@@ -3,7 +3,7 @@ import type {
   ConversationDetail, ConversationStatus, ConversationSummary, InboxRepository, MessageItem, NetworkId, NoteItem,
 } from '@/lib/inbox/types';
 import type {
-  AppContext, CreatePostInput, IntegrationItem, MemberItem, PostItem, PostsRepository, Repositories, Result, WorkspaceRepository,
+  AppContext, CreatePostInput, IntegrationItem, MemberItem, NotificationItem, PostItem, PostsRepository, Repositories, Result, WorkspaceRepository,
 } from './types';
 
 // Mode démo : données d'exemple en mémoire, partagées par tous les visiteurs du serveur de développement.
@@ -22,6 +22,7 @@ export const DEMO_CONTEXT: AppContext = {
 };
 
 interface Store {
+  notifications: NotificationItem[];
   conversations: ConversationDetail[];
   integrations: IntegrationItem[];
   members: MemberItem[];
@@ -112,6 +113,10 @@ function seed(): Store {
 
   return {
     conversations, integrations, orgName: DEMO_CONTEXT.org.name, seq,
+    notifications: [
+      { id: 'nt1', type: 'post_error', title: 'Canal à reconnecter', body: 'Le jeton d’accès a expiré : reconnectez le canal.', createdAt: ago(3 * H), read: false, href: '/app/calendrier' },
+      { id: 'nt2', type: 'message_failed', title: 'Réponse non envoyée', body: 'La fenêtre de 24 h est dépassée : Meta n’autorise plus de réponse à cette conversation.', createdAt: ago(26 * H), read: true, href: '/app/inbox?c=c5' },
+    ],
     members: [
       { userId: 'demo-user', name: 'Camille', role: 'admin' },
       { userId: 'u2', name: 'Hugo', role: 'member' },
@@ -200,7 +205,19 @@ const workspace: WorkspaceRepository = {
   async integrations() { return store().integrations; },
   async members() { return store().members; },
   async renameOrganization(name) { store().orgName = name; return { ok: true }; },
+  async notifications() { return structuredClone(store().notifications); },
+  async markNotificationsRead() { store().notifications.forEach((n) => { n.read = true; }); return { ok: true }; },
 };
 
-export const demoRepositories: Repositories = { inbox, posts, workspace };
+/** Mode démo : « connecte » un canal fictif pour pouvoir parcourir l'onboarding sans OAuth. */
+export function demoConnectChannel(networkId: NetworkId, name: string): Result {
+  const s = store();
+  if (s.integrations.some((i) => i.networkId === networkId)) return { ok: true };
+  s.integrations.push({ id: id('i'), networkId, name, username: null, pictureUrl: null, status: 'active' });
+  return { ok: true };
+}
+
+const media = { async list() { return []; } };
+
+export const demoRepositories: Repositories = { inbox, posts, workspace, media };
 export const demoOrgName = () => store().orgName;

@@ -9,7 +9,9 @@ Planifiez vos publications et répondez à tous vos messages et commentaires dep
 |---|---|
 | Site vitrine, tarifs, pages légales (brouillons) | ✅ Fait, en français (`apps/web`) |
 | Connexion / inscription / mot de passe oublié (Supabase Auth) | ✅ Écrit ; **à valider sur un projet Supabase réel** |
-| Application : boîte de réception, publications, canaux, réglages | ✅ Fonctionne en **mode démo** ; branchement Supabase écrit mais **non testé sur un projet réel** |
+| Application : onboarding en 3 étapes, calendrier (jour/semaine/mois/liste), boîte de réception, médias, canaux, réglages, notifications | ✅ Fonctionne en **mode démo** ; branchement Supabase écrit mais **non testé sur un projet réel** |
+| Onboarding « à la Postiz » : organisation créée automatiquement, modale plein écran ouverte par `?onboarding=true` | ✅ Étapes 1 (canaux) et 3 (prise en main) ; l'étape 2 (agents IA, MCP, CLI) est affichée « Bientôt » car ces fonctions n'existent pas encore |
+| Pages « Agent », « Analyses », « Facturation » du menu | ❌ Affichées grisées « Bientôt disponible » |
 | Base Supabase : schéma, RLS multi-organisations, file d'envoi, ingestion des messages | ✅ Migrations testées (49 tests dans PGlite, sans Docker) |
 | Webhooks Meta : signature, normalisation, Edge Function `webhook-meta` | ✅ Logique testée ; **fonction non déployée ni exécutée sous Deno** |
 | Worker : publication (Facebook, X, LinkedIn : texte), envoi de réponses Messenger/Instagram/commentaires | ✅ Logique testée avec des réseaux simulés ; **jamais exécuté contre les vraies API** |
@@ -30,7 +32,13 @@ pnpm dev            # http://localhost:3100
 ```
 
 Sans variables Supabase, l'application tourne avec des données d'exemple : ouvrez `/app` (ou le lien « Ouvrir
-l'application de démonstration » sur `/login`). Les réponses envoyées restent en mémoire du serveur, rien ne part aux réseaux.
+l'application de démonstration » sur `/login`). Pour voir l'onboarding d'un nouvel inscrit : `/app/calendrier?onboarding=true`.
+Les réponses et publications créées restent en mémoire du serveur, rien ne part aux réseaux. En démo, cliquer sur un canal
+de l'onboarding « connecte » un compte fictif.
+
+Parcours d'un nouvel inscrit (calqué sur Postiz) : inscription → l'organisation est créée automatiquement
+(`ensure_organization`) → arrivée sur le calendrier avec l'onboarding plein écran → « Commencer » ferme l'onboarding.
+Une vidéo de présentation peut remplacer la check-list de l'étape 3 via `NEXT_PUBLIC_TUTORIAL_VIDEO_URL` (URL https).
 
 ## Avec un vrai projet Supabase
 
@@ -39,11 +47,34 @@ l'application de démonstration » sur `/login`). Les réponses envoyées resten
 3. *Authentication → URL Configuration* : `Site URL` = votre URL, et ajoutez `<URL>/auth/callback` aux URL de redirection.
    Pour tester sans e-mail de confirmation : *Authentication → Providers → Email* → désactiver « Confirm email » (développement uniquement).
 4. Copiez `.env.example` en `.env` et renseignez `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY` (**jamais** côté navigateur) et `TOKEN_ENCRYPTION_KEY` (`openssl rand -base64 32`).
-   Le fichier `.env` à la racine est lu par le worker ; pour l'app web, copiez aussi les variables `NEXT_PUBLIC_*` dans `apps/web/.env.local`.
+   Le fichier `.env` à la racine est lu par le worker ; pour l'app web, copiez les variables nécessaires dans `apps/web/.env.local` (`NEXT_PUBLIC_*`, et pour connecter des canaux : `SUPABASE_SERVICE_ROLE_KEY`, `TOKEN_ENCRYPTION_KEY` et les clés des réseaux, voir `apps/web/.env.example`).
 5. `pnpm dev`, créez un compte, puis une organisation.
 6. Worker : `pnpm dev:worker` (ajoutez `WORKER_DRY_RUN=1` pour tout essayer sans contacter aucun réseau).
 7. Webhooks Meta : `supabase functions deploy webhook-meta --no-verify-jwt`, puis
    `supabase secrets set META_APP_SECRET=… META_WEBHOOK_VERIFY_TOKEN=…` (voir `docs/RESEAUX.md`).
+
+## Connexion des canaux (OAuth)
+
+Page *Canaux* → « Connecter » (administrateur de l'organisation uniquement). Un bouton reste **désactivé** tant que le
+serveur n'a pas toutes les variables du réseau (`.env.example`) ni `SUPABASE_SERVICE_ROLE_KEY` / `TOKEN_ENCRYPTION_KEY`.
+
+- `POST /api/oauth/start/<réseau>` : crée un `state` signé (HMAC) et, pour X et Google, un PKCE S256. Seul le hachage du `state`
+  et le `code_verifier` chiffré sont stockés (`oauth_states`, fermée aux clients), liés à l'utilisateur et à l'organisation.
+  Meta, LinkedIn et TikTok n'ont pas de PKCE dans leur flux web documenté : ils reposent sur le `state` lié à l'utilisateur.
+- `GET /api/oauth/callback/<meta|x|linkedin|google|tiktok>` : consomme le `state` (usage unique, 10 min), échange le code, lit le profil,
+  puis écrit `integrations` + `integration_secrets` en une seule opération SQL (`connect_integration`). Les jetons sont chiffrés
+  (AES-256-GCM) et **ne sont jamais renvoyés au navigateur**.
+- Meta : jeton longue durée → liste des Pages (Facebook) ou comptes Instagram professionnels liés → l'utilisateur coche ceux à connecter
+  (`/app/canaux/connecter/<id>`) → jeton de Page (sans expiration) enregistré, abonnement de la Page aux webhooks.
+- Déconnexion : révocation du jeton / désabonnement chez le réseau (au mieux), jetons supprimés, canal marqué supprimé,
+  publications en attente passées en erreur.
+- Worker : rafraîchit les jetons de X, LinkedIn, YouTube et TikTok qui expirent dans moins de 30 min (verrou en base : un seul worker par
+  jeton) ; refus définitif ou jeton échu sans refresh token → canal « À reconnecter » + notification aux administrateurs.
+
+> ⚠️ **Rien de ceci n'a été exécuté contre les vraies API Meta, X, LinkedIn, Google ou TikTok.** Les URL, scopes et formats suivent la
+> documentation publique et sont vérifiés uniquement par des tests avec un réseau simulé (`pnpm test`). Les applications des réseaux
+> n'existent pas encore (voir `docs/RESEAUX.md`) ; attendez-vous à des ajustements à la première vraie connexion, en particulier pour
+> TikTok, Instagram et l'abonnement aux webhooks Meta.
 
 ## Tests
 
@@ -59,7 +90,7 @@ apps/web        Site vitrine, authentification et application (Next.js 16, Tailw
 apps/worker     Publication, envoi des réponses, balayage du travail abandonné (Node, tsx)
 apps/mobile     Application Expo (repris de postiz-mobile), branchée à Supabase — voir son README
 apps/uploader   Normalisation des médias, Python (repris de postiz-uploader) — à brancher
-packages/core   Ré-exporte le code partagé de supabase/functions/_shared (chiffrement, webhooks Meta, envoi)
+packages/core   Chiffrement, webhooks Meta, envoi (ré-exportés de supabase/functions/_shared) et flux OAuth des réseaux (src/oauth)
 packages/db     Tests de la base dans PGlite
 supabase/       Migrations, Edge Functions, code partagé Deno/Node
 ```

@@ -44,3 +44,14 @@ export async function getRepositories(ctx: AppContext): Promise<Repositories> {
   if (ctx.mode === 'demo') return demoRepositories;
   return createSupabaseRepositories(await createClient(), ctx);
 }
+
+/**
+ * Première connexion : crée l'organisation de l'utilisateur sans lui poser de question (comme Postiz),
+ * puis l'envoie vers l'onboarding. Idempotent côté base (ensure_organization).
+ */
+export async function provisionOrganization(user: { email: string }, displayName?: string | null): Promise<boolean> {
+  const supabase = await createClient();
+  const base = (displayName ?? '').trim() || user.email.split('@')[0] || '';
+  const { error } = await supabase.rpc('ensure_organization', { p_name: base ? `Espace de ${base}` : null });
+  return !error;
+}

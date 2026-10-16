@@ -114,7 +114,7 @@ function Thread({ c, params, now, canReply }: { c: ConversationDetail; params: P
         <Link href={href({ ...params, c: undefined })} className="mb-2 inline-block text-sm font-medium text-muted lg:hidden">← Retour à la liste</Link>
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="min-w-0">
-            <h1 className="truncate text-lg font-semibold">{c.contactName}{c.contactUsername && <span className="ml-2 text-sm font-normal text-subtle">@{c.contactUsername}</span>}</h1>
+            <h2 className="truncate text-lg font-semibold">{c.contactName}{c.contactUsername && <span className="ml-2 text-sm font-normal text-subtle">@{c.contactUsername}</span>}</h2>
             <p className="mt-0.5 flex flex-wrap items-center gap-x-2 text-sm text-muted">
               <NetworkLabel id={c.networkId} />
               <span>· {c.accountName}</span>
@@ -206,11 +206,8 @@ export default async function InboxPage({ searchParams }: { searchParams: Promis
 
       <aside className={`${selected ? 'hidden lg:flex' : 'flex'} w-full shrink-0 flex-col border-r border-line bg-paper lg:w-[390px]`}>
         <div className="border-b border-line bg-surface px-4 pt-4 pb-3">
-          <div className="flex items-baseline justify-between">
-            <h1 className="text-xl font-semibold tracking-tight">Boîte de réception</h1>
-            <p className="text-sm text-muted">{unreadTotal > 0 ? `${unreadTotal} non lu${unreadTotal > 1 ? 's' : ''}` : 'Tout est lu'}</p>
-          </div>
-          <form action="/app/inbox" className="mt-3">
+          <p className="text-sm font-semibold text-muted">{unreadTotal > 0 ? `${unreadTotal} non lu${unreadTotal > 1 ? 's' : ''}` : 'Tout est lu'}</p>
+          <form action="/app/inbox" className="mt-2.5">
             {base.status && <input type="hidden" name="status" value={base.status} />}
             {base.net && <input type="hidden" name="net" value={base.net} />}
             <label htmlFor="inbox-q" className="sr-only">Rechercher</label>

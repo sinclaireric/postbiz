@@ -4,7 +4,7 @@ import type {
   ConversationDetail, ConversationStatus, ConversationSummary, InboxRepository, MessageItem, NetworkId, NoteItem,
 } from '@/lib/inbox/types';
 import type {
-  AppContext, CreatePostInput, IntegrationItem, MemberItem, OrgRole, PostItem, PostsRepository, Repositories, Result, WorkspaceRepository,
+  AppContext, CreatePostInput, IntegrationItem, MediaItem, MemberItem, NotificationItem, OrgRole, PostItem, PostsRepository, Repositories, Result, WorkspaceRepository,
 } from './types';
 
 // Implémentation Supabase. Toutes les requêtes passent par la clé « anon » + la session de l'utilisateur :
@@ -171,11 +171,44 @@ export function createSupabaseRepositories(supabase: SupabaseClient, ctx: AppCon
       return (data ?? []).map((m: Row): MemberItem => ({ userId: m.user_id, name: names.get(m.user_id) ?? 'Membre', role: m.role as OrgRole }));
     },
 
+    async notifications() {
+      const { data } = await supabase
+        .from('notifications')
+        .select('id, type, title, body, data, read_at, created_at')
+        .eq('user_id', ctx.user.id)
+        .order('created_at', { ascending: false })
+        .limit(20);
+      return (data ?? []).map((n: Row): NotificationItem => ({
+        id: n.id, type: n.type, title: n.title, body: n.body ?? null, createdAt: n.created_at, read: !!n.read_at,
+        href: n.data?.conversationId ? `/app/inbox?c=${encodeURIComponent(String(n.data.conversationId))}` : n.data?.postId ? '/app/calendrier' : null,
+      }));
+    },
+
+    async markNotificationsRead() {
+      const { error } = await supabase.from('notifications').update({ read_at: new Date().toISOString() }).eq('user_id', ctx.user.id).is('read_at', null);
+      return error ? fail(GENERIC_ERROR) : { ok: true };
+    },
+
     async renameOrganization(name) {
       const { error } = await supabase.from('organizations').update({ name: name.trim() }).eq('id', ctx.org.id);
       return error ? fail('Seul un administrateur peut renommer l’organisation.') : { ok: true };
     },
   };
 
-  return { inbox, posts, workspace };
+  const media = {
+    async list(): Promise<MediaItem[]> {
+      const { data } = await supabase
+        .from('media')
+        .select('id, path, mime_type, size_bytes, created_at')
+        .eq('org_id', ctx.org.id)
+        .order('created_at', { ascending: false })
+        .limit(200);
+      const rows = (data ?? []) as Row[];
+      const signed = rows.length ? await supabase.storage.from('media').createSignedUrls(rows.map((r) => r.path as string), 3600) : { data: [] as Row[] };
+      const urlByPath = new Map<string, string>((signed.data ?? []).filter((x: Row) => x.signedUrl).map((x: Row) => [x.path as string, x.signedUrl as string]));
+      return rows.map((r) => ({ id: r.id, path: r.path, mimeType: r.mime_type ?? null, sizeBytes: r.size_bytes ?? null, createdAt: r.created_at, url: urlByPath.get(r.path) ?? null }));
+    },
+  };
+
+  return { inbox, posts, workspace, media };
 }

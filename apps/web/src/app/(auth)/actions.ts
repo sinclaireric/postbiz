@@ -38,10 +38,10 @@ export async function signup(_: FormState, formData: FormData): Promise<FormStat
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
-    options: { emailRedirectTo: `${siteUrl}/auth/callback?next=/app/onboarding` },
+    options: { emailRedirectTo: `${siteUrl}/auth/callback?next=${encodeURIComponent('/app/calendrier?onboarding=true')}` },
   });
   if (error) return { error: frenchAuthError(error.message) };
-  if (data.session) redirect('/app/onboarding'); // confirmation par e-mail désactivée côté Supabase
+  if (data.session) redirect('/app/calendrier?onboarding=true'); // confirmation par e-mail désactivée côté Supabase
   return { message: 'Compte créé. Ouvrez le lien que nous venons de vous envoyer par e-mail pour confirmer votre adresse.' };
 }
 

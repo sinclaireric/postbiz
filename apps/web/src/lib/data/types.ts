@@ -56,13 +56,41 @@ export interface PostsRepository {
   remove(groupId: string): Promise<Result>;
 }
 
+export interface NotificationItem {
+  id: string;
+  type: string;
+  title: string;
+  body: string | null;
+  createdAt: string;
+  read: boolean;
+  /** Page de l'application à ouvrir au clic. */
+  href: string | null;
+}
+
 export interface WorkspaceRepository {
   integrations(): Promise<IntegrationItem[]>;
   members(): Promise<MemberItem[]>;
   renameOrganization(name: string): Promise<Result>;
+  notifications(): Promise<NotificationItem[]>;
+  markNotificationsRead(): Promise<Result>;
+}
+
+export interface MediaItem {
+  id: string;
+  path: string;
+  mimeType: string | null;
+  sizeBytes: number | null;
+  createdAt: string;
+  /** URL signée temporaire d'affichage (null en mode démo). */
+  url: string | null;
+}
+
+export interface MediaRepository {
+  list(): Promise<MediaItem[]>;
 }
 
 export interface Repositories {
+  media: MediaRepository;
   inbox: InboxRepository;
   posts: PostsRepository;
   workspace: WorkspaceRepository;

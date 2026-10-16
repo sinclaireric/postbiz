@@ -40,7 +40,7 @@ export async function createPostAction(_: PostFormState, formData: FormData): Pr
     mode,
   });
   if (!res.ok) return { errors: [res.error ?? 'Impossible d’enregistrer la publication.'] };
-  revalidatePath('/app/publications');
+  revalidatePath('/app/calendrier');
   return { savedAt: Date.now() };
 }
 
@@ -49,5 +49,5 @@ export async function deletePostAction(formData: FormData): Promise<void> {
   if (session.status !== 'ready' || session.ctx.org.role === 'viewer') return;
   const repos = await getRepositories(session.ctx);
   await repos.posts.remove(String(formData.get('groupId') ?? ''));
-  revalidatePath('/app/publications');
+  revalidatePath('/app/calendrier');
 }

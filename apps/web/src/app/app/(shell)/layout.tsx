@@ -1,36 +1,57 @@
 import { redirect } from 'next/navigation';
+import { Suspense } from 'react';
 import { signOut } from '@/app/(auth)/actions';
-import { Sidebar } from '@/components/app/sidebar';
-import { getRepositories, getSession } from '@/lib/data';
+import { AppShell } from '@/components/app/shell';
+import { Onboarding } from '@/components/onboarding/onboarding';
+import { getRepositories, getSession, provisionOrganization } from '@/lib/data';
 import { ROLE_LABEL } from '@/lib/data/types';
+import { networkAvailability } from '@/lib/oauth/availability';
+import { networkById } from '@/lib/networks';
+import { onboardingTiles, tutorialEmbedUrl } from '@/lib/onboarding';
+import { isDemo } from '@/lib/supabase/env';
+import { markNotificationsReadAction } from './actions';
 
 export default async function ShellLayout({ children }: { children: React.ReactNode }) {
-  const session = await getSession();
+  let session = await getSession();
   if (session.status === 'anonymous') redirect('/login');
-  if (session.status === 'no-org') redirect('/app/onboarding');
+  if (session.status === 'no-org') {
+    // Première connexion : l'organisation est créée sans question, puis on ouvre l'onboarding.
+    const ok = await provisionOrganization(session.user);
+    redirect(ok ? '/app/calendrier?onboarding=true' : '/login?erreur=organisation');
+  }
+  if (session.status !== 'ready') redirect('/login');
 
   const { ctx } = session;
   const repos = await getRepositories(ctx);
-  const unread = (await repos.inbox.listConversations()).reduce((n, c) => n + c.unreadCount, 0);
+  const [conversations, notifications, integrations] = await Promise.all([
+    repos.inbox.listConversations(),
+    repos.workspace.notifications(),
+    repos.workspace.integrations(),
+  ]);
+
+  const tiles = onboardingTiles(networkAvailability(process.env, isDemo), { demo: ctx.mode === 'demo', role: ctx.org.role });
+  const connected = integrations
+    .filter((i) => i.status !== 'disabled')
+    .map((i) => ({ id: i.id, name: i.name, networkId: i.networkId, color: networkById(i.networkId)?.color ?? '#999' }));
 
   return (
-    <div className="flex min-h-dvh flex-col bg-paper lg:flex-row">
-      <Sidebar
+    <>
+      <AppShell
         orgName={ctx.org.name}
-        role={ROLE_LABEL[ctx.org.role]}
+        roleLabel={ROLE_LABEL[ctx.org.role]}
         userName={ctx.user.name}
         userEmail={ctx.user.email}
-        unread={unread}
+        unreadMessages={conversations.reduce((n, c) => n + c.unreadCount, 0)}
+        notifications={notifications}
         signOutAction={signOut}
-      />
-      <div className="flex min-w-0 flex-1 flex-col lg:h-dvh lg:overflow-hidden">
-        {ctx.mode === 'demo' && (
-          <p className="border-b border-warn/25 bg-warn-soft px-4 py-2 text-center text-sm font-medium text-warn">
-            Mode démo : données d’exemple, rien n’est envoyé aux réseaux. Configurez Supabase pour utiliser vos vraies données.
-          </p>
-        )}
-        <div className="flex min-h-0 flex-1 flex-col lg:overflow-y-auto">{children}</div>
-      </div>
-    </div>
+        markNotificationsRead={markNotificationsReadAction}
+        demo={ctx.mode === 'demo'}
+      >
+        {children}
+      </AppShell>
+      <Suspense fallback={null}>
+        <Onboarding tiles={tiles} connected={connected} tutorialUrl={tutorialEmbedUrl(process.env.NEXT_PUBLIC_TUTORIAL_VIDEO_URL)} />
+      </Suspense>
+    </>
   );
 }

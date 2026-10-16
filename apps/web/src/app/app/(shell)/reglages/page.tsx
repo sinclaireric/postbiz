@@ -18,9 +18,7 @@ export default async function SettingsPage() {
 
   return (
     <div className="mx-auto w-full max-w-3xl px-5 py-8 sm:px-8">
-      <h1 className="text-2xl font-semibold tracking-tight">Réglages</h1>
-
-      <section className="mt-8 rounded-3xl border border-line bg-surface p-6" aria-labelledby="org">
+      <section className="rounded-3xl border border-line bg-surface p-6" aria-labelledby="org">
         <h2 id="org" className="text-lg font-semibold">Organisation</h2>
         <div className="mt-4"><RenameForm name={ctx.org.name} disabled={ctx.org.role !== 'admin'} /></div>
       </section>

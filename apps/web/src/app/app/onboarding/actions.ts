@@ -1,19 +1,16 @@
 'use server';
 
-import { redirect } from 'next/navigation';
-import { isDemo } from '@/lib/supabase/env';
-import { createClient } from '@/lib/supabase/server';
+import { revalidatePath } from 'next/cache';
+import { getSession } from '@/lib/data';
+import { demoConnectChannel } from '@/lib/data/demo';
+import { networkById } from '@/lib/networks';
 
-export interface OnboardingState { error?: string }
-
-export async function createOrganizationAction(_: OnboardingState, formData: FormData): Promise<OnboardingState> {
-  if (isDemo) redirect('/app/inbox');
-  const name = String(formData.get('name') ?? '').trim();
-  if (name.length < 2) return { error: 'Donnez un nom d’au moins 2 caractères à votre organisation.' };
-  if (name.length > 120) return { error: 'Ce nom est trop long.' };
-
-  const supabase = await createClient();
-  const { error } = await supabase.rpc('create_organization', { p_name: name });
-  if (error) return { error: 'Impossible de créer l’organisation. Réessayez dans un instant.' };
-  redirect('/app/inbox');
+/** Mode démo uniquement : simule la connexion d'un canal pour pouvoir parcourir l'onboarding sans OAuth. */
+export async function connectDemoChannelAction(formData: FormData): Promise<void> {
+  const session = await getSession();
+  if (session.status !== 'ready' || session.ctx.mode !== 'demo') return;
+  const network = networkById(String(formData.get('networkId') ?? ''));
+  if (!network) return;
+  demoConnectChannel(network.id, `${network.name} (démo)`);
+  revalidatePath('/app', 'layout');
 }
