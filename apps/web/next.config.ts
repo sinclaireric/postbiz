@@ -1,4 +1,5 @@
 import type { NextConfig } from 'next';
+import { aliasRedirects, configuredAliases } from './src/lib/alias-domains';
 
 const securityHeaders = [
   { key: 'X-Content-Type-Options', value: 'nosniff' },
@@ -14,6 +15,10 @@ const nextConfig: NextConfig = {
   transpilePackages: ['@postbiz/core'],
   async headers() {
     return [{ source: '/:path*', headers: securityHeaders }];
+  },
+  // Domaines secondaires → domaine principal (NEXT_PUBLIC_SITE_URL). Évalué au build : à renseigner avant `next build`.
+  async redirects() {
+    return aliasRedirects(process.env.NEXT_PUBLIC_SITE_URL, configuredAliases(process.env.SITE_ALIAS_DOMAINS));
   },
 };
 

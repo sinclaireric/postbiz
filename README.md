@@ -77,6 +77,18 @@ serveur n'a pas toutes les variables du réseau (`.env.example`) ni `SUPABASE_SE
 > n'existent pas encore (voir `docs/RESEAUX.md`) ; attendez-vous à des ajustements à la première vraie connexion, en particulier pour
 > TikTok, Instagram et l'abonnement aux webhooks Meta.
 
+## Domaines
+
+`NEXT_PUBLIC_SITE_URL` est le domaine principal : il sert aux liens des e-mails, aux adresses de retour OAuth et au contrôle d'origine.
+Les domaines secondaires (par défaut `getpostbiz.com`, `trypostiz.com`, `postizz.com`, `post-iz.com`, et leur `www.`) redirigent en 308 vers lui,
+chemin et paramètres conservés (`apps/web/src/lib/alias-domains.ts`, testé). Changer la liste : variable `SITE_ALIAS_DOMAINS`.
+
+- Les redirections sont **calculées au build** : définir `NEXT_PUBLIC_SITE_URL` (et éventuellement `SITE_ALIAS_DOMAINS`) avant `next build`. Tant que le
+  domaine principal est une adresse locale ou absent, rien ne redirige.
+- Ce code **n'achète ni ne configure aucun domaine** : chacun doit être enregistré, pointer vers l'hébergement (DNS) et avoir un certificat TLS, sinon
+  la redirection n'est jamais atteinte. Le domaine principal doit rester celui déclaré dans l'URL de retour OAuth de chaque réseau
+  et dans Supabase (*Authentication → URL Configuration*) ; les secondaires n'y figurent pas.
+
 ## Langues
 
 14 langues pour le site, l'authentification et l'application web (sélecteur dans l'en-tête, le pied de page et l'application).
