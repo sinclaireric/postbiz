@@ -80,8 +80,8 @@
   "home": {
     "badgeBeta": "Beta aberto",
     "badgeOpenSource": "Software livre · AGPL-3.0",
-    "title": "Agende seus posts e responda a <accent>todas as suas mensagens</accent>, em um só lugar",
-    "subtitle": "O Postbiz conecta suas contas do Facebook, Instagram, X, LinkedIn, TikTok e YouTube. Você agenda suas publicações, e as mensagens e comentários dos seus seguidores chegam a uma única caixa de entrada, compartilhada com sua equipe.",
+    "title": "Posts e mensagens, <accent>conduzidos pelos seus agentes de IA</accent>",
+    "subtitle": "O Postbiz conecta suas contas do Facebook, Instagram, X, LinkedIn, TikTok e YouTube: um único calendário para agendar e uma única caixa de entrada para responder. Conecte o agente de IA da sua escolha (Claude, ChatGPT, Cursor…) para redigir e agendar posts por você: servidor MCP, CLI e API pública em breve.",
     "ctaPrimary": "Experimentar grátis",
     "ctaPricing": "Ver os preços",
     "betaNote": "Beta gratuito · Sem cartão de crédito",

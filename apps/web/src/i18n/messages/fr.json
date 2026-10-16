@@ -123,8 +123,8 @@
   "home": {
     "badgeBeta": "Bêta ouverte",
     "badgeOpenSource": "Logiciel libre · AGPL-3.0",
-    "title": "Planifiez vos posts et répondez à <accent>tous vos messages</accent>, au même endroit",
-    "subtitle": "Postbiz relie vos comptes Facebook, Instagram, X, LinkedIn, TikTok et YouTube. Vous programmez vos publications, et les messages et commentaires de vos abonnés arrivent dans une seule boîte de réception, partagée avec votre équipe.",
+    "title": "Posts et messages, <accent>pilotés par vos agents IA</accent>",
+    "subtitle": "Postbiz relie vos comptes Facebook, Instagram, X, LinkedIn, TikTok et YouTube : un seul calendrier pour programmer, une seule boîte de réception pour répondre. Branchez l’agent IA de votre choix (Claude, ChatGPT, Cursor…) pour rédiger et programmer vos posts à votre place : serveur MCP, CLI et API publique bientôt disponibles.",
     "ctaPrimary": "Essayer gratuitement",
     "ctaPricing": "Voir les tarifs",
     "betaNote": "Bêta gratuite · Sans carte bancaire",

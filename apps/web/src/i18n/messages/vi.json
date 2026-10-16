@@ -80,8 +80,8 @@
   "home": {
     "badgeBeta": "Beta mở",
     "badgeOpenSource": "Phần mềm tự do · AGPL-3.0",
-    "title": "Lên lịch bài đăng và trả lời <accent>mọi tin nhắn</accent> tại cùng một nơi",
-    "subtitle": "Postbiz kết nối tài khoản Facebook, Instagram, X, LinkedIn, TikTok và YouTube của bạn. Bạn lên lịch bài đăng, còn tin nhắn và bình luận của người theo dõi đổ về một hộp thư chung với đội ngũ của bạn.",
+    "title": "Bài đăng và tin nhắn, <accent>do các trợ lý AI của bạn điều khiển</accent>",
+    "subtitle": "Postbiz kết nối tài khoản Facebook, Instagram, X, LinkedIn, TikTok và YouTube của bạn: một lịch duy nhất để lên lịch, một hộp thư duy nhất để trả lời. Hãy kết nối trợ lý AI bạn chọn (Claude, ChatGPT, Cursor…) để soạn và lên lịch bài đăng thay bạn: máy chủ MCP, CLI và API công khai sẽ sớm ra mắt.",
     "ctaPrimary": "Dùng thử miễn phí",
     "ctaPricing": "Xem bảng giá",
     "betaNote": "Beta miễn phí · Không cần thẻ tín dụng",

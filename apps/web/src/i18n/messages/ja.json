@@ -80,8 +80,8 @@
   "home": {
     "badgeBeta": "オープンベータ",
     "badgeOpenSource": "フリーソフトウェア · AGPL-3.0",
-    "title": "投稿を予約して、<accent>すべてのメッセージ</accent>にひとつの場所から返信",
-    "subtitle": "PostbizはFacebook、Instagram、X、LinkedIn、TikTok、YouTubeのアカウントを接続します。投稿の予約はあなたが、フォロワーからのメッセージとコメントはチームで共有するひとつの受信トレイに届きます。",
+    "title": "投稿もメッセージも、<accent>AIエージェント</accent>におまかせ",
+    "subtitle": "PostbizはFacebook、Instagram、X、LinkedIn、TikTok、YouTubeのアカウントを接続します。予約はひとつのカレンダーで、返信はひとつの受信トレイで。お好みのAIエージェント(Claude、ChatGPT、Cursorなど)をつなげば、投稿の作成と予約を任せられます。MCPサーバー、CLI、公開APIは近日対応予定です。",
     "ctaPrimary": "無料で試す",
     "ctaPricing": "料金を見る",
     "betaNote": "無料ベータ · クレジットカード不要",

@@ -80,8 +80,8 @@
   "home": {
     "badgeBeta": "공개 베타",
     "badgeOpenSource": "자유 소프트웨어 · AGPL-3.0",
-    "title": "게시물을 예약하고 <accent>모든 메시지</accent>에 한곳에서 답하세요",
-    "subtitle": "Postbiz는 Facebook, Instagram, X, LinkedIn, TikTok, YouTube 계정을 연결합니다. 게시는 직접 예약하고, 팔로워의 메시지와 댓글은 팀이 함께 쓰는 하나의 받은편지함으로 모입니다.",
+    "title": "게시물과 메시지, <accent>AI 에이전트</accent>가 관리합니다",
+    "subtitle": "Postbiz는 Facebook, Instagram, X, LinkedIn, TikTok, YouTube 계정을 연결합니다. 예약은 하나의 캘린더에서, 답장은 하나의 받은편지함에서. 원하는 AI 에이전트(Claude, ChatGPT, Cursor 등)를 연결하면 게시물 작성과 예약을 대신 맡길 수 있습니다. MCP 서버, CLI, 공개 API는 곧 제공됩니다.",
     "ctaPrimary": "무료로 체험",
     "ctaPricing": "요금 보기",
     "betaNote": "무료 베타 · 신용카드 불필요",

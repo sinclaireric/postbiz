@@ -80,8 +80,8 @@
   "home": {
     "badgeBeta": "Beta aperta",
     "badgeOpenSource": "Software libero · AGPL-3.0",
-    "title": "Programma i tuoi post e rispondi a <accent>tutti i tuoi messaggi</accent>, nello stesso posto",
-    "subtitle": "Postbiz collega i tuoi account Facebook, Instagram, X, LinkedIn, TikTok e YouTube. Tu programmi le pubblicazioni, e i messaggi e i commenti dei tuoi follower arrivano in un’unica casella condivisa con il tuo team.",
+    "title": "Post e messaggi, <accent>guidati dai tuoi agenti IA</accent>",
+    "subtitle": "Postbiz collega i tuoi account Facebook, Instagram, X, LinkedIn, TikTok e YouTube: un solo calendario per programmare, una sola casella per rispondere. Collega l’agente IA che preferisci (Claude, ChatGPT, Cursor…) perché scriva e programmi i post al posto tuo: server MCP, CLI e API pubblica in arrivo.",
     "ctaPrimary": "Prova gratis",
     "ctaPricing": "Vedi i prezzi",
     "betaNote": "Beta gratuita · Nessuna carta di credito",

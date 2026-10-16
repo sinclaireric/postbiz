@@ -80,8 +80,8 @@
   "home": {
     "badgeBeta": "בטא פתוחה",
     "badgeOpenSource": "תוכנה חופשית · AGPL-3.0",
-    "title": "תזמנו את הפוסטים והשיבו ל<accent>כל ההודעות שלכם</accent> במקום אחד",
-    "subtitle": "Postbiz מחברת את חשבונות Facebook, Instagram, X, LinkedIn, TikTok ו-YouTube שלכם. אתם מתזמנים פרסומים, וההודעות והתגובות של העוקבים מגיעות לתיבה אחת המשותפת לצוות.",
+    "title": "פוסטים והודעות, <accent>בניהול סוכני ה-AI שלכם</accent>",
+    "subtitle": "Postbiz מחברת את חשבונות Facebook, Instagram, X, LinkedIn, TikTok ו-YouTube שלכם: לוח שנה אחד לתזמון, תיבת דואר נכנס אחת למענה. חברו את סוכן ה-AI לבחירתכם (Claude, ChatGPT, Cursor…) כדי שיכתוב ויתזמן פוסטים במקומכם: שרת MCP, ממשק שורת פקודה ו-API ציבורי יגיעו בקרוב.",
     "ctaPrimary": "נסו בחינם",
     "ctaPricing": "צפו במחירים",
     "betaNote": "בטא חינמית · ללא כרטיס אשראי",

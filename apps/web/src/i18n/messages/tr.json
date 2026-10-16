@@ -80,8 +80,8 @@
   "home": {
     "badgeBeta": "Açık beta",
     "badgeOpenSource": "Özgür yazılım · AGPL-3.0",
-    "title": "Gönderilerinizi planlayın ve <accent>tüm mesajlarınıza</accent> tek yerden yanıt verin",
-    "subtitle": "Postbiz; Facebook, Instagram, X, LinkedIn, TikTok ve YouTube hesaplarınızı bağlar. Siz yayınları planlarsınız, takipçilerinizin mesaj ve yorumları ise ekibinizle paylaştığınız tek bir gelen kutusuna düşer.",
+    "title": "Gönderiler ve mesajlar, <accent>yapay zekâ ajanlarınızın yönetiminde</accent>",
+    "subtitle": "Postbiz; Facebook, Instagram, X, LinkedIn, TikTok ve YouTube hesaplarınızı bağlar: planlamak için tek takvim, yanıtlamak için tek gelen kutusu. Seçtiğiniz yapay zekâ ajanını (Claude, ChatGPT, Cursor…) bağlayın; gönderileri sizin yerinize yazsın ve planlasın. MCP sunucusu, CLI ve herkese açık API yakında geliyor.",
     "ctaPrimary": "Ücretsiz dene",
     "ctaPricing": "Fiyatları gör",
     "betaNote": "Ücretsiz beta · Kredi kartı gerekmez",

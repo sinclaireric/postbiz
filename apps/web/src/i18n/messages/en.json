@@ -123,8 +123,8 @@
   "home": {
     "badgeBeta": "Open beta",
     "badgeOpenSource": "Open source · AGPL-3.0",
-    "title": "Schedule your posts and answer <accent>all your messages</accent>, in one place",
-    "subtitle": "Postbiz connects your Facebook, Instagram, X, LinkedIn, TikTok and YouTube accounts. You schedule your posts, and your followers’ messages and comments land in a single inbox shared with your team.",
+    "title": "Posts and messages, <accent>run by your AI agents</accent>",
+    "subtitle": "Postbiz connects your Facebook, Instagram, X, LinkedIn, TikTok and YouTube accounts: one calendar to schedule, one inbox to reply. Plug in the AI agent of your choice (Claude, ChatGPT, Cursor…) to draft and schedule posts for you: MCP server, CLI and public API coming soon.",
     "ctaPrimary": "Try for free",
     "ctaPricing": "See pricing",
     "betaNote": "Free beta · No credit card",

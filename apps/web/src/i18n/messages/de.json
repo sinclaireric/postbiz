@@ -80,8 +80,8 @@
   "home": {
     "badgeBeta": "Offene Beta",
     "badgeOpenSource": "Freie Software · AGPL-3.0",
-    "title": "Planen Sie Ihre Beiträge und beantworten Sie <accent>alle Ihre Nachrichten</accent> – an einem Ort",
-    "subtitle": "Postbiz verbindet Ihre Konten bei Facebook, Instagram, X, LinkedIn, TikTok und YouTube. Sie planen Ihre Beiträge, und die Nachrichten und Kommentare Ihrer Follower landen in einem einzigen Posteingang, den Sie mit Ihrem Team teilen.",
+    "title": "Beiträge und Nachrichten, <accent>gesteuert von Ihren KI-Agenten</accent>",
+    "subtitle": "Postbiz verbindet Ihre Konten bei Facebook, Instagram, X, LinkedIn, TikTok und YouTube: ein Kalender zum Planen, ein Posteingang zum Antworten. Schließen Sie den KI-Agenten Ihrer Wahl an (Claude, ChatGPT, Cursor …), damit er Beiträge für Sie entwirft und plant: MCP-Server, CLI und öffentliche API folgen in Kürze.",
     "ctaPrimary": "Kostenlos testen",
     "ctaPricing": "Preise ansehen",
     "betaNote": "Kostenlose Beta · Keine Kreditkarte",
