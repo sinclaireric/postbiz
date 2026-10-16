@@ -1,3 +1,4 @@
+import type { MessageKey } from '@/i18n/types';
 import { NETWORKS, type Capability } from '@/lib/networks';
 import type { OrgRole } from '@/lib/data/types';
 
@@ -11,10 +12,8 @@ export type TileState = 'connect' | 'demo' | 'admin_only' | 'unavailable';
 
 export interface OnboardingTile {
   id: string;
-  name: string;
   color: string;
   state: TileState;
-  note?: string;
   capabilities: { publish: Capability; dm: Capability; comments: Capability };
 }
 
@@ -27,15 +26,15 @@ export function onboardingTiles(
     if (opts.demo) state = 'demo';
     else if (opts.role !== 'admin') state = 'admin_only';
     else state = availability[n.id]?.available ? 'connect' : 'unavailable';
-    return { id: n.id, name: n.name, color: n.color, state, note: n.note, capabilities: { publish: n.publish, dm: n.dm, comments: n.comments } };
+    return { id: n.id, color: n.color, state, capabilities: { publish: n.publish, dm: n.dm, comments: n.comments } };
   });
 }
 
-export const TILE_HINT: Record<TileState, string> = {
-  connect: 'Cliquez pour connecter ce canal.',
-  demo: 'Mode démo : la connexion est simulée.',
-  admin_only: 'Seul un administrateur de l’organisation peut connecter un canal.',
-  unavailable: 'Connexion indisponible : les clés API de ce réseau ne sont pas encore configurées sur ce serveur (voir docs/RESEAUX.md).',
+export const TILE_HINT_KEY: Record<TileState, MessageKey> = {
+  connect: 'app.onboarding.hintConnect',
+  demo: 'app.onboarding.hintDemo',
+  admin_only: 'app.onboarding.hintAdminOnly',
+  unavailable: 'app.onboarding.hintUnavailable',
 };
 
 /** URL d'une vidéo de présentation (embed YouTube ou autre), si configurée. N'accepte que https. */

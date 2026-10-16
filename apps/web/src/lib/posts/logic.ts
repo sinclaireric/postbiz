@@ -1,4 +1,6 @@
+import type { FormError } from '@/lib/form-error';
 import type { NetworkId } from '@/lib/inbox/types';
+import { networkName } from '@/lib/networks';
 
 export interface NetworkRule {
   /** Longueur maximale du texte (approximative : les réseaux comptent différemment liens et émojis). */
@@ -16,8 +18,6 @@ export const NETWORK_RULES: Record<NetworkId, NetworkRule> = {
   youtube: { maxLength: 5_000, requiresMedia: true },
 };
 
-const NAMES: Record<NetworkId, string> = { facebook: 'Facebook', instagram: 'Instagram', x: 'X', linkedin: 'LinkedIn', tiktok: 'TikTok', youtube: 'YouTube' };
-
 export type PostMode = 'draft' | 'schedule';
 
 export interface PostInput {
@@ -33,33 +33,34 @@ export interface PostInput {
 /** Délai minimum entre maintenant et une publication programmée. */
 export const MIN_LEAD_MS = 60_000;
 
-export function validatePost(input: PostInput): string[] {
-  const errors: string[] = [];
+/** Erreurs de validation d'une publication, sous forme de clés de message (traduites à l'affichage). */
+export function validatePost(input: PostInput): FormError[] {
+  const errors: FormError[] = [];
   const now = input.now ?? new Date();
   const text = input.content.trim();
   const networks = [...new Set(input.networkIds)];
 
-  if (networks.length === 0) errors.push('Choisissez au moins un canal.');
+  if (networks.length === 0) errors.push({ key: 'app.validation.noChannel' });
 
   if (input.mode === 'schedule') {
-    if (!text && !input.hasMedia) errors.push('Écrivez un texte ou ajoutez un média.');
+    if (!text && !input.hasMedia) errors.push({ key: 'app.validation.needTextOrMedia' });
     if (!input.publishAt) {
-      errors.push('Choisissez une date et une heure de publication.');
+      errors.push({ key: 'app.validation.needDate' });
     } else {
       const t = new Date(input.publishAt).getTime();
-      if (Number.isNaN(t)) errors.push('La date de publication n’est pas valide.');
-      else if (t < now.getTime() + MIN_LEAD_MS) errors.push('La date de publication doit être dans le futur.');
+      if (Number.isNaN(t)) errors.push({ key: 'app.validation.invalidDate' });
+      else if (t < now.getTime() + MIN_LEAD_MS) errors.push({ key: 'app.validation.pastDate' });
     }
     for (const id of networks) {
       if (NETWORK_RULES[id].requiresMedia && !input.hasMedia) {
-        errors.push(`${NAMES[id]} exige une image ou une vidéo (l’envoi de médias arrive bientôt).`);
+        errors.push({ key: 'app.validation.needsMedia', params: { network: networkName(id) } });
       }
     }
   }
 
   for (const id of networks) {
     const max = NETWORK_RULES[id].maxLength;
-    if (text.length > max) errors.push(`${NAMES[id]} : ${text.length} / ${max} caractères.`);
+    if (text.length > max) errors.push({ key: 'app.validation.tooLong', params: { network: networkName(id), length: text.length, max } });
   }
   return errors;
 }

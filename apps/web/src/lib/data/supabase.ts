@@ -1,4 +1,5 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
+import { GENERIC_ERROR, type FormError } from '@/lib/form-error';
 import { replyWindow, validateReply } from '@/lib/inbox/logic';
 import type {
   ConversationDetail, ConversationStatus, ConversationSummary, InboxRepository, MessageItem, NetworkId, NoteItem,
@@ -16,8 +17,7 @@ type Row = Record<string, any>;
 /** PostgREST renvoie un objet (ou un tableau selon la relation) pour une table jointe. */
 const one = <T extends Row>(v: T | T[] | null | undefined): T | null => (Array.isArray(v) ? (v[0] ?? null) : (v ?? null));
 
-const fail = (message: string): Result => ({ ok: false, error: message });
-const GENERIC_ERROR = 'L’opération a échoué. Réessayez dans un instant.';
+const fail = (error: FormError): Result => ({ ok: false, error });
 
 async function profileNames(supabase: SupabaseClient, ids: (string | null)[]): Promise<Map<string, string>> {
   const unique = [...new Set(ids.filter((x): x is string => !!x))];
@@ -34,7 +34,7 @@ function toSummary(r: Row, names: Map<string, string>): ConversationSummary {
     networkId: (integ?.provider ?? 'facebook') as NetworkId,
     accountName: integ?.name ?? '',
     kind: r.kind,
-    contactName: contact?.name ?? contact?.username ?? 'Contact inconnu',
+    contactName: contact?.name ?? contact?.username ?? '',
     contactUsername: contact?.username ?? null,
     status: r.status,
     assigneeName: r.assignee_id ? (names.get(r.assignee_id) ?? 'Membre') : null,
@@ -83,7 +83,7 @@ export function createSupabaseRepositories(supabase: SupabaseClient, ctx: AppCon
 
     async sendReply(conversationId, body) {
       const { data: c } = await supabase.from('conversations').select('reply_window_expires_at').eq('id', conversationId).eq('org_id', ctx.org.id).maybeSingle();
-      if (!c) return fail('Conversation introuvable.');
+      if (!c) return fail({ key: 'app.inbox.notFound' });
       const invalid = validateReply(body, replyWindow(c.reply_window_expires_at));
       if (invalid) return fail(invalid);
       // Le message est mis en file (« queued ») : le worker l'envoie au réseau puis le passe à « sent » ou « failed ».
@@ -191,7 +191,7 @@ export function createSupabaseRepositories(supabase: SupabaseClient, ctx: AppCon
 
     async renameOrganization(name) {
       const { error } = await supabase.from('organizations').update({ name: name.trim() }).eq('id', ctx.org.id);
-      return error ? fail('Seul un administrateur peut renommer l’organisation.') : { ok: true };
+      return error ? fail({ key: 'app.settings.errRename' }) : { ok: true };
     },
   };
 

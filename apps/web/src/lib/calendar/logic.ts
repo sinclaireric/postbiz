@@ -45,13 +45,13 @@ export function shiftAnchor(view: CalendarView, anchor: Date, direction: 1 | -1)
 
 const dmy = (d: Date) => `${p2(d.getDate())}/${p2(d.getMonth() + 1)}/${d.getFullYear()}`;
 
-export function rangeLabel(view: CalendarView, anchor: Date): string {
+export function rangeLabel(view: CalendarView, anchor: Date, localeTag = 'fr'): string {
   if (view === 'day') return dmy(anchor);
   if (view === 'week') {
     const days = weekDays(anchor);
     return `${dmy(days[0]!)} - ${dmy(days[6]!)}`;
   }
-  return anchor.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
+  return anchor.toLocaleDateString(localeTag, { month: 'long', year: 'numeric' });
 }
 
 export const dayKey = (d: Date) => `${d.getFullYear()}-${p2(d.getMonth() + 1)}-${p2(d.getDate())}`;

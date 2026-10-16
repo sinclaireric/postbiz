@@ -3,23 +3,31 @@ import { AuthShell } from '@/components/auth/auth-shell';
 import { DemoBanner } from '@/components/auth/demo-banner';
 import { LoginForm } from '@/components/auth/forms';
 import { GoogleButton } from '@/components/auth/google-button';
+import { getT } from '@/i18n/server';
+import type { MessageKey } from '@/i18n/types';
 import { safeNext } from '@/lib/safe-redirect';
 
-export const metadata: Metadata = { title: 'Connexion' };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getT();
+  return { title: t('meta.login.title') };
+}
 
-const ERRORS: Record<string, string> = {
-  lien: 'Ce lien n’est plus valide. Demandez-en un nouveau.',
-  google: 'La connexion avec Google a échoué. Réessayez.',
+const ERRORS: Record<string, MessageKey> = {
+  lien: 'auth.linkErrors.lien',
+  google: 'auth.linkErrors.google',
+  organisation: 'auth.linkErrors.organisation',
 };
 
 export default async function LoginPage({ searchParams }: { searchParams: Promise<{ next?: string; erreur?: string }> }) {
   const { next, erreur } = await searchParams;
+  const t = await getT();
+  const errorKey = erreur ? ERRORS[erreur] : undefined;
   return (
-    <AuthShell title="Bon retour" subtitle="Connectez-vous pour retrouver vos messages et vos publications." switchLabel="Pas encore de compte ?" switchHref="/signup" switchText="Créer un compte">
+    <AuthShell title={t('auth.login.title')} subtitle={t('auth.login.subtitle')} switchLabel={t('auth.login.switchLabel')} switchHref="/signup" switchText={t('auth.login.switchText')}>
       <DemoBanner />
-      {erreur && ERRORS[erreur] && <p role="alert" className="mb-5 rounded-xl bg-danger-soft px-4 py-3 text-sm font-medium text-danger">{ERRORS[erreur]}</p>}
+      {errorKey && <p role="alert" className="mb-5 rounded-xl bg-danger-soft px-4 py-3 text-sm font-medium text-danger">{t(errorKey)}</p>}
       <div className="grid gap-5">
-        <GoogleButton label="Continuer avec Google" />
+        <GoogleButton />
         <LoginForm next={safeNext(next)} />
       </div>
     </AuthShell>

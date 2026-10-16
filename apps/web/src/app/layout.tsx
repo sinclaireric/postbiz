@@ -1,27 +1,38 @@
 import type { Metadata, Viewport } from 'next';
 import { Instrument_Serif, Plus_Jakarta_Sans } from 'next/font/google';
+import { LOCALE_META } from '@/i18n/config';
+import { I18nProvider } from '@/i18n/client';
+import { getClientMessages, getLocale, getT } from '@/i18n/server';
 import './globals.css';
 
-const jakarta = Plus_Jakarta_Sans({ subsets: ['latin'], variable: '--font-jakarta', display: 'swap' });
-const instrument = Instrument_Serif({ subsets: ['latin'], weight: '400', style: ['normal', 'italic'], variable: '--font-instrument', display: 'swap' });
+const jakarta = Plus_Jakarta_Sans({ subsets: ['latin', 'latin-ext', 'vietnamese'], variable: '--font-jakarta', display: 'swap' });
+const instrument = Instrument_Serif({ subsets: ['latin', 'latin-ext'], weight: '400', style: ['normal', 'italic'], variable: '--font-instrument', display: 'swap' });
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3100';
 
-export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
-  title: { default: 'Postbiz — Planifiez vos posts, répondez à tous vos messages', template: '%s · Postbiz' },
-  description:
-    'Postbiz réunit la planification de vos publications et une boîte de réception unifiée pour les messages privés et commentaires de Facebook, Instagram, X, LinkedIn, TikTok et YouTube.',
-  openGraph: { type: 'website', siteName: 'Postbiz', locale: 'fr_FR' },
-  robots: { index: true, follow: true },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getT();
+  return {
+    metadataBase: new URL(siteUrl),
+    title: { default: t('meta.siteTitle'), template: t('meta.titleTemplate', { page: '%s' }) },
+    description: t('meta.siteDescription'),
+    openGraph: { type: 'website', siteName: 'Postbiz', locale: t.locale },
+    robots: { index: true, follow: true },
+  };
+}
 
 export const viewport: Viewport = { themeColor: '#fafaf7', width: 'device-width', initialScale: 1 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const locale = await getLocale();
+  const meta = LOCALE_META[locale];
+  const messages = await getClientMessages(locale);
+
   return (
-    <html lang="fr" className={`${jakarta.variable} ${instrument.variable}`}>
-      <body className="min-h-dvh bg-paper text-ink antialiased">{children}</body>
+    <html lang={meta.tag} dir={meta.dir} className={`${jakarta.variable} ${instrument.variable}`}>
+      <body className="min-h-dvh bg-paper text-ink antialiased">
+        <I18nProvider locale={locale} messages={messages}>{children}</I18nProvider>
+      </body>
     </html>
   );
 }

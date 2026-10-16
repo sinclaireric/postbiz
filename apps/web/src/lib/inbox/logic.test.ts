@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
-  filterConversations, formatRelative, formatRemaining, replyWindow, sortConversations, validateReply, MAX_REPLY_LENGTH,
+  filterConversations, replyWindow, sortConversations, splitRemaining, validateReply, MAX_REPLY_LENGTH,
 } from './logic';
 import type { ConversationSummary } from './types';
 
@@ -13,13 +13,14 @@ const conv = (o: Partial<ConversationSummary>): ConversationSummary => ({
   replyWindowExpiresAt: null, ...o,
 });
 
-describe('formatRemaining', () => {
-  it('formate heures et minutes', () => {
-    expect(formatRemaining(19 * 3_600_000)).toBe('19 h');
-    expect(formatRemaining(2 * 3_600_000 + 15 * 60_000)).toBe('2 h 15');
-    expect(formatRemaining(12 * 60_000)).toBe('12 min');
-    expect(formatRemaining(10_000)).toBe('moins d’1 min');
-    expect(formatRemaining(10 * 3_600_000 + 30 * 60_000)).toBe('10 h');
+describe('splitRemaining', () => {
+  it('découpe en heures et minutes', () => {
+    expect(splitRemaining(19 * 3_600_000)).toEqual({ kind: 'hours', h: 19 });
+    expect(splitRemaining(2 * 3_600_000 + 15 * 60_000)).toEqual({ kind: 'hoursMinutes', h: 2, m: '15' });
+    expect(splitRemaining(2 * 3_600_000 + 5 * 60_000)).toEqual({ kind: 'hoursMinutes', h: 2, m: '05' });
+    expect(splitRemaining(12 * 60_000)).toEqual({ kind: 'minutes', m: 12 });
+    expect(splitRemaining(10_000)).toEqual({ kind: 'lessThanMinute' });
+    expect(splitRemaining(10 * 3_600_000 + 30 * 60_000)).toEqual({ kind: 'hours', h: 10 });
   });
 });
 
@@ -28,7 +29,7 @@ describe('replyWindow', () => {
   it('ouverte quand il reste plus de 4 h', () => {
     const w = replyWindow(at(19), NOW);
     expect(w.state).toBe('open');
-    expect(w.label).toBe('Répondre sous 19 h');
+    expect(w.remainingMs).toBe(19 * 3_600_000);
   });
   it('urgente sous 4 h', () => expect(replyWindow(at(3), NOW).state).toBe('urgent'));
   it('urgente pile à 4 h, ouverte juste au-dessus', () => {
@@ -38,16 +39,6 @@ describe('replyWindow', () => {
   it('expirée une fois passée', () => {
     expect(replyWindow(at(-1), NOW).state).toBe('expired');
     expect(replyWindow(at(0), NOW).state).toBe('expired');
-  });
-});
-
-describe('formatRelative', () => {
-  it('formate l’ancienneté', () => {
-    expect(formatRelative(at(0), NOW)).toBe('à l’instant');
-    expect(formatRelative(new Date(NOW.getTime() - 5 * 60_000).toISOString(), NOW)).toBe('5 min');
-    expect(formatRelative(at(-3), NOW)).toBe('3 h');
-    expect(formatRelative(at(-30), NOW)).toBe('hier');
-    expect(formatRelative(at(-24 * 5), NOW)).toMatch(/oct/);
   });
 });
 
@@ -96,10 +87,10 @@ describe('validateReply', () => {
   const open = replyWindow(at(10), NOW);
   const expired = replyWindow(at(-1), NOW);
   it('refuse un message vide ou trop long', () => {
-    expect(validateReply('   ', open)).toMatch(/Écrivez/);
-    expect(validateReply('x'.repeat(MAX_REPLY_LENGTH + 1), open)).toMatch(/dépasse/);
+    expect(validateReply('   ', open)).toEqual({ key: 'app.validation.replyEmpty' });
+    expect(validateReply('x'.repeat(MAX_REPLY_LENGTH + 1), open)).toEqual({ key: 'app.validation.replyTooLong', params: { max: MAX_REPLY_LENGTH } });
   });
-  it('refuse hors fenêtre de 24 h', () => expect(validateReply('Bonjour', expired)).toMatch(/24 h/));
+  it('refuse hors fenêtre de 24 h', () => expect(validateReply('Bonjour', expired)).toEqual({ key: 'app.validation.windowExpired' }));
   it('accepte un message valide', () => {
     expect(validateReply('Bonjour', open)).toBeNull();
     expect(validateReply('Bonjour', replyWindow(null, NOW))).toBeNull();

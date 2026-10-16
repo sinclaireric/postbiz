@@ -56,6 +56,7 @@ describe('navigation', () => {
     expect(rangeLabel('week', d(2026, 10, 16))).toBe('12/10/2026 - 18/10/2026');
     expect(rangeLabel('day', d(2026, 10, 16))).toBe('16/10/2026');
     expect(rangeLabel('month', d(2026, 10, 16))).toMatch(/octobre 2026/);
+    expect(rangeLabel('month', d(2026, 10, 16), 'en')).toMatch(/October 2026/);
   });
 });
 

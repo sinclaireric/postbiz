@@ -4,8 +4,10 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { connectDemoChannelAction } from '@/app/app/onboarding/actions';
-import { CAPABILITY_LABEL } from '@/lib/networks';
-import { TILE_HINT, type OnboardingTile } from '@/lib/onboarding';
+import { useT } from '@/i18n/client';
+import type { MessageKey } from '@/i18n/types';
+import { capabilityKey, networkName, networkNoteKey, type Network } from '@/lib/networks';
+import { TILE_HINT_KEY, type OnboardingTile } from '@/lib/onboarding';
 
 export interface ConnectedChannel {
   id: string;
@@ -20,7 +22,7 @@ interface Props {
   tutorialUrl: string | null;
 }
 
-const STEPS = ['Connecter des canaux', 'Connecter des agents', 'Regarder le tutoriel'];
+const STEP_KEYS: MessageKey[] = ['app.onboarding.step1', 'app.onboarding.step2', 'app.onboarding.step3'];
 const CALENDAR = '/app/calendrier';
 
 /** Onboarding plein écran, ouvert par `?onboarding=true` (après l'inscription), comme dans Postiz. */
@@ -31,6 +33,7 @@ export function Onboarding(props: Props) {
 }
 
 function OnboardingDialog({ tiles, connected, tutorialUrl }: Props) {
+  const t = useT();
   const router = useRouter();
   const [step, setStep] = useState(1);
   const [askClose, setAskClose] = useState(false);
@@ -63,11 +66,11 @@ function OnboardingDialog({ tiles, connected, tutorialUrl }: Props) {
       ref={root}
       role="dialog"
       aria-modal="true"
-      aria-label="Prise en main de Postbiz"
+      aria-label={t('app.onboarding.label')}
       tabIndex={-1}
       className="fixed inset-0 z-[60] flex flex-col overflow-y-auto bg-[#121211] text-white outline-none"
     >
-      <button type="button" onClick={() => setAskClose(true)} aria-label="Fermer la prise en main" className="absolute top-5 right-5 z-10 flex h-9 w-9 items-center justify-center rounded-full text-white/70 hover:bg-white/10 hover:text-white">
+      <button type="button" onClick={() => setAskClose(true)} aria-label={t('app.onboarding.closeLabel')} className="absolute top-5 end-5 z-10 flex h-9 w-9 items-center justify-center rounded-full text-white/70 hover:bg-white/10 hover:text-white">
         <svg width="16" height="16" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="m2 2 10 10M12 2 2 12" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" /></svg>
       </button>
 
@@ -83,11 +86,11 @@ function OnboardingDialog({ tiles, connected, tutorialUrl }: Props) {
       {askClose && (
         <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/60 p-4" role="alertdialog" aria-modal="true" aria-labelledby="ob-close-title">
           <div className="w-full max-w-sm rounded-2xl border border-white/10 bg-[#1c1c1a] p-6">
-            <h2 id="ob-close-title" className="text-lg font-semibold">Quitter la prise en main ?</h2>
-            <p className="mt-2 text-sm leading-relaxed text-white/65">Vous pourrez connecter vos canaux plus tard depuis la page Canaux.</p>
+            <h2 id="ob-close-title" className="text-lg font-semibold">{t('app.onboarding.quitTitle')}</h2>
+            <p className="mt-2 text-sm leading-relaxed text-white/65">{t('app.onboarding.quitText')}</p>
             <div className="mt-6 flex justify-end gap-3">
-              <button type="button" autoFocus onClick={() => setAskClose(false)} className="h-10 rounded-full border border-white/20 px-5 text-sm font-semibold hover:bg-white/10">Rester</button>
-              <button type="button" onClick={close} className="h-10 rounded-full bg-lime px-5 text-sm font-semibold text-ink hover:brightness-95">Quitter</button>
+              <button type="button" autoFocus onClick={() => setAskClose(false)} className="h-10 rounded-full border border-white/20 px-5 text-sm font-semibold hover:bg-white/10">{t('app.onboarding.stay')}</button>
+              <button type="button" onClick={close} className="h-10 rounded-full bg-lime px-5 text-sm font-semibold text-ink hover:brightness-95">{t('app.onboarding.quit')}</button>
             </div>
           </div>
         </div>
@@ -97,20 +100,21 @@ function OnboardingDialog({ tiles, connected, tutorialUrl }: Props) {
 }
 
 function Stepper({ step }: { step: number }) {
+  const t = useT();
   return (
-    <ol className="flex items-center justify-center gap-3 sm:gap-5" aria-label="Étapes">
-      {STEPS.map((label, i) => {
+    <ol className="flex items-center justify-center gap-3 sm:gap-5" aria-label={t('app.onboarding.steps')}>
+      {STEP_KEYS.map((key, i) => {
         const n = i + 1;
         const active = step === n;
         return (
-          <li key={label} className="flex items-center gap-3 sm:gap-5" aria-current={active ? 'step' : undefined}>
+          <li key={key} className="flex items-center gap-3 sm:gap-5" aria-current={active ? 'step' : undefined}>
             <span className="flex items-center gap-2.5">
               <span className={`flex h-9 w-9 items-center justify-center rounded-full text-sm font-bold ${active ? 'bg-white text-ink' : step > n ? 'bg-lime text-ink' : 'bg-white/10 text-white/80'}`}>
                 {step > n ? '✓' : n}
               </span>
-              <span className={`hidden text-[15px] sm:inline ${active ? 'font-semibold' : 'text-white/70'}`}>{label}</span>
+              <span className={`hidden text-[15px] sm:inline ${active ? 'font-semibold' : 'text-white/70'}`}>{t(key)}</span>
             </span>
-            {n < STEPS.length && <span className="hidden h-px w-10 bg-white/50 sm:block sm:w-14" aria-hidden="true" />}
+            {n < STEP_KEYS.length && <span className="hidden h-px w-10 bg-white/50 sm:block sm:w-14" aria-hidden="true" />}
           </li>
         );
       })}
@@ -128,32 +132,36 @@ function Heading({ title, subtitle }: { title: string; subtitle: string }) {
 }
 
 const ArrowRight = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
+  <svg className="rtl:rotate-180" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
 );
 
 const PrimaryButton = (props: React.ComponentProps<'button'>) => (
   <button {...props} className="group flex h-12 items-center gap-3 rounded-xl bg-lime px-7 text-[15px] font-semibold text-ink shadow-[0_8px_30px_-8px_rgba(198,244,50,0.45)] transition hover:brightness-95" />
 );
 
-const BackButton = ({ onClick }: { onClick: () => void }) => (
-  <button type="button" onClick={onClick} className="flex h-12 items-center gap-2 rounded-xl border-2 border-white/25 px-6 text-[15px] font-medium hover:bg-white/10">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m12 19-7-7 7-7M19 12H5" /></svg>
-    Retour
-  </button>
-);
+const BackButton = ({ onClick }: { onClick: () => void }) => {
+  const t = useT();
+  return (
+    <button type="button" onClick={onClick} className="flex h-12 items-center gap-2 rounded-xl border-2 border-white/25 px-6 text-[15px] font-medium hover:bg-white/10">
+      <svg className="rtl:rotate-180" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m12 19-7-7 7-7M19 12H5" /></svg>
+      {t('common.back')}
+    </button>
+  );
+};
 
 /* ------------------------------------------------------------------ Étape 1 */
 
 function StepChannels({ tiles, connected, onNext }: { tiles: OnboardingTile[]; connected: ConnectedChannel[]; onNext: () => void }) {
+  const t = useT();
   const [help, setHelp] = useState<string | null>(null);
 
   return (
     <div className="flex flex-1 flex-col">
-      <Heading title="Connectez vos canaux" subtitle="Connectez vos comptes de réseaux sociaux pour commencer à programmer des publications et à répondre à vos messages." />
+      <Heading title={t('app.onboarding.channelsTitle')} subtitle={t('app.onboarding.channelsSubtitle')} />
 
       {connected.length > 0 && (
-        <section className="mt-8 rounded-2xl bg-white/5 p-4" aria-label="Canaux connectés">
-          <p className="text-sm font-medium">Canaux connectés ({connected.length})</p>
+        <section className="mt-8 rounded-2xl bg-white/5 p-4" aria-label={t('app.onboarding.connectedChannels', { count: connected.length })}>
+          <p className="text-sm font-medium">{t('app.onboarding.connectedChannels', { count: connected.length })}</p>
           <ul className="mt-3 flex flex-wrap gap-3">
             {connected.map((c) => (
               <li key={c.id} className="flex items-center gap-2.5 rounded-xl bg-white/10 px-3 py-2 text-sm">
@@ -165,28 +173,28 @@ function StepChannels({ tiles, connected, onNext }: { tiles: OnboardingTile[]; c
         </section>
       )}
 
-      <p className="mt-8 text-[15px] font-medium">Cliquez sur un canal pour l’ajouter</p>
+      <p className="mt-8 text-[15px] font-medium">{t('app.onboarding.clickToAdd')}</p>
       <ul className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-        {tiles.map((t) => (
-          <li key={t.id} className="relative">
-            <Tile tile={t} />
+        {tiles.map((tile) => (
+          <li key={tile.id} className="relative">
+            <Tile tile={tile} />
             <button
               type="button"
-              aria-expanded={help === t.id}
-              aria-label={`À savoir sur ${t.name}`}
-              onClick={() => setHelp(help === t.id ? null : t.id)}
-              className="absolute top-2 right-2 flex h-5 w-5 items-center justify-center rounded-full bg-white text-[11px] font-bold text-ink"
+              aria-expanded={help === tile.id}
+              aria-label={t('app.onboarding.about', { name: networkName(tile.id) })}
+              onClick={() => setHelp(help === tile.id ? null : tile.id)}
+              className="absolute top-2 end-2 flex h-5 w-5 items-center justify-center rounded-full bg-white text-[11px] font-bold text-ink"
             >
               ?
             </button>
-            {help === t.id && (
-              <div role="note" className="absolute top-9 right-0 left-0 z-20 rounded-xl border border-white/10 bg-[#2a2a27] p-3 text-xs leading-relaxed text-white/85 shadow-xl">
-                <p className="font-semibold">{t.name}</p>
+            {help === tile.id && (
+              <div role="note" className="absolute top-9 inset-x-0 z-20 rounded-xl border border-white/10 bg-[#2a2a27] p-3 text-xs leading-relaxed text-white/85 shadow-xl">
+                <p className="font-semibold">{networkName(tile.id)}</p>
                 <p className="mt-1 text-white/70">
-                  Publier : {CAPABILITY_LABEL[t.capabilities.publish]} · Messages : {CAPABILITY_LABEL[t.capabilities.dm]} · Commentaires : {CAPABILITY_LABEL[t.capabilities.comments]}
+                  {t('app.onboarding.capabilities', { publish: t(capabilityKey(tile.capabilities.publish)), dm: t(capabilityKey(tile.capabilities.dm)), comments: t(capabilityKey(tile.capabilities.comments)) })}
                 </p>
-                {t.note && <p className="mt-1.5 text-white/70">{t.note}</p>}
-                <p className="mt-1.5 text-white/55">{TILE_HINT[t.state]}</p>
+                <p className="mt-1.5 text-white/70">{t(networkNoteKey(tile.id as Network['id']))}</p>
+                <p className="mt-1.5 text-white/55">{t(TILE_HINT_KEY[tile.state])}</p>
               </div>
             )}
           </li>
@@ -195,7 +203,7 @@ function StepChannels({ tiles, connected, onNext }: { tiles: OnboardingTile[]; c
 
       <div className="mt-auto flex justify-end pt-10">
         <PrimaryButton type="button" onClick={onNext}>
-          {connected.length > 0 ? 'Continuer' : 'Continuer sans canaux'}
+          {connected.length > 0 ? t('app.onboarding.continueWith') : t('app.onboarding.continueWithout')}
           <ArrowRight />
         </PrimaryButton>
       </div>
@@ -204,12 +212,14 @@ function StepChannels({ tiles, connected, onNext }: { tiles: OnboardingTile[]; c
 }
 
 function Tile({ tile }: { tile: OnboardingTile }) {
+  const t = useT();
+  const name = networkName(tile.id);
   const inner = (
     <>
       <span className="flex h-12 w-12 items-center justify-center rounded-full text-lg font-bold text-white" style={{ background: tile.color }} aria-hidden="true">
-        {tile.name.slice(0, 1)}
+        {name.slice(0, 1)}
       </span>
-      <span className="mt-3 text-[15px] font-medium">{tile.name}</span>
+      <span className="mt-3 text-[15px] font-medium">{name}</span>
     </>
   );
   const base = 'flex h-[132px] w-full flex-col items-center justify-center rounded-2xl border border-white/10 bg-[#1c1c1a] transition';
@@ -232,7 +242,7 @@ function Tile({ tile }: { tile: OnboardingTile }) {
     );
   }
   return (
-    <button type="button" disabled title={TILE_HINT[tile.state]} className={`${base} cursor-not-allowed opacity-45`}>
+    <button type="button" disabled title={t(TILE_HINT_KEY[tile.state])} className={`${base} cursor-not-allowed opacity-45`}>
       {inner}
     </button>
   );
@@ -240,27 +250,27 @@ function Tile({ tile }: { tile: OnboardingTile }) {
 
 /* ------------------------------------------------------------------ Étape 2 */
 
-const AGENT_OPTIONS = [
-  { title: 'Serveur MCP', text: 'Donnez à votre agent (Claude, ChatGPT, Cursor…) des outils pour créer, programmer et gérer vos publications.' },
-  { title: 'Ligne de commande', text: 'Installez la CLI Postbiz et laissez votre agent l’utiliser depuis votre terminal.' },
-  { title: 'API publique', text: 'Pilotez Postbiz depuis vos propres outils (n8n, Make, scripts).' },
-];
-
 function StepAgents({ onBack, onNext }: { onBack: () => void; onNext: () => void }) {
+  const t = useT();
+  const options = [
+    { title: t('app.onboarding.mcpTitle'), text: t('app.onboarding.mcpText') },
+    { title: t('app.onboarding.cliTitle'), text: t('app.onboarding.cliText') },
+    { title: t('app.onboarding.apiTitle'), text: t('app.onboarding.apiText') },
+  ];
   return (
     <div className="flex flex-1 flex-col">
-      <Heading title="Connectez votre agent IA" subtitle="Laissez l’agent de votre choix créer et programmer des publications pour vous." />
+      <Heading title={t('app.onboarding.agentsTitle')} subtitle={t('app.onboarding.agentsSubtitle')} />
 
       <p className="mx-auto mt-8 max-w-2xl rounded-2xl border border-lime/30 bg-lime/10 px-5 py-4 text-center text-[15px] leading-relaxed text-lime">
-        Cette étape s’activera bientôt : le serveur MCP, la CLI et l’API publique de Postbiz ne sont pas encore disponibles. Vous pouvez la passer.
+        {t('app.onboarding.agentsSoon')}
       </p>
 
       <ul className="mx-auto mt-8 grid w-full max-w-4xl gap-4 md:grid-cols-3">
-        {AGENT_OPTIONS.map((o) => (
+        {options.map((o) => (
           <li key={o.title} className="rounded-2xl border border-white/10 bg-[#1c1c1a] p-6 opacity-70">
             <div className="flex items-center justify-between gap-3">
               <h2 className="text-lg font-semibold">{o.title}</h2>
-              <span className="rounded-full bg-white/10 px-2.5 py-0.5 text-xs font-semibold text-white/80">Bientôt</span>
+              <span className="rounded-full bg-white/10 px-2.5 py-0.5 text-xs font-semibold text-white/80">{t('app.onboarding.soon')}</span>
             </div>
             <p className="mt-3 text-[15px] leading-relaxed text-white/60">{o.text}</p>
           </li>
@@ -270,7 +280,7 @@ function StepAgents({ onBack, onNext }: { onBack: () => void; onNext: () => void
       <div className="mt-auto flex items-center justify-between pt-10">
         <BackButton onClick={onBack} />
         <PrimaryButton type="button" onClick={onNext}>
-          Continuer / Passer
+          {t('app.onboarding.continueSkip')}
           <ArrowRight />
         </PrimaryButton>
       </div>
@@ -280,29 +290,26 @@ function StepAgents({ onBack, onNext }: { onBack: () => void; onNext: () => void
 
 /* ------------------------------------------------------------------ Étape 3 */
 
-const CHECKLIST = [
-  { title: 'Connectez un canal', text: 'Depuis la page Canaux : vos comptes Facebook, Instagram, X, LinkedIn, TikTok ou YouTube.', href: '/app/canaux', cta: 'Ouvrir Canaux' },
-  { title: 'Programmez une publication', text: 'Dans le calendrier, cliquez sur un créneau libre, écrivez, choisissez les canaux.', href: '/app/calendrier', cta: 'Ouvrir le calendrier' },
-  { title: 'Répondez à vos messages', text: 'Les messages privés et commentaires arrivent en direct dans la boîte de réception.', href: '/app/inbox', cta: 'Ouvrir la boîte de réception' },
-];
-
 function StepTutorial({ tutorialUrl, onBack, onFinish }: { tutorialUrl: string | null; onBack: () => void; onFinish: () => void }) {
+  const t = useT();
+  const checklist = [
+    { title: t('app.onboarding.check1.title'), text: t('app.onboarding.check1.text'), href: '/app/canaux', cta: t('app.onboarding.check1.cta') },
+    { title: t('app.onboarding.check2.title'), text: t('app.onboarding.check2.text'), href: '/app/calendrier', cta: t('app.onboarding.check2.cta') },
+    { title: t('app.onboarding.check3.title'), text: t('app.onboarding.check3.text'), href: '/app/inbox', cta: t('app.onboarding.check3.cta') },
+  ];
   return (
     <div className="flex flex-1 flex-col">
-      <Heading
-        title="Apprenez à utiliser Postbiz"
-        subtitle={tutorialUrl ? 'Regardez cette courte vidéo pour tirer le meilleur parti de Postbiz.' : 'Trois gestes suffisent pour démarrer.'}
-      />
+      <Heading title={t('app.onboarding.tutorialTitle')} subtitle={tutorialUrl ? t('app.onboarding.tutorialVideo') : t('app.onboarding.tutorialSteps')} />
 
       {tutorialUrl ? (
         <div className="mx-auto mt-8 w-full max-w-4xl flex-1">
           <div className="aspect-video w-full overflow-hidden rounded-2xl bg-black">
-            <iframe className="h-full w-full" src={tutorialUrl} title="Tutoriel Postbiz" allow="autoplay; encrypted-media" allowFullScreen referrerPolicy="strict-origin-when-cross-origin" />
+            <iframe className="h-full w-full" src={tutorialUrl} title={t('app.onboarding.videoTitle')} allow="autoplay; encrypted-media" allowFullScreen referrerPolicy="strict-origin-when-cross-origin" />
           </div>
         </div>
       ) : (
         <ol className="mx-auto mt-8 grid w-full max-w-4xl gap-4 md:grid-cols-3">
-          {CHECKLIST.map((c, i) => (
+          {checklist.map((c, i) => (
             <li key={c.title} className="flex flex-col rounded-2xl border border-white/10 bg-[#1c1c1a] p-6">
               <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white/10 text-sm font-bold">{i + 1}</span>
               <h2 className="mt-4 text-lg font-semibold">{c.title}</h2>
@@ -316,7 +323,7 @@ function StepTutorial({ tutorialUrl, onBack, onFinish }: { tutorialUrl: string |
       <div className="mt-auto flex items-center justify-between pt-10">
         <BackButton onClick={onBack} />
         <button type="button" onClick={onFinish} className="flex h-12 items-center gap-3 rounded-xl bg-lime px-7 text-[15px] font-semibold text-ink shadow-[0_8px_30px_-8px_rgba(198,244,50,0.45)] transition hover:brightness-95">
-          Commencer
+          {t('app.onboarding.start')}
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><path d="m22 4-10 10-3-3" /></svg>
         </button>
       </div>

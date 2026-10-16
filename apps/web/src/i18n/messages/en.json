@@ -1,0 +1,1021 @@
+{
+  "common": {
+    "brand": "Postbiz",
+    "skipToContent": "Skip to content",
+    "back": "Back",
+    "continue": "Continue",
+    "close": "Close",
+    "cancel": "Cancel",
+    "send": "Send",
+    "delete": "Delete",
+    "save": "Save",
+    "capability": {
+      "beta": "Beta",
+      "soon": "Soon",
+      "none": "Not available"
+    },
+    "role": {
+      "admin": "Administrator",
+      "member": "Member",
+      "viewer": "Viewer"
+    },
+    "language": {
+      "title": "Change language",
+      "button": "Change language",
+      "current": "Language: {name}"
+    },
+    "networkNames": {
+      "facebook": "Facebook",
+      "instagram": "Instagram",
+      "x": "X",
+      "linkedin": "LinkedIn",
+      "tiktok": "TikTok",
+      "youtube": "YouTube"
+    }
+  },
+  "networks": {
+    "facebook": {
+      "note": "Pages. Messages: you can reply within 24 hours of the customer’s last message."
+    },
+    "instagram": {
+      "note": "Professional accounts. Messages: you can reply within 24 hours of the customer’s last message."
+    },
+    "x": {
+      "note": "Messages depend on the paid tier of the X API."
+    },
+    "linkedin": {
+      "note": "LinkedIn does not open its messaging to third-party apps. Page comments are planned."
+    },
+    "tiktok": {
+      "note": "Messaging requires TikTok’s approval and is not available in some regions."
+    },
+    "youtube": {
+      "note": "YouTube has no private messages: comments only."
+    }
+  },
+  "header": {
+    "mainNav": "Main navigation",
+    "product": "Product",
+    "channels": "Channels",
+    "pricing": "Pricing",
+    "contact": "Contact",
+    "signIn": "Sign in",
+    "tryFree": "Try for free",
+    "openMenu": "Open menu",
+    "inbox": {
+      "title": "Inbox",
+      "desc": "Private messages and comments from all your networks."
+    },
+    "planning": {
+      "title": "Scheduling",
+      "desc": "One calendar to publish everywhere, on time."
+    },
+    "channelsDesc": "What Postbiz can do on each network."
+  },
+  "footer": {
+    "tagline": "Schedule your posts and answer all your messages and comments from a single inbox.",
+    "product": "Product",
+    "resources": "Resources",
+    "legal": "Legal",
+    "inbox": "Inbox",
+    "planning": "Scheduling",
+    "channels": "Channels",
+    "pricing": "Pricing",
+    "contact": "Contact",
+    "createAccount": "Create an account",
+    "signIn": "Sign in",
+    "terms": "Terms of Service",
+    "privacy": "Privacy",
+    "dataDeletion": "Data deletion",
+    "copyright": "© {year} Postbiz. Open-source software under the AGPL-3.0 license.",
+    "trademarks": "Facebook, Instagram, X, LinkedIn, TikTok and YouTube are trademarks of their respective owners."
+  },
+  "preview": {
+    "label": "Preview of the Postbiz inbox: conversation list on the left, discussion on the right.",
+    "title": "Inbox",
+    "replyWithin": "Reply within 19 h",
+    "composer": "Write a reply…",
+    "send": "Send",
+    "row1": "Hi, do you ship to Belgium?",
+    "row2": "Thanks for the answer, perfect!",
+    "row3": "So pretty 😍 is it available in green?",
+    "row4": "Great video, is a sequel planned?",
+    "row3Name": "Sarah — comment",
+    "bubble1": "Hi, do you ship to Belgium?",
+    "bubble2": "And how long does it take? 🙏",
+    "bubble3": "Hi Léa! Yes, delivery takes 3 to 5 business days.",
+    "time1": "2 min",
+    "time2": "14 min",
+    "time3": "1 h",
+    "time4": "3 h"
+  },
+  "calendarPreview": {
+    "label": "Preview of the publishing calendar over one week.",
+    "title": "Calendar · typical week",
+    "days": {
+      "mon": "Mon",
+      "tue": "Tue",
+      "wed": "Wed",
+      "thu": "Thu",
+      "fri": "Fri"
+    }
+  },
+  "home": {
+    "badgeBeta": "Open beta",
+    "badgeOpenSource": "Open source · AGPL-3.0",
+    "title": "Schedule your posts and answer <accent>all your messages</accent>, in one place",
+    "subtitle": "Postbiz connects your Facebook, Instagram, X, LinkedIn, TikTok and YouTube accounts. You schedule your posts, and your followers’ messages and comments land in a single inbox shared with your team.",
+    "ctaPrimary": "Try for free",
+    "ctaPricing": "See pricing",
+    "betaNote": "Free beta · No credit card",
+    "pillars": {
+      "eyebrow": "One tool for your networks",
+      "title": "Everything you do on your networks every day, <accent>without switching apps</accent>",
+      "publish": {
+        "title": "Publish",
+        "text": "Schedule the same content to several networks, with a preview for each, and see everything in one calendar."
+      },
+      "reply": {
+        "title": "Reply",
+        "text": "Messenger and Instagram private messages, Facebook, Instagram and YouTube comments: one list, one reply box."
+      },
+      "collaborate": {
+        "title": "Collaborate",
+        "text": "Assign a conversation to a colleague, leave an internal note, keep quick replies for frequent questions."
+      }
+    },
+    "window": {
+      "eyebrow": "Messenger and Instagram",
+      "title": "The 24-hour window, <accent>under control</accent>",
+      "text": "Meta gives you 24 hours to reply after a customer’s last message. Postbiz shows the time left on every conversation and puts the ones about to expire first, so no request is forgotten.",
+      "point1": "Countdown on every conversation",
+      "point2": "Sorted by urgency",
+      "point3": "Warning before sending a late reply"
+    },
+    "steps": {
+      "eyebrow": "How it works",
+      "title": "Ready in <accent>a few minutes</accent>",
+      "s1": {
+        "title": "Connect",
+        "text": "Authorize your accounts in a few clicks. Your access is encrypted and never visible to your browser."
+      },
+      "s2": {
+        "title": "Schedule",
+        "text": "Write once, choose the networks and the time. Postbiz publishes for you."
+      },
+      "s3": {
+        "title": "Reply",
+        "text": "Messages and comments arrive live in the inbox, sorted by urgency."
+      },
+      "s4": {
+        "title": "Follow up",
+        "text": "Open, pending, closed: every conversation has a status and an owner."
+      }
+    },
+    "features": {
+      "eyebrow": "The complete suite",
+      "title": "Everything you need to <accent>manage your networks</accent>, nothing more",
+      "inbox": {
+        "title": "Unified inbox",
+        "text": "Private messages and comments, updated in real time, with search across the whole history."
+      },
+      "calendar": {
+        "title": "Publishing calendar",
+        "text": "An overview of what goes out, when and where. Drafts, scheduled, published, errors."
+      },
+      "media": {
+        "title": "Media library",
+        "text": "Images and videos in one place, automatically adapted to each network’s requirements."
+      },
+      "team": {
+        "title": "Assignment and notes",
+        "text": "Share conversations across the team and keep the context in view."
+      },
+      "mobile": {
+        "title": "Mobile app",
+        "text": "Reply from your phone and get a notification for every new message."
+      },
+      "stats": {
+        "title": "Statistics per network",
+        "text": "Which posts work, at what time, on which channel."
+      }
+    },
+    "channels": {
+      "eyebrow": "Channels",
+      "title": "Six networks, <accent>with full transparency</accent>",
+      "text": "Each network decides what third-party tools are allowed to do. We tell you plainly what works today, what is coming, and what is not possible.",
+      "cta": "See details per network"
+    },
+    "trust": {
+      "eyebrow": "Your data",
+      "title": "Your conversations <accent>stay yours</accent>",
+      "isolation": {
+        "title": "Isolation per organization",
+        "text": "Each team only sees its own data: the separation is enforced in the database itself, not just in the interface."
+      },
+      "tokens": {
+        "title": "Protected network access",
+        "text": "The access tokens for your accounts are encrypted before being stored, and are never sent to your browser."
+      },
+      "openSource": {
+        "title": "Open-source software",
+        "text": "Postbiz is published under the AGPL-3.0 license: you can read the code, and host it yourself if you wish."
+      }
+    },
+    "faq": {
+      "eyebrow": "Frequently asked questions",
+      "title": "You may be <accent>wondering</accent>",
+      "more": "Another question? <link>Write to us</link>.",
+      "q1": "Which networks are supported?",
+      "a1": "Facebook, Instagram, X, LinkedIn, TikTok and YouTube for publishing. For the inbox, coverage depends on what each network allows: see the Channels page for network-by-network details.",
+      "q2": "Can I reply to private messages on LinkedIn or YouTube?",
+      "a2": "No, and no third-party tool can without a special agreement: LinkedIn does not open its messaging to apps, and YouTube has no private messages. Postbiz will show YouTube comments, and LinkedIn Page comments as soon as they are available.",
+      "q3": "Why a “24-hour window”?",
+      "a3": "On Messenger and Instagram, Meta lets a business reply for 24 hours after the customer’s last message. Postbiz shows the time left on every conversation so you know what to handle first.",
+      "q4": "Are my messages used to train an AI?",
+      "a4": "No. Postbiz does not use your messages or posts to train models.",
+      "q5": "How much does it cost?",
+      "a5": "The beta is free, no credit card needed. The price list is already public on the Pricing page, so you know what to expect.",
+      "q6": "Can I host Postbiz myself?",
+      "a6": "Yes. Postbiz is open-source software (AGPL-3.0) built on Supabase. If you modify it and offer it to third parties, you must publish your changes."
+    },
+    "final": {
+      "title": "Start replying <accent>without chasing your messages</accent>",
+      "text": "Create your account and connect your first channel. Free beta, no credit card.",
+      "cta": "Try for free",
+      "talk": "Talk to the team"
+    }
+  },
+  "legal": {
+    "draftNotice": "<b>Draft text.</b> This document is a starting template: passages in square brackets [ ] must be completed, and the whole text must be reviewed by a lawyer before going live.",
+    "updated": "Last updated: {date}",
+    "datePlaceholder": "[date]",
+    "availableIn": "This document is only available in French and English; the English version is shown.",
+    "terms": {
+      "title": "Terms of Service",
+      "s1": {
+        "h": "1. Publisher and purpose",
+        "p": "Postbiz is published by [COMPANY NAME], [legal form], [address], registered under number [REGISTRATION NUMBER]. These terms govern the use of the Postbiz service, which lets you schedule posts and manage the messages and comments of social media accounts that the user has connected."
+      },
+      "s2": {
+        "h": "2. Account",
+        "p": "The user creates an account with a valid e-mail address and keeps their credentials safe. They are responsible for actions taken from their account and by the members they invite to their organization."
+      },
+      "s3": {
+        "h": "3. Third-party social networks",
+        "p1": "Postbiz acts on the accounts the user authorizes, through the official interfaces of Facebook, Instagram, X, LinkedIn, TikTok and YouTube. The user remains bound by each network’s terms (for example, the 24-hour window for replying to messages on Messenger and Instagram) and guarantees that they hold the necessary rights over the content they publish.",
+        "p2": "Available features depend on the permissions granted by each network, which may change or be withdrawn. Postbiz does not guarantee that a given feature will be available on a given network."
+      },
+      "s4": {
+        "h": "4. Content and conduct",
+        "p": "The user must not use the service unlawfully, in particular to send unsolicited bulk messages, to distribute illegal content or content that breaks the networks’ rules, or to attempt to bypass technical or security limits."
+      },
+      "s5": {
+        "h": "5. Pricing and payment",
+        "p": "During the beta period, the service is provided free of charge. The prices published on the Pricing page will apply at the end of the beta, after the user has been notified at least [30] days in advance. [Billing, cancellation and refund terms to be completed when payments are enabled.]"
+      },
+      "s6": {
+        "h": "6. Availability and liability",
+        "p": "Postbiz uses reasonable means to keep the service running, without guaranteeing that it will never be interrupted. [Limitation of liability to be completed.]"
+      },
+      "s7": {
+        "h": "7. Termination",
+        "p": "The user may delete their account at any time. Postbiz may suspend an account that breaches these terms or the rules of a third-party network."
+      },
+      "s8": {
+        "h": "8. Open-source software",
+        "p": "The source code of Postbiz is published under the GNU AGPL-3.0 license. That license governs the code; these terms govern the service hosted by the publisher."
+      },
+      "s9": {
+        "h": "9. Governing law",
+        "p1": "French law. [Competent court to be completed.]",
+        "p2": "Contact: <mail>{email}</mail>"
+      }
+    },
+    "privacy": {
+      "title": "Privacy Policy",
+      "s1": {
+        "h": "1. Data controller",
+        "p": "[COMPANY NAME], [address]. Contact: <mail>{email}</mail>."
+      },
+      "s2": {
+        "h": "2. Data we process",
+        "li1": "<b>Account:</b> e-mail address, display name, password (stored in encrypted form by our authentication provider).",
+        "li2": "<b>Connected channels:</b> account identifier, name and picture, and the access tokens provided by the network (encrypted before storage).",
+        "li3": "<b>Messages and comments:</b> content received and sent on the accounts you connect, as well as the public identifier, name and username of the people who write to you.",
+        "li4": "<b>Posts:</b> the texts, media and dates you schedule.",
+        "li5": "<b>Usage:</b> technical logs needed for security and for the service to work properly."
+      },
+      "s3": {
+        "h": "3. Purposes and legal bases",
+        "li1": "Providing the service (performance of the contract).",
+        "li2": "Ensuring security and preventing abuse (legitimate interest).",
+        "li3": "Answering your support requests (legitimate interest).",
+        "p": "We do not use your messages or posts to train artificial intelligence models, and we do not sell them."
+      },
+      "s4": {
+        "h": "4. Processors",
+        "li1": "Supabase Inc. — database, authentication and storage [hosting region: to be completed].",
+        "li2": "[Application and worker host: to be completed].",
+        "li3": "[E-mail delivery provider: to be completed].",
+        "p": "The social networks you connect are separate data controllers, governed by their own policies."
+      },
+      "s5": {
+        "h": "5. Retention periods",
+        "p": "Account data is kept as long as the account exists. Messages and comments are deleted when you disconnect the channel concerned or delete your account, within [30] days. [To be adjusted.]"
+      },
+      "s6": {
+        "h": "6. Your rights",
+        "p": "You may request access, rectification, erasure, restriction and portability of your data, and object to its processing, by writing to <mail>{email}</mail>. You may also lodge a complaint with your data protection authority."
+      },
+      "s7": {
+        "h": "7. Security",
+        "p": "Data is isolated per organization at the database level, access tokens are encrypted, and traffic is encrypted. As no system is infallible, we will inform you of any incident affecting your data."
+      }
+    },
+    "dataDeletion": {
+      "title": "Deleting your data",
+      "s1": {
+        "h": "Delete a channel’s data",
+        "p": "In Postbiz, open <b>Channels</b>, choose the channel, then <b>Disconnect</b>. Access tokens are deleted immediately, and the related conversations and messages within [30] days."
+      },
+      "s2": {
+        "h": "Delete your account",
+        "p": "In <b>Settings</b>, choose <b>Delete my account</b>. Your profile, the organizations of which you are the only administrator and all associated data are deleted within [30] days."
+      },
+      "s3": {
+        "h": "You removed Postbiz from Facebook or Instagram",
+        "p": "If you remove the Postbiz app from your Facebook or Instagram account settings, we stop receiving your data and delete the matching tokens. To ask for the erasure of conversations already stored, write to us with the name of the account concerned."
+      },
+      "s4": {
+        "h": "By e-mail",
+        "p": "Write to <mail>{email}</mail> from your account’s address. We confirm the deletion by reply."
+      }
+    }
+  },
+  "pricing": {
+    "title": "Simple pricing, <accent>published from the beta</accent>",
+    "subtitle": "Three plans depending on your team size. Everything is free during the beta, no credit card.",
+    "billingLabel": "Billing period",
+    "monthly": "Monthly",
+    "yearly": "Yearly",
+    "discount": "−{percent}%",
+    "perMonth": "/ month",
+    "billedYearly": "Billed yearly · you save {amount}",
+    "billedMonthly": "Billed monthly",
+    "popular": "Popular",
+    "cta": "Start for free",
+    "inherits": "Everything in {plan}, plus:",
+    "plans": {
+      "starter": {
+        "name": "Starter",
+        "tagline": "For a creator or a small brand getting started.",
+        "f1": "3 connected channels",
+        "f2": "1 member",
+        "f3": "Scheduling and calendar",
+        "f4": "Unified inbox",
+        "f5": "Mobile app"
+      },
+      "pro": {
+        "name": "Pro",
+        "tagline": "For a team that replies every day.",
+        "f1": "10 connected channels",
+        "f2": "5 members",
+        "f3": "Assignment and internal notes",
+        "f4": "Quick replies",
+        "f5": "Push notifications",
+        "f6": "Search across all messages"
+      },
+      "team": {
+        "name": "Team",
+        "tagline": "For an agency or several brands.",
+        "f1": "Unlimited channels",
+        "f2": "15 members",
+        "f3": "Roles and permissions",
+        "f4": "Automatic video optimization",
+        "f5": "Priority support"
+      }
+    },
+    "custom": {
+      "name": "Custom",
+      "tagline": "For an organization with specific needs.",
+      "price": "Quote",
+      "priceNote": "Based on your usage",
+      "cta": "Contact us",
+      "f1": "Dedicated hosting possible",
+      "f2": "Onboarding support",
+      "f3": "Tailored contract"
+    },
+    "compare": {
+      "title": "Compare plans",
+      "feature": "Feature",
+      "included": "Included",
+      "notIncluded": "Not included",
+      "unlimited": "Unlimited",
+      "soon": "Soon",
+      "rows": {
+        "channels": "Connected channels",
+        "members": "Team members",
+        "planning": "Scheduling and calendar",
+        "inbox": "Unified inbox",
+        "mobile": "Mobile app",
+        "assign": "Assignment and internal notes",
+        "quick": "Quick replies",
+        "push": "Push notifications",
+        "search": "Search across the whole history",
+        "roles": "Roles and permissions",
+        "video": "Automatic video optimization",
+        "support": "Priority support"
+      }
+    },
+    "faq": {
+      "title": "Questions about pricing",
+      "more": "Another question? <link>Contact us</link>.",
+      "q1": "Is the beta really free?",
+      "a1": "Yes. During the beta, all plans are free and no credit card is required. The prices above are the ones we plan to apply; we will let you know well before any change.",
+      "q2": "Can I change plans?",
+      "a2": "At any time. The features of the higher plan are available immediately.",
+      "q3": "What happens if I exceed the number of channels?",
+      "a3": "You cannot connect an additional channel until you change plans. Your existing channels keep working.",
+      "q4": "Are private messages included everywhere?",
+      "a4": "Yes, within what each network allows. See the Channels page for details."
+    }
+  },
+  "channelsPage": {
+    "title": "What works, what is coming, <accent>and what is not possible</accent>",
+    "intro": "Each network decides what third-party tools are allowed to do. Rather than promise a “universal” inbox, here is the real status, network by network.",
+    "network": "Network",
+    "publish": "Publish",
+    "dm": "Private messages",
+    "comments": "Comments",
+    "note": "Good to know",
+    "footnote": "“Beta”: available to testers. “Soon”: planned, subject to the access granted by the network.",
+    "why1": {
+      "title": "Why not all messages?",
+      "text": "LinkedIn and YouTube do not give third-party apps access to private messages. We do not work around these rules: it would put your accounts at risk."
+    },
+    "why2": {
+      "title": "Why this 24-hour window?",
+      "text": "It is a Meta rule for Messenger and Instagram. Postbiz shows the time left for each conversation."
+    },
+    "why3": {
+      "title": "Missing a network?",
+      "text": "Tell us which one and why: our priorities follow what you actually use."
+    },
+    "ctaTitle": "Connect your first channel",
+    "ctaPrimary": "Try for free",
+    "ctaSuggest": "Suggest a network"
+  },
+  "productInbox": {
+    "eyebrow": "Inbox",
+    "title": "All your messages and comments, <accent>in a single list</accent>",
+    "intro": "No more jumping from one app to another. Messenger, Instagram and the comments on your posts arrive live in Postbiz, with the context to reply fast and well.",
+    "p1": {
+      "title": "Live",
+      "text": "New messages appear without reloading the page, on the web and on mobile."
+    },
+    "p2": {
+      "title": "The 24-hour window, visible",
+      "text": "Each Messenger or Instagram conversation shows the time left to reply, and the most urgent ones come first."
+    },
+    "p3": {
+      "title": "Built for teams",
+      "text": "Assign a conversation, leave an internal note, use quick replies, change the status: open, pending, closed."
+    },
+    "p4": {
+      "title": "Search the whole history",
+      "text": "Find a conversation by a word, a name or a username."
+    },
+    "p5": {
+      "title": "Messages and comments together",
+      "text": "Reply to a public comment, then continue in a private message, without losing the thread."
+    },
+    "p6": {
+      "title": "Transparent about limits",
+      "text": "LinkedIn and YouTube do not open their private messages: we say so, instead of hiding it."
+    },
+    "ctaTitle": "Reply to every message, at the right time"
+  },
+  "productPlanning": {
+    "eyebrow": "Scheduling",
+    "title": "Write once, <accent>publish everywhere</accent>",
+    "intro": "Choose your networks and the time, and let Postbiz publish for you. A calendar shows what goes out, when, and what failed.",
+    "p1": {
+      "title": "One piece of content, several networks",
+      "text": "Adapt the text per network if needed, and check the constraints (length, media) before sending."
+    },
+    "p2": {
+      "title": "Never a duplicate",
+      "text": "If the result of a post is uncertain, Postbiz does not resend it on its own: it tells you, so you can check on the network first."
+    },
+    "p3": {
+      "title": "Adapted media",
+      "text": "Images and videos are converted to each network’s requirements before publishing."
+    },
+    "p4": {
+      "title": "Drafts and clear states",
+      "text": "Draft, scheduled, in progress, published, error: you always know where each post stands."
+    },
+    "p5": {
+      "title": "Teamwork",
+      "text": "Members prepare, administrators approve; permissions are enforced by the database."
+    },
+    "p6": {
+      "title": "Guided reconnection",
+      "text": "If access to an account expires, you are notified and reconnect in one click."
+    },
+    "ctaTitle": "Schedule your week in ten minutes"
+  },
+  "productPage": {
+    "ctaPrimary": "Try for free",
+    "ctaPricing": "See pricing"
+  },
+  "contact": {
+    "eyebrow": "Contact",
+    "title": "Let’s talk about <accent>your needs</accent>",
+    "intro": "A question, a network to suggest, a specific need: write to us, we usually reply within one business day.",
+    "byEmail": "By e-mail",
+    "hint": "For a bug, tell us which network is concerned and the approximate time: it saves us precious time.",
+    "cta": "Create an account"
+  },
+  "meta": {
+    "siteTitle": "Postbiz — Schedule your posts, answer all your messages",
+    "siteDescription": "Postbiz combines post scheduling and a unified inbox for the private messages and comments of Facebook, Instagram, X, LinkedIn, TikTok and YouTube.",
+    "pricing": {
+      "title": "Pricing",
+      "description": "Postbiz pricing: three plans, a 20% discount when billed yearly. The beta is free, no credit card needed."
+    },
+    "channels": {
+      "title": "Channels",
+      "description": "What Postbiz can do on Facebook, Instagram, X, LinkedIn, TikTok and YouTube: publishing, private messages, comments."
+    },
+    "productInbox": {
+      "title": "Unified inbox",
+      "description": "Messenger and Instagram private messages, Facebook, Instagram and YouTube comments: a single inbox for your whole team."
+    },
+    "productPlanning": {
+      "title": "Post scheduling",
+      "description": "Schedule your posts on Facebook, Instagram, X, LinkedIn, TikTok and YouTube from a single calendar."
+    },
+    "contact": {
+      "title": "Contact",
+      "description": "Write to the Postbiz team."
+    },
+    "terms": {
+      "title": "Terms of Service"
+    },
+    "privacy": {
+      "title": "Privacy Policy"
+    },
+    "dataDeletion": {
+      "title": "Data deletion"
+    },
+    "login": {
+      "title": "Sign in"
+    },
+    "signup": {
+      "title": "Create an account"
+    },
+    "forgot": {
+      "title": "Forgot password"
+    },
+    "reset": {
+      "title": "New password"
+    },
+    "app": "Application",
+    "calendar": "Calendar",
+    "inbox": "Inbox",
+    "media": "Media",
+    "channelsApp": "Channels",
+    "settings": "Settings",
+    "welcome": "Welcome",
+    "titleTemplate": "{page} · Postbiz"
+  },
+  "auth": {
+    "email": "E-mail",
+    "emailPlaceholder": "you@example.com",
+    "password": "Password",
+    "confirmPassword": "Confirm password",
+    "newPassword": "New password",
+    "show": "Show",
+    "hide": "Hide",
+    "wait": "Please wait…",
+    "or": "OR",
+    "google": "Continue with Google",
+    "googleSignup": "Sign up with Google",
+    "termsLink": "Terms",
+    "privacyLink": "Privacy",
+    "asideTitle": "One inbox for <accent>all your messages</accent>",
+    "login": {
+      "title": "Welcome back",
+      "subtitle": "Sign in to get back to your messages and your posts.",
+      "switchLabel": "No account yet?",
+      "switchText": "Create an account",
+      "forgot": "Forgot password?",
+      "submit": "Sign in",
+      "pending": "Signing in…"
+    },
+    "signup": {
+      "title": "Create your account",
+      "subtitle": "Free beta, no credit card. Ready in a few minutes.",
+      "switchLabel": "Already registered?",
+      "switchText": "Sign in",
+      "submit": "Create my account",
+      "pending": "Creating your account…",
+      "legal": "By continuing, you accept our <terms>terms of service</terms> and our <privacy>privacy policy</privacy>."
+    },
+    "forgot": {
+      "title": "Forgot your password",
+      "subtitle": "Enter your e-mail: we will send you a link to choose a new one.",
+      "switchLabel": "Remember it now?",
+      "switchText": "Sign in",
+      "submit": "Send the link",
+      "pending": "Sending…"
+    },
+    "reset": {
+      "title": "New password",
+      "subtitle": "Choose a password of at least 8 characters.",
+      "switchText": "Back to sign in",
+      "submit": "Save",
+      "pending": "Saving…"
+    },
+    "demoBanner": "<b>Demo mode.</b> Supabase is not configured: sign-in is disabled. <link>Open the demo application →</link>",
+    "linkErrors": {
+      "lien": "This link is no longer valid. Request a new one.",
+      "google": "Signing in with Google failed. Please try again.",
+      "organisation": "We could not create your workspace. Please try again in a moment."
+    },
+    "messages": {
+      "demo": "Demo mode: Supabase is not configured. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.",
+      "signupDone": "Account created. Open the link we just sent you by e-mail to confirm your address.",
+      "forgotDone": "If an account exists for this address, a reset link has just been sent to it."
+    },
+    "validation": {
+      "emailRequired": "Enter your e-mail address.",
+      "emailInvalid": "This e-mail address is not valid.",
+      "passwordRequired": "Enter a password.",
+      "passwordCurrentRequired": "Enter your password.",
+      "passwordShort": "The password must contain at least {min} characters.",
+      "passwordLong": "The password cannot exceed {max} characters.",
+      "passwordMismatch": "The two passwords do not match."
+    },
+    "errors": {
+      "invalidCredentials": "Incorrect e-mail or password.",
+      "emailNotConfirmed": "Confirm your e-mail address using the link we sent you.",
+      "rateLimit": "Too many attempts. Please try again in a few minutes.",
+      "weakPassword": "This password is too weak. Choose a longer one.",
+      "samePassword": "Choose a password different from the old one.",
+      "generic": "Something went wrong. Please try again in a moment."
+    }
+  },
+  "app": {
+    "demoStrip": "Demo mode: sample data, nothing is sent to the networks.",
+    "demoStripLong": "Demo mode: sample data, nothing is sent to the networks. Configure Supabase to use your real data.",
+    "nav": {
+      "label": "Application",
+      "accountLabel": "Account and settings",
+      "home": "Postbiz, calendar",
+      "calendar": "Calendar",
+      "inbox": "Inbox",
+      "agent": "Agent",
+      "analytics": "Analytics",
+      "media": "Media",
+      "channels": "Channels",
+      "billing": "Billing",
+      "settings": "Settings",
+      "soon": "Coming soon"
+    },
+    "titles": {
+      "calendar": "Calendar",
+      "inbox": "Inbox",
+      "media": "Media",
+      "channels": "Channels",
+      "settings": "Settings"
+    },
+    "notifications": {
+      "title": "Notifications",
+      "label": "Notifications",
+      "labelUnread_one": "Notifications ({count} unread)",
+      "labelUnread_other": "Notifications ({count} unread)",
+      "markAll": "Mark all as read",
+      "empty": "No notifications.",
+      "types": {
+        "post_error": "A post failed",
+        "post_unknown": "Check your post",
+        "message_failed": "Reply not sent"
+      }
+    },
+    "userMenu": {
+      "label": "Account menu",
+      "settings": "Settings",
+      "signOut": "Sign out"
+    },
+    "modal": {
+      "close": "Close"
+    },
+    "time": {
+      "lessThanMinute": "less than 1 min",
+      "minutes": "{m} min",
+      "hours": "{h} h",
+      "hoursMinutes": "{h} h {m}"
+    },
+    "inbox": {
+      "unread_one": "{count} unread",
+      "unread_other": "{count} unread",
+      "allRead": "All read",
+      "searchLabel": "Search",
+      "searchPlaceholder": "Search a name or a message…",
+      "tabs": {
+        "active": "Active",
+        "unread": "Unread",
+        "closed": "Closed",
+        "all": "All"
+      },
+      "filterStatus": "Filter by status",
+      "filterNetwork": "Filter by network",
+      "allNetworks": "All networks",
+      "emptyNone": "No messages yet",
+      "emptyNoMatch": "No conversation matches",
+      "emptyNoneHint": "Connect a channel: messages and comments will arrive there live.",
+      "emptyNoMatchHint": "Try another filter or another search.",
+      "connectChannel": "Connect a channel",
+      "kindDm": "Private message",
+      "kindComment": "Comment",
+      "kindCommentPublic": "Public comment",
+      "expired": "Expired",
+      "status": {
+        "open": "Open",
+        "pending": "Pending",
+        "snoozed": "Snoozed",
+        "closed": "Closed"
+      },
+      "window": {
+        "remaining": "Reply within {time}",
+        "expired": "Reply window expired"
+      },
+      "backToList": "← Back to the list",
+      "conversationWith": "Conversation with {name}",
+      "reopen": "Reopen",
+      "setPending": "Set to pending",
+      "setOpen": "Set back to open",
+      "close": "Close",
+      "notes": {
+        "title": "Internal notes ({count})",
+        "teamOnly": "Visible to the team only",
+        "placeholder": "Note visible to the team only…",
+        "add": "Add note",
+        "label": "Internal note",
+        "empty": "Write a note.",
+        "tooLong": "The note is too long."
+      },
+      "delivery": {
+        "queued": "Queued for sending…",
+        "sending": "Sending…",
+        "failed": "Sending failed"
+      },
+      "attachment": "Attachment",
+      "attachmentType": "Attachment ({type})",
+      "replyLabel": "Your reply",
+      "replyDm": "Reply to {name}…",
+      "replyComment": "Reply publicly to the comment…",
+      "shortcut": "Ctrl/⌘ + Enter to send",
+      "send": "Send",
+      "sending": "Sending…",
+      "viewerNoReply": "Your role (viewer) does not allow replying.",
+      "windowClosed": "The 24-hour window has passed: Meta no longer allows replies to this conversation. The customer has to write to you again.",
+      "pickTitle": "Choose a conversation",
+      "pickText": "The most urgent ones — those whose 24-hour reply window is about to close — appear at the top of the list.",
+      "notFound": "Conversation not found.",
+      "unknownContact": "Unknown contact"
+    },
+    "validation": {
+      "replyEmpty": "Write a message before sending.",
+      "replyTooLong": "The message exceeds {max} characters.",
+      "windowExpired": "The 24-hour window has passed: Meta no longer allows replies to this conversation.",
+      "noChannel": "Choose at least one channel.",
+      "needTextOrMedia": "Write some text or add media.",
+      "needDate": "Choose a publication date and time.",
+      "invalidDate": "The publication date is not valid.",
+      "pastDate": "The publication date must be in the future.",
+      "needsMedia": "{network} requires an image or a video (media upload is coming soon).",
+      "tooLong": "{network}: {length} / {max} characters.",
+      "notMedia": "“{name}” is not an image or a video.",
+      "fileEmpty": "“{name}” is empty.",
+      "fileTooBig": "“{name}” exceeds 1 GB."
+    },
+    "units": {
+      "b": "B",
+      "kb": "KB",
+      "mb": "MB",
+      "gb": "GB"
+    },
+    "calendar": {
+      "channels": "Channels",
+      "hidePanel": "Hide the channels panel",
+      "showPanel": "Show the channels panel",
+      "previous": "Previous period",
+      "next": "Next period",
+      "today": "Today",
+      "display": "Display",
+      "day": "Day",
+      "week": "Week",
+      "month": "Month",
+      "mode": "Mode",
+      "calendarView": "Calendar view",
+      "listView": "List view",
+      "newPost": "New post",
+      "addChannelShort": "+ Channel",
+      "label": "Publishing calendar",
+      "createAtHour": "Create a post on {day} at {hour}",
+      "createOnDay": "Create a post on {day}",
+      "more_one": "+{count} more",
+      "more_other": "+{count} more",
+      "tomorrow": "Tomorrow",
+      "yesterday": "Yesterday",
+      "todayLabel": "Today",
+      "noDate": "No date",
+      "emptyTitle": "No posts",
+      "emptyHint": "Click a slot in the calendar to create one.",
+      "detailTitle": "Post",
+      "noText": "(no text)",
+      "viewPost": "View the post",
+      "delete": "Delete",
+      "state": {
+        "draft": "Draft",
+        "queued": "Scheduled",
+        "publishing": "In progress",
+        "published": "Published",
+        "error": "Error",
+        "unknown": "Unknown result"
+      }
+    },
+    "channelsPanel": {
+      "add": "Add a channel",
+      "emptyTitle": "No channels yet",
+      "emptyText": "Connect your social accounts to schedule, publish and reply to your messages, all in one place.",
+      "connected": "Connected channels",
+      "reconnect": "Reconnect",
+      "disabled": "Disabled",
+      "manage": "Manage channels",
+      "viewerNote": "Your role (viewer) does not allow creating posts."
+    },
+    "composer": {
+      "title": "New post",
+      "channels": "Channels",
+      "toReconnect": "· reconnect needed",
+      "mediaRequired": "· media required",
+      "text": "Text",
+      "placeholder": "Write your post…",
+      "charsLimit": "{count} / {max} characters",
+      "chars": "{count} characters",
+      "date": "Publication date and time",
+      "schedule": "Schedule",
+      "draft": "Save as draft",
+      "saved": "Post saved.",
+      "noChannelsTitle": "No channel connected",
+      "noChannelsText": "Connect a channel to create your first post.",
+      "viewerNote": "Your role (viewer) does not allow creating posts.",
+      "errReconnect": "Reconnect {names} first before posting there.",
+      "errSave": "The post could not be saved."
+    },
+    "media": {
+      "demoNote": "Demo mode: files are only previewed in your browser, nothing is saved.",
+      "emptyTitle": "You don’t have any media yet",
+      "emptyText": "Select or upload images and videos (1 GB maximum per file). You can also drag and drop them here.",
+      "upload": "+ Upload",
+      "uploading": "Uploading…",
+      "viewerNote": "Your role (viewer) does not allow uploading media.",
+      "count_one": "{count} file",
+      "count_other": "{count} files",
+      "localPreview": "local preview",
+      "deleteLabel": "Delete {name}",
+      "confirmDelete": "Delete “{name}”?",
+      "errSend": "“{name}” could not be uploaded.",
+      "errSave": "“{name}” could not be saved.",
+      "errDelete": "Deletion failed.",
+      "noPreview": "Preview unavailable"
+    },
+    "settings": {
+      "orgTitle": "Organization",
+      "orgName": "Organization name",
+      "orgSaved": "Name saved.",
+      "save": "Save",
+      "saving": "Saving…",
+      "teamTitle": "Team ({count})",
+      "you": "(you)",
+      "inviteSoon": "Inviting new members is coming soon.",
+      "accountTitle": "My account",
+      "deleteAccount": "To delete your account and your data, follow <link>the deletion procedure</link>.",
+      "errRename": "Only an administrator can rename the organization.",
+      "errNameLength": "The name must be between 2 and 120 characters."
+    },
+    "channelsPage": {
+      "intro": "The social media accounts connected to your organization.",
+      "connectedTitle": "Connected ({count})",
+      "noneConnected": "No channel connected yet.",
+      "status": {
+        "active": "Connected",
+        "refresh_needed": "Reconnect",
+        "disabled": "Disabled"
+      },
+      "reconnectButton": "Reconnect",
+      "disconnect": "Disconnect",
+      "confirmDisconnect": "Disconnect “{name}”? The tokens will be deleted and pending posts on this channel will fail.",
+      "addTitle": "Connect a channel",
+      "demoWarn": "Demo mode: connecting accounts requires a configured Supabase project.",
+      "configWarn": "Connecting accounts becomes available once each network’s API keys are configured (Meta, Google, TikTok, LinkedIn, X apps).",
+      "seeDocs": "See <code>docs/RESEAUX.md</code> in the repository for the steps.",
+      "adminOnly": "Only an organization administrator can connect a channel.",
+      "whyDemo": "Unavailable in demo mode",
+      "whyMissing": "Missing configuration on the server: {missing}",
+      "whyAdmin": "Administrators only",
+      "whyConnect": "Connect {name}",
+      "connect": "Connect",
+      "publish": "Publish: {status}",
+      "messages": "Messages: {status}",
+      "comments": "Comments: {status}",
+      "flashConnected_one": "{count} channel connected",
+      "flashConnected_other": "{count} channels connected",
+      "flashWebhooks": "Warning: subscribing to the Page’s messages failed, you will not receive its messages in the inbox until it is redone (reconnect the channel).",
+      "flashDisconnected": "Channel disconnected: the tokens have been deleted.",
+      "flashCleanupFailed": "Channel disconnected and tokens deleted here. Revoking access at the network failed: remove Postbiz from the authorized apps of your account.",
+      "pickTitle": "Choose the accounts to connect",
+      "pickText": "{network} granted access to the accounts below. Tick the ones you want to use in {org}.",
+      "pickSubmit": "Connect the selection",
+      "pickCancel": "Cancel",
+      "pickMetaTitle": "Choose the accounts to connect"
+    },
+    "oauthErrors": {
+      "reseau_inconnu": "This network does not exist.",
+      "non_configure": "Connecting this network is not configured on this server.",
+      "non_autorise": "Only an organization administrator can connect or disconnect a channel.",
+      "refuse": "You cancelled the authorization at the network: nothing was connected.",
+      "etat_invalide": "The connection expired or is no longer valid. Start it again from this page.",
+      "echange": "The network refused the connection. Try again; if it happens again, check the configuration of the network’s app.",
+      "profil": "Connection accepted, but the account profile could not be read. Please try again in a moment.",
+      "aucun_compte": "No usable account was found (for Meta: an authorized Page, or a professional Instagram account linked to a Page).",
+      "selection_vide": "Select at least one account to connect.",
+      "expire": "This selection has expired. Start the connection again.",
+      "erreur": "The connection failed. Please try again in a moment."
+    },
+    "onboarding": {
+      "label": "Getting started with Postbiz",
+      "steps": "Steps",
+      "step1": "Connect channels",
+      "step2": "Connect agents",
+      "step3": "Watch the tutorial",
+      "closeLabel": "Close the getting-started guide",
+      "quitTitle": "Leave the getting-started guide?",
+      "quitText": "You can connect your channels later from the Channels page.",
+      "stay": "Stay",
+      "quit": "Leave",
+      "channelsTitle": "Connect your channels",
+      "channelsSubtitle": "Connect your social media accounts to start scheduling posts and replying to your messages.",
+      "connectedChannels": "Connected channels ({count})",
+      "clickToAdd": "Click a channel to add it",
+      "about": "Good to know about {name}",
+      "capabilities": "Publish: {publish} · Messages: {dm} · Comments: {comments}",
+      "continueWith": "Continue",
+      "continueWithout": "Continue without channels",
+      "hintConnect": "Click to connect this channel.",
+      "hintDemo": "Demo mode: the connection is simulated.",
+      "hintAdminOnly": "Only an organization administrator can connect a channel.",
+      "hintUnavailable": "Connection unavailable: this network’s API keys are not configured on this server yet (see docs/RESEAUX.md).",
+      "agentsTitle": "Connect your AI agent",
+      "agentsSubtitle": "Let the agent of your choice create and schedule posts for you.",
+      "agentsSoon": "This step will be enabled soon: the Postbiz MCP server, CLI and public API are not available yet. You can skip it.",
+      "soon": "Soon",
+      "mcpTitle": "MCP server",
+      "mcpText": "Give your agent (Claude, ChatGPT, Cursor…) tools to create, schedule and manage your posts.",
+      "cliTitle": "Command line",
+      "cliText": "Install the Postbiz CLI and let your agent use it from your terminal.",
+      "apiTitle": "Public API",
+      "apiText": "Drive Postbiz from your own tools (n8n, Make, scripts).",
+      "continueSkip": "Continue / Skip",
+      "tutorialTitle": "Learn how to use Postbiz",
+      "tutorialVideo": "Watch this short video to get the most out of Postbiz.",
+      "tutorialSteps": "Three steps are enough to get started.",
+      "videoTitle": "Postbiz tutorial",
+      "check1": {
+        "title": "Connect a channel",
+        "text": "From the Channels page: your Facebook, Instagram, X, LinkedIn, TikTok or YouTube accounts.",
+        "cta": "Open Channels"
+      },
+      "check2": {
+        "title": "Schedule a post",
+        "text": "In the calendar, click a free slot, write, choose the channels.",
+        "cta": "Open the calendar"
+      },
+      "check3": {
+        "title": "Reply to your messages",
+        "text": "Private messages and comments arrive live in the inbox.",
+        "cta": "Open the inbox"
+      },
+      "start": "Get started"
+    },
+    "errors": {
+      "generic": "The operation failed. Please try again in a moment.",
+      "channelNotFound": "Channel not found."
+    }
+  }
+}

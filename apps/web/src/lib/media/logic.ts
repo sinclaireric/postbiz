@@ -1,3 +1,5 @@
+import type { FormError } from '@/lib/form-error';
+
 /** 1 Gio : limite du bucket « media » (voir la migration 20261016000003_engine.sql). */
 export const MAX_MEDIA_BYTES = 1024 * 1024 * 1024;
 
@@ -7,11 +9,11 @@ export interface FileLike {
   size: number;
 }
 
-/** Images et vidéos uniquement, dans la limite de taille. Renvoie un message d'erreur, sinon `null`. */
-export function validateMediaFile(f: FileLike): string | null {
-  if (!/^(image|video)\//.test(f.type)) return `« ${f.name} » n’est pas une image ni une vidéo.`;
-  if (f.size <= 0) return `« ${f.name} » est vide.`;
-  if (f.size > MAX_MEDIA_BYTES) return `« ${f.name} » dépasse 1 Go.`;
+/** Images et vidéos uniquement, dans la limite de taille. Renvoie une erreur (clé de message), sinon `null`. */
+export function validateMediaFile(f: FileLike): FormError | null {
+  if (!/^(image|video)\//.test(f.type)) return { key: 'app.validation.notMedia', params: { name: f.name } };
+  if (f.size <= 0) return { key: 'app.validation.fileEmpty', params: { name: f.name } };
+  if (f.size > MAX_MEDIA_BYTES) return { key: 'app.validation.fileTooBig', params: { name: f.name } };
   return null;
 }
 
@@ -34,10 +36,3 @@ export const storagePath = (orgId: string, uuid: string, fileName: string) => `$
 
 /** Nom d'affichage : retire le préfixe d'identifiant ajouté au chemin. */
 export const displayName = (path: string) => path.split('/').pop()!.replace(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}-/, '');
-
-export function formatBytes(n: number): string {
-  if (n < 1024) return `${n} o`;
-  if (n < 1024 ** 2) return `${(n / 1024).toFixed(0)} Ko`;
-  if (n < 1024 ** 3) return `${(n / 1024 ** 2).toFixed(1).replace('.', ',')} Mo`;
-  return `${(n / 1024 ** 3).toFixed(1).replace('.', ',')} Go`;
-}

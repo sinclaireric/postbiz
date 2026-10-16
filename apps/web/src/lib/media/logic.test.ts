@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { MAX_MEDIA_BYTES, displayName, formatBytes, safeFileName, storagePath, validateMediaFile } from './logic';
+import { MAX_MEDIA_BYTES, displayName, safeFileName, storagePath, validateMediaFile } from './logic';
 
 describe('validateMediaFile', () => {
   it('accepte images et vidéos', () => {
@@ -7,9 +7,9 @@ describe('validateMediaFile', () => {
     expect(validateMediaFile({ name: 'a.mp4', type: 'video/mp4', size: MAX_MEDIA_BYTES })).toBeNull();
   });
   it('refuse les autres types, les fichiers vides et trop gros', () => {
-    expect(validateMediaFile({ name: 'a.pdf', type: 'application/pdf', size: 10 })).toMatch(/pas une image/);
-    expect(validateMediaFile({ name: 'a.png', type: 'image/png', size: 0 })).toMatch(/vide/);
-    expect(validateMediaFile({ name: 'a.mp4', type: 'video/mp4', size: MAX_MEDIA_BYTES + 1 })).toMatch(/1 Go/);
+    expect(validateMediaFile({ name: 'a.pdf', type: 'application/pdf', size: 10 })).toEqual({ key: 'app.validation.notMedia', params: { name: 'a.pdf' } });
+    expect(validateMediaFile({ name: 'a.png', type: 'image/png', size: 0 })).toEqual({ key: 'app.validation.fileEmpty', params: { name: 'a.png' } });
+    expect(validateMediaFile({ name: 'a.mp4', type: 'video/mp4', size: MAX_MEDIA_BYTES + 1 })).toEqual({ key: 'app.validation.fileTooBig', params: { name: 'a.mp4' } });
     expect(validateMediaFile({ name: 'x', type: '', size: 10 })).not.toBeNull();
   });
 });
@@ -38,13 +38,4 @@ describe('chemins de stockage', () => {
     expect(p.split('/')).toHaveLength(2);
   });
   it('retrouve le nom d’affichage', () => expect(displayName(storagePath('org-1', uuid, 'Ma photo.png'))).toBe('Ma-photo.png'));
-});
-
-describe('formatBytes', () => {
-  it('formate', () => {
-    expect(formatBytes(512)).toBe('512 o');
-    expect(formatBytes(2048)).toBe('2 Ko');
-    expect(formatBytes(5 * 1024 ** 2)).toBe('5,0 Mo');
-    expect(formatBytes(1.5 * 1024 ** 3)).toBe('1,5 Go');
-  });
 });

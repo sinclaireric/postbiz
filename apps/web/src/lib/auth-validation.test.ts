@@ -1,22 +1,25 @@
 import { describe, expect, it } from 'vitest';
-import { frenchAuthError, normalizeEmail, validateEmail, validatePassword } from './auth-validation';
+import { authErrorKey, normalizeEmail, validateEmail, validatePassword } from './auth-validation';
 import { safeNext } from './safe-redirect';
 
 describe('validation des formulaires', () => {
   it('normalise l’e-mail', () => expect(normalizeEmail('  Léa@Exemple.FR ')).toBe('léa@exemple.fr'));
   it('valide les e-mails', () => {
     expect(validateEmail('a@b.co')).toBeNull();
-    for (const bad of ['', 'a', 'a@b', 'a@b.', '@b.co', 'a b@c.fr']) expect(validateEmail(bad)).not.toBeNull();
+    expect(validateEmail('')).toEqual({ key: 'auth.validation.emailRequired' });
+    for (const bad of ['a', 'a@b', 'a@b.', '@b.co', 'a b@c.fr']) expect(validateEmail(bad)).toEqual({ key: 'auth.validation.emailInvalid' });
   });
-  it('exige 8 caractères minimum', () => {
-    expect(validatePassword('1234567')).toMatch(/au moins 8/);
+  it('exige 8 caractères minimum et 72 au maximum', () => {
+    expect(validatePassword('1234567')).toEqual({ key: 'auth.validation.passwordShort', params: { min: 8 } });
     expect(validatePassword('12345678')).toBeNull();
-    expect(validatePassword('x'.repeat(73))).toMatch(/72/);
+    expect(validatePassword('x'.repeat(73))).toEqual({ key: 'auth.validation.passwordLong', params: { max: 72 } });
+    expect(validatePassword('')).toEqual({ key: 'auth.validation.passwordRequired' });
   });
-  it('traduit les erreurs Supabase', () => {
-    expect(frenchAuthError('Invalid login credentials')).toMatch(/incorrect/);
-    expect(frenchAuthError('Email not confirmed')).toMatch(/Confirmez/);
-    expect(frenchAuthError('quelque chose d’inattendu')).toMatch(/erreur/);
+  it('ramène les erreurs Supabase à nos clés', () => {
+    expect(authErrorKey('Invalid login credentials')).toBe('auth.errors.invalidCredentials');
+    expect(authErrorKey('Email not confirmed')).toBe('auth.errors.emailNotConfirmed');
+    expect(authErrorKey('quelque chose d’inattendu')).toBe('auth.errors.generic');
+    expect(authErrorKey(undefined)).toBe('auth.errors.generic');
   });
 });
 

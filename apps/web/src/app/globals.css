@@ -45,6 +45,48 @@ body {
   letter-spacing: -0.01em;
 }
 
+/*
+ * Écritures non latines : Plus Jakarta Sans ne couvre que le latin (et le cyrillique étendu), Instrument Serif
+ * que le latin. On garde Jakarta en tête pour les noms de marque et on complète avec les polices système de
+ * chaque écriture : aucune police web supplémentaire n'est téléchargée (le CJK en pèserait des mégaoctets).
+ * Le sélecteur :lang() suit l'attribut lang posé sur <html> par le layout (zh-Hans, ar, he, ja, ko…).
+ */
+:lang(ar) {
+  --font-sans: var(--font-jakarta), "SF Arabic", "Geeza Pro", "Segoe UI", Tahoma, "Noto Sans Arabic", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-sans);
+}
+:lang(he) {
+  --font-sans: var(--font-jakarta), "Arial Hebrew", "Segoe UI", "Noto Sans Hebrew", Arial, ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-sans);
+}
+:lang(zh) {
+  --font-sans: var(--font-jakarta), "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", "Noto Sans SC", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-sans);
+}
+:lang(ja) {
+  --font-sans: var(--font-jakarta), "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", Meiryo, "Noto Sans CJK JP", "Noto Sans JP", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-sans);
+}
+:lang(ko) {
+  --font-sans: var(--font-jakarta), "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans CJK KR", "Noto Sans KR", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-sans);
+}
+
+/*
+ * Ni italique ni approche négative des lettres hors de l'alphabet latin : l'italique synthétique abîme
+ * l'arabe, l'hébreu et le CJK, et tout espacement entre lettres (positif ou négatif) casse la liaison
+ * des lettres arabes. Le mot mis en valeur passe donc en gras, comme repère visuel équivalent.
+ */
+:lang(ar) *, :lang(he) *, :lang(zh) *, :lang(ja) *, :lang(ko) * { letter-spacing: 0; }
+:lang(ar) .accent, :lang(he) .accent, :lang(zh) .accent, :lang(ja) .accent, :lang(ko) .accent {
+  font-family: var(--font-sans);
+  font-style: normal;
+  font-weight: 700;
+}
+:lang(zh), :lang(ja) { line-break: strict; }
+/* Retours à la ligne par groupes de mots dans les grands titres (ignoré par les navigateurs qui ne connaissent pas auto-phrase) */
+:lang(zh) :is(h1, h2, h3), :lang(ja) :is(h1, h2, h3) { word-break: auto-phrase; }
+
 /* Panneau vert forêt à losanges, sans image externe */
 .pattern-diamonds {
   background-color: var(--color-forest);

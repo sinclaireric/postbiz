@@ -1,3 +1,4 @@
+import type { FormError } from '@/lib/form-error';
 import type { Network } from '@/lib/networks';
 
 export type NetworkId = Network['id'];
@@ -45,7 +46,7 @@ export interface ConversationDetail extends ConversationSummary {
 
 export interface ActionResult {
   ok: boolean;
-  error?: string;
+  error?: FormError;
 }
 
 /** Accès aux données de l'inbox : implémenté pour Supabase et pour le mode démo. */

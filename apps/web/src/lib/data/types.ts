@@ -1,3 +1,4 @@
+import type { FormError } from '@/lib/form-error';
 import type { NetworkId } from '@/lib/inbox/types';
 import type { InboxRepository } from '@/lib/inbox/types';
 
@@ -47,7 +48,7 @@ export interface CreatePostInput {
 
 export interface Result {
   ok: boolean;
-  error?: string;
+  error?: FormError;
 }
 
 export interface PostsRepository {
@@ -96,4 +97,4 @@ export interface Repositories {
   workspace: WorkspaceRepository;
 }
 
-export const ROLE_LABEL: Record<OrgRole, string> = { admin: 'Administrateur', member: 'Membre', viewer: 'Lecteur' };
+

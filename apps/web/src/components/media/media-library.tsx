@@ -3,9 +3,12 @@
 import { useRouter } from 'next/navigation';
 import { useRef, useState } from 'react';
 import { Button } from '@/components/ui';
+import { useT } from '@/i18n/client';
+import { formatBytes } from '@/i18n/format';
 import type { MediaItem } from '@/lib/data/types';
+import { errorText } from '@/lib/form-error';
 import { createClient } from '@/lib/supabase/client';
-import { displayName, formatBytes, storagePath, validateMediaFile } from '@/lib/media/logic';
+import { displayName, storagePath, validateMediaFile } from '@/lib/media/logic';
 
 interface LocalItem { id: string; name: string; type: string; size: number; url: string }
 
@@ -21,6 +24,7 @@ function EmptyIllustration() {
 }
 
 export function MediaLibrary({ items, orgId, canWrite, demo }: { items: MediaItem[]; orgId: string; canWrite: boolean; demo: boolean }) {
+  const t = useT();
   const router = useRouter();
   const input = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
@@ -30,7 +34,7 @@ export function MediaLibrary({ items, orgId, canWrite, demo }: { items: MediaIte
 
   async function upload(files: FileList | File[]) {
     const list = [...files];
-    const problems = list.map(validateMediaFile).filter((e): e is string => !!e);
+    const problems = list.map(validateMediaFile).filter((e): e is NonNullable<ReturnType<typeof validateMediaFile>> => !!e).map((e) => errorText(t, e));
     const valid = list.filter((f) => !validateMediaFile(f));
     setErrors(problems);
     if (valid.length === 0) return;
@@ -48,11 +52,11 @@ export function MediaLibrary({ items, orgId, canWrite, demo }: { items: MediaIte
     for (const f of valid) {
       const path = storagePath(orgId, crypto.randomUUID(), f.name);
       const up = await supabase.storage.from('media').upload(path, f, { contentType: f.type, upsert: false });
-      if (up.error) { failed.push(`« ${f.name} » n’a pas pu être envoyé.`); continue; }
+      if (up.error) { failed.push(t('app.media.errSend', { name: f.name })); continue; }
       const ins = await supabase.from('media').insert({ org_id: orgId, bucket: 'media', path, mime_type: f.type, size_bytes: f.size, created_by: auth.user?.id });
       if (ins.error) {
         await supabase.storage.from('media').remove([path]); // pas de fichier orphelin
-        failed.push(`« ${f.name} » n’a pas pu être enregistré.`);
+        failed.push(t('app.media.errSave', { name: f.name }));
       }
     }
     setErrors((e) => [...e, ...failed]);
@@ -61,19 +65,20 @@ export function MediaLibrary({ items, orgId, canWrite, demo }: { items: MediaIte
   }
 
   async function remove(item: MediaItem) {
-    if (!window.confirm(`Supprimer « ${displayName(item.path)} » ?`)) return;
+    if (!window.confirm(t('app.media.confirmDelete', { name: displayName(item.path) }))) return;
     const supabase = createClient();
     const del = await supabase.from('media').delete().eq('id', item.id);
-    if (del.error) { setErrors(['La suppression a échoué.']); return; }
+    if (del.error) { setErrors([t('app.media.errDelete')]); return; }
     await supabase.storage.from('media').remove([item.path]);
     router.refresh();
   }
 
   const total = items.length + local.length;
+  const units = { b: t('app.units.b'), kb: t('app.units.kb'), mb: t('app.units.mb'), gb: t('app.units.gb') };
   const picker = (
     <>
       <input ref={input} type="file" accept="image/*,video/*" multiple hidden onChange={(e) => { if (e.target.files) void upload(e.target.files); e.target.value = ''; }} />
-      {canWrite && <Button type="button" onClick={() => input.current?.click()} disabled={busy}>{busy ? 'Envoi en cours…' : '+ Téléverser'}</Button>}
+      {canWrite && <Button type="button" onClick={() => input.current?.click()} disabled={busy}>{busy ? t('app.media.uploading') : t('app.media.upload')}</Button>}
     </>
   );
 
@@ -84,7 +89,7 @@ export function MediaLibrary({ items, orgId, canWrite, demo }: { items: MediaIte
       onDragLeave={() => setDrag(false)}
       onDrop={(e) => { e.preventDefault(); setDrag(false); if (canWrite) void upload(e.dataTransfer.files); }}
     >
-      {demo && <p className="mb-4 rounded-xl bg-warn-soft px-4 py-2.5 text-sm text-warn">Mode démo : les fichiers sont seulement prévisualisés dans votre navigateur, rien n’est enregistré.</p>}
+      {demo && <p className="mb-4 rounded-xl bg-warn-soft px-4 py-2.5 text-sm text-warn">{t('app.media.demoNote')}</p>}
       {errors.length > 0 && (
         <ul role="alert" className="mb-4 grid gap-1 rounded-xl bg-danger-soft px-4 py-3 text-sm font-medium text-danger">{errors.map((e) => <li key={e}>{e}</li>)}</ul>
       )}
@@ -92,32 +97,32 @@ export function MediaLibrary({ items, orgId, canWrite, demo }: { items: MediaIte
       {total === 0 ? (
         <div className={`flex flex-1 flex-col items-center justify-center rounded-3xl border-2 border-dashed px-6 py-16 text-center transition ${drag ? 'border-ink bg-lime-soft/60' : 'border-line bg-surface'}`}>
           <EmptyIllustration />
-          <p className="mt-6 text-xl font-semibold tracking-tight">Vous n’avez pas encore de média</p>
-          <p className="mt-2 max-w-md text-[15px] leading-relaxed text-muted">Sélectionnez ou téléversez des images et des vidéos (1 Go maximum par fichier). Vous pouvez aussi les glisser-déposer ici.</p>
+          <p className="mt-6 text-xl font-semibold tracking-tight">{t('app.media.emptyTitle')}</p>
+          <p className="mt-2 max-w-md text-[15px] leading-relaxed text-muted">{t('app.media.emptyText')}</p>
           <div className="mt-6">{picker}</div>
-          {!canWrite && <p className="mt-4 text-sm text-muted">Votre rôle (lecteur) ne permet pas de téléverser des médias.</p>}
+          {!canWrite && <p className="mt-4 text-sm text-muted">{t('app.media.viewerNote')}</p>}
         </div>
       ) : (
         <>
           <div className="mb-5 flex items-center justify-between gap-3">
-            <p className="text-sm text-muted">{total} média{total > 1 ? 's' : ''}</p>
+            <p className="text-sm text-muted">{t('app.media.count', { count: total })}</p>
             {picker}
           </div>
           <ul className={`grid grid-cols-2 gap-4 rounded-3xl sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 ${drag ? 'outline-2 outline-dashed outline-ink' : ''}`}>
             {local.map((m) => (
               <li key={m.id} className="overflow-hidden rounded-2xl border border-line bg-surface">
-                <Thumb url={m.url} type={m.type} name={m.name} />
+                <Thumb url={m.url} type={m.type} name={m.name} noPreview={t('app.media.noPreview')} />
                 <p className="truncate px-3 pt-2 text-sm font-semibold" title={m.name}>{m.name}</p>
-                <p className="px-3 pb-3 text-xs text-subtle">{formatBytes(m.size)} · aperçu local</p>
+                <p className="px-3 pb-3 text-xs text-subtle">{formatBytes(t.locale, m.size, units)} · {t('app.media.localPreview')}</p>
               </li>
             ))}
             {items.map((m) => (
               <li key={m.id} className="group relative overflow-hidden rounded-2xl border border-line bg-surface">
-                <Thumb url={m.url} type={m.mimeType ?? ''} name={displayName(m.path)} />
+                <Thumb url={m.url} type={m.mimeType ?? ''} name={displayName(m.path)} noPreview={t('app.media.noPreview')} />
                 <p className="truncate px-3 pt-2 text-sm font-semibold" title={displayName(m.path)}>{displayName(m.path)}</p>
-                <p className="px-3 pb-3 text-xs text-subtle">{m.sizeBytes != null ? formatBytes(m.sizeBytes) : ''}</p>
+                <p className="px-3 pb-3 text-xs text-subtle">{m.sizeBytes != null ? formatBytes(t.locale, m.sizeBytes, units) : ''}</p>
                 {canWrite && (
-                  <button type="button" onClick={() => void remove(m)} aria-label={`Supprimer ${displayName(m.path)}`} className="absolute top-2 right-2 flex h-8 w-8 items-center justify-center rounded-full bg-ink/70 text-white opacity-0 transition group-hover:opacity-100 focus-visible:opacity-100">
+                  <button type="button" onClick={() => void remove(m)} aria-label={t('app.media.deleteLabel', { name: displayName(m.path) })} className="absolute top-2 end-2 flex h-8 w-8 items-center justify-center rounded-full bg-ink/70 text-white opacity-0 transition group-hover:opacity-100 focus-visible:opacity-100">
                     <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M3 4h8M5.5 4V2.8h3V4M4.5 4l.4 7h4.2l.4-7" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" /></svg>
                   </button>
                 )}
@@ -130,9 +135,9 @@ export function MediaLibrary({ items, orgId, canWrite, demo }: { items: MediaIte
   );
 }
 
-function Thumb({ url, type, name }: { url: string | null; type: string; name: string }) {
+function Thumb({ url, type, name, noPreview }: { url: string | null; type: string; name: string; noPreview: string }) {
   const box = 'flex aspect-square w-full items-center justify-center bg-wash text-xs text-subtle';
-  if (!url) return <div className={box}>Aperçu indisponible</div>;
+  if (!url) return <div className={box}>{noPreview}</div>;
   if (type.startsWith('video/')) return <video src={url} preload="metadata" muted playsInline className="aspect-square w-full bg-ink object-cover" aria-label={name} />;
   // eslint-disable-next-line @next/next/no-img-element
   return <img src={url} alt={name} loading="lazy" className="aspect-square w-full object-cover" />;

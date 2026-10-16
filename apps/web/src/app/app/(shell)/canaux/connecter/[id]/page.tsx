@@ -3,16 +3,21 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { NetworkDot } from '@/components/app/network-dot';
 import { Button } from '@/components/ui';
+import { getT } from '@/i18n/server';
 import { getSession } from '@/lib/data';
-import { ERROR_MESSAGES, getPendingSelection } from '@/lib/oauth/flow';
+import { getPendingSelection } from '@/lib/oauth/flow';
 import { createFlowDeps } from '@/lib/oauth/server';
-import { networkById } from '@/lib/networks';
+import { networkName } from '@/lib/networks';
 import { confirmSelectionAction } from '../../actions';
 
-export const metadata: Metadata = { title: 'Choisir les comptes à connecter' };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getT();
+  return { title: t('app.channelsPage.pickMetaTitle') };
+}
 export const dynamic = 'force-dynamic';
 
 export default async function SelectAccountsPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ erreur?: string }> }) {
+  const t = await getT();
   const session = await getSession();
   if (session.status !== 'ready') redirect('/login');
   const deps = createFlowDeps();
@@ -23,15 +28,12 @@ export default async function SelectAccountsPage({ params, searchParams }: { par
   const pending = await getPendingSelection(deps, { userId: session.ctx.user.id, pendingId: id });
   if (!pending) redirect('/app/canaux?erreur=expire');
 
-  const network = networkById(pending.network);
   return (
     <div className="mx-auto w-full max-w-2xl px-5 py-8 sm:px-8">
-      <h1 className="text-2xl font-semibold tracking-tight">Choisissez les comptes à connecter</h1>
-      <p className="mt-1 text-muted">
-        {network?.name} a autorisé l’accès aux comptes ci-dessous. Cochez ceux que vous voulez utiliser dans {session.ctx.org.name}.
-      </p>
+      <h2 className="text-2xl font-semibold tracking-tight">{t('app.channelsPage.pickTitle')}</h2>
+      <p className="mt-1 text-muted">{t('app.channelsPage.pickText', { network: networkName(pending.network), org: session.ctx.org.name })}</p>
       {erreur === 'selection_vide' && (
-        <p role="alert" className="mt-4 rounded-2xl border border-danger/30 bg-danger-soft px-4 py-3 text-sm text-danger">{ERROR_MESSAGES.selection_vide}</p>
+        <p role="alert" className="mt-4 rounded-2xl border border-danger/30 bg-danger-soft px-4 py-3 text-sm text-danger">{t('app.oauthErrors.selection_vide')}</p>
       )}
       <form action={confirmSelectionAction} className="mt-6">
         <input type="hidden" name="pendingId" value={id} />
@@ -55,8 +57,8 @@ export default async function SelectAccountsPage({ params, searchParams }: { par
           ))}
         </ul>
         <div className="mt-6 flex items-center gap-3">
-          <Button type="submit">Connecter la sélection</Button>
-          <Link href="/app/canaux" className="text-sm text-muted underline">Annuler</Link>
+          <Button type="submit">{t('app.channelsPage.pickSubmit')}</Button>
+          <Link href="/app/canaux" className="text-sm text-muted underline">{t('app.channelsPage.pickCancel')}</Link>
         </div>
       </form>
     </div>

@@ -1,9 +1,11 @@
 import { signInWithGoogle } from '@/app/(auth)/actions';
 import { buttonClass } from '@/components/ui';
 import { googleAuthEnabled } from '@/lib/supabase/env';
+import { getT } from '@/i18n/server';
 
-export function GoogleButton({ label }: { label: string }) {
+export async function GoogleButton({ signup = false }: { signup?: boolean }) {
   if (!googleAuthEnabled) return null;
+  const t = await getT();
   return (
     <>
       <form action={signInWithGoogle}>
@@ -14,11 +16,11 @@ export function GoogleButton({ label }: { label: string }) {
             <path fill="#FBBC05" d="M3.96 10.72A5.4 5.4 0 0 1 3.68 9c0-.6.1-1.18.28-1.72V4.95H.96A9 9 0 0 0 0 9c0 1.45.35 2.82.96 4.05l3-2.33Z" />
             <path fill="#EA4335" d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58C13.46.9 11.43 0 9 0A9 9 0 0 0 .96 4.95l3 2.33C4.67 5.16 6.66 3.58 9 3.58Z" />
           </svg>
-          {label}
+          {signup ? t('auth.googleSignup') : t('auth.google')}
         </button>
       </form>
       <div className="flex items-center gap-4 text-xs font-semibold tracking-widest text-subtle" role="separator">
-        <span className="h-px flex-1 bg-line" />OU<span className="h-px flex-1 bg-line" />
+        <span className="h-px flex-1 bg-line" />{t('auth.or')}<span className="h-px flex-1 bg-line" />
       </div>
     </>
   );

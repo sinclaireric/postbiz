@@ -7,7 +7,8 @@ Planifiez vos publications et répondez à tous vos messages et commentaires dep
 
 | Brique | État |
 |---|---|
-| Site vitrine, tarifs, pages légales (brouillons) | ✅ Fait, en français (`apps/web`) |
+| Site vitrine, tarifs, pages légales (brouillons) | ✅ Fait (`apps/web`) ; pages légales en français et en anglais seulement |
+| Internationalisation du site, de l'authentification et de l'application web : 14 langues (en, he, ru, zh, fr, es, pt, de, it, ja, ko, ar, tr, vi), arabe et hébreu en lecture de droite à gauche | ✅ Clés vérifiées par test (mêmes clés, paramètres, balises et formes plurielles que le français) ; **traductions non relues par des locuteurs natifs**. Voir « Langues » ci-dessous |
 | Connexion / inscription / mot de passe oublié (Supabase Auth) | ✅ Écrit ; **à valider sur un projet Supabase réel** |
 | Application : onboarding en 3 étapes, calendrier (jour/semaine/mois/liste), boîte de réception, médias, canaux, réglages, notifications | ✅ Fonctionne en **mode démo** ; branchement Supabase écrit mais **non testé sur un projet réel** |
 | Onboarding « à la Postiz » : organisation créée automatiquement, modale plein écran ouverte par `?onboarding=true` | ✅ Étapes 1 (canaux) et 3 (prise en main) ; l'étape 2 (agents IA, MCP, CLI) est affichée « Bientôt » car ces fonctions n'existent pas encore |
@@ -75,6 +76,27 @@ serveur n'a pas toutes les variables du réseau (`.env.example`) ni `SUPABASE_SE
 > documentation publique et sont vérifiés uniquement par des tests avec un réseau simulé (`pnpm test`). Les applications des réseaux
 > n'existent pas encore (voir `docs/RESEAUX.md`) ; attendez-vous à des ajustements à la première vraie connexion, en particulier pour
 > TikTok, Instagram et l'abonnement aux webhooks Meta.
+
+## Langues
+
+14 langues pour le site, l'authentification et l'application web (sélecteur dans l'en-tête, le pied de page et l'application).
+
+- **Choix de la langue** : cookie `postbiz_locale` (posé par le sélecteur) → en-tête `Accept-Language` → anglais. Le français est la
+  langue source ; une clé absente d'une langue retombe sur l'anglais puis sur le français. Pas de préfixe d'URL (`/fr/…`) : une même
+  adresse sert toutes les langues.
+- **Fichiers** : `apps/web/src/i18n/messages/<langue>.json` (un arbre de messages par langue). Les clés sont typées à partir de `fr.json`.
+  Pluriels : suffixes `_zero`, `_one`, `_two`, `_few`, `_many`, `_other` selon `Intl.PluralRules` (`_other` est obligatoire). Texte enrichi :
+  balises `<accent>…</accent>`, `<link>…</link>`, etc., rendues par `RichText`.
+- **Ajouter une langue** : ajouter son code dans `LOCALES` et `LOCALE_META` (`i18n/config.ts`, avec son sens d'écriture), un drapeau dans
+  `components/flags.tsx`, son chargeur dans `i18n/messages/index.ts`, puis copier `en.json` en `<langue>.json` et traduire.
+  `pnpm --filter @postbiz/web test` signale toute clé manquante ou en trop, tout paramètre `{…}` ou balise modifié, tout pluriel sans `_other`.
+- **Droite à gauche** (arabe, hébreu) : `dir` posé sur `<html>`, classes Tailwind logiques (`ms-`, `pe-`, `start-`, `rounded-ee-`…) et
+  `rtl:rotate-180` pour les chevrons. Le texte saisi par les utilisateurs (messages, notes) porte `dir="auto"`.
+- **Dates, heures, nombres, tailles de fichiers, prix** : `Intl`, selon la langue active.
+- **Limites** : textes juridiques (CGU, confidentialité, suppression des données) seulement en français et en anglais (autres langues :
+  version anglaise avec un avis) ; le portugais est celui du Brésil ; texte du mode démo, du worker, des notifications poussées et de
+  l'application mobile **non traduits** ; polices : Jakarta pour le latin, polices système pour le cyrillique, l'arabe, l'hébreu et le CJK ;
+  les traductions ont été rédigées sans relecture native et devront être relues avant un lancement dans ces langues.
 
 ## Tests
 

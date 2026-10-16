@@ -4,7 +4,7 @@ import { signOut } from '@/app/(auth)/actions';
 import { AppShell } from '@/components/app/shell';
 import { Onboarding } from '@/components/onboarding/onboarding';
 import { getRepositories, getSession, provisionOrganization } from '@/lib/data';
-import { ROLE_LABEL } from '@/lib/data/types';
+import { getT } from '@/i18n/server';
 import { networkAvailability } from '@/lib/oauth/availability';
 import { networkById } from '@/lib/networks';
 import { onboardingTiles, tutorialEmbedUrl } from '@/lib/onboarding';
@@ -12,7 +12,8 @@ import { isDemo } from '@/lib/supabase/env';
 import { markNotificationsReadAction } from './actions';
 
 export default async function ShellLayout({ children }: { children: React.ReactNode }) {
-  let session = await getSession();
+  const t = await getT();
+  const session = await getSession();
   if (session.status === 'anonymous') redirect('/login');
   if (session.status === 'no-org') {
     // Première connexion : l'organisation est créée sans question, puis on ouvre l'onboarding.
@@ -38,7 +39,7 @@ export default async function ShellLayout({ children }: { children: React.ReactN
     <>
       <AppShell
         orgName={ctx.org.name}
-        roleLabel={ROLE_LABEL[ctx.org.role]}
+        roleLabel={t(`common.role.${ctx.org.role}`)}
         userName={ctx.user.name}
         userEmail={ctx.user.email}
         unreadMessages={conversations.reduce((n, c) => n + c.unreadCount, 0)}

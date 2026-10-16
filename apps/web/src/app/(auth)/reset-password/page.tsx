@@ -1,12 +1,17 @@
 import type { Metadata } from 'next';
 import { AuthShell } from '@/components/auth/auth-shell';
 import { ResetPasswordForm } from '@/components/auth/forms';
+import { getT } from '@/i18n/server';
 
-export const metadata: Metadata = { title: 'Nouveau mot de passe' };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getT();
+  return { title: t('meta.reset.title') };
+}
 
-export default function ResetPasswordPage() {
+export default async function ResetPasswordPage() {
+  const t = await getT();
   return (
-    <AuthShell title="Nouveau mot de passe" subtitle="Choisissez un mot de passe d’au moins 8 caractères." switchLabel="" switchHref="/login" switchText="Retour à la connexion">
+    <AuthShell title={t('auth.reset.title')} subtitle={t('auth.reset.subtitle')} switchLabel="" switchHref="/login" switchText={t('auth.reset.switchText')}>
       <ResetPasswordForm />
     </AuthShell>
   );

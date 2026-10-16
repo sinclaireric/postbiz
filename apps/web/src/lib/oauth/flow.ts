@@ -48,6 +48,10 @@ export type ErrorCode =
   | 'reseau_inconnu' | 'non_configure' | 'non_autorise' | 'refuse' | 'etat_invalide' | 'echange' | 'profil' | 'aucun_compte'
   | 'selection_vide' | 'expire' | 'erreur';
 
+/**
+ * Textes de repli en français, utilisés par la logique et les tests. L’affichage passe par les messages
+ * traduits `app.oauthErrors.<code>` (voir la page des canaux) : garder les deux listes de codes alignées.
+ */
 export const ERROR_MESSAGES: Record<ErrorCode, string> = {
   reseau_inconnu: 'Ce réseau n’existe pas.',
   non_configure: 'La connexion de ce réseau n’est pas configurée sur ce serveur.',

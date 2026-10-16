@@ -148,7 +148,7 @@ const inbox: InboxRepository = {
   },
   async sendReply(cid, body) {
     const c = store().conversations.find((x) => x.id === cid);
-    if (!c) return { ok: false, error: 'Conversation introuvable.' };
+    if (!c) return { ok: false, error: { key: 'app.inbox.notFound' } };
     const error = validateReply(body, replyWindow(c.replyWindowExpiresAt));
     if (error) return { ok: false, error };
     const m = msg('out', body.trim(), new Date().toISOString(), { sentByName: DEMO_CONTEXT.user.name });
@@ -160,7 +160,7 @@ const inbox: InboxRepository = {
   },
   async setStatus(cid, status: ConversationStatus) {
     const c = store().conversations.find((x) => x.id === cid);
-    if (!c) return { ok: false, error: 'Conversation introuvable.' };
+    if (!c) return { ok: false, error: { key: 'app.inbox.notFound' } };
     c.status = status;
     return { ok: true };
   },
@@ -171,7 +171,7 @@ const inbox: InboxRepository = {
   },
   async addNote(cid, body) {
     const c = store().conversations.find((x) => x.id === cid);
-    if (!c) return { ok: false, error: 'Conversation introuvable.' };
+    if (!c) return { ok: false, error: { key: 'app.inbox.notFound' } };
     c.notes.push({ id: id('n'), authorName: DEMO_CONTEXT.user.name, body: body.trim(), createdAt: new Date().toISOString() });
     return { ok: true };
   },
@@ -186,7 +186,7 @@ const posts: PostsRepository = {
     const groupId = id('g');
     for (const iid of input.integrationIds) {
       const integ = s.integrations.find((i) => i.id === iid);
-      if (!integ) return { ok: false, error: 'Canal introuvable.' };
+      if (!integ) return { ok: false, error: { key: 'app.errors.channelNotFound' } };
       s.posts.push({
         id: id('p'), groupId, networkId: integ.networkId, accountName: integ.name, content: input.content.trim(),
         publishAt: input.publishAt, state: input.mode === 'schedule' ? 'queued' : 'draft', error: null, releaseUrl: null,

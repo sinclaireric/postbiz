@@ -1,10 +1,13 @@
 import Link from 'next/link';
 import type { ReactNode } from 'react';
-import { Logo } from '@/components/logo';
 import { InboxPreview } from '@/components/inbox-preview';
+import { LanguageSwitcher } from '@/components/language-switcher';
+import { Logo } from '@/components/logo';
+import { RichText, accentLimeTags } from '@/components/rich-text';
+import { getT } from '@/i18n/server';
 
 /** Écran partagé : formulaire à gauche, panneau de marque à droite (masqué sur mobile). */
-export function AuthShell({
+export async function AuthShell({
   title,
   subtitle,
   switchLabel,
@@ -19,15 +22,19 @@ export function AuthShell({
   switchText: string;
   children: ReactNode;
 }) {
+  const t = await getT();
   return (
     <div className="grid min-h-dvh lg:grid-cols-2">
       <div className="flex min-h-dvh flex-col bg-paper px-6 py-6 sm:px-10">
-        <header className="flex items-center justify-between">
+        <header className="flex items-center justify-between gap-3">
           <Logo />
-          <p className="text-sm text-muted">
-            <span className="hidden sm:inline">{switchLabel} </span>
-            <Link href={switchHref} className="font-semibold text-ink underline underline-offset-4">{switchText}</Link>
-          </p>
+          <div className="flex items-center gap-2">
+            <p className="text-sm text-muted">
+              {switchLabel && <span className="hidden sm:inline">{switchLabel} </span>}
+              <Link href={switchHref} className="font-semibold text-ink underline underline-offset-4">{switchText}</Link>
+            </p>
+            <LanguageSwitcher />
+          </div>
         </header>
 
         <main className="mx-auto flex w-full max-w-[400px] flex-1 flex-col justify-center py-12">
@@ -39,8 +46,8 @@ export function AuthShell({
         <footer className="flex items-center justify-between text-sm text-subtle">
           <p>© {new Date().getFullYear()} Postbiz</p>
           <p className="flex gap-5">
-            <Link href="/cgu" className="hover:text-ink">Conditions</Link>
-            <Link href="/confidentialite" className="hover:text-ink">Confidentialité</Link>
+            <Link href="/cgu" className="hover:text-ink">{t('auth.termsLink')}</Link>
+            <Link href="/confidentialite" className="hover:text-ink">{t('auth.privacyLink')}</Link>
           </p>
         </footer>
       </div>
@@ -48,7 +55,7 @@ export function AuthShell({
       <aside className="pattern-diamonds relative hidden items-center justify-center overflow-hidden p-10 lg:flex" aria-hidden="true">
         <div className="w-full max-w-[560px]">
           <p className="mb-6 max-w-md text-[2rem] leading-[1.1] font-semibold tracking-[-0.03em] text-white">
-            Une seule boîte pour <span className="accent text-lime">tous vos messages</span>
+            <RichText t={t} k="auth.asideTitle" tags={accentLimeTags} />
           </p>
           <InboxPreview />
         </div>

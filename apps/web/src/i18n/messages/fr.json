@@ -1,0 +1,1021 @@
+{
+  "common": {
+    "brand": "Postbiz",
+    "skipToContent": "Aller au contenu",
+    "back": "Retour",
+    "continue": "Continuer",
+    "close": "Fermer",
+    "cancel": "Annuler",
+    "send": "Envoyer",
+    "delete": "Supprimer",
+    "save": "Enregistrer",
+    "capability": {
+      "beta": "Bêta",
+      "soon": "Bientôt",
+      "none": "Non disponible"
+    },
+    "role": {
+      "admin": "Administrateur",
+      "member": "Membre",
+      "viewer": "Lecteur"
+    },
+    "language": {
+      "title": "Changer de langue",
+      "button": "Changer de langue",
+      "current": "Langue : {name}"
+    },
+    "networkNames": {
+      "facebook": "Facebook",
+      "instagram": "Instagram",
+      "x": "X",
+      "linkedin": "LinkedIn",
+      "tiktok": "TikTok",
+      "youtube": "YouTube"
+    }
+  },
+  "networks": {
+    "facebook": {
+      "note": "Pages. Messages : réponse possible 24 h après le dernier message du client."
+    },
+    "instagram": {
+      "note": "Comptes professionnels. Messages : réponse possible 24 h après le dernier message du client."
+    },
+    "x": {
+      "note": "Les messages dépendent de l’offre payante de l’API X."
+    },
+    "linkedin": {
+      "note": "LinkedIn n’ouvre pas sa messagerie aux applications tierces. Commentaires de Pages prévus."
+    },
+    "tiktok": {
+      "note": "Messagerie soumise à l’approbation de TikTok et indisponible dans certaines régions."
+    },
+    "youtube": {
+      "note": "YouTube n’a pas de messages privés : commentaires uniquement."
+    }
+  },
+  "header": {
+    "mainNav": "Navigation principale",
+    "product": "Produit",
+    "channels": "Canaux",
+    "pricing": "Tarifs",
+    "contact": "Contact",
+    "signIn": "Connexion",
+    "tryFree": "Essai gratuit",
+    "openMenu": "Ouvrir le menu",
+    "inbox": {
+      "title": "Boîte de réception",
+      "desc": "Messages privés et commentaires de tous vos réseaux."
+    },
+    "planning": {
+      "title": "Planification",
+      "desc": "Un calendrier pour publier partout, à l’heure."
+    },
+    "channelsDesc": "Ce que Postbiz sait faire sur chaque réseau."
+  },
+  "footer": {
+    "tagline": "Planifiez vos publications et répondez à tous vos messages et commentaires depuis une seule boîte.",
+    "product": "Produit",
+    "resources": "Ressources",
+    "legal": "Légal",
+    "inbox": "Boîte de réception",
+    "planning": "Planification",
+    "channels": "Canaux",
+    "pricing": "Tarifs",
+    "contact": "Contact",
+    "createAccount": "Créer un compte",
+    "signIn": "Connexion",
+    "terms": "Conditions d’utilisation",
+    "privacy": "Confidentialité",
+    "dataDeletion": "Suppression des données",
+    "copyright": "© {year} Postbiz. Logiciel libre sous licence AGPL-3.0.",
+    "trademarks": "Facebook, Instagram, X, LinkedIn, TikTok et YouTube sont des marques de leurs propriétaires."
+  },
+  "preview": {
+    "label": "Aperçu de la boîte de réception Postbiz : liste de conversations à gauche, discussion à droite.",
+    "title": "Boîte de réception",
+    "replyWithin": "Répondre sous 19 h",
+    "composer": "Écrire une réponse…",
+    "send": "Envoyer",
+    "row1": "Bonjour, vous livrez en Belgique ?",
+    "row2": "Merci pour la réponse, c’est parfait !",
+    "row3": "Trop beau 😍 c’est dispo en vert ?",
+    "row4": "Super vidéo, une suite est prévue ?",
+    "row3Name": "Sarah — commentaire",
+    "bubble1": "Bonjour, vous livrez en Belgique ?",
+    "bubble2": "Et en combien de temps ? 🙏",
+    "bubble3": "Bonjour Léa ! Oui, livraison en 3 à 5 jours ouvrés.",
+    "time1": "2 min",
+    "time2": "14 min",
+    "time3": "1 h",
+    "time4": "3 h"
+  },
+  "calendarPreview": {
+    "label": "Aperçu du calendrier de publication sur une semaine.",
+    "title": "Calendrier · semaine type",
+    "days": {
+      "mon": "Lun",
+      "tue": "Mar",
+      "wed": "Mer",
+      "thu": "Jeu",
+      "fri": "Ven"
+    }
+  },
+  "home": {
+    "badgeBeta": "Bêta ouverte",
+    "badgeOpenSource": "Logiciel libre · AGPL-3.0",
+    "title": "Planifiez vos posts et répondez à <accent>tous vos messages</accent>, au même endroit",
+    "subtitle": "Postbiz relie vos comptes Facebook, Instagram, X, LinkedIn, TikTok et YouTube. Vous programmez vos publications, et les messages et commentaires de vos abonnés arrivent dans une seule boîte de réception, partagée avec votre équipe.",
+    "ctaPrimary": "Essayer gratuitement",
+    "ctaPricing": "Voir les tarifs",
+    "betaNote": "Bêta gratuite · Sans carte bancaire",
+    "pillars": {
+      "eyebrow": "Un seul outil pour vos réseaux",
+      "title": "Ce que vous faites chaque jour sur vos réseaux, <accent>sans changer d’application</accent>",
+      "publish": {
+        "title": "Publier",
+        "text": "Programmez le même contenu vers plusieurs réseaux, avec un aperçu pour chacun, et retrouvez tout dans un calendrier."
+      },
+      "reply": {
+        "title": "Répondre",
+        "text": "Messages privés Messenger et Instagram, commentaires Facebook, Instagram et YouTube : une seule liste, une seule zone de réponse."
+      },
+      "collaborate": {
+        "title": "Collaborer",
+        "text": "Assignez une conversation à un collègue, laissez une note interne, gardez des réponses rapides pour les questions fréquentes."
+      }
+    },
+    "window": {
+      "eyebrow": "Messenger et Instagram",
+      "title": "La fenêtre de 24 heures, <accent>sous contrôle</accent>",
+      "text": "Meta vous laisse 24 heures pour répondre après le dernier message d’un client. Postbiz affiche le temps restant sur chaque conversation et met en avant celles qui vont expirer, pour qu’aucune demande ne tombe dans l’oubli.",
+      "point1": "Compte à rebours sur chaque conversation",
+      "point2": "Tri par urgence",
+      "point3": "Avertissement avant l’envoi d’une réponse tardive"
+    },
+    "steps": {
+      "eyebrow": "Comment ça marche",
+      "title": "Prêt en <accent>quelques minutes</accent>",
+      "s1": {
+        "title": "Connecter",
+        "text": "Autorisez vos comptes en quelques clics. Vos accès sont chiffrés et jamais visibles par votre navigateur."
+      },
+      "s2": {
+        "title": "Planifier",
+        "text": "Écrivez une fois, choisissez les réseaux et l’heure. Postbiz publie à votre place."
+      },
+      "s3": {
+        "title": "Répondre",
+        "text": "Les messages et commentaires arrivent en direct dans la boîte de réception, triés par urgence."
+      },
+      "s4": {
+        "title": "Suivre",
+        "text": "Ouvert, en attente, fermé : chaque conversation a un statut et un responsable."
+      }
+    },
+    "features": {
+      "eyebrow": "La suite complète",
+      "title": "Tout ce qu’il faut pour <accent>gérer vos réseaux</accent>, rien de plus",
+      "inbox": {
+        "title": "Boîte de réception unifiée",
+        "text": "Messages privés et commentaires, mis à jour en temps réel, avec recherche dans tout l’historique."
+      },
+      "calendar": {
+        "title": "Calendrier de publication",
+        "text": "Vue d’ensemble de ce qui part, quand et où. Brouillons, programmés, publiés, erreurs."
+      },
+      "media": {
+        "title": "Médiathèque",
+        "text": "Images et vidéos centralisées, adaptées automatiquement aux exigences de chaque réseau."
+      },
+      "team": {
+        "title": "Assignation et notes",
+        "text": "Répartissez les conversations dans l’équipe et gardez le contexte sous les yeux."
+      },
+      "mobile": {
+        "title": "Application mobile",
+        "text": "Répondez depuis votre téléphone et recevez une notification à chaque nouveau message."
+      },
+      "stats": {
+        "title": "Statistiques par réseau",
+        "text": "Quelles publications fonctionnent, à quelle heure, sur quel canal."
+      }
+    },
+    "channels": {
+      "eyebrow": "Canaux",
+      "title": "Six réseaux, <accent>en toute transparence</accent>",
+      "text": "Chaque réseau décide de ce que les outils tiers ont le droit de faire. Nous vous disons clairement ce qui marche aujourd’hui, ce qui arrive, et ce qui n’est pas possible.",
+      "cta": "Voir le détail par réseau"
+    },
+    "trust": {
+      "eyebrow": "Vos données",
+      "title": "Vos conversations <accent>restent les vôtres</accent>",
+      "isolation": {
+        "title": "Isolation par organisation",
+        "text": "Chaque équipe ne voit que ses données : la séparation est appliquée dans la base de données elle-même, pas seulement dans l’interface."
+      },
+      "tokens": {
+        "title": "Accès aux réseaux protégés",
+        "text": "Les jetons d’accès à vos comptes sont chiffrés avant d’être enregistrés, et ne sont jamais envoyés à votre navigateur."
+      },
+      "openSource": {
+        "title": "Logiciel libre",
+        "text": "Postbiz est publié sous licence AGPL-3.0 : vous pouvez lire le code, et l’héberger vous-même si vous le souhaitez."
+      }
+    },
+    "faq": {
+      "eyebrow": "Questions fréquentes",
+      "title": "Vous vous <accent>demandez</accent>",
+      "more": "Une autre question ? <link>Écrivez-nous</link>.",
+      "q1": "Quels réseaux sont pris en charge ?",
+      "a1": "Facebook, Instagram, X, LinkedIn, TikTok et YouTube pour la publication. Pour la boîte de réception, la couverture dépend de ce que chaque réseau autorise : voir la page Canaux pour le détail réseau par réseau.",
+      "q2": "Puis-je répondre aux messages privés de LinkedIn ou de YouTube ?",
+      "a2": "Non, et aucun outil tiers ne le peut sans accord spécial : LinkedIn n’ouvre pas sa messagerie aux applications, et YouTube n’a pas de messages privés. Postbiz affichera les commentaires YouTube, et les commentaires de Pages LinkedIn dès qu’ils seront disponibles.",
+      "q3": "Pourquoi une « fenêtre de 24 heures » ?",
+      "a3": "Sur Messenger et Instagram, Meta autorise une entreprise à répondre pendant 24 heures après le dernier message du client. Postbiz affiche le temps restant sur chaque conversation, pour que vous sachiez quoi traiter en premier.",
+      "q4": "Mes messages servent-ils à entraîner une IA ?",
+      "a4": "Non. Postbiz n’utilise pas vos messages ni vos publications pour entraîner des modèles.",
+      "q5": "Combien ça coûte ?",
+      "a5": "La bêta est gratuite, sans carte bancaire. La grille tarifaire est déjà publique sur la page Tarifs, pour que vous sachiez à quoi vous attendre.",
+      "q6": "Puis-je héberger Postbiz moi-même ?",
+      "a6": "Oui. Postbiz est un logiciel libre (AGPL-3.0) construit sur Supabase. Si vous le modifiez et le proposez à des tiers, vous devez publier vos modifications."
+    },
+    "final": {
+      "title": "Commencez à répondre <accent>sans courir après vos messages</accent>",
+      "text": "Créez votre compte et connectez votre premier canal. Bêta gratuite, sans carte bancaire.",
+      "cta": "Essayer gratuitement",
+      "talk": "Parler à l’équipe"
+    }
+  },
+  "legal": {
+    "draftNotice": "<b>Projet de texte.</b> Ce document est un modèle de départ : les passages entre crochets [ ] sont à compléter et l’ensemble doit être relu par un juriste avant la mise en production.",
+    "updated": "Dernière mise à jour : {date}",
+    "datePlaceholder": "[date]",
+    "availableIn": "Ce document n’est disponible qu’en français et en anglais ; la version anglaise est affichée.",
+    "terms": {
+      "title": "Conditions générales d’utilisation",
+      "s1": {
+        "h": "1. Éditeur et objet",
+        "p": "Postbiz est édité par [RAISON SOCIALE], [forme juridique], [adresse], immatriculée sous le numéro [SIREN/RCS]. Les présentes conditions encadrent l’utilisation du service Postbiz, qui permet de planifier des publications et de gérer les messages et commentaires de comptes de réseaux sociaux connectés par l’utilisateur."
+      },
+      "s2": {
+        "h": "2. Compte",
+        "p": "L’utilisateur crée un compte avec une adresse e-mail valide et en protège les identifiants. Il est responsable des actions effectuées depuis son compte et de celles des membres qu’il invite dans son organisation."
+      },
+      "s3": {
+        "h": "3. Réseaux sociaux tiers",
+        "p1": "Postbiz agit sur les comptes que l’utilisateur autorise, via les interfaces officielles de Facebook, Instagram, X, LinkedIn, TikTok et YouTube. L’utilisateur reste soumis aux conditions de chacun de ces réseaux (par exemple, la fenêtre de 24 heures pour répondre aux messages sur Messenger et Instagram) et garantit disposer des droits nécessaires sur les contenus qu’il publie.",
+        "p2": "Les fonctionnalités disponibles dépendent des autorisations accordées par chaque réseau, qui peuvent changer ou être retirées. Postbiz ne garantit pas la disponibilité d’une fonctionnalité sur un réseau donné."
+      },
+      "s4": {
+        "h": "4. Contenus et conduite",
+        "p": "L’utilisateur s’interdit tout usage illicite du service, notamment l’envoi de messages non sollicités en masse, la diffusion de contenus illégaux ou contraires aux règles des réseaux, et toute tentative de contourner les limites techniques ou de sécurité."
+      },
+      "s5": {
+        "h": "5. Tarifs et paiement",
+        "p": "Pendant la période de bêta, le service est fourni gratuitement. Les tarifs publiés sur la page Tarifs s’appliqueront à l’issue de la bêta, après information préalable de l’utilisateur d’au moins [30] jours. [Conditions de facturation, de résiliation et de remboursement à compléter lors de l’activation des paiements.]"
+      },
+      "s6": {
+        "h": "6. Disponibilité et responsabilité",
+        "p": "Postbiz met en œuvre des moyens raisonnables pour assurer la continuité du service, sans garantie d’absence d’interruption. [Limitation de responsabilité à compléter.]"
+      },
+      "s7": {
+        "h": "7. Résiliation",
+        "p": "L’utilisateur peut supprimer son compte à tout moment. Postbiz peut suspendre un compte en cas de manquement aux présentes conditions ou aux règles d’un réseau tiers."
+      },
+      "s8": {
+        "h": "8. Logiciel libre",
+        "p": "Le code source de Postbiz est publié sous licence GNU AGPL-3.0. Cette licence régit le code ; les présentes conditions régissent le service hébergé par l’éditeur."
+      },
+      "s9": {
+        "h": "9. Droit applicable",
+        "p1": "Droit français. [Juridiction compétente à compléter.]",
+        "p2": "Contact : <mail>{email}</mail>"
+      }
+    },
+    "privacy": {
+      "title": "Politique de confidentialité",
+      "s1": {
+        "h": "1. Responsable du traitement",
+        "p": "[RAISON SOCIALE], [adresse]. Contact : <mail>{email}</mail>."
+      },
+      "s2": {
+        "h": "2. Données que nous traitons",
+        "li1": "<b>Compte :</b> adresse e-mail, nom affiché, mot de passe (stocké sous forme chiffrée par notre prestataire d’authentification).",
+        "li2": "<b>Canaux connectés :</b> identifiant, nom et photo du compte, et jetons d’accès fournis par le réseau (chiffrés avant enregistrement).",
+        "li3": "<b>Messages et commentaires :</b> contenus reçus et envoyés sur les comptes que vous connectez, ainsi que l’identifiant public, le nom et le pseudonyme des personnes qui vous écrivent.",
+        "li4": "<b>Publications :</b> textes, médias et dates que vous programmez.",
+        "li5": "<b>Usage :</b> journaux techniques nécessaires à la sécurité et au bon fonctionnement du service."
+      },
+      "s3": {
+        "h": "3. Finalités et bases légales",
+        "li1": "Fournir le service (exécution du contrat).",
+        "li2": "Assurer la sécurité et prévenir les abus (intérêt légitime).",
+        "li3": "Répondre à vos demandes de support (intérêt légitime).",
+        "p": "Nous n’utilisons pas vos messages ni vos publications pour entraîner des modèles d’intelligence artificielle et nous ne les vendons pas."
+      },
+      "s4": {
+        "h": "4. Sous-traitants",
+        "li1": "Supabase Inc. — base de données, authentification et stockage [région d’hébergement : à compléter].",
+        "li2": "[Hébergeur de l’application et du worker : à compléter].",
+        "li3": "[Prestataire d’envoi d’e-mails : à compléter].",
+        "p": "Les réseaux sociaux que vous connectez sont des responsables de traitement distincts, régis par leurs propres politiques."
+      },
+      "s5": {
+        "h": "5. Durées de conservation",
+        "p": "Les données du compte sont conservées tant que le compte existe. Les messages et commentaires sont supprimés lorsque vous déconnectez le canal concerné ou supprimez votre compte, dans un délai de [30] jours. [À ajuster.]"
+      },
+      "s6": {
+        "h": "6. Vos droits",
+        "p": "Vous pouvez demander l’accès, la rectification, l’effacement, la limitation, la portabilité de vos données et vous opposer à leur traitement en écrivant à <mail>{email}</mail>. Vous pouvez aussi saisir la CNIL."
+      },
+      "s7": {
+        "h": "7. Sécurité",
+        "p": "Isolation des données par organisation au niveau de la base de données, chiffrement des jetons d’accès, chiffrement des échanges. Aucun système n’étant infaillible, nous vous informons en cas d’incident affectant vos données."
+      }
+    },
+    "dataDeletion": {
+      "title": "Suppression de vos données",
+      "s1": {
+        "h": "Supprimer les données d’un canal",
+        "p": "Dans Postbiz, ouvrez <b>Canaux</b>, choisissez le canal puis <b>Déconnecter</b>. Les jetons d’accès sont supprimés immédiatement, ainsi que les conversations et messages associés dans un délai de [30] jours."
+      },
+      "s2": {
+        "h": "Supprimer votre compte",
+        "p": "Dans <b>Réglages</b>, choisissez <b>Supprimer mon compte</b>. Votre profil, vos organisations dont vous êtes le seul administrateur et toutes les données associées sont supprimés dans un délai de [30] jours."
+      },
+      "s3": {
+        "h": "Vous avez retiré Postbiz depuis Facebook ou Instagram",
+        "p": "Si vous supprimez l’application Postbiz depuis les réglages de votre compte Facebook ou Instagram, nous cessons de recevoir vos données et supprimons les jetons correspondants. Pour demander l’effacement des conversations déjà enregistrées, écrivez-nous en indiquant le nom du compte concerné."
+      },
+      "s4": {
+        "h": "Par e-mail",
+        "p": "Écrivez à <mail>{email}</mail> depuis l’adresse de votre compte. Nous confirmons la suppression par retour de message."
+      }
+    }
+  },
+  "pricing": {
+    "title": "Des tarifs simples, <accent>publiés dès la bêta</accent>",
+    "subtitle": "Trois offres selon la taille de votre équipe. Tout est gratuit pendant la bêta, sans carte bancaire.",
+    "billingLabel": "Période de facturation",
+    "monthly": "Mensuel",
+    "yearly": "Annuel",
+    "discount": "−{percent} %",
+    "perMonth": "/ mois",
+    "billedYearly": "Facturé à l’année · vous économisez {amount}",
+    "billedMonthly": "Facturé au mois",
+    "popular": "Populaire",
+    "cta": "Commencer gratuitement",
+    "inherits": "Tout de {plan}, plus :",
+    "plans": {
+      "starter": {
+        "name": "Starter",
+        "tagline": "Pour un créateur ou une petite marque qui démarre.",
+        "f1": "3 canaux connectés",
+        "f2": "1 membre",
+        "f3": "Planification et calendrier",
+        "f4": "Boîte de réception unifiée",
+        "f5": "Application mobile"
+      },
+      "pro": {
+        "name": "Pro",
+        "tagline": "Pour une équipe qui répond tous les jours.",
+        "f1": "10 canaux connectés",
+        "f2": "5 membres",
+        "f3": "Assignation et notes internes",
+        "f4": "Réponses rapides",
+        "f5": "Notifications push",
+        "f6": "Recherche dans tous les messages"
+      },
+      "team": {
+        "name": "Équipe",
+        "tagline": "Pour une agence ou plusieurs marques.",
+        "f1": "Canaux illimités",
+        "f2": "15 membres",
+        "f3": "Rôles et permissions",
+        "f4": "Optimisation automatique des vidéos",
+        "f5": "Support prioritaire"
+      }
+    },
+    "custom": {
+      "name": "Sur mesure",
+      "tagline": "Pour une organisation avec des besoins spécifiques.",
+      "price": "Devis",
+      "priceNote": "Selon votre usage",
+      "cta": "Nous contacter",
+      "f1": "Hébergement dédié possible",
+      "f2": "Accompagnement à la mise en place",
+      "f3": "Contrat sur mesure"
+    },
+    "compare": {
+      "title": "Comparer les offres",
+      "feature": "Fonctionnalité",
+      "included": "Inclus",
+      "notIncluded": "Non inclus",
+      "unlimited": "Illimités",
+      "soon": "Bientôt",
+      "rows": {
+        "channels": "Canaux connectés",
+        "members": "Membres de l’équipe",
+        "planning": "Planification et calendrier",
+        "inbox": "Boîte de réception unifiée",
+        "mobile": "Application mobile",
+        "assign": "Assignation et notes internes",
+        "quick": "Réponses rapides",
+        "push": "Notifications push",
+        "search": "Recherche dans tout l’historique",
+        "roles": "Rôles et permissions",
+        "video": "Optimisation automatique des vidéos",
+        "support": "Support prioritaire"
+      }
+    },
+    "faq": {
+      "title": "Questions sur les tarifs",
+      "more": "Une autre question ? <link>Contactez-nous</link>.",
+      "q1": "La bêta est-elle vraiment gratuite ?",
+      "a1": "Oui. Pendant la bêta, tous les plans sont gratuits et aucune carte bancaire n’est demandée. Les prix ci-dessus sont ceux que nous prévoyons d’appliquer ; nous vous préviendrons bien avant tout changement.",
+      "q2": "Puis-je changer de plan ?",
+      "a2": "À tout moment. Les fonctionnalités du plan supérieur sont disponibles immédiatement.",
+      "q3": "Que se passe-t-il si je dépasse le nombre de canaux ?",
+      "a3": "Vous ne pouvez pas connecter de canal supplémentaire tant que vous n’avez pas changé de plan. Vos canaux existants continuent de fonctionner.",
+      "q4": "Les messages privés sont-ils inclus partout ?",
+      "a4": "Oui, dans la limite de ce que chaque réseau autorise. Consultez la page Canaux pour le détail."
+    }
+  },
+  "channelsPage": {
+    "title": "Ce qui marche, ce qui arrive, <accent>et ce qui n’est pas possible</accent>",
+    "intro": "Chaque réseau décide de ce que les outils tiers ont le droit de faire. Plutôt que de promettre une boîte de réception « universelle », voici l’état réel, réseau par réseau.",
+    "network": "Réseau",
+    "publish": "Publier",
+    "dm": "Messages privés",
+    "comments": "Commentaires",
+    "note": "À savoir",
+    "footnote": "« Bêta » : disponible pour les testeurs. « Bientôt » : prévu, sous réserve de l’accès accordé par le réseau.",
+    "why1": {
+      "title": "Pourquoi pas tous les messages ?",
+      "text": "LinkedIn et YouTube ne donnent pas accès aux messages privés aux applications tierces. Nous ne contournons pas ces règles : cela mettrait vos comptes en danger."
+    },
+    "why2": {
+      "title": "Pourquoi cette fenêtre de 24 heures ?",
+      "text": "C’est une règle de Meta pour Messenger et Instagram. Postbiz affiche le temps restant pour chaque conversation."
+    },
+    "why3": {
+      "title": "Un réseau manque ?",
+      "text": "Dites-nous lequel et pourquoi : nos priorités suivent ce que vous utilisez réellement."
+    },
+    "ctaTitle": "Connectez votre premier canal",
+    "ctaPrimary": "Essayer gratuitement",
+    "ctaSuggest": "Suggérer un réseau"
+  },
+  "productInbox": {
+    "eyebrow": "Boîte de réception",
+    "title": "Tous vos messages et commentaires, <accent>dans une seule liste</accent>",
+    "intro": "Fini de passer d’une application à l’autre. Messenger, Instagram et les commentaires de vos publications arrivent en direct dans Postbiz, avec le contexte pour répondre vite et bien.",
+    "p1": {
+      "title": "En direct",
+      "text": "Les nouveaux messages apparaissent sans recharger la page, sur le web comme sur mobile."
+    },
+    "p2": {
+      "title": "La fenêtre de 24 h visible",
+      "text": "Chaque conversation Messenger ou Instagram affiche le temps restant pour répondre, et les plus urgentes passent en premier."
+    },
+    "p3": {
+      "title": "Pensé pour l’équipe",
+      "text": "Assignez une conversation, laissez une note interne, utilisez des réponses rapides, changez le statut : ouvert, en attente, fermé."
+    },
+    "p4": {
+      "title": "Recherche dans tout l’historique",
+      "text": "Retrouvez une conversation par un mot, un nom ou un pseudonyme."
+    },
+    "p5": {
+      "title": "Messages et commentaires ensemble",
+      "text": "Répondez à un commentaire public, puis poursuivez en message privé, sans perdre le fil."
+    },
+    "p6": {
+      "title": "Transparent sur les limites",
+      "text": "LinkedIn et YouTube n’ouvrent pas leurs messages privés : nous l’indiquons, au lieu de le cacher."
+    },
+    "ctaTitle": "Répondez à chaque message, au bon moment"
+  },
+  "productPlanning": {
+    "eyebrow": "Planification",
+    "title": "Écrivez une fois, <accent>publiez partout</accent>",
+    "intro": "Choisissez vos réseaux, l’heure, et laissez Postbiz publier à votre place. Un calendrier montre ce qui part, quand, et ce qui a échoué.",
+    "p1": {
+      "title": "Un contenu, plusieurs réseaux",
+      "text": "Adaptez le texte par réseau si besoin, et vérifiez les contraintes (longueur, médias) avant l’envoi."
+    },
+    "p2": {
+      "title": "Jamais de doublon",
+      "text": "Si le résultat d’une publication est incertain, Postbiz ne la renvoie pas tout seul : il vous l’indique, pour que vous vérifiiez d’abord sur le réseau."
+    },
+    "p3": {
+      "title": "Médias adaptés",
+      "text": "Images et vidéos sont converties aux exigences de chaque réseau avant la publication."
+    },
+    "p4": {
+      "title": "Brouillons et états clairs",
+      "text": "Brouillon, programmé, en cours, publié, erreur : vous savez toujours où en est chaque publication."
+    },
+    "p5": {
+      "title": "Travail d’équipe",
+      "text": "Les membres préparent, les administrateurs valident ; les droits sont appliqués par la base de données."
+    },
+    "p6": {
+      "title": "Reconnexion guidée",
+      "text": "Si l’accès à un compte expire, vous êtes prévenu et vous reconnectez en un clic."
+    },
+    "ctaTitle": "Programmez votre semaine en dix minutes"
+  },
+  "productPage": {
+    "ctaPrimary": "Essayer gratuitement",
+    "ctaPricing": "Voir les tarifs"
+  },
+  "contact": {
+    "eyebrow": "Contact",
+    "title": "Parlons de <accent>votre besoin</accent>",
+    "intro": "Une question, un réseau à suggérer, un besoin spécifique : écrivez-nous, nous répondons en général sous un jour ouvré.",
+    "byEmail": "Par e-mail",
+    "hint": "Pour un bug, indiquez le réseau concerné et l’heure approximative : cela nous fait gagner un temps précieux.",
+    "cta": "Créer un compte"
+  },
+  "meta": {
+    "siteTitle": "Postbiz — Planifiez vos posts, répondez à tous vos messages",
+    "siteDescription": "Postbiz réunit la planification de vos publications et une boîte de réception unifiée pour les messages privés et commentaires de Facebook, Instagram, X, LinkedIn, TikTok et YouTube.",
+    "pricing": {
+      "title": "Tarifs",
+      "description": "Les tarifs de Postbiz : trois offres, une remise de 20 % à l’année. La bêta est gratuite, sans carte bancaire."
+    },
+    "channels": {
+      "title": "Canaux",
+      "description": "Ce que Postbiz sait faire sur Facebook, Instagram, X, LinkedIn, TikTok et YouTube : publication, messages privés, commentaires."
+    },
+    "productInbox": {
+      "title": "Boîte de réception unifiée",
+      "description": "Messages privés Messenger et Instagram, commentaires Facebook, Instagram et YouTube : une seule boîte de réception pour toute votre équipe."
+    },
+    "productPlanning": {
+      "title": "Planification des publications",
+      "description": "Programmez vos publications sur Facebook, Instagram, X, LinkedIn, TikTok et YouTube depuis un seul calendrier."
+    },
+    "contact": {
+      "title": "Contact",
+      "description": "Écrivez à l’équipe Postbiz."
+    },
+    "terms": {
+      "title": "Conditions d’utilisation"
+    },
+    "privacy": {
+      "title": "Politique de confidentialité"
+    },
+    "dataDeletion": {
+      "title": "Suppression des données"
+    },
+    "login": {
+      "title": "Connexion"
+    },
+    "signup": {
+      "title": "Créer un compte"
+    },
+    "forgot": {
+      "title": "Mot de passe oublié"
+    },
+    "reset": {
+      "title": "Nouveau mot de passe"
+    },
+    "app": "Application",
+    "calendar": "Calendrier",
+    "inbox": "Boîte de réception",
+    "media": "Médias",
+    "channelsApp": "Canaux",
+    "settings": "Réglages",
+    "welcome": "Bienvenue",
+    "titleTemplate": "{page} · Postbiz"
+  },
+  "auth": {
+    "email": "E-mail",
+    "emailPlaceholder": "vous@exemple.fr",
+    "password": "Mot de passe",
+    "confirmPassword": "Confirmer le mot de passe",
+    "newPassword": "Nouveau mot de passe",
+    "show": "Afficher",
+    "hide": "Masquer",
+    "wait": "Veuillez patienter…",
+    "or": "OU",
+    "google": "Continuer avec Google",
+    "googleSignup": "S’inscrire avec Google",
+    "termsLink": "Conditions",
+    "privacyLink": "Confidentialité",
+    "asideTitle": "Une seule boîte pour <accent>tous vos messages</accent>",
+    "login": {
+      "title": "Bon retour",
+      "subtitle": "Connectez-vous pour retrouver vos messages et vos publications.",
+      "switchLabel": "Pas encore de compte ?",
+      "switchText": "Créer un compte",
+      "forgot": "Mot de passe oublié ?",
+      "submit": "Se connecter",
+      "pending": "Connexion…"
+    },
+    "signup": {
+      "title": "Créez votre compte",
+      "subtitle": "Bêta gratuite, sans carte bancaire. Prêt en quelques minutes.",
+      "switchLabel": "Déjà inscrit ?",
+      "switchText": "Se connecter",
+      "submit": "Créer mon compte",
+      "pending": "Création du compte…",
+      "legal": "En continuant, vous acceptez nos <terms>conditions d’utilisation</terms> et notre <privacy>politique de confidentialité</privacy>."
+    },
+    "forgot": {
+      "title": "Mot de passe oublié",
+      "subtitle": "Saisissez votre e-mail : nous vous envoyons un lien pour en choisir un nouveau.",
+      "switchLabel": "Vous vous en souvenez ?",
+      "switchText": "Se connecter",
+      "submit": "Envoyer le lien",
+      "pending": "Envoi…"
+    },
+    "reset": {
+      "title": "Nouveau mot de passe",
+      "subtitle": "Choisissez un mot de passe d’au moins 8 caractères.",
+      "switchText": "Retour à la connexion",
+      "submit": "Enregistrer",
+      "pending": "Enregistrement…"
+    },
+    "demoBanner": "<b>Mode démo.</b> Supabase n’est pas configuré : la connexion est désactivée. <link>Ouvrir l’application de démonstration →</link>",
+    "linkErrors": {
+      "lien": "Ce lien n’est plus valide. Demandez-en un nouveau.",
+      "google": "La connexion avec Google a échoué. Réessayez.",
+      "organisation": "Impossible de créer votre espace de travail. Réessayez dans un instant."
+    },
+    "messages": {
+      "demo": "Mode démo : Supabase n’est pas configuré. Renseignez NEXT_PUBLIC_SUPABASE_URL et NEXT_PUBLIC_SUPABASE_ANON_KEY.",
+      "signupDone": "Compte créé. Ouvrez le lien que nous venons de vous envoyer par e-mail pour confirmer votre adresse.",
+      "forgotDone": "Si un compte existe pour cette adresse, un lien de réinitialisation vient de lui être envoyé."
+    },
+    "validation": {
+      "emailRequired": "Saisissez votre adresse e-mail.",
+      "emailInvalid": "Cette adresse e-mail n’est pas valide.",
+      "passwordRequired": "Saisissez un mot de passe.",
+      "passwordCurrentRequired": "Saisissez votre mot de passe.",
+      "passwordShort": "Le mot de passe doit contenir au moins {min} caractères.",
+      "passwordLong": "Le mot de passe ne peut pas dépasser {max} caractères.",
+      "passwordMismatch": "Les deux mots de passe ne correspondent pas."
+    },
+    "errors": {
+      "invalidCredentials": "E-mail ou mot de passe incorrect.",
+      "emailNotConfirmed": "Confirmez votre adresse e-mail avec le lien que nous vous avons envoyé.",
+      "rateLimit": "Trop de tentatives. Réessayez dans quelques minutes.",
+      "weakPassword": "Ce mot de passe est trop faible. Choisissez-en un plus long.",
+      "samePassword": "Choisissez un mot de passe différent de l’ancien.",
+      "generic": "Une erreur est survenue. Réessayez dans un instant."
+    }
+  },
+  "app": {
+    "demoStrip": "Mode démo : données d’exemple, rien n’est envoyé aux réseaux.",
+    "demoStripLong": "Mode démo : données d’exemple, rien n’est envoyé aux réseaux. Configurez Supabase pour utiliser vos vraies données.",
+    "nav": {
+      "label": "Application",
+      "accountLabel": "Compte et réglages",
+      "home": "Postbiz, calendrier",
+      "calendar": "Calendrier",
+      "inbox": "Inbox",
+      "agent": "Agent",
+      "analytics": "Analyses",
+      "media": "Médias",
+      "channels": "Canaux",
+      "billing": "Facturation",
+      "settings": "Paramètres",
+      "soon": "Bientôt disponible"
+    },
+    "titles": {
+      "calendar": "Calendrier",
+      "inbox": "Boîte de réception",
+      "media": "Médias",
+      "channels": "Canaux",
+      "settings": "Paramètres"
+    },
+    "notifications": {
+      "title": "Notifications",
+      "label": "Notifications",
+      "labelUnread_one": "Notifications ({count} non lue)",
+      "labelUnread_other": "Notifications ({count} non lues)",
+      "markAll": "Tout marquer comme lu",
+      "empty": "Aucune notification.",
+      "types": {
+        "post_error": "Une publication a échoué",
+        "post_unknown": "Vérifiez votre publication",
+        "message_failed": "Réponse non envoyée"
+      }
+    },
+    "userMenu": {
+      "label": "Menu du compte",
+      "settings": "Paramètres",
+      "signOut": "Se déconnecter"
+    },
+    "modal": {
+      "close": "Fermer"
+    },
+    "time": {
+      "lessThanMinute": "moins d’1 min",
+      "minutes": "{m} min",
+      "hours": "{h} h",
+      "hoursMinutes": "{h} h {m}"
+    },
+    "inbox": {
+      "unread_one": "{count} non lu",
+      "unread_other": "{count} non lus",
+      "allRead": "Tout est lu",
+      "searchLabel": "Rechercher",
+      "searchPlaceholder": "Rechercher un nom ou un message…",
+      "tabs": {
+        "active": "Actives",
+        "unread": "Non lues",
+        "closed": "Fermées",
+        "all": "Toutes"
+      },
+      "filterStatus": "Filtrer par statut",
+      "filterNetwork": "Filtrer par réseau",
+      "allNetworks": "Tous les réseaux",
+      "emptyNone": "Aucun message pour l’instant",
+      "emptyNoMatch": "Aucune conversation ne correspond",
+      "emptyNoneHint": "Connectez un canal : les messages et commentaires y arriveront en direct.",
+      "emptyNoMatchHint": "Essayez un autre filtre ou une autre recherche.",
+      "connectChannel": "Connecter un canal",
+      "kindDm": "Message privé",
+      "kindComment": "Commentaire",
+      "kindCommentPublic": "Commentaire public",
+      "expired": "Expirée",
+      "status": {
+        "open": "Ouverte",
+        "pending": "En attente",
+        "snoozed": "Reportée",
+        "closed": "Fermée"
+      },
+      "window": {
+        "remaining": "Répondre sous {time}",
+        "expired": "Fenêtre de réponse expirée"
+      },
+      "backToList": "← Retour à la liste",
+      "conversationWith": "Conversation avec {name}",
+      "reopen": "Rouvrir",
+      "setPending": "Mettre en attente",
+      "setOpen": "Remettre en ouverte",
+      "close": "Fermer",
+      "notes": {
+        "title": "Notes internes ({count})",
+        "teamOnly": "Visibles par l’équipe uniquement",
+        "placeholder": "Note visible par l’équipe uniquement…",
+        "add": "Ajouter la note",
+        "label": "Note interne",
+        "empty": "Écrivez une note.",
+        "tooLong": "La note est trop longue."
+      },
+      "delivery": {
+        "queued": "En file d’envoi…",
+        "sending": "Envoi en cours…",
+        "failed": "Échec de l’envoi"
+      },
+      "attachment": "Pièce jointe",
+      "attachmentType": "Pièce jointe ({type})",
+      "replyLabel": "Votre réponse",
+      "replyDm": "Répondre à {name}…",
+      "replyComment": "Répondre publiquement au commentaire…",
+      "shortcut": "Ctrl/⌘ + Entrée pour envoyer",
+      "send": "Envoyer",
+      "sending": "Envoi…",
+      "viewerNoReply": "Votre rôle (lecteur) ne permet pas de répondre.",
+      "windowClosed": "La fenêtre de 24 heures est dépassée : Meta n’autorise plus de réponse à cette conversation. Le client doit vous écrire de nouveau.",
+      "pickTitle": "Choisissez une conversation",
+      "pickText": "Les plus urgentes — celles dont la fenêtre de réponse de 24 h va se fermer — apparaissent en haut de la liste.",
+      "notFound": "Conversation introuvable.",
+      "unknownContact": "Contact inconnu"
+    },
+    "validation": {
+      "replyEmpty": "Écrivez un message avant d’envoyer.",
+      "replyTooLong": "Le message dépasse {max} caractères.",
+      "windowExpired": "La fenêtre de 24 h est dépassée : Meta n’autorise plus de réponse à cette conversation.",
+      "noChannel": "Choisissez au moins un canal.",
+      "needTextOrMedia": "Écrivez un texte ou ajoutez un média.",
+      "needDate": "Choisissez une date et une heure de publication.",
+      "invalidDate": "La date de publication n’est pas valide.",
+      "pastDate": "La date de publication doit être dans le futur.",
+      "needsMedia": "{network} exige une image ou une vidéo (l’envoi de médias arrive bientôt).",
+      "tooLong": "{network} : {length} / {max} caractères.",
+      "notMedia": "« {name} » n’est pas une image ni une vidéo.",
+      "fileEmpty": "« {name} » est vide.",
+      "fileTooBig": "« {name} » dépasse 1 Go."
+    },
+    "units": {
+      "b": "o",
+      "kb": "Ko",
+      "mb": "Mo",
+      "gb": "Go"
+    },
+    "calendar": {
+      "channels": "Canaux",
+      "hidePanel": "Masquer le panneau des canaux",
+      "showPanel": "Afficher le panneau des canaux",
+      "previous": "Période précédente",
+      "next": "Période suivante",
+      "today": "Aujourd’hui",
+      "display": "Affichage",
+      "day": "Jour",
+      "week": "Semaine",
+      "month": "Mois",
+      "mode": "Mode",
+      "calendarView": "Vue calendrier",
+      "listView": "Vue liste",
+      "newPost": "Nouvelle publication",
+      "addChannelShort": "+ Canal",
+      "label": "Calendrier de publication",
+      "createAtHour": "Créer une publication le {day} à {hour}",
+      "createOnDay": "Créer une publication le {day}",
+      "more_one": "+{count} autre",
+      "more_other": "+{count} autres",
+      "tomorrow": "Demain",
+      "yesterday": "Hier",
+      "todayLabel": "Aujourd’hui",
+      "noDate": "Sans date",
+      "emptyTitle": "Aucune publication",
+      "emptyHint": "Cliquez sur un créneau du calendrier pour en créer une.",
+      "detailTitle": "Publication",
+      "noText": "(sans texte)",
+      "viewPost": "Voir la publication",
+      "delete": "Supprimer",
+      "state": {
+        "draft": "Brouillon",
+        "queued": "Programmée",
+        "publishing": "En cours",
+        "published": "Publiée",
+        "error": "Erreur",
+        "unknown": "Résultat inconnu"
+      }
+    },
+    "channelsPanel": {
+      "add": "Ajouter un canal",
+      "emptyTitle": "Aucun canal pour le moment",
+      "emptyText": "Connectez vos comptes sociaux pour planifier, publier et répondre à vos messages, tout en un seul endroit.",
+      "connected": "Canaux connectés",
+      "reconnect": "À reconnecter",
+      "disabled": "Désactivé",
+      "manage": "Gérer les canaux",
+      "viewerNote": "Votre rôle (lecteur) ne permet pas de créer des publications."
+    },
+    "composer": {
+      "title": "Nouvelle publication",
+      "channels": "Canaux",
+      "toReconnect": "· à reconnecter",
+      "mediaRequired": "· média requis",
+      "text": "Texte",
+      "placeholder": "Écrivez votre publication…",
+      "charsLimit": "{count} / {max} caractères",
+      "chars": "{count} caractères",
+      "date": "Date et heure de publication",
+      "schedule": "Programmer",
+      "draft": "Enregistrer le brouillon",
+      "saved": "Publication enregistrée.",
+      "noChannelsTitle": "Aucun canal connecté",
+      "noChannelsText": "Connectez un canal pour créer votre première publication.",
+      "viewerNote": "Votre rôle (lecteur) ne permet pas de créer des publications.",
+      "errReconnect": "Reconnectez d’abord {names} avant d’y publier.",
+      "errSave": "Impossible d’enregistrer la publication."
+    },
+    "media": {
+      "demoNote": "Mode démo : les fichiers sont seulement prévisualisés dans votre navigateur, rien n’est enregistré.",
+      "emptyTitle": "Vous n’avez pas encore de média",
+      "emptyText": "Sélectionnez ou téléversez des images et des vidéos (1 Go maximum par fichier). Vous pouvez aussi les glisser-déposer ici.",
+      "upload": "+ Téléverser",
+      "uploading": "Envoi en cours…",
+      "viewerNote": "Votre rôle (lecteur) ne permet pas de téléverser des médias.",
+      "count_one": "{count} média",
+      "count_other": "{count} médias",
+      "localPreview": "aperçu local",
+      "deleteLabel": "Supprimer {name}",
+      "confirmDelete": "Supprimer « {name} » ?",
+      "errSend": "« {name} » n’a pas pu être envoyé.",
+      "errSave": "« {name} » n’a pas pu être enregistré.",
+      "errDelete": "La suppression a échoué.",
+      "noPreview": "Aperçu indisponible"
+    },
+    "settings": {
+      "orgTitle": "Organisation",
+      "orgName": "Nom de l’organisation",
+      "orgSaved": "Nom enregistré.",
+      "save": "Enregistrer",
+      "saving": "Enregistrement…",
+      "teamTitle": "Équipe ({count})",
+      "you": "(vous)",
+      "inviteSoon": "L’invitation de nouveaux membres arrive bientôt.",
+      "accountTitle": "Mon compte",
+      "deleteAccount": "Pour supprimer votre compte et vos données, suivez <link>la procédure de suppression</link>.",
+      "errRename": "Seul un administrateur peut renommer l’organisation.",
+      "errNameLength": "Le nom doit faire entre 2 et 120 caractères."
+    },
+    "channelsPage": {
+      "intro": "Les comptes de réseaux sociaux connectés à votre organisation.",
+      "connectedTitle": "Connectés ({count})",
+      "noneConnected": "Aucun canal connecté pour l’instant.",
+      "status": {
+        "active": "Connecté",
+        "refresh_needed": "À reconnecter",
+        "disabled": "Désactivé"
+      },
+      "reconnectButton": "Reconnecter",
+      "disconnect": "Déconnecter",
+      "confirmDisconnect": "Déconnecter « {name} » ? Les jetons seront supprimés et les publications en attente sur ce canal passeront en erreur.",
+      "addTitle": "Connecter un canal",
+      "demoWarn": "Mode démo : la connexion des comptes demande un projet Supabase configuré.",
+      "configWarn": "La connexion des comptes s’active quand les clés API de chaque réseau sont configurées (applications Meta, Google, TikTok, LinkedIn, X).",
+      "seeDocs": "Voir <code>docs/RESEAUX.md</code> dans le dépôt pour la marche à suivre.",
+      "adminOnly": "Seul un administrateur de l’organisation peut connecter un canal.",
+      "whyDemo": "Indisponible en mode démo",
+      "whyMissing": "Configuration manquante sur le serveur : {missing}",
+      "whyAdmin": "Réservé aux administrateurs",
+      "whyConnect": "Connecter {name}",
+      "connect": "Connecter",
+      "publish": "Publier : {status}",
+      "messages": "Messages : {status}",
+      "comments": "Commentaires : {status}",
+      "flashConnected_one": "{count} canal connecté",
+      "flashConnected_other": "{count} canaux connectés",
+      "flashWebhooks": "Attention : l’abonnement aux messages de la Page a échoué, vous ne recevrez pas ses messages dans l’inbox tant qu’il n’est pas refait (reconnectez le canal).",
+      "flashDisconnected": "Canal déconnecté : les jetons ont été supprimés.",
+      "flashCleanupFailed": "Canal déconnecté et jetons supprimés ici. La révocation chez le réseau a échoué : retirez Postbiz des applications autorisées de votre compte.",
+      "pickTitle": "Choisissez les comptes à connecter",
+      "pickText": "{network} a autorisé l’accès aux comptes ci-dessous. Cochez ceux que vous voulez utiliser dans {org}.",
+      "pickSubmit": "Connecter la sélection",
+      "pickCancel": "Annuler",
+      "pickMetaTitle": "Choisir les comptes à connecter"
+    },
+    "oauthErrors": {
+      "reseau_inconnu": "Ce réseau n’existe pas.",
+      "non_configure": "La connexion de ce réseau n’est pas configurée sur ce serveur.",
+      "non_autorise": "Seul un administrateur de l’organisation peut connecter ou déconnecter un canal.",
+      "refuse": "Vous avez annulé l’autorisation chez le réseau : rien n’a été connecté.",
+      "etat_invalide": "La connexion a expiré ou n’est plus valide. Relancez-la depuis cette page.",
+      "echange": "Le réseau a refusé la connexion. Réessayez ; si cela se reproduit, vérifiez la configuration de l’application du réseau.",
+      "profil": "Connexion acceptée, mais le profil du compte n’a pas pu être lu. Réessayez dans un instant.",
+      "aucun_compte": "Aucun compte utilisable n’a été trouvé (pour Meta : Page autorisée, ou compte Instagram professionnel lié à une Page).",
+      "selection_vide": "Sélectionnez au moins un compte à connecter.",
+      "expire": "Cette sélection a expiré. Relancez la connexion.",
+      "erreur": "La connexion a échoué. Réessayez dans un instant."
+    },
+    "onboarding": {
+      "label": "Prise en main de Postbiz",
+      "steps": "Étapes",
+      "step1": "Connecter des canaux",
+      "step2": "Connecter des agents",
+      "step3": "Regarder le tutoriel",
+      "closeLabel": "Fermer la prise en main",
+      "quitTitle": "Quitter la prise en main ?",
+      "quitText": "Vous pourrez connecter vos canaux plus tard depuis la page Canaux.",
+      "stay": "Rester",
+      "quit": "Quitter",
+      "channelsTitle": "Connectez vos canaux",
+      "channelsSubtitle": "Connectez vos comptes de réseaux sociaux pour commencer à programmer des publications et à répondre à vos messages.",
+      "connectedChannels": "Canaux connectés ({count})",
+      "clickToAdd": "Cliquez sur un canal pour l’ajouter",
+      "about": "À savoir sur {name}",
+      "capabilities": "Publier : {publish} · Messages : {dm} · Commentaires : {comments}",
+      "continueWith": "Continuer",
+      "continueWithout": "Continuer sans canaux",
+      "hintConnect": "Cliquez pour connecter ce canal.",
+      "hintDemo": "Mode démo : la connexion est simulée.",
+      "hintAdminOnly": "Seul un administrateur de l’organisation peut connecter un canal.",
+      "hintUnavailable": "Connexion indisponible : les clés API de ce réseau ne sont pas encore configurées sur ce serveur (voir docs/RESEAUX.md).",
+      "agentsTitle": "Connectez votre agent IA",
+      "agentsSubtitle": "Laissez l’agent de votre choix créer et programmer des publications pour vous.",
+      "agentsSoon": "Cette étape s’activera bientôt : le serveur MCP, la CLI et l’API publique de Postbiz ne sont pas encore disponibles. Vous pouvez la passer.",
+      "soon": "Bientôt",
+      "mcpTitle": "Serveur MCP",
+      "mcpText": "Donnez à votre agent (Claude, ChatGPT, Cursor…) des outils pour créer, programmer et gérer vos publications.",
+      "cliTitle": "Ligne de commande",
+      "cliText": "Installez la CLI Postbiz et laissez votre agent l’utiliser depuis votre terminal.",
+      "apiTitle": "API publique",
+      "apiText": "Pilotez Postbiz depuis vos propres outils (n8n, Make, scripts).",
+      "continueSkip": "Continuer / Passer",
+      "tutorialTitle": "Apprenez à utiliser Postbiz",
+      "tutorialVideo": "Regardez cette courte vidéo pour tirer le meilleur parti de Postbiz.",
+      "tutorialSteps": "Trois gestes suffisent pour démarrer.",
+      "videoTitle": "Tutoriel Postbiz",
+      "check1": {
+        "title": "Connectez un canal",
+        "text": "Depuis la page Canaux : vos comptes Facebook, Instagram, X, LinkedIn, TikTok ou YouTube.",
+        "cta": "Ouvrir Canaux"
+      },
+      "check2": {
+        "title": "Programmez une publication",
+        "text": "Dans le calendrier, cliquez sur un créneau libre, écrivez, choisissez les canaux.",
+        "cta": "Ouvrir le calendrier"
+      },
+      "check3": {
+        "title": "Répondez à vos messages",
+        "text": "Les messages privés et commentaires arrivent en direct dans la boîte de réception.",
+        "cta": "Ouvrir la boîte de réception"
+      },
+      "start": "Commencer"
+    },
+    "errors": {
+      "generic": "L’opération a échoué. Réessayez dans un instant.",
+      "channelNotFound": "Canal introuvable."
+    }
+  }
+}

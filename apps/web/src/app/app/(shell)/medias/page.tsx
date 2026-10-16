@@ -1,9 +1,13 @@
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { MediaLibrary } from '@/components/media/media-library';
+import { getT } from '@/i18n/server';
 import { getRepositories, getSession } from '@/lib/data';
 
-export const metadata: Metadata = { title: 'Médias' };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getT();
+  return { title: t('meta.media') };
+}
 export const dynamic = 'force-dynamic';
 
 export default async function MediaPage() {

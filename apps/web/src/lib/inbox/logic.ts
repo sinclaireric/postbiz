@@ -1,3 +1,4 @@
+import type { FormError } from '@/lib/form-error';
 import type { ConversationStatus, ConversationSummary } from './types';
 
 const HOUR = 3_600_000;
@@ -11,36 +12,26 @@ export type WindowState = 'none' | 'open' | 'urgent' | 'expired';
 export interface ReplyWindow {
   state: WindowState;
   remainingMs: number;
-  label: string;
 }
 
-/** Durée restante lisible : « 19 h », « 2 h 15 », « 12 min ». */
-export function formatRemaining(ms: number): string {
-  if (ms < MINUTE) return 'moins d’1 min';
+/** Durée restante découpée : l'affichage (« 19 h », « 2 h 15 », « 12 min ») est traduit par l'interface. */
+export type Remaining = { kind: 'lessThanMinute' } | { kind: 'minutes'; m: number } | { kind: 'hours'; h: number } | { kind: 'hoursMinutes'; h: number; m: string };
+
+export function splitRemaining(ms: number): Remaining {
+  if (ms < MINUTE) return { kind: 'lessThanMinute' };
   const h = Math.floor(ms / HOUR);
   const m = Math.floor((ms % HOUR) / MINUTE);
-  if (h === 0) return `${m} min`;
-  if (h >= 10 || m === 0) return `${h} h`;
-  return `${h} h ${String(m).padStart(2, '0')}`;
+  if (h === 0) return { kind: 'minutes', m };
+  if (h >= 10 || m === 0) return { kind: 'hours', h };
+  return { kind: 'hoursMinutes', h, m: String(m).padStart(2, '0') };
 }
 
 /** Fenêtre de réponse Meta (24 h après le dernier message entrant). */
 export function replyWindow(expiresAt: string | null, now: Date = new Date()): ReplyWindow {
-  if (!expiresAt) return { state: 'none', remainingMs: 0, label: '' };
+  if (!expiresAt) return { state: 'none', remainingMs: 0 };
   const remainingMs = new Date(expiresAt).getTime() - now.getTime();
-  if (remainingMs <= 0) return { state: 'expired', remainingMs: 0, label: 'Fenêtre de réponse expirée' };
-  const label = `Répondre sous ${formatRemaining(remainingMs)}`;
-  return { state: remainingMs <= URGENT_THRESHOLD_MS ? 'urgent' : 'open', remainingMs, label };
-}
-
-/** Ancienneté relative en français : « à l’instant », « 5 min », « 3 h », « hier », « 12 oct. ». */
-export function formatRelative(iso: string, now: Date = new Date()): string {
-  const diff = now.getTime() - new Date(iso).getTime();
-  if (diff < MINUTE) return 'à l’instant';
-  if (diff < HOUR) return `${Math.floor(diff / MINUTE)} min`;
-  if (diff < 24 * HOUR) return `${Math.floor(diff / HOUR)} h`;
-  if (diff < 48 * HOUR) return 'hier';
-  return new Date(iso).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
+  if (remainingMs <= 0) return { state: 'expired', remainingMs: 0 };
+  return { state: remainingMs <= URGENT_THRESHOLD_MS ? 'urgent' : 'open', remainingMs };
 }
 
 export interface InboxFilters {
@@ -89,20 +80,11 @@ export function sortConversations(list: ConversationSummary[], now: Date = new D
 
 export const MAX_REPLY_LENGTH = 2000;
 
-/** Une réponse peut-elle partir ? Renvoie un message d'erreur sinon. */
-export function validateReply(body: string, window: ReplyWindow): string | null {
+/** Une réponse peut-elle partir ? Renvoie une erreur (clé de message) sinon. */
+export function validateReply(body: string, window: ReplyWindow): FormError | null {
   const text = body.trim();
-  if (!text) return 'Écrivez un message avant d’envoyer.';
-  if (text.length > MAX_REPLY_LENGTH) return `Le message dépasse ${MAX_REPLY_LENGTH} caractères.`;
-  if (window.state === 'expired') {
-    return 'La fenêtre de 24 h est dépassée : Meta n’autorise plus de réponse à cette conversation.';
-  }
+  if (!text) return { key: 'app.validation.replyEmpty' };
+  if (text.length > MAX_REPLY_LENGTH) return { key: 'app.validation.replyTooLong', params: { max: MAX_REPLY_LENGTH } };
+  if (window.state === 'expired') return { key: 'app.validation.windowExpired' };
   return null;
 }
-
-export const STATUS_LABEL: Record<ConversationStatus, string> = {
-  open: 'Ouverte',
-  pending: 'En attente',
-  snoozed: 'Reportée',
-  closed: 'Fermée',
-};

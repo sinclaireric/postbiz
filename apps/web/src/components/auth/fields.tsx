@@ -3,6 +3,7 @@
 import { useFormStatus } from 'react-dom';
 import { useId, useState, type ComponentProps } from 'react';
 import { Button } from '@/components/ui';
+import { useT } from '@/i18n/client';
 
 export function Field({ label, hint, ...props }: ComponentProps<'input'> & { label: string; hint?: React.ReactNode }) {
   const id = useId();
@@ -22,6 +23,7 @@ export function Field({ label, hint, ...props }: ComponentProps<'input'> & { lab
 }
 
 export function PasswordField({ label, hint, ...props }: ComponentProps<'input'> & { label: string; hint?: React.ReactNode }) {
+  const t = useT();
   const id = useId();
   const [shown, setShown] = useState(false);
   return (
@@ -35,21 +37,23 @@ export function PasswordField({ label, hint, ...props }: ComponentProps<'input'>
           id={id}
           {...props}
           type={shown ? 'text' : 'password'}
-          className="h-11 w-full rounded-xl border border-line bg-surface pr-16 pl-3.5 text-[15px] outline-none transition placeholder:text-subtle focus:border-ink focus:ring-4 focus:ring-lime/40"
+          dir="ltr"
+          className="h-11 w-full rounded-xl border border-line bg-surface ps-3.5 pe-16 text-[15px] outline-none transition placeholder:text-subtle focus:border-ink focus:ring-4 focus:ring-lime/40"
         />
-        <button type="button" onClick={() => setShown((s) => !s)} className="absolute top-1/2 right-3 -translate-y-1/2 text-sm font-medium text-muted hover:text-ink" aria-pressed={shown}>
-          {shown ? 'Masquer' : 'Afficher'}
+        <button type="button" onClick={() => setShown((s) => !s)} className="absolute top-1/2 end-3 -translate-y-1/2 text-sm font-medium text-muted hover:text-ink" aria-pressed={shown}>
+          {shown ? t('auth.hide') : t('auth.show')}
         </button>
       </div>
     </div>
   );
 }
 
-export function SubmitButton({ children, pending: pendingLabel = 'Veuillez patienter…' }: { children: React.ReactNode; pending?: string }) {
+export function SubmitButton({ children, pending: pendingLabel }: { children: React.ReactNode; pending?: string }) {
+  const t = useT();
   const { pending } = useFormStatus();
   return (
     <Button type="submit" size="lg" className="w-full" disabled={pending} aria-busy={pending}>
-      {pending ? pendingLabel : children}
+      {pending ? (pendingLabel ?? t('auth.wait')) : children}
     </Button>
   );
 }
