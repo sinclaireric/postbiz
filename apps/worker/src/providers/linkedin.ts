@@ -1,5 +1,7 @@
+import type { Env } from '@postbiz/core';
 import { OutcomeUnknownError } from './errors.ts';
 import { mutate, type Fetch } from './http.ts';
+import { oauthRefresher } from './oauth.ts';
 import type { SocialProvider } from './types.ts';
 
 /** Version de l'API LinkedIn (AAAAMM). LinkedIn retire les versions anciennes : à mettre à jour régulièrement. */
@@ -14,10 +16,11 @@ export function escapeLinkedInText(text: string): string {
 }
 
 // ⚠️ Non validé contre l'API réelle. `settings.author_urn` : `urn:li:person:<id>` (profil) ou `urn:li:organization:<id>` (Page).
-export const createLinkedInProvider = (fetchImpl: Fetch = fetch): SocialProvider => ({
+export const createLinkedInProvider = (fetchImpl: Fetch = fetch, env: Env = process.env): SocialProvider => ({
   id: 'linkedin',
   supportsThreads: false,
   supportsMedia: false,
+  refreshToken: oauthRefresher('linkedin', fetchImpl, env),
   async publish({ accessToken, integration, posts }) {
     const post = posts[0]!;
     const author = (integration.settings.author_urn as string | undefined) ?? `urn:li:person:${integration.internalId}`;

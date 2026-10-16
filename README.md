@@ -13,7 +13,7 @@ Planifiez vos publications et répondez à tous vos messages et commentaires dep
 | Base Supabase : schéma, RLS multi-organisations, file d'envoi, ingestion des messages | ✅ Migrations testées (49 tests dans PGlite, sans Docker) |
 | Webhooks Meta : signature, normalisation, Edge Function `webhook-meta` | ✅ Logique testée ; **fonction non déployée ni exécutée sous Deno** |
 | Worker : publication (Facebook, X, LinkedIn : texte), envoi de réponses Messenger/Instagram/commentaires | ✅ Logique testée avec des réseaux simulés ; **jamais exécuté contre les vraies API** |
-| Connexion des canaux par OAuth | ❌ Pas encore. Contournement : `pnpm --filter @postbiz/worker add-channel` avec un jeton obtenu à la main |
+| Connexion des canaux par OAuth (Meta, X, LinkedIn, YouTube, TikTok), choix des Pages, déconnexion, rafraîchissement des jetons | ✅ Écrit et testé **avec des réseaux simulés uniquement** ; **jamais exécuté contre les vraies API** (aucune application de réseau n'est créée) ; flux non essayé dans un navigateur avec un vrai projet Supabase. Voir ci-dessous |
 | Envoi d'images/vidéos, Instagram / TikTok / YouTube en publication | ❌ Pas encore (`apps/uploader` à brancher) |
 | Inbox X, LinkedIn (commentaires), TikTok, YouTube (commentaires) | ❌ Pas encore |
 | App mobile (`apps/mobile`) | 🟡 Branchée à Supabase (auth, organisation, calendrier, création de posts, inbox + Realtime, enregistrement des jetons push) ; **compile, mais jamais testée sur un vrai projet ni sur appareil**. Pas encore : envoi de médias, envoi des push (aucune Edge Function), connexion de canaux |

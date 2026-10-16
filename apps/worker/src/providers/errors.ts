@@ -24,3 +24,11 @@ export class OutcomeUnknownError extends Error {
     this.name = 'OutcomeUnknownError';
   }
 }
+
+/** Le rafraîchissement d'un jeton a échoué pour une raison passagère (réseau, 5xx, configuration) : réessayer plus tard. */
+export class RefreshTransientError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'RefreshTransientError';
+  }
+}

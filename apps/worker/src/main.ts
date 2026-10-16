@@ -1,7 +1,8 @@
 import { createClient } from '@supabase/supabase-js';
-import { decryptSecret } from '@postbiz/core';
+import { decryptSecret, encryptSecret } from '@postbiz/core';
 import { loadConfig } from './config.ts';
 import { createSupabaseWorkerDb } from './engine/db.ts';
+import { createSupabaseRefreshDb, refreshTokens } from './engine/refresh.ts';
 import { tick } from './engine/tick.ts';
 import { createRegistry } from './providers/registry.ts';
 
@@ -12,6 +13,11 @@ async function main() {
   const supabase = createClient(cfg.supabaseUrl, cfg.serviceRoleKey, { auth: { persistSession: false, autoRefreshToken: false } });
   const db = createSupabaseWorkerDb(supabase, (enc) => decryptSecret(enc, cfg.tokenEncryptionKey));
   const providers = createRegistry({ dryRun: cfg.dryRun });
+  const refreshDb = createSupabaseRefreshDb(supabase, {
+    encrypt: (plain) => encryptSecret(plain, cfg.tokenEncryptionKey),
+    decrypt: (enc) => decryptSecret(enc, cfg.tokenEncryptionKey),
+  });
+  let lastRefresh = 0;
 
   log(`Worker Postbiz démarré${cfg.dryRun ? ' (MODE ESSAI : aucun réseau n’est contacté)' : ''}`);
 
@@ -23,6 +29,16 @@ async function main() {
       await tick({ supabase, db, providers }, { posts: cfg.postBatch, messages: cfg.messageBatch }, log);
     } catch (e) {
       log('passage en échec', (e as Error).message);
+    }
+    // En mode essai on ne contacte aucun réseau : pas de rafraîchissement.
+    if (!cfg.dryRun && Date.now() - lastRefresh >= cfg.refreshIntervalMs) {
+      lastRefresh = Date.now();
+      try {
+        const s = await refreshTokens({ db: refreshDb, providers }, {}, log);
+        if (s.refreshed || s.reconnectNeeded || s.expired) log('jetons', s);
+      } catch (e) {
+        log('rafraîchissement des jetons en échec', (e as Error).message);
+      }
     }
     await new Promise((r) => setTimeout(r, cfg.pollIntervalMs));
   }

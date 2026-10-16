@@ -2,7 +2,7 @@
   "name": "@postbiz/core",
   "private": true,
   "version": "0.1.0",
-  "description": "Code partagé worker / Edge Functions : chiffrement, webhooks Meta, envoi de réponses. Source de vérité : supabase/functions/_shared.",
+  "description": "Code partagé : chiffrement, webhooks Meta, envoi de réponses (source : supabase/functions/_shared) et flux OAuth des réseaux (src/oauth), utilisé par l'app web et le worker.",
   "type": "module",
   "main": "src/index.ts",
   "types": "src/index.ts",

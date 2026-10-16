@@ -1,4 +1,4 @@
-// Ajoute un canal de test sans passer par l'OAuth : utile pour essayer la publication et l'inbox avec un jeton
+// Ajoute un canal de test sans passer par l’OAuth : utile pour essayer la publication et l'inbox avec un jeton
 // obtenu à la main (ex. jeton de Page dans l'explorateur de l'API Graph).
 //
 //   pnpm --filter @postbiz/worker add-channel -- --org <uuid> --provider facebook --internal-id <PAGE_ID> \

@@ -101,6 +101,13 @@ describe('registre', () => {
     expect(reg('facebook')).not.toBeNull();
     expect(reg('x')).not.toBeNull();
     expect(reg('linkedin')).not.toBeNull();
-    for (const n of ['instagram', 'tiktok', 'youtube']) expect(reg(n)).toBeNull();
+    expect(reg('instagram')).toBeNull();
+  });
+  it('YouTube et TikTok : jetons rafraîchissables, publication refusée avec un message clair', async () => {
+    const reg = createRegistry({ dryRun: false });
+    for (const n of ['tiktok', 'youtube']) {
+      expect(reg(n)!.refreshToken).toBeTypeOf('function');
+      await expect(reg(n)!.publish(input())).rejects.toMatchObject({ name: 'PublishRejectedError', message: expect.stringContaining('pas encore disponible') });
+    }
   });
 });

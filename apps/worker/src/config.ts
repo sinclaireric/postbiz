@@ -4,6 +4,7 @@ export interface WorkerConfig {
   tokenEncryptionKey: string;
   dryRun: boolean;
   pollIntervalMs: number;
+  refreshIntervalMs: number;
   postBatch: number;
   messageBatch: number;
 }
@@ -18,6 +19,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): WorkerConfig {
     tokenEncryptionKey: env.TOKEN_ENCRYPTION_KEY!,
     dryRun: env.WORKER_DRY_RUN === '1',
     pollIntervalMs: int(env.WORKER_POLL_INTERVAL_MS, 5_000),
+    refreshIntervalMs: int(env.WORKER_REFRESH_INTERVAL_MS, 60_000),
     postBatch: int(env.WORKER_POST_BATCH, 5),
     messageBatch: int(env.WORKER_MESSAGE_BATCH, 20),
   };

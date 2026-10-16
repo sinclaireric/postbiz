@@ -10,6 +10,8 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
+  // @postbiz/core est du TypeScript non compilé (workspace) : Next doit le transpiler.
+  transpilePackages: ['@postbiz/core'],
   async headers() {
     return [{ source: '/:path*', headers: securityHeaders }];
   },

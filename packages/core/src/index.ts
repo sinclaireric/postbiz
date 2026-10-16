@@ -1,7 +1,9 @@
-// Le code réellement partagé vit dans supabase/functions/_shared (seul emplacement que les Edge Functions
-// savent empaqueter). Ce paquet le ré-exporte pour le worker et l'app web.
+// Le code utilisé aussi par les Edge Functions vit dans supabase/functions/_shared (seul emplacement qu'elles
+// savent empaqueter) ; ce paquet le ré-exporte pour le worker et l'app web.
 export * from '../../../supabase/functions/_shared/crypto.ts';
 export * from '../../../supabase/functions/_shared/meta/signature.ts';
 export * from '../../../supabase/functions/_shared/meta/webhook.ts';
 export * from '../../../supabase/functions/_shared/meta/graph.ts';
 export * from '../../../supabase/functions/_shared/meta/handler.ts';
+// Flux OAuth (connexion des canaux, rafraîchissement des jetons) : code propre à ce paquet, partagé par l'app web et le worker.
+export * from './oauth/index.ts';
