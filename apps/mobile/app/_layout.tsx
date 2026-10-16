@@ -11,6 +11,7 @@ import { StatusBar } from "expo-status-bar";
 import * as SystemUI from "expo-system-ui";
 import { cssInterop } from "nativewind";
 import { useEffect } from "react";
+import { ActivityIndicator, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "react-native-reanimated";
 import { SafeAreaProvider } from "react-native-safe-area-context";
@@ -18,7 +19,15 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 
 import { ErrorBoundary } from "@/components/ui/error-boundary";
+import { AppDataSync } from "@/components/app-data-sync";
+import { ConfigMissingScreen } from "@/components/ui/config-missing-screen";
+import { CreateOrganizationScreen } from "@/components/ui/create-organization-screen";
 import { ToastProvider } from "@/components/ui/toast";
+import { resetAllStores } from "@/lib/reset-stores";
+import { useAuthLinks } from "@/lib/use-auth-links";
+import { isSupabaseConfigured } from "@/lib/supabase";
+import { useAuthStore } from "@/store/auth-store";
+import { useOrgStore } from "@/store/org-store";
 
 const PostbizDarkTheme: Theme = {
   ...DarkTheme,
@@ -38,18 +47,107 @@ cssInterop(Ionicons, {
   },
 });
 
-export const unstable_settings = {
-  initialRouteName: "(auth)",
-};
-
 void SplashScreen.preventAutoHideAsync();
 void SystemUI.setBackgroundColorAsync("#0E0E0E");
+
+function FullScreenSpinner() {
+  return (
+    <View className="absolute inset-0 items-center justify-center bg-[#1A1919]">
+      <ActivityIndicator color="#FC69FF" />
+    </View>
+  );
+}
+
+/** Navigation protégée par l'état de connexion, avec les écrans d'attente par-dessus (la pile reste montée). */
+function AppNavigator() {
+  const authStatus = useAuthStore((s) => s.status);
+  const recovery = useAuthStore((s) => s.recovery);
+  const orgStatus = useOrgStore((s) => s.status);
+  const signedIn = authStatus === "signedIn" && !recovery;
+
+  useAuthLinks();
+
+  useEffect(() => {
+    if (signedIn) void useOrgStore.getState().load();
+    else resetAllStores();
+  }, [signedIn]);
+
+  const overlay = !isSupabaseConfigured ? (
+    <ConfigMissingScreen />
+  ) : authStatus === "loading" ? (
+    <FullScreenSpinner />
+  ) : signedIn && (orgStatus === "idle" || orgStatus === "loading") ? (
+    <FullScreenSpinner />
+  ) : signedIn && orgStatus === "empty" ? (
+    <CreateOrganizationScreen />
+  ) : signedIn && orgStatus === "error" ? (
+    <CreateOrganizationScreen retryOnly />
+  ) : null;
+
+  return (
+    <>
+      <Stack
+        screenOptions={{
+          contentStyle: { backgroundColor: "#0E0E0E" },
+          freezeOnBlur: false,
+        }}
+      >
+        <Stack.Protected guard={!signedIn}>
+          <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+        </Stack.Protected>
+        <Stack.Protected guard={signedIn}>
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen
+            name="conversation/[id]"
+            options={{ headerShown: false, animation: "slide_from_right" }}
+          />
+          <Stack.Screen
+            name="notifications"
+            options={{
+              headerShown: false,
+              presentation: "transparentModal",
+              animation: "slide_from_right",
+              contentStyle: { backgroundColor: "transparent" },
+            }}
+          />
+          <Stack.Screen
+            name="add-channel"
+            options={{
+              headerShown: false,
+              presentation: "transparentModal",
+              animation: "slide_from_right",
+              contentStyle: { backgroundColor: "transparent" },
+            }}
+          />
+          <Stack.Screen
+            name="create-post"
+            options={{
+              headerShown: false,
+              presentation: "transparentModal",
+              animation: "slide_from_bottom",
+              contentStyle: { backgroundColor: "transparent" },
+            }}
+          />
+          <Stack.Screen
+            name="modal"
+            options={{ presentation: "modal", title: "Modal" }}
+          />
+        </Stack.Protected>
+        <Stack.Screen name="auth-callback" options={{ headerShown: false }} />
+      </Stack>
+      {signedIn && orgStatus === "ready" ? <AppDataSync /> : null}
+      {overlay}
+    </>
+  );
+}
 
 export default function RootLayout() {
   const [loaded] = useFonts({
     PlusJakartaSans: require("@/assets/fonts/PlusJakartaSans.ttf"),
     "PlusJakartaSans-Italic": require("@/assets/fonts/PlusJakartaSans-Italic.ttf"),
   });
+
+  useEffect(() => useAuthStore.getState().init(), []);
 
   useEffect(() => {
     if (loaded) {
@@ -68,53 +166,7 @@ export default function RootLayout() {
           <ErrorBoundary>
             <BottomSheetModalProvider>
               <ToastProvider>
-                <Stack
-                  initialRouteName="(auth)"
-                  screenOptions={{
-                    contentStyle: { backgroundColor: "#0E0E0E" },
-                    freezeOnBlur: false,
-                  }}
-                >
-                  <Stack.Screen
-                    name="(auth)"
-                    options={{ headerShown: false }}
-                  />
-                  <Stack.Screen
-                    name="(tabs)"
-                    options={{ headerShown: false }}
-                  />
-                  <Stack.Screen
-                    name="notifications"
-                    options={{
-                      headerShown: false,
-                      presentation: "transparentModal",
-                      animation: "slide_from_right",
-                      contentStyle: { backgroundColor: "transparent" },
-                    }}
-                  />
-                  <Stack.Screen
-                    name="add-channel"
-                    options={{
-                      headerShown: false,
-                      presentation: "transparentModal",
-                      animation: "slide_from_right",
-                      contentStyle: { backgroundColor: "transparent" },
-                    }}
-                  />
-                  <Stack.Screen
-                    name="create-post"
-                    options={{
-                      headerShown: false,
-                      presentation: "transparentModal",
-                      animation: "slide_from_bottom",
-                      contentStyle: { backgroundColor: "transparent" },
-                    }}
-                  />
-                  <Stack.Screen
-                    name="modal"
-                    options={{ presentation: "modal", title: "Modal" }}
-                  />
-                </Stack>
+                <AppNavigator />
                 <StatusBar style="auto" />
               </ToastProvider>
             </BottomSheetModalProvider>

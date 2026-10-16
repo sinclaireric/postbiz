@@ -194,7 +194,7 @@ export function MediaLibrarySheet({
       <View className="flex-1 bg-main-sections">
         <View className="h-[60px] flex-row items-center justify-between px-4 py-3">
           <Text className="font-jakarta text-h2 font-semibold text-text-primary">
-            Media Library
+            Médiathèque
           </Text>
           <Pressable
             className="h-8 w-8 items-center justify-center"
@@ -215,7 +215,7 @@ export function MediaLibrarySheet({
                   {"You don't have\nany assets yet"}
                 </Text>
                 <Text className="mt-1 text-center font-jakarta text-body-1 text-text-secondary">
-                  Click the button below to upload one.
+                  Touchez le bouton ci-dessous pour en ajouter un.
                 </Text>
               </View>
 
@@ -230,7 +230,7 @@ export function MediaLibrarySheet({
                     size={18}
                   />
                   <Text className="font-jakarta text-button font-semibold text-white">
-                    Upload
+                    Ajouter
                   </Text>
                 </View>
               </Pressable>
@@ -248,7 +248,7 @@ export function MediaLibrarySheet({
               <View className="flex-row items-center justify-center gap-3 pb-6">
                 <EncodingIndicator />
                 <Text className="font-jakarta text-h4 font-semibold text-text-primary">
-                  Encoding...
+                  Encodage…
                 </Text>
               </View>
             ) : selectedCount > 0 ? (
@@ -260,7 +260,7 @@ export function MediaLibrarySheet({
                 />
                 <Pressable onPress={onDeleteSelected}>
                   <Text className="font-jakarta text-h4 font-semibold text-text-critical">
-                    Delete Selected
+                    Supprimer la sélection
                   </Text>
                 </Pressable>
               </View>
@@ -310,7 +310,7 @@ export function MediaLibrarySheet({
                         : "text-white"
                     }`}
                   >
-                    Upload
+                    Ajouter
                   </Text>
                 </View>
               </Pressable>
@@ -331,7 +331,7 @@ export function MediaLibrarySheet({
                       : "text-buttons-disabled-text"
                   }`}
                 >
-                  Add Selected Media
+                  Ajouter les médias sélectionnés
                 </Text>
               </Pressable>
             </View>

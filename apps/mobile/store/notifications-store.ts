@@ -1,60 +1,68 @@
 import { create } from "zustand";
 
-import { NOTIFICATIONS_BY_DAY } from "@/data/mock-notifications";
+import { supabase } from "@/lib/supabase";
 import type { NotificationItem } from "@/types";
 
-type NotificationSection = {
-  title: string;
-  items: NotificationItem[];
-};
-
 type NotificationsState = {
-  sections: NotificationSection[];
+  items: NotificationItem[];
+  loaded: boolean;
   error: string | null;
 
-  markAsRead: (id: string) => void;
-  markAllAsRead: () => void;
-  clearError: () => void;
+  load: (userId: string) => Promise<void>;
+  markAsRead: (id: string) => Promise<void>;
+  markAllAsRead: () => Promise<void>;
+  reset: () => void;
 };
 
 export const useNotificationsStore = create<NotificationsState>((set, get) => ({
-  sections: NOTIFICATIONS_BY_DAY,
+  items: [],
+  loaded: false,
   error: null,
 
-  markAsRead: (id) => {
-    const exists = get().sections.some((s) => s.items.some((i) => i.id === id));
-    if (!exists) {
-      set({ error: `Notification "${id}" not found.` });
+  load: async (userId) => {
+    const { data, error } = await supabase
+      .from("notifications")
+      .select("id, type, title, body, data, read_at, created_at")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false })
+      .limit(100);
+    if (error) {
+      set({ error: "Impossible de charger les notifications.", loaded: true });
       return;
     }
-    set((state) => ({
-      sections: state.sections.map((section) => ({
-        ...section,
-        items: section.items.map((item) =>
-          item.id === id ? { ...item, unread: false } : item,
-        ),
-      })),
+    set({
+      loaded: true,
       error: null,
-    }));
+      items: (data ?? []).map((n) => ({
+        id: n.id as string,
+        type: n.type as string,
+        title: n.title as string,
+        body: (n.body as string | null) ?? null,
+        data: (n.data as Record<string, unknown> | null) ?? {},
+        createdAt: n.created_at as string,
+        unread: n.read_at === null,
+      })),
+    });
   },
 
-  markAllAsRead: () =>
-    set((state) => ({
-      sections: state.sections.map((section) => ({
-        ...section,
-        items: section.items.map((item) => ({ ...item, unread: false })),
-      })),
-      error: null,
-    })),
+  markAsRead: async (id) => {
+    const previous = get().items;
+    if (!previous.some((n) => n.id === id && n.unread)) return;
+    set({ items: previous.map((n) => (n.id === id ? { ...n, unread: false } : n)) });
+    const { error } = await supabase.from("notifications").update({ read_at: new Date().toISOString() }).eq("id", id);
+    if (error) set({ items: previous });
+  },
 
-  clearError: () => set({ error: null }),
+  markAllAsRead: async () => {
+    const previous = get().items;
+    const unreadIds = previous.filter((n) => n.unread).map((n) => n.id);
+    if (unreadIds.length === 0) return;
+    set({ items: previous.map((n) => ({ ...n, unread: false })) });
+    const { error } = await supabase.from("notifications").update({ read_at: new Date().toISOString() }).in("id", unreadIds);
+    if (error) set({ items: previous });
+  },
+
+  reset: () => set({ items: [], loaded: false, error: null }),
 }));
 
-export const useUnreadCount = () =>
-  useNotificationsStore((state) =>
-    state.sections.reduce(
-      (count, section) =>
-        count + section.items.filter((item) => item.unread).length,
-      0,
-    ),
-  );
+export const useUnreadCount = () => useNotificationsStore((state) => state.items.filter((n) => n.unread).length);

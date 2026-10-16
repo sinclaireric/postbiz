@@ -8,21 +8,28 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { AppButton } from "@/components/ui/app-button";
 import { AuthInput } from "@/components/ui/auth-input";
+import { useAuthStore } from "@/store/auth-store";
 
 export default function ForgotPasswordScreen() {
   const router = useRouter();
   const [email, setEmail] = useState("");
-  const [focusedField, setFocusedField] = useState<"email" | null>(null);
   const [errors, setErrors] = useState<{ email?: string }>({});
+  const [busy, setBusy] = useState(false);
   const isEmailValid = email.includes("@");
 
-  const handleSendResetLink = () => {
+  const handleSendResetLink = async () => {
     const newErrors: { email?: string } = {};
-    if (!email || !email.includes("@")) newErrors.email = "Please enter a valid email";
+    if (!email || !email.includes("@")) newErrors.email = "Saisissez une adresse e-mail valide";
     setErrors(newErrors);
-    if (!newErrors.email) {
-      router.push("/(auth)/verify-otp" as any);
+    if (newErrors.email) return;
+    setBusy(true);
+    const result = await useAuthStore.getState().sendPasswordReset(email);
+    setBusy(false);
+    if (!result.ok) {
+      setErrors({ email: result.error });
+      return;
     }
+    router.push({ pathname: "/(auth)/check-email", params: { email, flow: "reset" } } as never);
   };
 
   return (
@@ -66,40 +73,37 @@ export default function ForgotPasswordScreen() {
 
             <View className="gap-8">
               <Text className="font-jakarta text-h1 font-semibold text-text-primary">
-                Forgot password
+                Mot de passe oublié
               </Text>
 
               <AuthInput
-                label="Email"
+                label="E-mail"
                 value={email}
                 onChangeText={(text) => {
                   setEmail(text);
                   if (errors.email) setErrors((prev) => ({ ...prev, email: undefined }));
                 }}
-                placeholder="Enter email address"
+                placeholder="Votre adresse e-mail"
                 keyboardType="email-address"
                 autoCapitalize="none"
-                focused={focusedField === "email"}
-                onFocus={() => setFocusedField("email")}
-                onBlur={() => setFocusedField(null)}
                 error={!!errors.email}
                 hint={errors.email}
               />
 
               <AppButton
-                label="Send Password Reset Email"
+                label={busy ? "Envoi…" : "Envoyer le lien de réinitialisation"}
                 onPress={handleSendResetLink}
-                variant={isEmailValid ? "primary" : "disabled"}
-                disabled={!isEmailValid}
+                variant={isEmailValid && !busy ? "primary" : "disabled"}
+                disabled={!isEmailValid || busy}
               />
 
               <View className="flex-row items-baseline gap-2">
                 <Text className="font-jakarta text-body-1 text-text-primary">
-                  Don&apos;t have an account?
+                  Pas encore de compte ?
                 </Text>
                 <Pressable onPress={() => router.replace("/(auth)/signup")}>
                   <Text className="font-jakarta text-button font-semibold text-main-accent-pink">
-                    Sign Up
+                    Créer un compte
                   </Text>
                 </Pressable>
               </View>

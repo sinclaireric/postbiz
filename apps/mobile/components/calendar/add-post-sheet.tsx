@@ -1,6 +1,7 @@
 import { Pressable, Text, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { format } from "date-fns";
+import { fr } from "date-fns/locale";
 
 import { BottomSheetWrapper } from "@/components/ui/bottom-sheet-wrapper";
 import { isDatePassed, set } from "@/utils/calendar";
@@ -39,7 +40,7 @@ export function AddPostSheet({
       containerStyle={{ backgroundColor: "#242323" }}
     >
       <Text className="mb-5 font-jakarta text-h3 font-semibold text-text-primary">
-        Add Post
+        Nouvelle publication
       </Text>
 
       <Pressable
@@ -52,9 +53,7 @@ export function AddPostSheet({
             <Ionicons name="calendar-outline" size={18} className={passed ? "text-[#5A5A5A]" : "text-icon-primary"} />
           </View>
           <Text className={`font-jakarta text-h4 font-semibold ${passed ? "text-buttons-disabled-text" : "text-text-primary"}`}>
-            {format(dateTime, "MMMM d, yyyy h:mm a")
-              .replace(/ AM$/, " am")
-              .replace(/ PM$/, " pm")}
+            {format(dateTime, "d MMMM yyyy HH:mm", { locale: fr })}
           </Text>
         </View>
         <Ionicons name="chevron-forward" size={16} className={passed ? "text-[#5A5A5A]" : "text-icon-primary"} />
@@ -62,7 +61,7 @@ export function AddPostSheet({
 
       {passed ? (
         <Text className="mb-6 text-[15px] leading-[21px] tracking-[-0.25px] text-text-secondary">
-          The date has passed.
+          La date est dépassée.
         </Text>
       ) : null}
 
@@ -84,7 +83,7 @@ export function AddPostSheet({
               passed ? "text-buttons-disabled-text" : "text-white"
             }`}
           >
-            Create Post
+            Créer la publication
           </Text>
         </Pressable>
       </View>

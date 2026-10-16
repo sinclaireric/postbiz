@@ -35,7 +35,7 @@ export class ErrorBoundary extends Component<Props, State> {
       return (
         <View className="flex-1 items-center justify-center bg-main-sections px-6">
           <Text className="mb-2 font-jakarta text-h2 font-semibold text-text-primary">
-            Something went wrong
+            Une erreur est survenue
           </Text>
           <Text className="mb-6 text-center font-jakarta text-body-1 text-text-secondary">
             An unexpected error occurred. Please try again.
@@ -45,7 +45,7 @@ export class ErrorBoundary extends Component<Props, State> {
             onPress={this.handleReset}
           >
             <Text className="font-jakarta text-button font-semibold text-buttons-primary-text">
-              Try Again
+              Réessayer
             </Text>
           </Pressable>
         </View>

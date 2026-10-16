@@ -148,7 +148,7 @@ export type SettingsSheetContentProps = {
   delay: string;
   onDelayChange: (value: string) => void;
   focusedChannel: Channel | null;
-  /** All selected channels — shown in "Account that will engage" when default tab is active */
+  /** All selected channels — shown in "Compte qui interagira" when default tab is active */
   selectedChannels: Channel[];
   engagedChannelIds: string[];
   onToggleEngagedChannel: (id: string) => void;
@@ -280,7 +280,7 @@ export function SettingsSheetContent({
       <View>
         <View className="px-4 pb-3 pt-1">
           <Text className="font-jakarta text-h2 font-semibold text-text-primary">
-            Settings
+            Réglages
           </Text>
         </View>
 
@@ -292,18 +292,18 @@ export function SettingsSheetContent({
           />
           <SettingsRow
             icon="pricetag-outline"
-            label="Add Tag"
+            label="Ajouter une étiquette"
             onPress={() => onNavigate("tags")}
           />
           <SettingsRow
             icon="repeat-outline"
-            label="Repeat Post"
+            label="Répéter la publication"
             onPress={() => onNavigate("repeat")}
           />
 
           <SettingsRow
             icon="trash-outline"
-            label="Delete Post"
+            label="Supprimer la publication"
             destructive
             onPress={onDeletePost}
           />
@@ -317,7 +317,7 @@ export function SettingsSheetContent({
       <View>
         <View className="px-4 pb-3 pt-1">
           <Text className="font-jakarta text-h2 font-semibold text-text-primary">
-            Repeat Post
+            Répéter la publication
           </Text>
         </View>
 
@@ -350,7 +350,7 @@ export function SettingsSheetContent({
             onPress={() => onNavigate("main")}
           >
             <Text className="font-jakarta text-button font-semibold text-white">
-              Done
+              Terminé
             </Text>
           </Pressable>
         </View>
@@ -375,7 +375,7 @@ export function SettingsSheetContent({
             <Pressable className="flex-row items-center gap-2 py-2" onPress={onToggleCarousel}>
               <CheckBox checked={carousel} onPress={onToggleCarousel} />
               <Text className="font-jakarta text-[14px] text-text-primary">
-                Post as image carousel
+                Publier en carrousel d’images
               </Text>
             </Pressable>
 
@@ -384,7 +384,7 @@ export function SettingsSheetContent({
             >
               <View className="flex-row items-start justify-between py-2">
                 <Text className="font-jakarta text-[14px] text-text-primary">
-                  Add Re-posters
+                  Ajouter des relayeurs
                 </Text>
                 <ToggleSwitch value={reposters} onPress={onToggleReposters} />
               </View>
@@ -393,7 +393,7 @@ export function SettingsSheetContent({
                 <View className="mt-4 gap-4">
                   <View className="gap-2">
                     <Text className="font-jakarta text-[14px] font-semibold text-text-primary">
-                      Delay
+                      Délai
                     </Text>
                     <DropUpSelect
                       value={delay}
@@ -404,7 +404,7 @@ export function SettingsSheetContent({
 
                   <View className="gap-3">
                     <Text className="font-jakarta text-[14px] font-semibold text-text-primary">
-                      Account that will engage
+                      Compte qui interagira
                     </Text>
                     <View className="flex-row flex-wrap gap-2">
                       {focusedChannel ? (
@@ -462,7 +462,7 @@ export function SettingsSheetContent({
             <Text className={`font-jakarta text-button font-semibold ${
               networkDirty ? "text-white" : "text-buttons-disabled-text"
             }`}>
-              Done
+              Terminé
             </Text>
           </Pressable>
         </View>
@@ -475,7 +475,7 @@ export function SettingsSheetContent({
       <View>
         <View className="px-4 pb-3 pt-1">
           <Text className="font-jakarta text-h2 font-semibold text-text-primary">
-            Add Tag
+            Ajouter une étiquette
           </Text>
         </View>
 
@@ -499,7 +499,7 @@ export function SettingsSheetContent({
           >
             <Ionicons name="add" size={18} className="text-white" />
             <Text className="font-jakarta text-button font-semibold text-white">
-              Add New Tag
+              Nouvelle étiquette
             </Text>
           </Pressable>
 
@@ -508,7 +508,7 @@ export function SettingsSheetContent({
             onPress={() => onNavigate("main")}
           >
             <Text className="font-jakarta text-button font-semibold text-white">
-              Done
+              Terminé
             </Text>
           </Pressable>
         </View>
@@ -521,7 +521,7 @@ export function SettingsSheetContent({
     <View className="flex-1">
       <View className="h-[60px] flex-row items-center justify-between px-4 py-3">
         <Text className="font-jakarta text-h2 font-semibold text-text-primary">
-          New Tag
+          Nouvelle étiquette
         </Text>
         <Pressable
           className="h-5 w-5 items-center justify-center"
@@ -541,11 +541,11 @@ export function SettingsSheetContent({
         <View className="gap-5">
           <View className="gap-2">
             <Text className="font-jakarta text-body-2 font-semibold text-text-primary">
-              Name
+              Nom
             </Text>
             <TextInput
               className="h-[52px] overflow-hidden rounded-[10px] border border-input-stroke-default bg-background-primary px-4 font-jakarta text-body-1 text-text-primary"
-              placeholder="New"
+              placeholder="Nouvelle"
               placeholderTextColor="#8D8B8B"
               value={newTagName}
               onChangeText={onNewTagNameChange}
@@ -555,7 +555,7 @@ export function SettingsSheetContent({
 
           <View className="gap-2">
             <Text className="font-jakarta text-body-2 font-semibold text-text-primary">
-              Color
+              Couleur
             </Text>
 
             <View className="gap-5">
@@ -644,7 +644,7 @@ export function SettingsSheetContent({
           onPress={onSaveNewTag}
         >
           <Text className="font-jakarta text-button font-semibold text-white">
-            Save Tag
+            Enregistrer l’étiquette
           </Text>
         </Pressable>
       </View>

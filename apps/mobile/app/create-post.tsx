@@ -62,6 +62,7 @@ import { showToast } from "@/components/ui/toast";
 import { NETWORK_CHARACTER_LIMITS, NETWORK_CONFIG } from "@/constants/networks";
 import { useChannelsStore } from "@/store/channels-store";
 import { usePostsStore } from "@/store/posts-store";
+import { htmlToPlain } from "@/utils/text";
 import type { Channel } from "@/types";
 
 function BackChevronButton({ onPress }: { onPress: () => void }) {
@@ -113,15 +114,15 @@ function LockedTemplateCard({ onPress }: { onPress: () => void }) {
         opacity={0.7}
       />
       <Text className="w-[309px] text-center font-jakarta text-[14px] leading-[14px] text-text-primary">
-        Click this button to stop using the current template and customize the
-        post
+        Touchez ce bouton pour quitter le modèle actuel et personnaliser la
+        publication
       </Text>
       <Pressable
         className="h-11 items-center justify-center rounded-[8px] bg-buttons-secondary-bg px-8 pb-[14px] pt-3"
         onPress={onPress}
       >
         <Text className="font-jakarta text-[15px] font-semibold leading-[15px] text-buttons-secondary-text">
-          Edit Content
+          Modifier le contenu
         </Text>
       </Pressable>
     </View>
@@ -168,13 +169,7 @@ function buildNetworkLimitStatuses(
   });
 }
 
-function stripEditorHtml(html: string) {
-  return html
-    .replace(/<br\s*\/?>/gi, "\n")
-    .replace(/<\/p>\s*<p[^>]*>/gi, "\n")
-    .replace(/<[^>]*>/g, "")
-    .trim();
-}
+const stripEditorHtml = htmlToPlain;
 
 function PostConnector() {
   return <View className="ml-[10px] h-4 w-px bg-input-stroke-default" />;
@@ -218,7 +213,7 @@ function CharacterLimitStatus({
         <Text
           className={`font-jakarta text-[12px] font-medium ${hasErrors ? "text-text-critical" : "text-icon-secondary"}`}
         >
-          Character Limit
+          Limite de caractères
         </Text>
         {hasErrors ? (
           <SvgIcon
@@ -363,8 +358,7 @@ export default function CreatePostScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const channels = useChannelsStore((state) => state.channels);
-  const addPostToStore = usePostsStore((state) => state.addPost);
-  const updatePostInStore = usePostsStore((state) => state.updatePost);
+  const savePostsToStore = usePostsStore((state) => state.savePosts);
   const allStorePosts = usePostsStore((state) => state.posts);
   const params = useLocalSearchParams<{
     dateTime?: string;
@@ -437,17 +431,17 @@ export default function CreatePostScreen() {
   );
   const [networkCarouselEnabled, setNetworkCarouselEnabled] = useState(false);
   const [networkRepostersEnabled, setNetworkRepostersEnabled] = useState(true);
-  const [networkDelay, setNetworkDelay] = useState("Immediately");
+  const [networkDelay, setNetworkDelay] = useState("Immédiatement");
   const [engagedChannelIds, setEngagedChannelIds] = useState<string[]>(() =>
     channels.filter((c) => selectedChannelIds.includes(c.id)).map((c) => c.id),
   );
   const [repeatPostValue, setRepeatPostValue] =
-    useState<(typeof REPEAT_OPTIONS)[number]>("Every Day");
+    useState<(typeof REPEAT_OPTIONS)[number]>("Tous les jours");
   const [tags, setTags] = useState<ComposerTag[]>(INITIAL_TAGS);
   const [channelTagOverrides, setChannelTagOverrides] = useState<
     Record<string, string>
   >({});
-  const [newTagName, setNewTagName] = useState("New");
+  const [newTagName, setNewTagName] = useState("Nouvelle");
   const [newTagColor, setNewTagColor] =
     useState<(typeof TAG_COLOR_OPTIONS)[number]>("#E89623");
   const [activePostId, setActivePostId] = useState(posts[0]?.id ?? "post-1");
@@ -523,7 +517,7 @@ export default function CreatePostScreen() {
   const networkSettingsTitle =
     focusedChannelId && focusedChannel
       ? `${formatNetworkLabel(focusedChannel.network)} Settings`
-      : "Channel Settings";
+      : "Réglages du canal";
 
   const effectiveTags = useMemo(() => {
     if (focusedChannelId && channelTagOverrides[focusedChannelId]) {
@@ -593,9 +587,9 @@ export default function CreatePostScreen() {
 
   const deletePost = (postId: string) => {
     setPendingDelete({
-      title: "Delete Post",
-      message: "Are you sure you want to delete this post from the thread?",
-      confirmLabel: "Yes, Delete",
+      title: "Supprimer le message",
+      message: "Voulez-vous vraiment supprimer ce message du fil ?",
+      confirmLabel: "Oui, supprimer",
       onConfirm: () => executeDeletePost(postId),
     });
   };
@@ -604,89 +598,71 @@ export default function CreatePostScreen() {
     setSelectedChannelIds(channelIds);
   };
 
-  const handleSave = (action: string = "calendar") => {
-    setPostActionMenuVisible(false);
-    const defaultTag = tags.find((tag) => tag.selected);
+  const [saving, setSaving] = useState(false);
 
+  const handleSave = async (action: string = "calendar") => {
+    setPostActionMenuVisible(false);
+    if (saving) return;
+
+    const inactive = selectedChannels.find((c) => c.status && c.status !== "active");
+    if (inactive) {
+      showToast(`Le canal ${inactive.name} doit être reconnecté avant de publier.`, "error");
+      return;
+    }
+
+    const items: { channelId: string; thread: string[] }[] = [];
     for (const channel of selectedChannels) {
       const channelPosts = channelOverrides[channel.id] ?? posts;
-
       const validPosts = channelPosts.filter(
         (p) => stripEditorHtml(p.content).length > 0,
       );
       if (validPosts.length === 0) continue;
-
-      const overrideTagId = channelTagOverrides[channel.id];
-      const effectiveTag = overrideTagId
-        ? tags.find((t) => t.id === overrideTagId)
-        : defaultTag;
-
-      const displayContent = validPosts[0].content;
-      const firstImage = validPosts.find((p) => p.imageUris.length > 0)
-        ?.imageUris[0];
-      const composerPosts = validPosts.map((p) => ({
-        id: p.id,
-        content: p.content,
-        imageUris: p.imageUris,
-      }));
-
-      if (mode === "edit" && params.postId) {
-        updatePostInStore(params.postId, {
-          content: displayContent,
-          imageUri: firstImage,
-          composerPosts,
-          scheduledAt: scheduledDate.toISOString(),
-          network: channel.network,
-          status:
-            action === "draft"
-              ? "draft"
-              : action === "now"
-                ? "published"
-                : "scheduled",
-          tagLabel: effectiveTag?.label,
-          tagColor: effectiveTag?.color,
-        });
-      } else {
-        addPostToStore({
-          id: `${Date.now()}-${channel.id}`,
-          title: displayContent
-            .replace(/<[^>]*>/g, "")
-            .trim()
-            .slice(0, 40),
-          content: displayContent,
-          category: "Social",
-          imageUri: firstImage,
-          composerPosts,
-          scheduledAt: scheduledDate.toISOString(),
-          network: channel.network,
-          channelId: channel.id,
-          authorName: channel.name,
-          authorAvatar: channel.avatar,
-          status:
-            action === "draft"
-              ? "draft"
-              : action === "now"
-                ? "published"
-                : "scheduled",
-          tagLabel: effectiveTag?.label,
-          tagColor: effectiveTag?.color,
-        });
+      if (validPosts.some((p) => p.imageUris.length > 0)) {
+        showToast("L’envoi d’images et de vidéos n’est pas encore disponible.", "error");
+        return;
       }
+      items.push({
+        channelId: channel.id,
+        thread: validPosts.map((p) => stripEditorHtml(p.content)),
+      });
+    }
+    if (items.length === 0) {
+      showToast(
+        selectedChannels.length === 0
+          ? "Choisissez au moins un canal."
+          : "Écrivez un texte avant d’enregistrer.",
+        "error",
+      );
+      return;
+    }
+
+    const saveAction = action === "draft" ? "draft" : action === "now" ? "now" : "calendar";
+    setSaving(true);
+    const result = await savePostsToStore({
+      action: saveAction,
+      publishAt: scheduledDate,
+      items: mode === "edit" && params.postId ? [items[0]] : items,
+      editPostId: mode === "edit" && params.postId ? params.postId : undefined,
+    });
+    setSaving(false);
+    if (!result.ok) {
+      showToast(result.error, "error");
+      return;
     }
 
     // Tell the calendar to navigate to this post's date & time
-    usePostsStore.getState().setNavigateToDate(scheduledDate.toISOString());
+    usePostsStore.getState().setNavigateToDate(
+      (saveAction === "now" ? new Date() : scheduledDate).toISOString(),
+    );
 
     showToast(
-      action === "draft"
-        ? "Post saved as draft"
-        : action === "now"
-          ? "Post published"
-          : mode === "duplicate"
-            ? "Post duplicated"
-            : mode === "edit"
-              ? "Post updated"
-              : "Post created",
+      saveAction === "draft"
+        ? "Brouillon enregistré"
+        : saveAction === "now"
+          ? "Publication mise en file d’envoi"
+          : mode === "edit"
+            ? "Publication modifiée"
+            : "Publication programmée",
       "success",
     );
     router.back();
@@ -696,9 +672,9 @@ export default function CreatePostScreen() {
     setScheduledDate(newDate);
     setDateTimePickerVisible(false);
     if (newDate < new Date()) {
-      showToast("Selected date is in the past", "info");
+      showToast("La date choisie est dans le passé", "info");
     } else {
-      showToast("Date & time updated", "success");
+      showToast("Date et heure modifiées", "success");
     }
   }, []);
 
@@ -772,7 +748,7 @@ export default function CreatePostScreen() {
       }
 
       if (current.length >= 5) {
-        showToast("You can select up to 5 items", "info");
+        showToast("Vous pouvez sélectionner 5 éléments au maximum", "info");
         return current;
       }
 
@@ -782,9 +758,9 @@ export default function CreatePostScreen() {
 
   const handleDeleteSelectedMedia = () => {
     setPendingDelete({
-      title: "Delete Media",
+      title: "Supprimer le média",
       message: `Are you sure you want to delete ${selectedMediaIds.length === 1 ? "this media item" : `these ${selectedMediaIds.length} media items`}?`,
-      confirmLabel: "Yes, Delete",
+      confirmLabel: "Oui, supprimer",
       onConfirm: () => {
         setMediaAssets((current) =>
           current.filter((asset) => !selectedMediaIds.includes(asset.id)),
@@ -792,7 +768,7 @@ export default function CreatePostScreen() {
         const remaining = mediaAssets.length - selectedMediaIds.length;
         setSelectedMediaIds([]);
         setMediaSheetState(remaining > 0 ? "library" : "empty");
-        showToast("Selected media deleted", "success");
+        showToast("Médias supprimés", "success");
       },
     });
   };
@@ -862,10 +838,10 @@ export default function CreatePostScreen() {
   const handleResetChannelOverride = () => {
     if (!focusedChannelId) return;
     setPendingDelete({
-      title: "Revert to Global",
+      title: "Revenir au contenu commun",
       message:
-        "This will discard the custom content for this channel and revert to the global post. Continue?",
-      confirmLabel: "Yes, Revert",
+        "Le contenu personnalisé de ce canal sera supprimé et remplacé par le contenu commun. Continuer ?",
+      confirmLabel: "Oui, revenir",
       onConfirm: () => {
         const chId = focusedChannelId;
         setChannelOverrides((current) => {
@@ -875,7 +851,7 @@ export default function CreatePostScreen() {
         });
         setFocusedChannelId(null);
         setActivePostId(posts[0]?.id ?? "post-1");
-        showToast("Reverted to global mode", "success");
+        showToast("Contenu commun rétabli", "success");
       },
     });
   };
@@ -902,12 +878,16 @@ export default function CreatePostScreen() {
     setTimeout(() => setDeleteDialogVisible(true), 350);
   };
 
-  const confirmDeleteComposerPost = () => {
+  const confirmDeleteComposerPost = async () => {
     setDeleteDialogVisible(false);
     if (mode === "edit" && params.postId) {
-      usePostsStore.getState().deletePost(params.postId);
+      const result = await usePostsStore.getState().deletePost(params.postId);
+      if (!result.ok) {
+        showToast(result.error, "error");
+        return;
+      }
     }
-    showToast("Post deleted", "success");
+    showToast("Publication supprimée", "success");
     setTimeout(() => router.back(), 250);
   };
 
@@ -929,13 +909,13 @@ export default function CreatePostScreen() {
   };
 
   const openNewTagSheet = () => {
-    setNewTagName("New");
+    setNewTagName("Nouvelle");
     setNewTagColor("#E89623");
     setSettingsSheet("new-tag");
   };
 
   const handleSaveNewTag = () => {
-    const normalizedName = newTagName.trim() || "New";
+    const normalizedName = newTagName.trim() || "Nouvelle";
     const nextTag: ComposerTag = {
       id: `${normalizedName.toLowerCase().replace(/\s+/g, "-")}-${Date.now()}`,
       label: normalizedName,
@@ -956,7 +936,7 @@ export default function CreatePostScreen() {
       ]);
     }
     setSettingsSheet("tags");
-    showToast("Tag created", "success");
+    showToast("Étiquette créée", "success");
   };
 
   useEffect(() => {
@@ -991,7 +971,7 @@ export default function CreatePostScreen() {
       setMediaAssets((current) => [...current, ...pendingPickedAssets.current]);
       pendingPickedAssets.current = [];
       setMediaSheetState("library");
-      showToast("Media uploaded", "success");
+      showToast("Média ajouté", "success");
     }, 1400);
 
     return () => clearTimeout(timeout);
@@ -1087,7 +1067,7 @@ export default function CreatePostScreen() {
                       : "text-buttons-disabled-text"
                   }`}
                 >
-                  Post
+                  Publier
                 </Text>
                 <SvgIcon
                   source={require("@/assets/icons/create-post/chevron-down.svg")}
@@ -1320,10 +1300,10 @@ export default function CreatePostScreen() {
 
                         const deleteChPost = () => {
                           setPendingDelete({
-                            title: "Delete Post",
+                            title: "Supprimer le message",
                             message:
-                              "Are you sure you want to delete this post from the thread?",
-                            confirmLabel: "Yes, Delete",
+                              "Voulez-vous vraiment supprimer ce message du fil ?",
+                            confirmLabel: "Oui, supprimer",
                             onConfirm: () => {
                               setChannelOverrides((current) => {
                                 const arr = current[channelId];
@@ -1382,7 +1362,7 @@ export default function CreatePostScreen() {
                                     pendingAutoFocusPostId === chRefId
                                   }
                                   placeholder={
-                                    chIndex > 0 ? "Add another post" : undefined
+                                    chIndex > 0 ? "Ajouter un message au fil" : undefined
                                   }
                                   editorRef={(editor) => {
                                     editorRefs.current[chRefId] = editor;
@@ -1438,10 +1418,10 @@ export default function CreatePostScreen() {
                                       className="absolute -right-2 -top-2 h-[24px] w-[24px] items-center justify-center"
                                       onPress={() =>
                                         setPendingDelete({
-                                          title: "Remove Media",
+                                          title: "Retirer le média",
                                           message:
-                                            "Are you sure you want to remove this media?",
-                                          confirmLabel: "Yes, Remove",
+                                            "Voulez-vous vraiment retirer ce média ?",
+                                          confirmLabel: "Oui, retirer",
                                           onConfirm: () =>
                                             updateChannelOverridePost(
                                               channelId,
@@ -1549,7 +1529,7 @@ export default function CreatePostScreen() {
                               index === 0 || pendingAutoFocusPostId === post.id
                             }
                             placeholder={
-                              index > 0 ? "Add another post" : undefined
+                              index > 0 ? "Ajouter un message au fil" : undefined
                             }
                             editorRef={(editor) => {
                               editorRefs.current[post.id] = editor;
@@ -1605,10 +1585,10 @@ export default function CreatePostScreen() {
                                 className="absolute -right-2 -top-2 h-[24px] w-[24px] items-center justify-center"
                                 onPress={() =>
                                   setPendingDelete({
-                                    title: "Remove Media",
+                                    title: "Retirer le média",
                                     message:
-                                      "Are you sure you want to remove this media?",
-                                    confirmLabel: "Yes, Remove",
+                                      "Voulez-vous vraiment retirer ce média ?",
+                                    confirmLabel: "Oui, retirer",
                                     onConfirm: () =>
                                       updatePost(post.id, (current) => ({
                                         ...current,
@@ -1800,10 +1780,10 @@ export default function CreatePostScreen() {
 
           <ConfirmDialog
             visible={deleteDialogVisible}
-            title="Are you sure?"
-            message="Are you sure you want to delete this post?"
-            confirmLabel="Yes, Delete It"
-            cancelLabel="No, Cancel"
+            title="Êtes-vous sûr ?"
+            message="Voulez-vous vraiment supprimer cette publication ?"
+            confirmLabel="Oui, supprimer"
+            cancelLabel="Non, annuler"
             confirmDestructive
             onConfirm={confirmDeleteComposerPost}
             onCancel={() => {
@@ -1816,8 +1796,8 @@ export default function CreatePostScreen() {
             visible={pendingDelete !== null}
             title={pendingDelete?.title ?? ""}
             message={pendingDelete?.message ?? ""}
-            confirmLabel={pendingDelete?.confirmLabel ?? "Delete"}
-            cancelLabel="No, Cancel"
+            confirmLabel={pendingDelete?.confirmLabel ?? "Supprimer"}
+            cancelLabel="Non, annuler"
             confirmDestructive
             onConfirm={() => {
               pendingDelete?.onConfirm();

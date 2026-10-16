@@ -2,7 +2,7 @@ import { Pressable, Text, View } from "react-native";
 
 import type { CalendarDay } from "@/types";
 
-const WEEKDAY_LABELS = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
+const WEEKDAY_LABELS = ["Lu", "Ma", "Me", "Je", "Ve", "Sa", "Di"];
 
 type CalendarGridProps = {
   days: CalendarDay[];

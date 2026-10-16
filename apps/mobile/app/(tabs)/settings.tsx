@@ -1,136 +1,127 @@
-import * as Clipboard from "expo-clipboard";
 import { StatusBar } from "expo-status-bar";
-import { useState } from "react";
+import Constants from "expo-constants";
+import * as Linking from "expo-linking";
+import { useEffect, useState } from "react";
 import { Pressable, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { MainTabNavbar } from "@/components/ui/main-tab-navbar";
 import { NotificationBellButton } from "@/components/ui/notification-bell-button";
 import { showToast } from "@/components/ui/toast";
+import { getPushPermission, registerForPush, type PushStatus } from "@/lib/push";
+import { useAuthStore } from "@/store/auth-store";
+import { useOrgStore, type OrgRole } from "@/store/org-store";
 
-const API_KEY =
-  "b02b31841331e2f56f683189c6f05bd6e096fe17ff616fc42e61de8f2e9c8300";
+const ROLE_LABEL: Record<OrgRole, string> = {
+  admin: "Administrateur",
+  member: "Membre",
+  viewer: "Lecteur",
+};
 
-const VISIBLE_CHARS = 5;
-const BLUR_OFFSETS = [-4, -3, -2, -1, 0, 1, 2, 3, 4];
-
-function ApiKeyText({
-  text,
-  suffix,
-  revealed,
-  textClassName,
-}: {
-  text: string;
-  suffix?: string;
-  revealed: boolean;
-  textClassName?: string;
-}) {
-  const fullText = suffix ? text + suffix : text;
-
-  if (revealed) {
-    return (
-      <View className="relative">
-        <Text className={`${textClassName} text-[#EFEFEF]`}>{fullText}</Text>
-      </View>
-    );
-  }
-
+function Row({ label, value }: { label: string; value: string }) {
   return (
-    <View className="relative">
-      {BLUR_OFFSETS.flatMap((dx) =>
-        BLUR_OFFSETS.map((dy) => (
-          <Text
-            key={`${dx},${dy}`}
-            className={`${textClassName} absolute text-[#8A8A8A] opacity-[0.04]`}
-            style={{ left: dx, top: dy }}
-          >
-            {text}
-            {suffix ? (
-              <Text className="text-transparent">{suffix}</Text>
-            ) : null}
-          </Text>
-        )),
-      )}
-      <Text className={`${textClassName} text-[rgba(138,138,138,0.12)]`}>
-        {text}
-        {suffix ? (
-          <Text className="text-[#EFEFEF] bg-main-bg">
-            {suffix}
-          </Text>
-        ) : null}
+    <View className="flex-row items-center justify-between rounded-[10px] bg-main-bg px-4 py-3">
+      <Text className="font-jakarta text-body-1 text-text-secondary">{label}</Text>
+      <Text className="ml-4 flex-1 text-right font-jakarta text-body-1 text-text-primary" numberOfLines={1}>
+        {value}
       </Text>
     </View>
   );
 }
 
-function ApiKeyCard() {
-  const [revealed, setRevealed] = useState(false);
+export default function SettingsScreen() {
+  const user = useAuthStore((s) => s.user);
+  const org = useOrgStore((s) => s.current);
+  const [push, setPush] = useState<PushStatus | null>(null);
+  const [confirmSignOut, setConfirmSignOut] = useState(false);
 
-  const handleReveal = () => setRevealed(true);
+  useEffect(() => {
+    void getPushPermission().then(setPush);
+  }, []);
 
-  const handleCopy = async () => {
-    await Clipboard.setStringAsync(API_KEY);
-    showToast("API Key copied to clipboard");
+  const enablePush = async () => {
+    if (!user) return;
+    if (push === "denied") {
+      // iOS et Android ne redemandent pas l'autorisation après un refus : il faut passer par les réglages du système.
+      void Linking.openSettings();
+      return;
+    }
+    const result = await registerForPush(user.id);
+    setPush(result);
+    if (result === "granted") showToast("Notifications activées", "success");
   };
 
-  return (
-    <View className="w-full overflow-hidden rounded-[12px] bg-main-bg p-3">
-      <View className="gap-3">
-        <ApiKeyText
-          text={API_KEY.slice(0, -VISIBLE_CHARS)}
-          suffix={API_KEY.slice(-VISIBLE_CHARS)}
-          revealed={revealed}
-          textClassName="font-jakarta text-body-1"
-        />
-        <Pressable
-          className="w-[120px] items-center justify-center rounded-[6px] bg-buttons-tertiary-bg py-2"
-          onPress={revealed ? handleCopy : handleReveal}
-        >
-          <Text className="font-jakarta text-button-2 font-semibold text-buttons-tertiary-text">
-            {revealed ? "Copy Key" : "Reveal"}
-          </Text>
-        </Pressable>
-      </View>
-    </View>
-  );
-}
+  const pushLabel =
+    push === "granted"
+      ? "Activées"
+      : push === "denied"
+        ? "Désactivées dans le système"
+        : push === "unsupported"
+          ? "Indisponibles sur cet appareil"
+          : "…";
 
-export default function SettingsScreen() {
   return (
     <SafeAreaView className="flex-1 bg-main-sections" edges={["top"]}>
       <StatusBar style="light" />
 
       <View className="h-[60px] flex-row items-center justify-between px-4">
-        <Text className="font-jakarta text-h2 font-semibold text-text-primary">
-          Settings
-        </Text>
+        <Text className="font-jakarta text-h2 font-semibold text-text-primary">Réglages</Text>
         <NotificationBellButton />
       </View>
 
       <View className="flex-1 px-5 pt-4">
         <View className="w-full gap-5">
           <View className="gap-3">
-            <Text className="font-jakarta text-h4 font-semibold text-text-primary">
-              Public API
-            </Text>
-            <Text className="font-jakarta text-body-1 text-text-secondary">
-              Utilisez l'API Postbiz pour vous connecter à vos outils.{"\n"}
-              Read how to use it over the documentation,{"\n"}
-              Une intégration n8n arrive bientôt.
-            </Text>
+            <Text className="font-jakarta text-h4 font-semibold text-text-primary">Compte</Text>
+            <Row label="E-mail" value={user?.email ?? "—"} />
+            <Row label="Organisation" value={org?.name ?? "—"} />
+            <Row label="Rôle" value={org ? ROLE_LABEL[org.role] : "—"} />
           </View>
 
-          <ApiKeyCard />
+          <View className="gap-3">
+            <Text className="font-jakarta text-h4 font-semibold text-text-primary">Notifications push</Text>
+            <Row label="État" value={pushLabel} />
+            {push === "denied" || push === "granted" ? (
+              <Pressable
+                className="h-[44px] w-full items-center justify-center rounded-[8px] bg-buttons-tertiary-bg"
+                onPress={enablePush}
+              >
+                <Text className="font-jakarta text-[15px] font-semibold text-buttons-tertiary-text">
+                  {push === "denied" ? "Ouvrir les réglages du système" : "Réenregistrer cet appareil"}
+                </Text>
+              </Pressable>
+            ) : null}
+          </View>
 
-          <Pressable className="h-[52px] w-full items-center justify-center rounded-[8px] bg-buttons-primary-bg">
-            <Text className="font-jakarta text-[16px] font-semibold text-buttons-primary-text">
-              Rotate Key
-            </Text>
+          <Pressable
+            className="h-[52px] w-full items-center justify-center rounded-[8px] bg-buttons-primary-bg"
+            onPress={() => setConfirmSignOut(true)}
+          >
+            <Text className="font-jakarta text-[16px] font-semibold text-buttons-primary-text">Se déconnecter</Text>
           </Pressable>
+
+          <Text className="text-center font-jakarta text-caption text-text-secondary">
+            Postbiz {Constants.expoConfig?.version ?? ""}
+          </Text>
         </View>
       </View>
 
       <MainTabNavbar activeTab="settings" />
+
+      <ConfirmDialog
+        visible={confirmSignOut}
+        title="Se déconnecter ?"
+        message="Cet appareil ne recevra plus les notifications de ce compte."
+        confirmLabel="Oui, me déconnecter"
+        cancelLabel="Annuler"
+        confirmDestructive
+        onConfirm={() => {
+          setConfirmSignOut(false);
+          void useAuthStore.getState().signOut();
+        }}
+        onCancel={() => setConfirmSignOut(false)}
+      />
     </SafeAreaView>
   );
 }

@@ -1,4 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
+import * as Linking from "expo-linking";
 import { StatusBar } from "expo-status-bar";
 import { useRouter } from "expo-router";
 import { useCallback, useEffect } from "react";
@@ -19,43 +20,14 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 
-import { showToast } from "@/components/ui/toast";
-import { ADD_CHANNEL_LIST, RANDOM_AVATARS, type AddChannelItem } from "@/data/mock-add-channels";
-import { useChannelsStore } from "@/store/channels-store";
-import type { ChannelNetwork } from "@/types";
+import { AppButton } from "@/components/ui/app-button";
+import { NETWORK_CONFIG } from "@/constants/networks";
 
-function ChannelRow({ channel, onAdd }: { channel: AddChannelItem; onAdd: () => void }) {
-  return (
-    <Pressable
-      className="w-full flex-row items-center justify-between rounded-[8px] border border-channel-active-bg bg-channel-active-bg p-4"
-      onPress={onAdd}
-    >
-      <View className="flex-row items-center gap-3">
-        <View
-          className="h-10 w-10 items-center justify-center rounded-[6px]"
-          style={{ backgroundColor: channel.bgColor }}
-        >
-          <Ionicons name={channel.iconName} size={22} className="text-white" />
-        </View>
-
-        <View className="gap-0.5">
-          <Text className="font-jakarta text-[16px] font-semibold text-text-primary">
-            {channel.title}
-          </Text>
-          <Text className="font-jakarta text-[13px] text-text-secondary">
-            {channel.subtitle}
-          </Text>
-        </View>
-      </View>
-
-      <Ionicons name="add" size={26} className="text-main-accent-pink" />
-    </Pressable>
-  );
-}
+/** Adresse de l'application web (optionnelle) : EXPO_PUBLIC_WEB_URL. */
+const WEB_URL = process.env.EXPO_PUBLIC_WEB_URL ?? "";
 
 export default function AddChannelScreen() {
   const router = useRouter();
-  const addChannel = useChannelsStore((state) => state.addChannel);
   const { width: screenWidth } = useWindowDimensions();
   const translateX = useSharedValue(0);
 
@@ -91,20 +63,6 @@ export default function AddChannelScreen() {
     transform: [{ translateX: translateX.value }],
   }));
 
-  const handleAddChannel = useCallback(
-    (channel: AddChannelItem) => {
-      const avatar = RANDOM_AVATARS[Math.floor(Math.random() * RANDOM_AVATARS.length)];
-      addChannel({
-        id: `${channel.id}-${Date.now()}`,
-        name: channel.title,
-        network: channel.id as ChannelNetwork,
-        avatar,
-      });
-      showToast(`${channel.title} channel added`, "success");
-    },
-    [addChannel],
-  );
-
   return (
     <Animated.View style={[{ flex: 1 }, animatedStyle]}>
       <SafeAreaView className="flex-1 bg-background-primary" edges={["top", "bottom"]}>
@@ -119,7 +77,7 @@ export default function AddChannelScreen() {
           </Pressable>
 
           <Text className="font-jakarta text-[20px] font-semibold text-text-primary">
-            Add Channel
+            Ajouter un canal
           </Text>
 
           <View className="h-6 w-6" />
@@ -127,12 +85,31 @@ export default function AddChannelScreen() {
 
         <ScrollView
           className="flex-1 px-4"
-          contentContainerClassName="gap-2 pb-5"
+          contentContainerClassName="gap-4 pb-5 pt-2"
           showsVerticalScrollIndicator={false}
         >
-          {ADD_CHANNEL_LIST.map((channel) => (
-            <ChannelRow key={channel.id} channel={channel} onAdd={() => handleAddChannel(channel)} />
-          ))}
+          <Text className="font-jakarta text-h4 font-semibold text-text-primary">
+            Connexion depuis l’application web
+          </Text>
+          <Text className="font-jakarta text-body-1 text-text-secondary">
+            Les comptes Facebook, Instagram, X, LinkedIn, TikTok et YouTube se connectent pour l’instant depuis
+            Postbiz sur le web, car l’autorisation passe par chaque réseau. Une fois connectés, vos canaux
+            apparaissent ici automatiquement.
+          </Text>
+
+          <View className="flex-row flex-wrap gap-2 py-2">
+            {(["facebook", "instagram", "x", "linkedin", "tiktok", "youtube"] as const).map((network) => (
+              <View
+                key={network}
+                className="h-10 w-10 items-center justify-center rounded-[6px]"
+                style={{ backgroundColor: NETWORK_CONFIG[network].bg }}
+              >
+                <Ionicons name={NETWORK_CONFIG[network].icon} size={22} color="#FFFFFF" />
+              </View>
+            ))}
+          </View>
+
+          {WEB_URL ? <AppButton label="Ouvrir Postbiz sur le web" onPress={() => void Linking.openURL(WEB_URL)} /> : null}
         </ScrollView>
       </SafeAreaView>
     </Animated.View>

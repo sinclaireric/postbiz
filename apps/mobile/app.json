@@ -56,6 +56,13 @@
         {
           "barStyle": "light-content"
         }
+      ],
+      "expo-secure-store",
+      [
+        "expo-notifications",
+        {
+          "color": "#612BD3"
+        }
       ]
     ],
     "experiments": {

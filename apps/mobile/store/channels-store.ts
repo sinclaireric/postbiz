@@ -1,46 +1,49 @@
 import { create } from "zustand";
 
 import { NETWORK_CHARACTER_LIMITS } from "@/constants/networks";
-import { CHANNELS_LIST } from "@/data/mock-channels";
-import type { Channel } from "@/types";
+import { supabase } from "@/lib/supabase";
+import type { Channel, ChannelNetwork } from "@/types";
 
 type ChannelsState = {
   channels: Channel[];
+  loaded: boolean;
   error: string | null;
 
-  addChannel: (channel: Channel) => void;
-  deleteChannel: (id: string) => void;
-  clearError: () => void;
+  /** Lecture seule : les canaux sont créés par le callback OAuth (service_role), jamais par le client. */
+  load: (orgId: string) => Promise<void>;
+  reset: () => void;
 };
 
-export const useChannelsStore = create<ChannelsState>((set, get) => ({
-  channels: CHANNELS_LIST,
+export const useChannelsStore = create<ChannelsState>((set) => ({
+  channels: [],
+  loaded: false,
   error: null,
 
-  addChannel: (channel) => {
-    if (!channel.id || !channel.network) {
-      set({ error: "Channel must have an id and network." });
+  load: async (orgId) => {
+    const { data, error } = await supabase
+      .from("integrations")
+      .select("id, provider, name, username, picture_url, status")
+      .eq("org_id", orgId)
+      .order("created_at", { ascending: true });
+    if (error) {
+      set({ error: "Impossible de charger les canaux.", loaded: true });
       return;
     }
-    if (get().channels.some((c) => c.id === channel.id)) {
-      set({ error: `Channel with id "${channel.id}" already exists.` });
-      return;
-    }
-    set((state) => ({ channels: [...state.channels, channel], error: null }));
-  },
-
-  deleteChannel: (id) => {
-    if (!get().channels.some((c) => c.id === id)) {
-      set({ error: `Channel "${id}" not found.` });
-      return;
-    }
-    set((state) => ({
-      channels: state.channels.filter((c) => c.id !== id),
+    set({
+      loaded: true,
       error: null,
-    }));
+      channels: (data ?? []).map((i) => ({
+        id: i.id as string,
+        name: i.name as string,
+        network: i.provider as ChannelNetwork,
+        avatar: (i.picture_url as string | null) ?? "",
+        username: i.username as string | null,
+        status: i.status as Channel["status"],
+      })),
+    });
   },
 
-  clearError: () => set({ error: null }),
+  reset: () => set({ channels: [], loaded: false, error: null }),
 }));
 
 export function getChannelLimit(channel: Channel): number {

@@ -21,7 +21,7 @@ function PostEditorInner({
   onBlur,
   onReady,
   autoFocus,
-  placeholder = "What would you like to share?",
+  placeholder = "Que souhaitez-vous partager ?",
   editorRef,
 }: {
   initialContent: string;

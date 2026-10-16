@@ -39,7 +39,7 @@ export default function CalendarScreen() {
 
   // --- Global state ---
   const posts = usePostsStore((state) => state.posts);
-  const storeAddPost = usePostsStore((state) => state.addPost);
+  const storeDuplicatePost = usePostsStore((state) => state.duplicatePost);
   const storeDeletePost = usePostsStore((state) => state.deletePost);
   const storeReschedulePost = usePostsStore((state) => state.reschedulePost);
 
@@ -180,21 +180,22 @@ export default function CalendarScreen() {
   );
 
 
-  const handleDeleteConfirm = useCallback(() => {
-    if (deleteTarget) {
-      storeDeletePost(deleteTarget.id);
-      showToast("Post deleted", "success");
-      setDeleteTarget(null);
-      setPostDetailVisible(false);
-    }
+  const handleDeleteConfirm = useCallback(async () => {
+    if (!deleteTarget) return;
+    const target = deleteTarget;
+    setDeleteTarget(null);
+    setPostDetailVisible(false);
+    const result = await storeDeletePost(target.id);
+    showToast(result.ok ? "Publication supprimée" : result.error, result.ok ? "success" : "error");
   }, [deleteTarget, storeDeletePost]);
 
   const handleDateTimeSave = useCallback(
     (newDate: Date) => {
       const fromPostDetail = !!editingPostId;
       if (editingPostId) {
-        storeReschedulePost(editingPostId, newDate.toISOString());
-        showToast("Date & time updated", "success");
+        void storeReschedulePost(editingPostId, newDate.toISOString()).then((result) =>
+          showToast(result.ok ? "Date et heure modifiées" : result.error, result.ok ? "success" : "error"),
+        );
       } else {
         // Opened from Add Post sheet — update date/hour so the sheet below reflects it
         setSelectedDate(new Date(newDate.getFullYear(), newDate.getMonth(), newDate.getDate()));
@@ -240,8 +241,9 @@ export default function CalendarScreen() {
         seconds: 0,
         milliseconds: 0,
       });
-      storeReschedulePost(postId, newDate.toISOString());
-      showToast("Post rescheduled", "success");
+      void storeReschedulePost(postId, newDate.toISOString()).then((result) =>
+        showToast(result.ok ? "Publication déplacée" : result.error, result.ok ? "success" : "error"),
+      );
     },
     [posts, storeReschedulePost],
   );
@@ -294,27 +296,29 @@ export default function CalendarScreen() {
           }, 350);
         }}
         onDuplicate={(post) => {
-          const newId = `dup-${post.id}-${Date.now()}`;
-          storeAddPost({
-            ...post,
-            id: newId,
-            title: post.title,
-          });
           setPostDetailVisible(false);
-          setTimeout(() => {
-            router.push({
-              pathname: "/create-post",
-              params: {
-                postId: newId,
-                mode: "edit",
-                dateTime: post.scheduledAt,
-                content: post.content,
-                imageUri: post.imageUri ?? "",
-                network: post.network,
-                channelId: post.channelId,
-              },
-            } as any);
-          }, 350);
+          // La copie est enregistrée comme brouillon, puis ouverte pour être relue avant d'être programmée.
+          void storeDuplicatePost(post.id).then((result) => {
+            if (!result.ok || !result.id) {
+              showToast(result.ok ? "Copie impossible" : result.error, "error");
+              return;
+            }
+            const newId = result.id;
+            setTimeout(() => {
+              router.push({
+                pathname: "/create-post",
+                params: {
+                  postId: newId,
+                  mode: "edit",
+                  dateTime: post.scheduledAt,
+                  content: post.content,
+                  imageUri: post.imageUri ?? "",
+                  network: post.network,
+                  channelId: post.channelId,
+                },
+              } as any);
+            }, 350);
+          });
         }}
         onDelete={(post) => {
           setPostDetailVisible(false);
@@ -373,10 +377,10 @@ export default function CalendarScreen() {
       {/* Delete confirmation dialog */}
       <ConfirmDialog
         visible={deleteTarget !== null}
-        title="Are you sure?"
-        message="Are you sure you want to delete this post?"
-        confirmLabel="Yes, Delete It"
-        cancelLabel="No, Cancel"
+        title="Êtes-vous sûr ?"
+        message="Voulez-vous vraiment supprimer cette publication ?"
+        confirmLabel="Oui, supprimer"
+        cancelLabel="Non, annuler"
         confirmDestructive
         onConfirm={handleDeleteConfirm}
         onCancel={() => {

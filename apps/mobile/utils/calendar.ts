@@ -15,6 +15,7 @@ import {
   set,
   isBefore,
 } from "date-fns";
+import { fr } from "date-fns/locale";
 import type { CalendarDay, ScheduledPost, TimeSlot } from "@/types";
 
 /** Generate the grid of days for a given month (Monday-start weeks). */
@@ -76,11 +77,9 @@ export function generateTimeSlots(
 ): TimeSlot[] {
   const slots: TimeSlot[] = [];
   for (let h = startHour; h <= endHour; h++) {
-    const ampm = h < 12 ? "am" : "pm";
-    const hour12 = h === 0 ? 12 : h > 12 ? h - 12 : h;
     slots.push({
       hour: h,
-      label: `${hour12}:00 ${ampm}`,
+      label: `${String(h).padStart(2, "0")}:00`,
     });
   }
   return slots;
@@ -91,21 +90,20 @@ export function getPostHour(post: ScheduledPost): number {
   return getHours(parseISO(post.scheduledAt));
 }
 
-/** Format date for display: "Wed, 24 Feb" */
+/** Format date for display: "mer. 24 févr." */
 export function formatSelectedDate(date: Date): string {
-  return format(date, "EEE, d MMM");
+  return format(date, "EEE d MMM", { locale: fr });
 }
 
-/** Format date for detail display: "February 26, 2026 9:00 am" */
+/** Format date for detail display: "26 février 2026 09:00" */
 export function formatPostDateTime(isoString: string): string {
-  return format(parseISO(isoString), "MMMM d, yyyy h:mm a")
-    .replace(/ AM$/, " am")
-    .replace(/ PM$/, " pm");
+  return format(parseISO(isoString), "d MMMM yyyy HH:mm", { locale: fr });
 }
 
-/** Format month name: "February" */
+/** Format month name: "Février" */
 export function formatMonthName(date: Date): string {
-  return format(date, "MMMM");
+  const name = format(date, "MMMM", { locale: fr });
+  return name.charAt(0).toUpperCase() + name.slice(1);
 }
 
 /** Check if a date is in the past. */

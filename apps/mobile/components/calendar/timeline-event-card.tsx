@@ -122,7 +122,7 @@ export const TimelineEventCard = memo(function TimelineEventCard({ post, isSelec
             {post.status === "draft" ? (
               <>
                 <Text className="font-jakarta text-body-4 font-bold text-text-primary" numberOfLines={1}>
-                  Draft:
+                  Brouillon :
                 </Text>
                 <StyledPreview html={contentHtml} style="font-medium" />
               </>

@@ -30,22 +30,22 @@ export const FORMAT_TOOLS = [
 ];
 
 export const POST_ACTIONS = [
-  { id: "calendar", label: "Add to Calendar", tone: "primary" as const },
-  { id: "now", label: "Post Now", tone: "secondary" as const },
-  { id: "draft", label: "Save as Draft", tone: "tertiary" as const },
+  { id: "calendar", label: "Programmer", tone: "primary" as const },
+  { id: "now", label: "Publier maintenant", tone: "secondary" as const },
+  { id: "draft", label: "Enregistrer en brouillon", tone: "tertiary" as const },
 ];
 
 export const REPEAT_OPTIONS = [
-  "Do Not Repeat",
-  "Every Day",
-  "Every Three Days",
-  "Every Week",
-  "Every Month",
+  "Ne pas répéter",
+  "Tous les jours",
+  "Tous les trois jours",
+  "Toutes les semaines",
+  "Tous les mois",
 ] as const;
 
 export const TAG_COLOR_OPTIONS = ["#5D5FFF", "#E323E0", "#3023E3", "#E89623"] as const;
 
-export const DELAY_OPTIONS = ["Immediately", "After 5 minutes", "After 15 minutes"] as const;
+export const DELAY_OPTIONS = ["Immédiatement", "Après 5 minutes", "Après 15 minutes"] as const;
 
 const ALL_MEDIA_ASSETS = [
   { id: "media-1", uri: "https://picsum.photos/seed/postbiz-media-1/720/720" },
@@ -59,9 +59,9 @@ const ALL_MEDIA_ASSETS = [
 export const MEDIA_LIBRARY_ASSETS = ALL_MEDIA_ASSETS;
 
 export const INITIAL_TAGS: ComposerTag[] = [
-  { id: "personal", label: "Personal", color: "#5D5FFF", selected: true },
+  { id: "personal", label: "Personnel", color: "#5D5FFF", selected: true },
   { id: "important", label: "Important", color: "#E323E0", selected: false },
-  { id: "general", label: "General", color: "#3023E3", selected: false },
+  { id: "general", label: "Général", color: "#3023E3", selected: false },
 ];
 
 export function makePost(id: string, content: string, imageUris: string[] = []): ComposerPost {

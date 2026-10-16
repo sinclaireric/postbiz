@@ -34,7 +34,7 @@ export function PostDetailSheet({
         <>
           <View className="mb-3 flex-row items-center justify-between">
             <Text className="font-jakarta text-h3 font-semibold text-text-primary">
-              Post
+              Publication
             </Text>
             <Pressable
               className="h-8 w-8 items-center justify-center"
@@ -85,7 +85,7 @@ export function PostDetailSheet({
             >
               <Ionicons name="copy-outline" size={16} color="#FFFFFF" />
               <Text className="font-jakarta text-button font-semibold text-text-primary">
-                Duplicate
+                Dupliquer
               </Text>
             </Pressable>
             <Pressable
@@ -94,7 +94,7 @@ export function PostDetailSheet({
             >
               <Ionicons name="pencil" size={16} color="#FFFFFF" />
               <Text className="font-jakarta text-button font-semibold text-white">
-                Edit
+                Modifier
               </Text>
             </Pressable>
           </View>

@@ -51,7 +51,7 @@ export function NoChannelsEmptyState({ onAddChannel }: NoChannelsEmptyStateProps
 
       <View className="w-[343px] items-center gap-3">
         <Text className="w-[271px] text-center font-jakarta text-2xl font-semibold text-text-primary">
-          No channels connected yet
+          Aucun canal connecté pour l’instant
         </Text>
         <Text className="w-full text-center font-jakarta text-sm text-[rgba(255,255,255,0.6)]">
           Connect your social accounts to start scheduling, publishing, and analyzing - all in one place.
@@ -64,7 +64,7 @@ export function NoChannelsEmptyState({ onAddChannel }: NoChannelsEmptyStateProps
       >
         <Ionicons name="add" size={20} className="text-white" />
         <Text className="font-jakarta text-[15px] font-semibold text-buttons-primary-text">
-          Add Channel
+          Ajouter un canal
         </Text>
       </Pressable>
     </View>

@@ -39,18 +39,23 @@ export type Channel = {
   id: string;
   name: string;
   network: ChannelNetwork;
+  /** URL de l'avatar du compte ; chaîne vide si le réseau n'en fournit pas. */
   avatar: string;
+  username?: string | null;
+  /** `active` | `refresh_needed` | `disabled` : un canal à reconnecter ne publie plus. */
+  status?: "active" | "refresh_needed" | "disabled";
 };
 
+/** Ligne de la table `notifications` (une par événement : publication échouée, message reçu...). */
 export type NotificationItem = {
   id: string;
-  social: ChannelNetwork;
-  avatar: string;
-  networkLabel: string;
-  link: string;
-  date: string;
-  time: string;
-  unread?: boolean;
+  type: string;
+  title: string;
+  body: string | null;
+  /** Charge utile libre ; `conversation_id` ou `post_id` servent à ouvrir l'écran concerné. */
+  data: Record<string, unknown>;
+  createdAt: string; // ISO
+  unread: boolean;
 };
 
 export type NetworkConfig = {
@@ -65,7 +70,8 @@ export type ChartSpec = {
 
 // --- Calendar / Scheduled Post types ---
 
-export type PostStatus = "scheduled" | "published" | "draft";
+/** `draft` et `scheduled` (queued) sont les seuls états qu'un client peut écrire ; le reste vient du worker. */
+export type PostStatus = "scheduled" | "published" | "draft" | "error";
 
 export type PostCategory = "Personal" | "Business" | "Marketing" | "Social";
 
@@ -84,6 +90,12 @@ export type ScheduledPost = {
   tagLabel?: string;
   tagColor?: string;
   composerPosts?: { id: string; content: string; imageUris: string[] }[];
+  /** Un même contenu envoyé vers plusieurs canaux partage ce groupe. */
+  groupId?: string;
+  /** Message d'erreur du worker quand `status` vaut `error`. */
+  errorMessage?: string;
+  /** `publishing` : le worker est en train d'envoyer ; `unknown` : issue incertaine, jamais rejouée automatiquement. */
+  dbState?: string;
 };
 
 export type TimeSlot = {

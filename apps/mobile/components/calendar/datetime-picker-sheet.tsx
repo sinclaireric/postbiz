@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Keyboard, Pressable, ScrollView, Text, TextInput, useWindowDimensions, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { set } from "date-fns";
+import { fr } from "date-fns/locale";
 
 import { BottomSheetWrapper } from "@/components/ui/bottom-sheet-wrapper";
 import { CalendarGrid } from "@/components/calendar/calendar-grid";
@@ -279,7 +280,7 @@ export function DateTimePickerSheet({
     >
       <View className="mb-8 flex-row items-center justify-between px-4 pt-5">
         <Text className="font-jakarta text-h1 font-semibold text-text-primary">
-          Change Date or Time
+          Modifier la date ou l’heure
         </Text>
         <Pressable
           className="h-5 w-5 items-center justify-center"
@@ -302,7 +303,7 @@ export function DateTimePickerSheet({
           </Text>
           <View className="h-[52px] flex-1 justify-center rounded-[10px] border border-input-stroke-default bg-input-bg px-4">
             <Text className="font-jakarta text-body-1 text-text-primary">
-              {format(selectedDate, "EEE, d MMMM")}
+              {format(selectedDate, "EEE d MMMM", { locale: fr })}
             </Text>
           </View>
         </View>
@@ -339,7 +340,7 @@ export function DateTimePickerSheet({
 
         <View className="mb-8 flex-row items-center justify-between">
           <Text className="font-jakarta text-h4 font-semibold text-text-primary">
-            Time
+            Heure
           </Text>
 
           <View className="flex-row items-center gap-3">
@@ -350,7 +351,7 @@ export function DateTimePickerSheet({
                 onBlur={handleHourBlur}
                 onFocus={scrollToTime}
                 inputRef={hourRef}
-                accessibilityLabel="Hour field"
+                accessibilityLabel="Heure"
                 onStep={(delta) => stepField("hour", delta)}
               />
               <Text className="font-jakarta text-body-2 font-semibold text-text-primary">
@@ -362,7 +363,7 @@ export function DateTimePickerSheet({
                 onBlur={handleMinuteBlur}
                 onFocus={scrollToTime}
                 inputRef={minuteRef}
-                accessibilityLabel="Minute field"
+                accessibilityLabel="Minutes"
                 onStep={(delta) => stepField("minute", delta)}
               />
             </View>
@@ -406,7 +407,7 @@ export function DateTimePickerSheet({
             onPress={handleSave}
           >
             <Text className="font-jakarta text-button font-semibold text-white">
-              Save
+              Enregistrer
             </Text>
           </Pressable>
         </View>

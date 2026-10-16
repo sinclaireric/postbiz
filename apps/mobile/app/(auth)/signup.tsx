@@ -16,6 +16,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { AppButton } from "@/components/ui/app-button";
 import { AuthInput } from "@/components/ui/auth-input";
+import { useAuthStore } from "@/store/auth-store";
 
 export default function SignUpScreen() {
   const router = useRouter();
@@ -28,6 +29,7 @@ export default function SignUpScreen() {
     password?: string;
     company?: string;
   }>({});
+  const [busy, setBusy] = useState(false);
   const passwordInputRef = useRef<TextInput>(null);
 
   const handleTogglePassword = () => {
@@ -40,16 +42,25 @@ export default function SignUpScreen() {
     }
   };
 
-  const handleCreateAccount = () => {
+  const handleCreateAccount = async () => {
     const newErrors: { email?: string; password?: string; company?: string } =
       {};
-    if (!email || !email.includes("@")) newErrors.email = "Incorrect email";
-    if (!password || password.length < 6)
-      newErrors.password = "Incorrect password";
-    if (!company) newErrors.company = "Company name is required";
+    if (!email || !email.includes("@")) newErrors.email = "Adresse e-mail incorrecte";
+    if (!password || password.length < 8)
+      newErrors.password = "8 caractères minimum";
+    if (!company.trim()) newErrors.company = "Le nom de l’entreprise est requis";
     setErrors(newErrors);
-    if (Object.keys(newErrors).length === 0) {
-      router.push({ pathname: "/(auth)/verify-otp", params: { email, flow: "signup" } } as any);
+    if (Object.keys(newErrors).length > 0) return;
+    setBusy(true);
+    const result = await useAuthStore.getState().signUp(email, password, company);
+    setBusy(false);
+    if (!result.ok) {
+      setErrors({ email: result.error });
+      return;
+    }
+    // Sans confirmation requise, la session existe déjà et les routes protégées prennent le relais.
+    if (result.needsConfirmation) {
+      router.replace({ pathname: "/(auth)/check-email", params: { email, flow: "signup" } } as never);
     }
   };
 
@@ -86,7 +97,7 @@ export default function SignUpScreen() {
           <View className="gap-5">
             <View className="relative gap-6">
               <Text className="font-jakarta text-2xl font-semibold leading-8 text-text-primary">
-                Sign Up
+                Créer un compte
               </Text>
               <View
                 pointerEvents="none"
@@ -100,52 +111,17 @@ export default function SignUpScreen() {
               </View>
 
               <View className="gap-5 pt-[7px]">
-                <View className="gap-3">
-                  <Text className="font-jakarta text-sm text-text-secondary">
-                    Continue with
-                  </Text>
-                  <View className="flex-row gap-2">
-                    <Pressable className="h-[52px] flex-1 items-center justify-center rounded-[10px] bg-white">
-                      <Image
-                        source={require("@/assets/icons/login/google.svg")}
-                        className="w-6 h-6"
-                        contentFit="contain"
-                      />
-                    </Pressable>
-                    <Pressable className="h-[52px] flex-1 items-center justify-center rounded-[10px] bg-white">
-                      <Image
-                        source={require("@/assets/icons/login/apple.svg")}
-                        className="w-6 h-6"
-                        contentFit="contain"
-                      />
-                    </Pressable>
-                    <Pressable className="h-[52px] flex-1 items-center justify-center rounded-[10px] bg-white">
-                      <Image
-                        source={require("@/assets/icons/login/wallet.svg")}
-                        className="w-6 h-6"
-                        contentFit="contain"
-                      />
-                    </Pressable>
-                  </View>
-                </View>
-
-                <View className="flex-row items-center justify-center gap-5">
-                  <View className="h-px w-[100px] bg-separator-primary" />
-                  <Text className="font-jakarta text-sm text-text-secondary">
-                    or
-                  </Text>
-                  <View className="h-px w-[100px] bg-separator-primary" />
-                </View>
+                
 
                 <AuthInput
-                  label="Email"
+                  label="E-mail"
                   value={email}
                   onChangeText={(text) => {
                     setEmail(text);
                     if (errors.email)
                       setErrors((prev) => ({ ...prev, email: undefined }));
                   }}
-                  placeholder="Enter email address"
+                  placeholder="Votre adresse e-mail"
                   keyboardType="email-address"
                   autoCapitalize="none"
                   error={!!errors.email}
@@ -154,14 +130,14 @@ export default function SignUpScreen() {
 
                 <AuthInput
                   ref={passwordInputRef}
-                  label="Password"
+                  label="Mot de passe"
                   value={password}
                   onChangeText={(text) => {
                     setPassword(text);
                     if (errors.password)
                       setErrors((prev) => ({ ...prev, password: undefined }));
                   }}
-                  placeholder="Enter password"
+                  placeholder="8 caractères minimum"
                   secureTextEntry={!passwordVisible}
                   textContentType="none"
                   autoComplete="off"
@@ -194,14 +170,14 @@ export default function SignUpScreen() {
                 />
 
                 <AuthInput
-                  label="Company"
+                  label="Entreprise"
                   value={company}
                   onChangeText={(text) => {
                     setCompany(text);
                     if (errors.company)
                       setErrors((prev) => ({ ...prev, company: undefined }));
                   }}
-                  placeholder="Enter company name"
+                  placeholder="Nom de votre entreprise"
                   autoCapitalize="words"
                   error={!!errors.company}
                   hint={errors.company}
@@ -214,21 +190,26 @@ export default function SignUpScreen() {
           <View className="mt-auto gap-6 pt-5">
             <View className="items-center pb-1">
               <Text className="w-full font-jakarta text-sm text-text-primary">
-                By registering you agree to our{" "}
-                <Text className="underline" onPress={() => WebBrowser.openBrowserAsync("https://postbiz.com/cgu")}>Terms of Service</Text> and{" "}
-                <Text className="underline" onPress={() => WebBrowser.openBrowserAsync("https://postbiz.com/confidentialite")}>Privacy Policy</Text>
+                En créant un compte, vous acceptez nos{" "}
+                <Text className="underline" onPress={() => WebBrowser.openBrowserAsync("https://postbiz.com/cgu")}>conditions d’utilisation</Text> et notre{" "}
+                <Text className="underline" onPress={() => WebBrowser.openBrowserAsync("https://postbiz.com/confidentialite")}>politique de confidentialité</Text>.
               </Text>
             </View>
 
-            <AppButton label="Create Account" onPress={handleCreateAccount} />
+            <AppButton
+              label={busy ? "Création…" : "Créer mon compte"}
+              variant={busy ? "disabled" : "primary"}
+              disabled={busy}
+              onPress={handleCreateAccount}
+            />
 
             <View className="w-full flex-row items-baseline gap-2">
               <Text className="font-jakarta text-sm text-text-primary">
-                Already have an account?
+                Déjà un compte ?
               </Text>
               <Pressable onPress={() => router.replace("/(auth)")}>
                 <Text className="font-jakarta text-[15px] font-semibold text-main-accent-pink">
-                  Sign In
+                  Se connecter
                 </Text>
               </Pressable>
             </View>

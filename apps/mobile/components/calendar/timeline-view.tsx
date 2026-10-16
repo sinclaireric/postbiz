@@ -169,9 +169,11 @@ const TimelineSlotRow = memo(function TimelineSlotRow({
         <Text className="font-jakarta text-body-4 font-medium leading-[17px] text-[#B3B3B3]">
           {hourLabel}
         </Text>
-        <Text className="font-jakarta text-body-4 font-medium leading-[17px] text-[#B3B3B3]">
-          {meridiemLabel}
-        </Text>
+        {meridiemLabel ? (
+          <Text className="font-jakarta text-body-4 font-medium leading-[17px] text-[#B3B3B3]">
+            {meridiemLabel}
+          </Text>
+        ) : null}
       </View>
 
       <View className="flex-1 gap-1 pr-px">
@@ -192,8 +194,8 @@ const TimelineSlotRow = memo(function TimelineSlotRow({
               >
                 <Text className="font-jakarta text-body-4 font-semibold text-buttons-primary-bg">
                   {isExpanded
-                    ? "Show less"
-                    : `+ Show more (${hiddenCount})`}
+                    ? "Voir moins"
+                    : `+ Voir plus (${hiddenCount})`}
                 </Text>
               </Pressable>
             )}

@@ -66,7 +66,7 @@ export function ChannelSelectionSheet({
       <View className="flex-1 bg-background-primary">
         <View className="flex-row items-center justify-between px-4 py-5">
           <Text className="font-jakarta text-h2 font-semibold text-text-primary">
-            Select Channels
+            Choisir les canaux
           </Text>
           <Pressable
             className="h-8 w-8 items-center justify-center"
@@ -129,7 +129,7 @@ export function ChannelSelectionSheet({
           >
             <Ionicons name="add" size={18} className="text-white" />
             <Text className="font-jakarta text-button font-semibold text-text-primary">
-              Add Channel
+              Ajouter un canal
             </Text>
           </Pressable>
 
@@ -149,7 +149,7 @@ export function ChannelSelectionSheet({
                   : "text-buttons-disabled-text"
               }`}
             >
-              Done
+              Terminé
             </Text>
           </Pressable>
         </View>

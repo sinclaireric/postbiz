@@ -41,3 +41,6 @@ app-example
 # generated native folders
 /ios
 /android
+
+# env files (la clé anon est publique, mais le .env reste local)
+.env

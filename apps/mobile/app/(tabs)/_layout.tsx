@@ -19,14 +19,14 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Home',
+          title: 'Calendrier',
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
         }}
       />
       <Tabs.Screen
         name="explore"
         options={{
-          title: 'Explore',
+          title: 'Canaux',
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
         }}
       />
@@ -37,16 +37,17 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="analytics"
+        name="inbox"
         options={{
-          title: 'Analytics',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="chart.bar.fill" color={color} />,
+          title: 'Boîte de réception',
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
         }}
       />
+      <Tabs.Screen name="analytics" options={{ href: null }} />
       <Tabs.Screen
         name="settings"
         options={{
-          title: 'Settings',
+          title: 'Réglages',
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="gearshape.fill" color={color} />,
         }}
       />

@@ -9,6 +9,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { AppButton } from "@/components/ui/app-button";
 import { AuthInput } from "@/components/ui/auth-input";
 import { showToast } from "@/components/ui/toast";
+import { useAuthStore } from "@/store/auth-store";
 
 function PasswordVisibilityToggle({
   visible,
@@ -40,8 +41,9 @@ export default function ResetPasswordScreen() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
-  const [focusedField, setFocusedField] = useState<"password" | "confirmPassword" | null>(null);
   const [errors, setErrors] = useState<{ password?: string; confirmPassword?: string }>({});
+  const [busy, setBusy] = useState(false);
+  const recovery = useAuthStore((state) => state.recovery);
   const passwordInputRef = useRef<TextInput>(null);
   const confirmPasswordInputRef = useRef<TextInput>(null);
 
@@ -65,16 +67,23 @@ export default function ResetPasswordScreen() {
     }
   };
 
-  const handleResetPassword = () => {
+  const handleResetPassword = async () => {
     const newErrors: { password?: string; confirmPassword?: string } = {};
-    if (!password || password.length < 6) newErrors.password = "Password must be at least 6 characters";
-    if (!confirmPassword) newErrors.confirmPassword = "Please confirm your password";
-    else if (password !== confirmPassword) newErrors.confirmPassword = "Passwords do not match";
+    if (!password || password.length < 8) newErrors.password = "8 caractères minimum";
+    if (!confirmPassword) newErrors.confirmPassword = "Confirmez votre mot de passe";
+    else if (password !== confirmPassword) newErrors.confirmPassword = "Les mots de passe ne correspondent pas";
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) return;
 
-    showToast("Password reset successfully", "success");
-    router.replace("/(auth)");
+    setBusy(true);
+    const result = await useAuthStore.getState().updatePassword(password);
+    setBusy(false);
+    if (!result.ok) {
+      setErrors({ password: result.error });
+      return;
+    }
+    // La session ouverte par le lien devient la session normale : les routes protégées ouvrent l'application.
+    showToast("Mot de passe modifié", "success");
   };
 
   return (
@@ -119,20 +128,20 @@ export default function ResetPasswordScreen() {
           <View className="gap-8">
             <View className="gap-3">
               <Text className="font-jakarta text-2xl font-semibold leading-8 text-text-primary">
-                Create New Password
+                Nouveau mot de passe
               </Text>
               <Text className="font-jakarta text-sm text-text-secondary">
-                Set a strong password to secure access.
+                Choisissez un mot de passe d’au moins 8 caractères.
               </Text>
             </View>
 
             <View className="gap-5">
               <AuthInput
                 ref={passwordInputRef}
-                label="Password"
+                label="Mot de passe"
                 value={password}
                 onChangeText={(text) => { setPassword(text); if (errors.password) setErrors((prev) => ({ ...prev, password: undefined })); }}
-                placeholder="Enter password"
+                placeholder="Nouveau mot de passe"
                 secureTextEntry={!passwordVisible}
                 textContentType="none"
                 autoComplete="off"
@@ -140,8 +149,6 @@ export default function ResetPasswordScreen() {
                 spellCheck={false}
                 smartInsertDelete={false}
                 keyboardType={Platform.OS === "ios" ? "ascii-capable" : "default"}
-                onFocus={() => setFocusedField("password")}
-                onBlur={() => setFocusedField(null)}
                 error={!!errors.password}
                 hint={errors.password}
                 rightSlot={
@@ -154,10 +161,10 @@ export default function ResetPasswordScreen() {
 
               <AuthInput
                 ref={confirmPasswordInputRef}
-                label="Confirm Password"
+                label="Confirmer le mot de passe"
                 value={confirmPassword}
                 onChangeText={(text) => { setConfirmPassword(text); if (errors.confirmPassword) setErrors((prev) => ({ ...prev, confirmPassword: undefined })); }}
-                placeholder="Confirm password"
+                placeholder="Confirmez le mot de passe"
                 secureTextEntry={!confirmPasswordVisible}
                 textContentType="none"
                 autoComplete="off"
@@ -165,8 +172,6 @@ export default function ResetPasswordScreen() {
                 spellCheck={false}
                 smartInsertDelete={false}
                 keyboardType={Platform.OS === "ios" ? "ascii-capable" : "default"}
-                onFocus={() => setFocusedField("confirmPassword")}
-                onBlur={() => setFocusedField(null)}
                 error={!!errors.confirmPassword}
                 hint={errors.confirmPassword}
                 rightSlot={
@@ -178,7 +183,18 @@ export default function ResetPasswordScreen() {
               />
             </View>
 
-            <AppButton label="Reset Password" onPress={handleResetPassword} />
+            {recovery ? (
+              <AppButton
+                label={busy ? "Enregistrement…" : "Enregistrer le mot de passe"}
+                variant={busy ? "disabled" : "primary"}
+                disabled={busy}
+                onPress={handleResetPassword}
+              />
+            ) : (
+              <Text className="font-jakarta text-sm text-text-secondary">
+                Ouvrez le lien reçu par e-mail sur cet appareil pour choisir un nouveau mot de passe.
+              </Text>
+            )}
           </View>
       </ScrollView>
     </SafeAreaView>

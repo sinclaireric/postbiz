@@ -18,22 +18,22 @@ export default function OnboardingScreen() {
 
           <View className="mt-6 w-full items-center justify-center gap-3">
             <Text className="w-[245px] text-center font-jakarta text-2xl font-semibold leading-8 text-text-primary">
-              Let&apos;s Connect Your First Channel
+              Connectez votre premier canal
             </Text>
             <Text className="w-[275px] text-center font-jakarta text-sm text-[rgba(255,255,255,0.6)]">
-              You&apos;ll need at least one connected account to create and publish posts.
+              Il faut au moins un compte connecté pour programmer et publier des posts.
             </Text>
           </View>
         </View>
 
         <View className="absolute bottom-0 left-0 right-0 px-5 pb-5">
           <AppButton
-            label="Connect Channels"
+            label="Connecter un canal"
             onPress={() => router.push("/add-channel")}
           />
           <View className="mt-3">
             <AppButton
-              label="I'll Do It Later"
+              label="Plus tard"
               variant="text"
               onPress={() => {
                 if (router.canGoBack()) {

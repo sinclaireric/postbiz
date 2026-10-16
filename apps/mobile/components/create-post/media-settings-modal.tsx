@@ -73,7 +73,7 @@ export function MediaSettingsModal({
       >
         <View className="mb-8 flex-row items-center justify-between">
           <Text className="font-jakarta text-h1 font-semibold text-text-primary">
-            Media Settings
+            Réglages du média
           </Text>
           <Pressable
             className="h-8 w-8 items-center justify-center"
@@ -91,7 +91,7 @@ export function MediaSettingsModal({
           <TextInput
             value={altText}
             onChangeText={setAltText}
-            placeholder="Describe the image/video content..."
+            placeholder="Décrivez l’image ou la vidéo…"
             placeholderTextColor="#A3A3A3"
             className="h-[52px] overflow-hidden rounded-[10px] border border-input-stroke-default bg-input-bg font-jakarta text-body-1 text-text-primary pl-4 pr-3 py-1"
             selectionColor="#612BD3"
@@ -108,7 +108,7 @@ export function MediaSettingsModal({
             }}
           >
             <Text className="font-jakarta text-button font-semibold text-white">
-              Save Changes
+              Enregistrer
             </Text>
           </Pressable>
 
@@ -117,7 +117,7 @@ export function MediaSettingsModal({
             onPress={onClose}
           >
             <Text className="font-jakarta text-button font-semibold text-text-primary">
-              Cancel
+              Annuler
             </Text>
           </Pressable>
         </View>

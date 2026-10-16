@@ -16,8 +16,8 @@ Planifiez vos publications et répondez à tous vos messages et commentaires dep
 | Connexion des canaux par OAuth | ❌ Pas encore. Contournement : `pnpm --filter @postbiz/worker add-channel` avec un jeton obtenu à la main |
 | Envoi d'images/vidéos, Instagram / TikTok / YouTube en publication | ❌ Pas encore (`apps/uploader` à brancher) |
 | Inbox X, LinkedIn (commentaires), TikTok, YouTube (commentaires) | ❌ Pas encore |
-| App mobile (`apps/mobile`) | 🟡 Code repris et rebrandé, **toujours sur données factices** ; rien n'est branché à Supabase |
-| Facturation (Stripe), invitation de membres, notifications push, statistiques | ❌ Pas encore |
+| App mobile (`apps/mobile`) | 🟡 Branchée à Supabase (auth, organisation, calendrier, création de posts, inbox + Realtime, enregistrement des jetons push) ; **compile, mais jamais testée sur un vrai projet ni sur appareil**. Pas encore : envoi de médias, envoi des push (aucune Edge Function), connexion de canaux |
+| Facturation (Stripe), invitation de membres, envoi des notifications push, statistiques | ❌ Pas encore |
 
 Voir `docs/PLAN-MVP.md` pour le plan complet et `docs/RESEAUX.md` pour les démarches auprès de chaque réseau
 (ce sont elles, pas le code, qui fixeront la date de lancement).
@@ -57,7 +57,7 @@ pnpm typecheck
 ```
 apps/web        Site vitrine, authentification et application (Next.js 16, Tailwind 4, Supabase)
 apps/worker     Publication, envoi des réponses, balayage du travail abandonné (Node, tsx)
-apps/mobile     Application Expo (repris de postiz-mobile) — à brancher à Supabase
+apps/mobile     Application Expo (repris de postiz-mobile), branchée à Supabase — voir son README
 apps/uploader   Normalisation des médias, Python (repris de postiz-uploader) — à brancher
 packages/core   Ré-exporte le code partagé de supabase/functions/_shared (chiffrement, webhooks Meta, envoi)
 packages/db     Tests de la base dans PGlite
