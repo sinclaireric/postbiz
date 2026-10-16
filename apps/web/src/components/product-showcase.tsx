@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useT } from '@/i18n/client';
-import { Container } from '@/components/ui';
 
 type Mode = 'agentic' | 'classic';
 
@@ -12,11 +11,12 @@ const VIDEOS: Record<Mode, string> = {
 };
 
 /**
- * Démonstration vidéo sous le hero : une bascule choisit entre la planification « agentique » et la planification classique.
- * Une seule vidéo est chargée à la fois (l'autre ne l'est qu'au premier basculement) ; elle ne joue que lorsqu'elle est visible,
- * et jamais d'elle-même pour qui demande moins d'animations (les commandes du lecteur apparaissent alors).
+ * Démonstration vidéo du hero : une bascule choisit entre la planification « agentique » et la planification classique.
+ * Pensée pour le panneau vert du hero (texte clair sur fond sombre). Une seule vidéo est chargée à la fois (l'autre ne
+ * l'est qu'au premier basculement) ; elle ne joue que lorsqu'elle est visible, et jamais d'elle-même pour qui demande
+ * moins d'animations (les commandes du lecteur apparaissent alors).
  */
-export function ProductShowcase() {
+export function ProductShowcase({ className = '' }: { className?: string }) {
   const t = useT();
   const [mode, setMode] = useState<Mode>('agentic');
   const [reduced, setReduced] = useState(false);
@@ -43,35 +43,37 @@ export function ProductShowcase() {
     return () => observer.disconnect();
   }, [mode, reduced]);
 
-  const label = (m: Mode, text: string) => (
+  // Les libellés peuvent passer sur deux lignes : la grille leur donne chacun la moitié de la place restante,
+  // quelle que soit la largeur du panneau et la langue, sans jamais déborder.
+  const label = (m: Mode, text: string, align: string) => (
     <button
       type="button"
       aria-pressed={mode === m}
       onClick={() => setMode(m)}
-      className={`rounded-md px-1 text-center font-medium transition-colors ${mode === m ? 'text-white' : 'text-white/55 hover:text-white/85'}`}
+      className={`rounded-md px-1 font-medium leading-snug transition-colors ${align} ${mode === m ? 'text-white' : 'text-white/65 hover:text-white'}`}
     >
       {text}
     </button>
   );
 
   return (
-    <Container className="py-8 sm:py-12">
-      <div role="group" aria-label={t('home.showcase.switchLabel')} className="flex flex-col items-center gap-3 text-[15px] sm:flex-row sm:justify-center sm:gap-5 sm:text-lg">
-        {label('agentic', t('home.showcase.agentic'))}
+    <div role="region" aria-label={t('home.showcase.title')} className={className}>
+      <div role="group" aria-label={t('home.showcase.switchLabel')} className="grid grid-cols-[1fr_auto_1fr] items-center gap-3 text-sm sm:gap-4 sm:text-base">
+        {label('agentic', t('home.showcase.agentic'), 'text-end')}
         {/* Interrupteur décoratif : les deux boutons de texte portent l'état pour le clavier et les lecteurs d'écran. */}
         <button
           type="button"
           tabIndex={-1}
           aria-hidden="true"
           onClick={() => setMode(mode === 'agentic' ? 'classic' : 'agentic')}
-          className="flex h-7 w-12 shrink-0 rounded-full bg-white/15 p-1 ring-1 ring-white/20"
+          className="flex h-7 w-12 shrink-0 rounded-full bg-white/15 p-1 ring-1 ring-white/25"
         >
           <span className={`h-5 w-5 rounded-full bg-lime transition-[margin] duration-200 ${mode === 'agentic' ? 'ms-0' : 'ms-5'}`} />
         </button>
-        {label('classic', t('home.showcase.classic'))}
+        {label('classic', t('home.showcase.classic'), 'text-start')}
       </div>
 
-      <div className="relative mt-6 aspect-[1920/1018] w-full overflow-hidden rounded-2xl bg-forest sm:mt-8 sm:rounded-[2rem]">
+      <div className="relative mt-5 aspect-[1920/1018] w-full overflow-hidden rounded-2xl bg-forest shadow-2xl shadow-black/40 ring-1 ring-white/15">
         <video
           key={mode}
           ref={videoRef}
@@ -86,6 +88,6 @@ export function ProductShowcase() {
           className="absolute inset-0 h-full w-full object-cover"
         />
       </div>
-    </Container>
+    </div>
   );
 }

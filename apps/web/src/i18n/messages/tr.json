@@ -88,8 +88,8 @@
     "showcase": {
       "title": "Ürün önizlemesi",
       "switchLabel": "Planlama türü",
-      "agentic": "Yapay zekâ ajanıyla planlama istiyorum",
-      "classic": "Klasik planlama istiyorum",
+      "agentic": "Yapay zekâ ajanıyla planlama",
+      "classic": "Klasik planlama",
       "videoAgentic": "Video demosu: yapay zekâ ajanıyla yönetilen planlama",
       "videoClassic": "Video demosu: takvimle klasik planlama"
     },

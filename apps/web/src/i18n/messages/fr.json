@@ -131,8 +131,8 @@
     "showcase": {
       "title": "Aperçu du produit",
       "switchLabel": "Type de planification",
-      "agentic": "Je veux une planification par agent IA",
-      "classic": "Je veux une planification classique",
+      "agentic": "Planification par agent IA",
+      "classic": "Planification classique",
       "videoAgentic": "Démonstration vidéo : planification pilotée par un agent IA",
       "videoClassic": "Démonstration vidéo : planification classique avec calendrier"
     },

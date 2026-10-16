@@ -88,8 +88,8 @@
     "showcase": {
       "title": "Prévia do produto",
       "switchLabel": "Tipo de agendamento",
-      "agentic": "Preciso de agendamento com agente de IA",
-      "classic": "Preciso de agendamento clássico",
+      "agentic": "Agendamento com agente de IA",
+      "classic": "Agendamento clássico",
       "videoAgentic": "Demonstração em vídeo: agendamento conduzido por um agente de IA",
       "videoClassic": "Demonstração em vídeo: agendamento clássico com calendário"
     },

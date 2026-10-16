@@ -88,8 +88,8 @@
     "showcase": {
       "title": "제품 미리보기",
       "switchLabel": "예약 방식",
-      "agentic": "에이전트 기반 예약이 필요해요",
-      "classic": "기본 예약이 필요해요",
+      "agentic": "에이전트 예약",
+      "classic": "기본 예약",
       "videoAgentic": "영상 데모: AI 에이전트가 이끄는 예약",
       "videoClassic": "영상 데모: 캘린더를 사용한 기본 예약"
     },

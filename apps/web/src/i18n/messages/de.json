@@ -88,8 +88,8 @@
     "showcase": {
       "title": "Produktvorschau",
       "switchLabel": "Art der Planung",
-      "agentic": "Ich brauche KI-Agenten-Planung",
-      "classic": "Ich brauche klassische Planung",
+      "agentic": "Planung per KI-Agent",
+      "classic": "Klassische Planung",
       "videoAgentic": "Videodemo: Planung durch einen KI-Agenten",
       "videoClassic": "Videodemo: klassische Planung mit Kalender"
     },

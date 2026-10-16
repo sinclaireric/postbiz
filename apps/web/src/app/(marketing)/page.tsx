@@ -66,15 +66,9 @@ export default async function HomePage() {
             <p className="mt-4 text-sm text-subtle">{t('home.betaNote')}</p>
           </div>
           <div className="pattern-diamonds relative flex min-h-[420px] items-center justify-center overflow-hidden px-5 py-14 sm:px-10 lg:min-h-[640px]">
-            <InboxPreview className="w-full max-w-[600px]" />
+            <ProductShowcase className="w-full max-w-[640px]" />
           </div>
         </div>
-      </section>
-
-      {/* DÉMONSTRATION : planification agentique ou classique */}
-      <section className="bg-ink" aria-labelledby="showcase-title">
-        <h2 id="showcase-title" className="sr-only">{t('home.showcase.title')}</h2>
-        <ProductShowcase />
       </section>
 
       {/* TROIS PILIERS */}

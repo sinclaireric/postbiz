@@ -88,8 +88,8 @@
     "showcase": {
       "title": "Xem trước sản phẩm",
       "switchLabel": "Kiểu lên lịch",
-      "agentic": "Tôi cần lên lịch bằng trợ lý AI",
-      "classic": "Tôi cần lên lịch kiểu cổ điển",
+      "agentic": "Lên lịch bằng trợ lý AI",
+      "classic": "Lên lịch cổ điển",
       "videoAgentic": "Video demo: lên lịch do trợ lý AI điều khiển",
       "videoClassic": "Video demo: lên lịch cổ điển với lịch"
     },

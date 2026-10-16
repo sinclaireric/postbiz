@@ -88,8 +88,8 @@
     "showcase": {
       "title": "製品プレビュー",
       "switchLabel": "スケジュールの方式",
-      "agentic": "エージェントによる予約投稿がしたい",
-      "classic": "従来の予約投稿がしたい",
+      "agentic": "エージェントで予約",
+      "classic": "従来の予約",
       "videoAgentic": "動画デモ:AIエージェントによるスケジュール",
       "videoClassic": "動画デモ:カレンダーでの従来のスケジュール"
     },

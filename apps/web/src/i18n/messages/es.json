@@ -88,8 +88,8 @@
     "showcase": {
       "title": "Vista previa del producto",
       "switchLabel": "Tipo de programación",
-      "agentic": "Necesito programación con agente de IA",
-      "classic": "Necesito programación clásica",
+      "agentic": "Programación con agente de IA",
+      "classic": "Programación clásica",
       "videoAgentic": "Demostración en vídeo: programación guiada por un agente de IA",
       "videoClassic": "Demostración en vídeo: programación clásica con calendario"
     },

@@ -131,8 +131,8 @@
     "showcase": {
       "title": "Product preview",
       "switchLabel": "Scheduling style",
-      "agentic": "I need agentic scheduling",
-      "classic": "I need classic scheduling",
+      "agentic": "Agentic scheduling",
+      "classic": "Classic scheduling",
       "videoAgentic": "Video demo: scheduling driven by an AI agent",
       "videoClassic": "Video demo: classic scheduling with a calendar"
     },
