@@ -1,0 +1,5 @@
+# Configuration Supabase CLI (supabase init a généré un fichier plus complet : fusionnez-le avec celui-ci).
+project_id = "postbiz"
+
+[functions.webhook-meta]
+verify_jwt = false

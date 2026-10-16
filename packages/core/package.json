@@ -1,0 +1,18 @@
+{
+  "name": "@postbiz/core",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Code partagé worker / Edge Functions : chiffrement, webhooks Meta, envoi de réponses. Source de vérité : supabase/functions/_shared.",
+  "type": "module",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "typescript": "5.9.3",
+    "vitest": "3.2.7"
+  }
+}

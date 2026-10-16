@@ -1,0 +1,11 @@
+packages:
+  - "apps/web"
+  - "apps/worker"
+  - "packages/*"
+# apps/mobile (Expo, npm) et apps/uploader (Python) ont leur propre outillage.
+
+# Scripts de build autorisés (esbuild valide son binaire natif ; sharp sert à next/image).
+allowBuilds:
+  esbuild: true
+  sharp: true
+  unrs-resolver: true

@@ -1,0 +1,23 @@
+{
+  "name": "@postbiz/worker",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch --env-file-if-exists=../../.env src/main.ts",
+    "start": "tsx --env-file-if-exists=../../.env src/main.ts",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "add-channel": "tsx --env-file-if-exists=../../.env scripts/add-channel.ts"
+  },
+  "dependencies": {
+    "@postbiz/core": "workspace:*",
+    "@supabase/supabase-js": "2.118.0",
+    "tsx": "4.23.15"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "typescript": "5.9.3",
+    "vitest": "3.2.7"
+  }
+}

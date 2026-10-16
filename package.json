@@ -1,0 +1,21 @@
+{
+  "name": "postbiz",
+  "private": true,
+  "version": "0.1.0",
+  "license": "AGPL-3.0",
+  "packageManager": "pnpm@11.1.2",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "pnpm --filter @postbiz/web dev",
+    "dev:worker": "pnpm --filter @postbiz/worker dev",
+    "build": "pnpm --filter @postbiz/web build",
+    "typecheck": "pnpm -r --if-present typecheck",
+    "test": "pnpm -r --if-present test",
+    "test:db": "pnpm --filter @postbiz/db test"
+  },
+  "devDependencies": {
+    "typescript": "5.9.3"
+  }
+}

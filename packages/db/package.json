@@ -1,0 +1,17 @@
+{
+  "name": "@postbiz/db",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Tests de la base Supabase (migrations, RLS, moteur) exécutés dans PGlite, sans Docker.",
+  "type": "module",
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "0.5.10",
+    "@types/node": "^22.10.0",
+    "typescript": "5.9.3",
+    "vitest": "3.2.7"
+  }
+}
