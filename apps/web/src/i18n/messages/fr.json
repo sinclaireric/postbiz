@@ -128,6 +128,14 @@
     "ctaPrimary": "Essayer gratuitement",
     "ctaPricing": "Voir les tarifs",
     "betaNote": "Bêta gratuite · Sans carte bancaire",
+    "showcase": {
+      "title": "Aperçu du produit",
+      "switchLabel": "Type de planification",
+      "agentic": "Je veux une planification par agent IA",
+      "classic": "Je veux une planification classique",
+      "videoAgentic": "Démonstration vidéo : planification pilotée par un agent IA",
+      "videoClassic": "Démonstration vidéo : planification classique avec calendrier"
+    },
     "pillars": {
       "eyebrow": "Un seul outil pour vos réseaux",
       "title": "Ce que vous faites chaque jour sur vos réseaux, <accent>sans changer d’application</accent>",

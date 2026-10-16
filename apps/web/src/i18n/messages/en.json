@@ -128,6 +128,14 @@
     "ctaPrimary": "Try for free",
     "ctaPricing": "See pricing",
     "betaNote": "Free beta · No credit card",
+    "showcase": {
+      "title": "Product preview",
+      "switchLabel": "Scheduling style",
+      "agentic": "I need agentic scheduling",
+      "classic": "I need classic scheduling",
+      "videoAgentic": "Video demo: scheduling driven by an AI agent",
+      "videoClassic": "Video demo: classic scheduling with a calendar"
+    },
     "pillars": {
       "eyebrow": "One tool for your networks",
       "title": "Everything you do on your networks every day, <accent>without switching apps</accent>",

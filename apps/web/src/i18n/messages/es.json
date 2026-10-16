@@ -85,6 +85,14 @@
     "ctaPrimary": "Probar gratis",
     "ctaPricing": "Ver los precios",
     "betaNote": "Beta gratuita · Sin tarjeta de crédito",
+    "showcase": {
+      "title": "Vista previa del producto",
+      "switchLabel": "Tipo de programación",
+      "agentic": "Necesito programación con agente de IA",
+      "classic": "Necesito programación clásica",
+      "videoAgentic": "Demostración en vídeo: programación guiada por un agente de IA",
+      "videoClassic": "Demostración en vídeo: programación clásica con calendario"
+    },
     "pillars": {
       "eyebrow": "Una sola herramienta para tus redes",
       "title": "Lo que haces cada día en tus redes, <accent>sin cambiar de aplicación</accent>",

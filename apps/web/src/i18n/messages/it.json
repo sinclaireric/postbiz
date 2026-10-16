@@ -85,6 +85,14 @@
     "ctaPrimary": "Prova gratis",
     "ctaPricing": "Vedi i prezzi",
     "betaNote": "Beta gratuita · Nessuna carta di credito",
+    "showcase": {
+      "title": "Anteprima del prodotto",
+      "switchLabel": "Tipo di programmazione",
+      "agentic": "Mi serve la programmazione con agente IA",
+      "classic": "Mi serve la programmazione classica",
+      "videoAgentic": "Demo video: programmazione guidata da un agente IA",
+      "videoClassic": "Demo video: programmazione classica con calendario"
+    },
     "pillars": {
       "eyebrow": "Un solo strumento per i tuoi social",
       "title": "Quello che fai ogni giorno sui tuoi social, <accent>senza cambiare app</accent>",

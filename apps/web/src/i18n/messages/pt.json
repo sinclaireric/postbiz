@@ -85,6 +85,14 @@
     "ctaPrimary": "Experimentar grátis",
     "ctaPricing": "Ver os preços",
     "betaNote": "Beta gratuito · Sem cartão de crédito",
+    "showcase": {
+      "title": "Prévia do produto",
+      "switchLabel": "Tipo de agendamento",
+      "agentic": "Preciso de agendamento com agente de IA",
+      "classic": "Preciso de agendamento clássico",
+      "videoAgentic": "Demonstração em vídeo: agendamento conduzido por um agente de IA",
+      "videoClassic": "Demonstração em vídeo: agendamento clássico com calendário"
+    },
     "pillars": {
       "eyebrow": "Uma única ferramenta para suas redes",
       "title": "O que você faz todos os dias nas suas redes, <accent>sem trocar de aplicativo</accent>",

@@ -85,6 +85,14 @@
     "ctaPrimary": "무료로 체험",
     "ctaPricing": "요금 보기",
     "betaNote": "무료 베타 · 신용카드 불필요",
+    "showcase": {
+      "title": "제품 미리보기",
+      "switchLabel": "예약 방식",
+      "agentic": "에이전트 기반 예약이 필요해요",
+      "classic": "기본 예약이 필요해요",
+      "videoAgentic": "영상 데모: AI 에이전트가 이끄는 예약",
+      "videoClassic": "영상 데모: 캘린더를 사용한 기본 예약"
+    },
     "pillars": {
       "eyebrow": "소셜 네트워크를 위한 하나의 도구",
       "title": "매일 소셜 네트워크에서 하는 일, <accent>앱을 바꾸지 않고</accent>",

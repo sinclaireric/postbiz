@@ -85,6 +85,14 @@
     "ctaPrimary": "無料で試す",
     "ctaPricing": "料金を見る",
     "betaNote": "無料ベータ · クレジットカード不要",
+    "showcase": {
+      "title": "製品プレビュー",
+      "switchLabel": "スケジュールの方式",
+      "agentic": "エージェントによる予約投稿がしたい",
+      "classic": "従来の予約投稿がしたい",
+      "videoAgentic": "動画デモ:AIエージェントによるスケジュール",
+      "videoClassic": "動画デモ:カレンダーでの従来のスケジュール"
+    },
     "pillars": {
       "eyebrow": "SNS運用をひとつのツールで",
       "title": "毎日のSNS運用を、<accent>アプリを切り替えずに</accent>",

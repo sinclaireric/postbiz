@@ -85,6 +85,14 @@
     "ctaPrimary": "免费试用",
     "ctaPricing": "查看价格",
     "betaNote": "免费测试版 · 无需信用卡",
+    "showcase": {
+      "title": "产品预览",
+      "switchLabel": "排期方式",
+      "agentic": "我需要由智能体驱动的排期",
+      "classic": "我需要经典排期",
+      "videoAgentic": "视频演示:由 AI 智能体驱动的排期",
+      "videoClassic": "视频演示:带日历的经典排期"
+    },
     "pillars": {
       "eyebrow": "一个工具,管好你的社交网络",
       "title": "你每天在社交网络上做的事,<accent>无需切换应用</accent>",

@@ -85,6 +85,14 @@
     "ctaPrimary": "Kostenlos testen",
     "ctaPricing": "Preise ansehen",
     "betaNote": "Kostenlose Beta · Keine Kreditkarte",
+    "showcase": {
+      "title": "Produktvorschau",
+      "switchLabel": "Art der Planung",
+      "agentic": "Ich brauche KI-Agenten-Planung",
+      "classic": "Ich brauche klassische Planung",
+      "videoAgentic": "Videodemo: Planung durch einen KI-Agenten",
+      "videoClassic": "Videodemo: klassische Planung mit Kalender"
+    },
     "pillars": {
       "eyebrow": "Ein Werkzeug für Ihre Netzwerke",
       "title": "Alles, was Sie täglich in Ihren Netzwerken tun, <accent>ohne die App zu wechseln</accent>",

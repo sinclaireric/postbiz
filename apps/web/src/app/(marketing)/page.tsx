@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { InboxPreview } from '@/components/inbox-preview';
+import { ProductShowcase } from '@/components/product-showcase';
 import { RichText, accentLimeTags, accentTags } from '@/components/rich-text';
 import { Badge, ButtonLink, Container, Eyebrow } from '@/components/ui';
 import { getT } from '@/i18n/server';
@@ -68,6 +69,12 @@ export default async function HomePage() {
             <InboxPreview className="w-full max-w-[600px]" />
           </div>
         </div>
+      </section>
+
+      {/* DÉMONSTRATION : planification agentique ou classique */}
+      <section className="bg-ink" aria-labelledby="showcase-title">
+        <h2 id="showcase-title" className="sr-only">{t('home.showcase.title')}</h2>
+        <ProductShowcase />
       </section>
 
       {/* TROIS PILIERS */}

@@ -85,6 +85,14 @@
     "ctaPrimary": "Ücretsiz dene",
     "ctaPricing": "Fiyatları gör",
     "betaNote": "Ücretsiz beta · Kredi kartı gerekmez",
+    "showcase": {
+      "title": "Ürün önizlemesi",
+      "switchLabel": "Planlama türü",
+      "agentic": "Yapay zekâ ajanıyla planlama istiyorum",
+      "classic": "Klasik planlama istiyorum",
+      "videoAgentic": "Video demosu: yapay zekâ ajanıyla yönetilen planlama",
+      "videoClassic": "Video demosu: takvimle klasik planlama"
+    },
     "pillars": {
       "eyebrow": "Sosyal ağlarınız için tek araç",
       "title": "Sosyal ağlarda her gün yaptığınız işler, <accent>uygulama değiştirmeden</accent>",
