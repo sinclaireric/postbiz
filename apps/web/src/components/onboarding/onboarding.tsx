@@ -68,9 +68,9 @@ function OnboardingDialog({ tiles, connected, tutorialUrl }: Props) {
       aria-modal="true"
       aria-label={t('app.onboarding.label')}
       tabIndex={-1}
-      className="fixed inset-0 z-[60] flex flex-col overflow-y-auto bg-[#121211] text-white outline-none"
+      className="fixed inset-0 z-[60] flex flex-col overflow-y-auto bg-white text-ink outline-none"
     >
-      <button type="button" onClick={() => setAskClose(true)} aria-label={t('app.onboarding.closeLabel')} className="absolute top-5 end-5 z-10 flex h-9 w-9 items-center justify-center rounded-full text-white/70 hover:bg-white/10 hover:text-white">
+      <button type="button" onClick={() => setAskClose(true)} aria-label={t('app.onboarding.closeLabel')} className="absolute top-5 end-5 z-10 flex h-9 w-9 items-center justify-center rounded-full text-muted hover:bg-wash hover:text-ink">
         <svg width="16" height="16" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="m2 2 10 10M12 2 2 12" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" /></svg>
       </button>
 
@@ -84,12 +84,12 @@ function OnboardingDialog({ tiles, connected, tutorialUrl }: Props) {
       </div>
 
       {askClose && (
-        <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/60 p-4" role="alertdialog" aria-modal="true" aria-labelledby="ob-close-title">
-          <div className="w-full max-w-sm rounded-2xl border border-white/10 bg-[#1c1c1a] p-6">
+        <div className="fixed inset-0 z-[70] flex items-center justify-center bg-ink/40 p-4" role="alertdialog" aria-modal="true" aria-labelledby="ob-close-title">
+          <div className="w-full max-w-sm rounded-2xl border border-line bg-surface p-6 shadow-2xl">
             <h2 id="ob-close-title" className="text-lg font-semibold">{t('app.onboarding.quitTitle')}</h2>
-            <p className="mt-2 text-sm leading-relaxed text-white/65">{t('app.onboarding.quitText')}</p>
+            <p className="mt-2 text-sm leading-relaxed text-muted">{t('app.onboarding.quitText')}</p>
             <div className="mt-6 flex justify-end gap-3">
-              <button type="button" autoFocus onClick={() => setAskClose(false)} className="h-10 rounded-full border border-white/20 px-5 text-sm font-semibold hover:bg-white/10">{t('app.onboarding.stay')}</button>
+              <button type="button" autoFocus onClick={() => setAskClose(false)} className="h-10 rounded-full border border-line px-5 text-sm font-semibold hover:bg-wash">{t('app.onboarding.stay')}</button>
               <button type="button" onClick={close} className="h-10 rounded-full bg-lime px-5 text-sm font-semibold text-ink hover:brightness-95">{t('app.onboarding.quit')}</button>
             </div>
           </div>
@@ -109,12 +109,12 @@ function Stepper({ step }: { step: number }) {
         return (
           <li key={key} className="flex items-center gap-3 sm:gap-5" aria-current={active ? 'step' : undefined}>
             <span className="flex items-center gap-2.5">
-              <span className={`flex h-9 w-9 items-center justify-center rounded-full text-sm font-bold ${active ? 'bg-white text-ink' : step > n ? 'bg-lime text-ink' : 'bg-white/10 text-white/80'}`}>
+              <span className={`flex h-9 w-9 items-center justify-center rounded-full text-sm font-bold ${active ? 'bg-ink text-white' : step > n ? 'bg-lime text-ink' : 'bg-wash text-muted'}`}>
                 {step > n ? '✓' : n}
               </span>
-              <span className={`hidden text-[15px] sm:inline ${active ? 'font-semibold' : 'text-white/70'}`}>{t(key)}</span>
+              <span className={`hidden text-[15px] sm:inline ${active ? 'font-semibold' : 'text-muted'}`}>{t(key)}</span>
             </span>
-            {n < STEP_KEYS.length && <span className="hidden h-px w-10 bg-white/50 sm:block sm:w-14" aria-hidden="true" />}
+            {n < STEP_KEYS.length && <span className="hidden h-px w-10 bg-line sm:block sm:w-14" aria-hidden="true" />}
           </li>
         );
       })}
@@ -126,7 +126,7 @@ function Heading({ title, subtitle }: { title: string; subtitle: string }) {
   return (
     <div className="text-center">
       <h1 className="text-[28px] font-semibold tracking-tight">{title}</h1>
-      <p className="mx-auto mt-2 max-w-2xl text-[15px] text-white/60">{subtitle}</p>
+      <p className="mx-auto mt-2 max-w-2xl text-[15px] text-muted">{subtitle}</p>
     </div>
   );
 }
@@ -142,7 +142,7 @@ const PrimaryButton = (props: React.ComponentProps<'button'>) => (
 const BackButton = ({ onClick }: { onClick: () => void }) => {
   const t = useT();
   return (
-    <button type="button" onClick={onClick} className="flex h-12 items-center gap-2 rounded-xl border-2 border-white/25 px-6 text-[15px] font-medium hover:bg-white/10">
+    <button type="button" onClick={onClick} className="flex h-12 items-center gap-2 rounded-xl border-2 border-line px-6 text-[15px] font-medium hover:bg-wash">
       <svg className="rtl:rotate-180" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m12 19-7-7 7-7M19 12H5" /></svg>
       {t('common.back')}
     </button>
@@ -160,11 +160,11 @@ function StepChannels({ tiles, connected, onNext }: { tiles: OnboardingTile[]; c
       <Heading title={t('app.onboarding.channelsTitle')} subtitle={t('app.onboarding.channelsSubtitle')} />
 
       {connected.length > 0 && (
-        <section className="mt-8 rounded-2xl bg-white/5 p-4" aria-label={t('app.onboarding.connectedChannels', { count: connected.length })}>
+        <section className="mt-8 rounded-2xl bg-wash p-4" aria-label={t('app.onboarding.connectedChannels', { count: connected.length })}>
           <p className="text-sm font-medium">{t('app.onboarding.connectedChannels', { count: connected.length })}</p>
           <ul className="mt-3 flex flex-wrap gap-3">
             {connected.map((c) => (
-              <li key={c.id} className="flex items-center gap-2.5 rounded-xl bg-white/10 px-3 py-2 text-sm">
+              <li key={c.id} className="flex items-center gap-2.5 rounded-xl border border-line bg-surface px-3 py-2 text-sm">
                 <span className="h-2.5 w-2.5 rounded-full" style={{ background: c.color }} aria-hidden="true" />
                 {c.name}
               </li>
@@ -183,18 +183,18 @@ function StepChannels({ tiles, connected, onNext }: { tiles: OnboardingTile[]; c
               aria-expanded={help === tile.id}
               aria-label={t('app.onboarding.about', { name: networkName(tile.id) })}
               onClick={() => setHelp(help === tile.id ? null : tile.id)}
-              className="absolute top-2 end-2 flex h-5 w-5 items-center justify-center rounded-full bg-white text-[11px] font-bold text-ink"
+              className="absolute top-2 end-2 flex h-5 w-5 items-center justify-center rounded-full bg-ink text-[11px] font-bold text-white"
             >
               ?
             </button>
             {help === tile.id && (
-              <div role="note" className="absolute top-9 inset-x-0 z-20 rounded-xl border border-white/10 bg-[#2a2a27] p-3 text-xs leading-relaxed text-white/85 shadow-xl">
+              <div role="note" className="absolute top-9 inset-x-0 z-20 rounded-xl border border-line bg-surface p-3 text-xs leading-relaxed text-ink shadow-xl">
                 <p className="font-semibold">{networkName(tile.id)}</p>
-                <p className="mt-1 text-white/70">
+                <p className="mt-1 text-muted">
                   {t('app.onboarding.capabilities', { publish: t(capabilityKey(tile.capabilities.publish)), dm: t(capabilityKey(tile.capabilities.dm)), comments: t(capabilityKey(tile.capabilities.comments)) })}
                 </p>
-                <p className="mt-1.5 text-white/70">{t(networkNoteKey(tile.id as Network['id']))}</p>
-                <p className="mt-1.5 text-white/55">{t(TILE_HINT_KEY[tile.state])}</p>
+                <p className="mt-1.5 text-muted">{t(networkNoteKey(tile.id as Network['id']))}</p>
+                <p className="mt-1.5 text-subtle">{t(TILE_HINT_KEY[tile.state])}</p>
               </div>
             )}
           </li>
@@ -222,14 +222,14 @@ function Tile({ tile }: { tile: OnboardingTile }) {
       <span className="mt-3 text-[15px] font-medium">{name}</span>
     </>
   );
-  const base = 'flex h-[132px] w-full flex-col items-center justify-center rounded-2xl border border-white/10 bg-[#1c1c1a] transition';
+  const base = 'flex h-[132px] w-full flex-col items-center justify-center rounded-2xl border border-line bg-surface transition';
 
   if (tile.state === 'connect') {
     // Le démarrage OAuth est un POST same-origin (voir app/api/oauth/start/[network]).
     return (
       <form method="post" action={`/api/oauth/start/${tile.id}`}>
         <input type="hidden" name="next" value="/app/calendrier?onboarding=true" />
-        <button type="submit" className={`${base} cursor-pointer hover:border-lime/60 hover:bg-[#242421]`}>{inner}</button>
+        <button type="submit" className={`${base} cursor-pointer hover:border-ink/30 hover:bg-wash`}>{inner}</button>
       </form>
     );
   }
@@ -237,7 +237,7 @@ function Tile({ tile }: { tile: OnboardingTile }) {
     return (
       <form action={connectDemoChannelAction}>
         <input type="hidden" name="networkId" value={tile.id} />
-        <button type="submit" className={`${base} cursor-pointer hover:border-lime/60 hover:bg-[#242421]`}>{inner}</button>
+        <button type="submit" className={`${base} cursor-pointer hover:border-ink/30 hover:bg-wash`}>{inner}</button>
       </form>
     );
   }
@@ -261,18 +261,18 @@ function StepAgents({ onBack, onNext }: { onBack: () => void; onNext: () => void
     <div className="flex flex-1 flex-col">
       <Heading title={t('app.onboarding.agentsTitle')} subtitle={t('app.onboarding.agentsSubtitle')} />
 
-      <p className="mx-auto mt-8 max-w-2xl rounded-2xl border border-lime/30 bg-lime/10 px-5 py-4 text-center text-[15px] leading-relaxed text-lime">
+      <p className="mx-auto mt-8 max-w-2xl rounded-2xl border border-lime bg-lime-soft px-5 py-4 text-center text-[15px] leading-relaxed text-forest">
         {t('app.onboarding.agentsSoon')}
       </p>
 
       <ul className="mx-auto mt-8 grid w-full max-w-4xl gap-4 md:grid-cols-3">
         {options.map((o) => (
-          <li key={o.title} className="rounded-2xl border border-white/10 bg-[#1c1c1a] p-6 opacity-70">
+          <li key={o.title} className="rounded-2xl border border-line bg-surface p-6 opacity-70">
             <div className="flex items-center justify-between gap-3">
               <h2 className="text-lg font-semibold">{o.title}</h2>
-              <span className="rounded-full bg-white/10 px-2.5 py-0.5 text-xs font-semibold text-white/80">{t('app.onboarding.soon')}</span>
+              <span className="rounded-full bg-wash px-2.5 py-0.5 text-xs font-semibold text-muted">{t('app.onboarding.soon')}</span>
             </div>
-            <p className="mt-3 text-[15px] leading-relaxed text-white/60">{o.text}</p>
+            <p className="mt-3 text-[15px] leading-relaxed text-muted">{o.text}</p>
           </li>
         ))}
       </ul>
@@ -310,11 +310,11 @@ function StepTutorial({ tutorialUrl, onBack, onFinish }: { tutorialUrl: string |
       ) : (
         <ol className="mx-auto mt-8 grid w-full max-w-4xl gap-4 md:grid-cols-3">
           {checklist.map((c, i) => (
-            <li key={c.title} className="flex flex-col rounded-2xl border border-white/10 bg-[#1c1c1a] p-6">
-              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white/10 text-sm font-bold">{i + 1}</span>
+            <li key={c.title} className="flex flex-col rounded-2xl border border-line bg-surface p-6">
+              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-wash text-sm font-bold">{i + 1}</span>
               <h2 className="mt-4 text-lg font-semibold">{c.title}</h2>
-              <p className="mt-2 flex-1 text-[15px] leading-relaxed text-white/60">{c.text}</p>
-              <Link href={c.href} className="mt-5 text-sm font-semibold text-lime underline underline-offset-4">{c.cta}</Link>
+              <p className="mt-2 flex-1 text-[15px] leading-relaxed text-muted">{c.text}</p>
+              <Link href={c.href} className="mt-5 text-sm font-semibold text-forest underline underline-offset-4">{c.cta}</Link>
             </li>
           ))}
         </ol>
