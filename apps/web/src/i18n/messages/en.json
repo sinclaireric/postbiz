@@ -59,6 +59,7 @@
     "channels": "Channels",
     "pricing": "Pricing",
     "contact": "Contact",
+    "blog": "Blog",
     "signIn": "Sign in",
     "tryFree": "Try for free",
     "openMenu": "Open menu",
@@ -82,6 +83,7 @@
     "channels": "Channels",
     "pricing": "Pricing",
     "contact": "Contact",
+    "blog": "Blog",
     "createAccount": "Create an account",
     "signIn": "Sign in",
     "terms": "Terms of Service",
@@ -546,6 +548,41 @@
     "hint": "For a bug, tell us which network is concerned and the approximate time: it saves us precious time.",
     "cta": "Create an account"
   },
+  "blog": {
+    "title": "Blog",
+    "subtitle": "Guides, tips and news to publish everywhere and answer every message.",
+    "searchLabel": "Search the blog",
+    "searchPlaceholder": "Search",
+    "searchResults": "Results for “{query}”",
+    "clearSearch": "Clear search",
+    "empty": "No article matches.",
+    "categoriesLabel": "Categories",
+    "categories": { "all": "Latest", "agents": "AI agents", "guides": "Guides", "product": "Product" },
+    "availableIn": "Blog articles are written in French and English; the English version is shown.",
+    "pagination": { "label": "Pagination", "previous": "Previous", "next": "Next", "page": "Page {page} of {pages}" },
+    "breadcrumb": "Breadcrumb",
+    "readTime": "{minutes} min read",
+    "updated": "Last updated: {date}",
+    "toc": "Table of contents",
+    "share": "Share this article:",
+    "shareOn": "Share on {network}",
+    "articleBy": "Article by",
+    "authors": { "team": { "name": "The Postbiz team", "bio": "Postbiz is open-source software to schedule your posts and answer all your messages and comments from a single inbox. Here we write about what we learn while building it." } },
+    "callout": { "tip": "Tip", "note": "Good to know", "warning": "Warning" },
+    "cta": {
+      "title": "Your posts and your messages, in one place",
+      "point1": "One calendar for six networks",
+      "point2": "One inbox for messages and comments",
+      "button": "Try for free",
+      "endTitle": "Schedule your posts, <accent>answer every message</accent>",
+      "endText": "Postbiz brings a publishing calendar and a unified inbox together. The beta is free, no credit card needed.",
+      "endButton": "Create my account",
+      "endSecondary": "Discover the inbox"
+    },
+    "related": "Keep reading",
+    "backToBlog": "Back to the blog",
+    "notFound": { "title": "Article not found", "text": "This article doesn’t exist or has moved." }
+  },
   "meta": {
     "siteTitle": "Postbiz — Schedule your posts, answer all your messages",
     "siteDescription": "Postbiz combines post scheduling and a unified inbox for the private messages and comments of Facebook, Instagram, X, LinkedIn, TikTok and YouTube.",
@@ -569,6 +606,7 @@
       "title": "Contact",
       "description": "Write to the Postbiz team."
     },
+    "blog": { "title": "Blog", "description": "Postbiz guides, tips and news: schedule your posts, answer your messages, work with AI agents.", "categoryDescription": "Postbiz blog articles in the “{category}” category." },
     "terms": {
       "title": "Terms of Service"
     },

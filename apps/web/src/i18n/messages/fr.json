@@ -59,6 +59,7 @@
     "channels": "Canaux",
     "pricing": "Tarifs",
     "contact": "Contact",
+    "blog": "Blog",
     "signIn": "Connexion",
     "tryFree": "Essai gratuit",
     "openMenu": "Ouvrir le menu",
@@ -82,6 +83,7 @@
     "channels": "Canaux",
     "pricing": "Tarifs",
     "contact": "Contact",
+    "blog": "Blog",
     "createAccount": "Créer un compte",
     "signIn": "Connexion",
     "terms": "Conditions d’utilisation",
@@ -546,6 +548,41 @@
     "hint": "Pour un bug, indiquez le réseau concerné et l’heure approximative : cela nous fait gagner un temps précieux.",
     "cta": "Créer un compte"
   },
+  "blog": {
+    "title": "Blog",
+    "subtitle": "Guides, conseils et nouveautés pour publier partout et répondre à tous vos messages.",
+    "searchLabel": "Rechercher dans le blog",
+    "searchPlaceholder": "Rechercher",
+    "searchResults": "Résultats pour « {query} »",
+    "clearSearch": "Effacer la recherche",
+    "empty": "Aucun article ne correspond.",
+    "categoriesLabel": "Catégories",
+    "categories": { "all": "Récents", "agents": "Agents IA", "guides": "Guides", "product": "Produit" },
+    "availableIn": "Les articles du blog sont écrits en français et en anglais ; la version anglaise est affichée.",
+    "pagination": { "label": "Pagination", "previous": "Précédent", "next": "Suivant", "page": "Page {page} sur {pages}" },
+    "breadcrumb": "Fil d’Ariane",
+    "readTime": "{minutes} min de lecture",
+    "updated": "Mis à jour le {date}",
+    "toc": "Sommaire",
+    "share": "Partager cet article :",
+    "shareOn": "Partager sur {network}",
+    "articleBy": "Article par",
+    "authors": { "team": { "name": "L’équipe Postbiz", "bio": "Postbiz est un logiciel libre pour planifier vos publications et répondre à tous vos messages et commentaires depuis une seule boîte. Nous racontons ici ce que nous apprenons en le construisant." } },
+    "callout": { "tip": "Conseil", "note": "À savoir", "warning": "Attention" },
+    "cta": {
+      "title": "Vos publications et vos messages, au même endroit",
+      "point1": "Un calendrier pour six réseaux",
+      "point2": "Une boîte pour les messages et commentaires",
+      "button": "Essayer gratuitement",
+      "endTitle": "Planifiez vos posts, <accent>répondez à tous vos messages</accent>",
+      "endText": "Postbiz réunit un calendrier de publication et une boîte de réception unifiée. La bêta est gratuite, sans carte bancaire.",
+      "endButton": "Créer mon compte",
+      "endSecondary": "Découvrir la boîte de réception"
+    },
+    "related": "À lire aussi",
+    "backToBlog": "Retour au blog",
+    "notFound": { "title": "Article introuvable", "text": "Cet article n’existe pas ou a été déplacé." }
+  },
   "meta": {
     "siteTitle": "Postbiz — Planifiez vos posts, répondez à tous vos messages",
     "siteDescription": "Postbiz réunit la planification de vos publications et une boîte de réception unifiée pour les messages privés et commentaires de Facebook, Instagram, X, LinkedIn, TikTok et YouTube.",
@@ -569,6 +606,7 @@
       "title": "Contact",
       "description": "Écrivez à l’équipe Postbiz."
     },
+    "blog": { "title": "Blog", "description": "Guides, conseils et nouveautés Postbiz : planifier ses publications, répondre à ses messages, travailler avec des agents IA.", "categoryDescription": "Les articles du blog Postbiz dans la catégorie « {category} »." },
     "terms": {
       "title": "Conditions d’utilisation"
     },

@@ -26,6 +26,9 @@ export const formatLongDay = (locale: Locale, d: Date) =>
 
 export const formatShortDate = (locale: Locale, d: Date) => d.toLocaleDateString(tag(locale), { day: '2-digit', month: '2-digit' });
 export const formatFullDate = (locale: Locale, d: Date) => d.toLocaleDateString(tag(locale));
+/** Date d'un article (« 1 oct. 2026 », « Oct 1, 2026 »). L'article porte un jour sans heure : on formate en UTC pour ne pas le décaler. */
+export const formatArticleDate = (locale: Locale, isoDay: string) =>
+  new Date(`${isoDay}T00:00:00Z`).toLocaleDateString(tag(locale), { dateStyle: 'medium', timeZone: 'UTC' });
 export const formatMonthYear = (locale: Locale, d: Date) => d.toLocaleDateString(tag(locale), { month: 'long', year: 'numeric' });
 export const formatWeekday = (locale: Locale, d: Date, style: 'long' | 'short' = 'long') => d.toLocaleDateString(tag(locale), { weekday: style });
 export const formatDateTime = (locale: Locale, iso: string) => new Date(iso).toLocaleString(tag(locale), { dateStyle: 'full', timeStyle: 'short' });

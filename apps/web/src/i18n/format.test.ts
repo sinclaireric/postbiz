@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { formatBytes, formatEuro, formatRelative } from './format';
+import { formatArticleDate, formatBytes, formatEuro, formatRelative } from './format';
 
 const NOW = new Date('2026-10-16T12:00:00Z');
 const ago = (ms: number) => new Date(NOW.getTime() - ms).toISOString();
@@ -34,5 +34,13 @@ describe('formatEuro', () => {
     expect(formatEuro('en', 49)).toMatch(/€49/);
     expect(formatEuro('fr', 49)).toMatch(/49\s€/);
     expect(formatEuro('de', 49)).toMatch(/49\s€/);
+  });
+});
+
+describe('formatArticleDate', () => {
+  it('formate le jour dans la langue, sans décalage de fuseau', () => {
+    expect(formatArticleDate('en', '2026-10-01')).toBe('Oct 1, 2026');
+    expect(formatArticleDate('fr', '2026-10-01')).toBe('1 oct. 2026');
+    expect(formatArticleDate('de', '2026-01-01')).toMatch(/01\.01\.2026|1\. Jan\.? 2026/);
   });
 });

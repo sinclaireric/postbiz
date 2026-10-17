@@ -19,6 +19,7 @@ export async function SiteFooter() {
     {
       title: t('footer.resources'),
       links: [
+        { href: '/blog', label: t('footer.blog') },
         { href: '/contact', label: t('footer.contact') },
         { href: '/signup', label: t('footer.createAccount') },
         { href: '/login', label: t('footer.signIn') },

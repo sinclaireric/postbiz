@@ -14,6 +14,7 @@ export async function SiteHeader() {
   const links = [
     { href: '/canaux', label: t('header.channels') },
     { href: '/tarifs', label: t('header.pricing') },
+    { href: '/blog', label: t('header.blog') },
     { href: '/contact', label: t('header.contact') },
   ];
 
@@ -61,7 +62,7 @@ export async function SiteHeader() {
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true"><path d="M3 5h12M3 9h12M3 13h12" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" /></svg>
             </summary>
             <div className="absolute end-0 top-12 w-[280px] rounded-2xl border border-line bg-surface p-3 shadow-[0_12px_40px_-12px_rgba(17,17,16,0.3)]">
-              {[...productLinks.map((l) => ({ href: l.href, label: l.title })), { href: '/tarifs', label: t('header.pricing') }, { href: '/contact', label: t('header.contact') }].map((l) => (
+              {[...productLinks.map((l) => ({ href: l.href, label: l.title })), { href: '/tarifs', label: t('header.pricing') }, { href: '/blog', label: t('header.blog') }, { href: '/contact', label: t('header.contact') }].map((l) => (
                 <Link key={l.href + l.label} href={l.href} className="block rounded-xl px-3 py-2.5 text-[15px] font-medium hover:bg-wash">{l.label}</Link>
               ))}
               <div className="mt-2 grid gap-2 border-t border-line pt-3">
