@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { getT } from '@/i18n/server';
+import { AI_AGENTS } from '@/lib/agents';
 import { LanguageSwitcher } from './language-switcher';
 import { Logo } from './logo';
 import { ButtonLink, Container } from './ui';
@@ -40,6 +41,39 @@ export async function SiteHeader() {
                 </div>
               </div>
             </div>
+            <div className="group relative">
+              <button className="flex h-10 items-center gap-1 rounded-full px-3 text-[15px] font-medium text-ink/80 hover:text-ink" aria-haspopup="true">
+                {t('header.agents')}
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="m3 4.5 3 3 3-3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+              </button>
+              <div className="invisible absolute start-0 top-full w-[660px] pt-2 opacity-0 transition group-focus-within:visible group-focus-within:opacity-100 group-hover:visible group-hover:opacity-100">
+                <div className="rounded-2xl border border-line bg-surface p-2 shadow-[0_12px_40px_-12px_rgba(17,17,16,0.25)]">
+                  <ul className="grid grid-cols-3 gap-0.5">
+                    {AI_AGENTS.map((a) => (
+                      <li key={a.slug}>
+                        <Link href={`/${a.slug}`} className="flex items-center gap-2.5 rounded-xl px-2.5 py-2 text-[14px] font-medium hover:bg-wash">
+                          {/* eslint-disable-next-line @next/next/no-img-element -- petit SVG statique */}
+                          <img src={a.icon} alt="" width={24} height={24} className="h-6 w-6 shrink-0 rounded-[27%]" loading="lazy" />
+                          <span className="truncate">{a.name}</span>
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="mt-1 grid grid-cols-2 gap-0.5 border-t border-line pt-1">
+                    <Link href="/mcp" className="flex items-center gap-2.5 rounded-xl px-2.5 py-2 text-[14px] font-medium hover:bg-wash">
+                      {/* eslint-disable-next-line @next/next/no-img-element -- petit SVG statique */}
+                      <img src="/agents/mcp.svg" alt="" width={24} height={24} className="h-6 w-6 shrink-0 rounded-[27%]" loading="lazy" />
+                      {t('header.mcp')}
+                    </Link>
+                    <Link href="/agent" className="flex items-center gap-2.5 rounded-xl px-2.5 py-2 text-[14px] font-medium hover:bg-wash">
+                      {/* eslint-disable-next-line @next/next/no-img-element -- petit SVG statique */}
+                      <img src="/agents/terminal.svg" alt="" width={24} height={24} className="h-6 w-6 shrink-0 rounded-[27%]" loading="lazy" />
+                      {t('header.agentsAll')}
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            </div>
             {links.map((l) => (
               <Link key={l.href} href={l.href} className="flex h-10 items-center rounded-full px-3 text-[15px] font-medium text-ink/80 hover:text-ink">
                 {l.label}
@@ -62,7 +96,7 @@ export async function SiteHeader() {
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true"><path d="M3 5h12M3 9h12M3 13h12" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" /></svg>
             </summary>
             <div className="absolute end-0 top-12 w-[280px] rounded-2xl border border-line bg-surface p-3 shadow-[0_12px_40px_-12px_rgba(17,17,16,0.3)]">
-              {[...productLinks.map((l) => ({ href: l.href, label: l.title })), { href: '/tarifs', label: t('header.pricing') }, { href: '/blog', label: t('header.blog') }, { href: '/contact', label: t('header.contact') }].map((l) => (
+              {[...productLinks.map((l) => ({ href: l.href, label: l.title })), { href: '/agent', label: t('header.agents') }, { href: '/tarifs', label: t('header.pricing') }, { href: '/blog', label: t('header.blog') }, { href: '/contact', label: t('header.contact') }].map((l) => (
                 <Link key={l.href + l.label} href={l.href} className="block rounded-xl px-3 py-2.5 text-[15px] font-medium hover:bg-wash">{l.label}</Link>
               ))}
               <div className="mt-2 grid gap-2 border-t border-line pt-3">

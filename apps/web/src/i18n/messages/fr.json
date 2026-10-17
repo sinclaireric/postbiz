@@ -60,6 +60,9 @@
     "pricing": "Tarifs",
     "contact": "Contact",
     "blog": "Blog",
+    "agents": "Agents IA",
+    "agentsAll": "Tous les agents IA",
+    "mcp": "Serveur MCP",
     "signIn": "Connexion",
     "tryFree": "Essai gratuit",
     "openMenu": "Ouvrir le menu",
@@ -583,6 +586,104 @@
     "backToBlog": "Retour au blog",
     "notFound": { "title": "Article introuvable", "text": "Cet article n’existe pas ou a été déplacé." }
   },
+  "agents": {
+    "badge": "{name} + Postbiz",
+    "title": "Planifiez vos publications avec {name}",
+    "bullet1": "{name} + Postbiz : serveur MCP, ligne de commande et API publique, bientôt",
+    "bullet2": "Rédigez, planifiez et validez vos posts sur six réseaux",
+    "kind": {
+      "chat": { "bullet": "Demandez en langage naturel, validez dans le calendrier" },
+      "editor": { "bullet": "Préparez vos posts depuis le panneau de l’agent, sans quitter l’éditeur" },
+      "terminal": { "bullet": "Demandez depuis votre terminal, validez dans le calendrier" },
+      "autonomous": { "bullet": "Un agent qui prépare vos posts en continu, avec votre accord avant d’agir" },
+      "workspace": { "bullet": "Donnez un objectif, relisez les brouillons dans le calendrier" }
+    },
+    "available": "Disponible",
+    "howCta": "Voir comment ça marchera",
+    "fine": "Postbiz est l’outil de planification que {name} pourra piloter. Gardez toujours un humain dans la boucle.",
+    "fineLink": "Guide des agents IA",
+    "how": {
+      "title": "Comment ça marchera avec {name}",
+      "s1": { "title": "Connectez vos réseaux", "text": "Reliez vos pages et vos comptes à Postbiz. Cette étape est déjà disponible, en bêta." },
+      "s2": {
+        "title": "Reliez {name}",
+        "text": "Le serveur MCP, la ligne de commande et l’API publique sont en préparation. Nous préviendrons les inscrits."
+      },
+      "s3": {
+        "title": "Demandez, relisez, planifiez",
+        "text": "{name} prépare des brouillons ; vous les validez dans le calendrier avant qu’ils partent."
+      }
+    },
+    "demo": {
+      "badge": "Aperçu",
+      "user": "Prépare trois posts sur notre nouvelle offre pour la semaine prochaine, un par réseau.",
+      "agent": "Voici trois brouillons : LinkedIn, Instagram et X. Ils attendent votre validation dans le calendrier.",
+      "note": "Exemple illustratif : cette intégration n’est pas encore disponible."
+    },
+    "can": {
+      "title": "Ce que {name} pourra faire avec Postbiz",
+      "c1": {
+        "title": "Préparer des brouillons",
+        "text": "Rédiger un post, le décliner pour chaque réseau et le déposer en brouillon, sans rien publier."
+      },
+      "c2": {
+        "title": "Planifier",
+        "text": "Choisir un créneau et programmer la publication sur Facebook, Instagram, X, LinkedIn, TikTok ou YouTube."
+      },
+      "c3": { "title": "Lire le calendrier", "text": "Savoir ce qui est prévu cette semaine avant de proposer quoi que ce soit." },
+      "c4": {
+        "title": "Rester sous contrôle",
+        "text": "Un humain valide. Une publication dont l’issue est incertaine n’est jamais rejouée automatiquement."
+      }
+    },
+    "what": { "title": "Qu’est-ce que {name} ?" },
+    "networks": { "title": "Sur quels réseaux ?" },
+    "faq": {
+      "title": "Questions fréquentes sur {name}",
+      "q1": "Qu’est-ce que {name} ?",
+      "q2": "Puis-je utiliser {name} avec Postbiz dès aujourd’hui ?",
+      "a2": "Pas encore. L’accès pour agents (serveur MCP, ligne de commande, API publique) est en préparation. En attendant, vous pouvez demander des brouillons à {name} et les planifier vous-même dans le calendrier de Postbiz.",
+      "q3": "Faudra-t-il une clé d’API ?",
+      "a3": "Les modalités de connexion seront précisées au lancement de l’accès pour agents. Aucune clé n’est à créer pour l’instant.",
+      "q4": "{name} publiera-t-il sans mon accord ?",
+      "a4": "Notre principe : l’agent prépare, vous décidez. Les posts préparés par {name} attendent votre validation dans le calendrier.",
+      "q5": "Sur quels réseaux {name} pourra-t-il publier ?",
+      "a5": "Sur ceux de Postbiz : Facebook, Instagram, X, LinkedIn, TikTok et YouTube. L’état de chacun est détaillé sur la page Canaux."
+    },
+    "others": { "title": "Autres agents IA" },
+    "end": {
+      "title": "Planifiez vos posts, <accent>gardez la main</accent>",
+      "text": "Créez votre compte Postbiz et connectez vos réseaux dès maintenant. L’accès pour agents arrivera ensuite."
+    },
+    "hub": {
+      "title": "Les agents IA qui pourront piloter <accent>Postbiz</accent>",
+      "intro": "Claude, ChatGPT, Cursor, Codex… Postbiz prépare un serveur MCP, une ligne de commande et une API publique pour que l’agent de votre choix rédige et planifie vos posts. Rien de cela n’est encore disponible : cette page montre où nous allons.",
+      "guides": "Lire les guides",
+      "routesTitle": "Trois accès prévus, <accent>aucun n’existe encore</accent>",
+      "mcp": { "title": "Serveur MCP", "text": "Le standard par lequel les assistants IA se branchent à vos applications." },
+      "cli": { "title": "Ligne de commande", "text": "Pour les agents qui travaillent dans un terminal ou un éditeur de code." },
+      "api": { "title": "API publique", "text": "Pour tous les autres outils et pour vos propres automatisations." },
+      "listTitle": "Tous les agents",
+      "listText": "Une page par agent, avec ce qu’il pourra faire avec Postbiz."
+    },
+    "mcp": {
+      "title": "Le serveur MCP de <accent>Postbiz</accent>",
+      "intro": "MCP (Model Context Protocol) est le standard par lequel les assistants IA se branchent à vos applications. Le serveur MCP de Postbiz est en préparation : il n’est pas encore disponible.",
+      "all": "Voir les agents",
+      "c1": {
+        "title": "À quoi servira-t-il ?",
+        "text": "À laisser un assistant IA lire votre calendrier, préparer des brouillons et planifier des publications, depuis la conversation."
+      },
+      "c2": {
+        "title": "Avec quels assistants ?",
+        "text": "Tout assistant ou agent qui sait utiliser MCP : Claude, ChatGPT, Cursor, Codex et bien d’autres. La liste est sur la page des agents."
+      },
+      "c3": {
+        "title": "Qui garde la main ?",
+        "text": "Vous. L’assistant prépare, un humain valide, et une publication dont l’issue est incertaine n’est jamais rejouée automatiquement."
+      }
+    }
+  },
   "meta": {
     "siteTitle": "Postbiz — Planifiez vos posts, répondez à tous vos messages",
     "siteDescription": "Postbiz réunit la planification de vos publications et une boîte de réception unifiée pour les messages privés et commentaires de Facebook, Instagram, X, LinkedIn, TikTok et YouTube.",
@@ -607,6 +708,9 @@
       "description": "Écrivez à l’équipe Postbiz."
     },
     "blog": { "title": "Blog", "description": "Guides, conseils et nouveautés Postbiz : planifier ses publications, répondre à ses messages, travailler avec des agents IA.", "categoryDescription": "Les articles du blog Postbiz dans la catégorie « {category} »." },
+    "agent": { "title": "Planifier ses publications avec {name}", "description": "Postbiz prépare l’accès des agents IA : bientôt, {name} pourra rédiger des brouillons et planifier vos posts sur Facebook, Instagram, X, LinkedIn, TikTok et YouTube." },
+    "agents": { "title": "Agents IA", "description": "Claude, ChatGPT, Cursor, Codex… Postbiz prépare un serveur MCP, une ligne de commande et une API publique pour que l’agent de votre choix rédige et planifie vos posts." },
+    "mcp": { "title": "Serveur MCP", "description": "Le serveur MCP de Postbiz, en préparation : relier un assistant IA à votre calendrier de publication, avec un humain dans la boucle." },
     "terms": {
       "title": "Conditions d’utilisation"
     },

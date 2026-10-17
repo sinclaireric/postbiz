@@ -60,6 +60,9 @@
     "pricing": "Pricing",
     "contact": "Contact",
     "blog": "Blog",
+    "agents": "AI agents",
+    "agentsAll": "All AI agents",
+    "mcp": "MCP server",
     "signIn": "Sign in",
     "tryFree": "Try for free",
     "openMenu": "Open menu",
@@ -583,6 +586,89 @@
     "backToBlog": "Back to the blog",
     "notFound": { "title": "Article not found", "text": "This article doesn’t exist or has moved." }
   },
+  "agents": {
+    "badge": "{name} + Postbiz",
+    "title": "Schedule your posts with {name}",
+    "bullet1": "{name} + Postbiz: MCP server, command line and public API, coming soon",
+    "bullet2": "Draft, schedule and approve your posts on six networks",
+    "kind": {
+      "chat": { "bullet": "Ask in plain language, approve in the calendar" },
+      "editor": { "bullet": "Prepare your posts from the agent panel, without leaving the editor" },
+      "terminal": { "bullet": "Ask from your terminal, approve in the calendar" },
+      "autonomous": { "bullet": "An agent that prepares your posts continuously, with your approval before it acts" },
+      "workspace": { "bullet": "Give it a goal, review the drafts in the calendar" }
+    },
+    "available": "Available",
+    "howCta": "See how it will work",
+    "fine": "Postbiz is the scheduling tool {name} will be able to drive. Always keep a human in the loop.",
+    "fineLink": "AI agents guide",
+    "how": {
+      "title": "How it will work with {name}",
+      "s1": { "title": "Connect your networks", "text": "Link your pages and accounts to Postbiz. This step is already available, in beta." },
+      "s2": { "title": "Connect {name}", "text": "The MCP server, the command line and the public API are in the works. We’ll let sign-ups know." },
+      "s3": { "title": "Ask, review, schedule", "text": "{name} prepares drafts; you approve them in the calendar before they go out." }
+    },
+    "demo": {
+      "badge": "Preview",
+      "user": "Prepare three posts about our new offer for next week, one per network.",
+      "agent": "Here are three drafts: LinkedIn, Instagram and X. They’re waiting for your approval in the calendar.",
+      "note": "Illustrative example: this integration isn’t available yet."
+    },
+    "can": {
+      "title": "What {name} will be able to do with Postbiz",
+      "c1": { "title": "Prepare drafts", "text": "Write a post, adapt it for each network and drop it in as a draft, without publishing anything." },
+      "c2": { "title": "Schedule", "text": "Pick a time slot and schedule the post on Facebook, Instagram, X, LinkedIn, TikTok or YouTube." },
+      "c3": { "title": "Read the calendar", "text": "Know what is planned this week before suggesting anything." },
+      "c4": { "title": "Stay in control", "text": "A human approves. A publication whose outcome is uncertain is never replayed automatically." }
+    },
+    "what": { "title": "What is {name}?" },
+    "networks": { "title": "On which networks?" },
+    "faq": {
+      "title": "Frequently asked questions about {name}",
+      "q1": "What is {name}?",
+      "q2": "Can I use {name} with Postbiz today?",
+      "a2": "Not yet. Agent access (MCP server, command line, public API) is in the works. In the meantime, you can ask {name} for drafts and schedule them yourself in the Postbiz calendar.",
+      "q3": "Will I need an API key?",
+      "a3": "How to connect will be spelled out when agent access launches. There is no key to create for now.",
+      "q4": "Will {name} publish without my approval?",
+      "a4": "Our principle: the agent prepares, you decide. Posts prepared by {name} wait for your approval in the calendar.",
+      "q5": "Which networks will {name} be able to publish on?",
+      "a5": "Those of Postbiz: Facebook, Instagram, X, LinkedIn, TikTok and YouTube. The status of each is detailed on the Channels page."
+    },
+    "others": { "title": "Other AI agents" },
+    "end": {
+      "title": "Schedule your posts, <accent>stay in control</accent>",
+      "text": "Create your Postbiz account and connect your networks today. Agent access will come next."
+    },
+    "hub": {
+      "title": "The AI agents that will be able to drive <accent>Postbiz</accent>",
+      "intro": "Claude, ChatGPT, Cursor, Codex… Postbiz is preparing an MCP server, a command line and a public API so the agent of your choice can draft and schedule your posts. None of this is available yet: this page shows where we’re heading.",
+      "guides": "Read the guides",
+      "routesTitle": "Three planned ways in, <accent>none exists yet</accent>",
+      "mcp": { "title": "MCP server", "text": "The standard AI assistants use to plug into your apps." },
+      "cli": { "title": "Command line", "text": "For agents that work in a terminal or a code editor." },
+      "api": { "title": "Public API", "text": "For every other tool and your own automations." },
+      "listTitle": "All agents",
+      "listText": "One page per agent, with what it will be able to do with Postbiz."
+    },
+    "mcp": {
+      "title": "The <accent>Postbiz</accent> MCP server",
+      "intro": "MCP (Model Context Protocol) is the standard AI assistants use to plug into your apps. The Postbiz MCP server is in the works: it isn’t available yet.",
+      "all": "See the agents",
+      "c1": {
+        "title": "What will it be for?",
+        "text": "Letting an AI assistant read your calendar, prepare drafts and schedule posts, right from the conversation."
+      },
+      "c2": {
+        "title": "With which assistants?",
+        "text": "Any assistant or agent that can use MCP: Claude, ChatGPT, Cursor, Codex and many more. The list is on the agents page."
+      },
+      "c3": {
+        "title": "Who stays in control?",
+        "text": "You do. The assistant prepares, a human approves, and a publication whose outcome is uncertain is never replayed automatically."
+      }
+    }
+  },
   "meta": {
     "siteTitle": "Postbiz — Schedule your posts, answer all your messages",
     "siteDescription": "Postbiz combines post scheduling and a unified inbox for the private messages and comments of Facebook, Instagram, X, LinkedIn, TikTok and YouTube.",
@@ -607,6 +693,9 @@
       "description": "Write to the Postbiz team."
     },
     "blog": { "title": "Blog", "description": "Postbiz guides, tips and news: schedule your posts, answer your messages, work with AI agents.", "categoryDescription": "Postbiz blog articles in the “{category}” category." },
+    "agent": { "title": "Schedule your posts with {name}", "description": "Postbiz is preparing access for AI agents: soon, {name} will be able to draft and schedule your posts on Facebook, Instagram, X, LinkedIn, TikTok and YouTube." },
+    "agents": { "title": "AI agents", "description": "Claude, ChatGPT, Cursor, Codex… Postbiz is preparing an MCP server, a command line and a public API so the agent of your choice can draft and schedule your posts." },
+    "mcp": { "title": "MCP server", "description": "The Postbiz MCP server, in the works: connect an AI assistant to your publishing calendar, with a human in the loop." },
     "terms": {
       "title": "Terms of Service"
     },

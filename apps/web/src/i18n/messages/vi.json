@@ -29,6 +29,9 @@
     "pricing": "Bảng giá",
     "contact": "Liên hệ",
     "blog": "Blog",
+    "agents": "Tác nhân AI",
+    "agentsAll": "Tất cả tác nhân AI",
+    "mcp": "Máy chủ MCP",
     "signIn": "Đăng nhập",
     "tryFree": "Dùng thử miễn phí",
     "openMenu": "Mở menu",
@@ -340,6 +343,95 @@
     "backToBlog": "Quay lại blog",
     "notFound": { "title": "Không tìm thấy bài viết", "text": "Bài viết này không tồn tại hoặc đã được chuyển đi." }
   },
+  "agents": {
+    "badge": "{name} + Postbiz",
+    "title": "Lên lịch bài đăng với {name}",
+    "bullet1": "{name} + Postbiz: máy chủ MCP, dòng lệnh và API công khai, sắp ra mắt",
+    "bullet2": "Soạn, lên lịch và duyệt bài đăng cho sáu mạng xã hội",
+    "kind": {
+      "chat": { "bullet": "Yêu cầu bằng ngôn ngữ thường ngày, duyệt trong lịch" },
+      "editor": { "bullet": "Chuẩn bị bài đăng từ bảng điều khiển của tác nhân, không rời trình soạn thảo" },
+      "terminal": { "bullet": "Yêu cầu từ terminal, duyệt trong lịch" },
+      "autonomous": { "bullet": "Một tác nhân liên tục chuẩn bị bài đăng, và xin bạn đồng ý trước khi hành động" },
+      "workspace": { "bullet": "Giao một mục tiêu, kiểm tra các bản nháp trong lịch" }
+    },
+    "available": "Đã có",
+    "howCta": "Xem cách hoạt động",
+    "fine": "Postbiz là công cụ lên lịch mà {name} sẽ có thể điều khiển. Luôn để con người tham gia.",
+    "fineLink": "Hướng dẫn về tác nhân AI",
+    "how": {
+      "title": "Cách hoạt động với {name}",
+      "s1": { "title": "Kết nối các mạng của bạn", "text": "Liên kết trang và tài khoản của bạn với Postbiz. Bước này đã có, ở bản beta." },
+      "s2": {
+        "title": "Kết nối {name}",
+        "text": "Máy chủ MCP, dòng lệnh và API công khai đang được chuẩn bị. Chúng tôi sẽ báo cho người đã đăng ký."
+      },
+      "s3": { "title": "Yêu cầu, xem lại, lên lịch", "text": "{name} chuẩn bị bản nháp; bạn duyệt trong lịch trước khi bài được đăng." }
+    },
+    "demo": {
+      "badge": "Xem trước",
+      "user": "Chuẩn bị ba bài đăng về ưu đãi mới của chúng tôi cho tuần sau, mỗi mạng một bài.",
+      "agent": "Đây là ba bản nháp: LinkedIn, Instagram và X. Chúng đang chờ bạn duyệt trong lịch.",
+      "note": "Ví dụ minh họa: tích hợp này chưa có."
+    },
+    "can": {
+      "title": "{name} sẽ làm được gì với Postbiz",
+      "c1": { "title": "Chuẩn bị bản nháp", "text": "Soạn một bài, điều chỉnh cho từng mạng và lưu thành bản nháp, không đăng gì cả." },
+      "c2": { "title": "Lên lịch", "text": "Chọn khung giờ và lên lịch đăng trên Facebook, Instagram, X, LinkedIn, TikTok hoặc YouTube." },
+      "c3": { "title": "Đọc lịch", "text": "Biết tuần này có gì dự kiến trước khi đề xuất bất cứ điều gì." },
+      "c4": {
+        "title": "Giữ quyền kiểm soát",
+        "text": "Con người duyệt. Một bài đăng có kết quả không chắc chắn sẽ không bao giờ tự động được gửi lại."
+      }
+    },
+    "what": { "title": "{name} là gì?" },
+    "networks": { "title": "Trên những mạng nào?" },
+    "faq": {
+      "title": "Câu hỏi thường gặp về {name}",
+      "q1": "{name} là gì?",
+      "q2": "Hôm nay tôi có thể dùng {name} với Postbiz không?",
+      "a2": "Chưa. Quyền truy cập cho tác nhân (máy chủ MCP, dòng lệnh, API công khai) đang được chuẩn bị. Trong lúc chờ, bạn có thể nhờ {name} soạn bản nháp rồi tự lên lịch trong lịch của Postbiz.",
+      "q3": "Tôi có cần khóa API không?",
+      "a3": "Cách kết nối sẽ được nêu rõ khi quyền truy cập cho tác nhân ra mắt. Hiện chưa có khóa nào cần tạo.",
+      "q4": "{name} có đăng khi chưa được tôi đồng ý không?",
+      "a4": "Nguyên tắc của chúng tôi: tác nhân chuẩn bị, bạn quyết định. Các bài do {name} chuẩn bị sẽ chờ bạn duyệt trong lịch.",
+      "q5": "{name} sẽ đăng được trên những mạng nào?",
+      "a5": "Trên các mạng của Postbiz: Facebook, Instagram, X, LinkedIn, TikTok và YouTube. Tình trạng từng mạng được nêu chi tiết ở trang Kênh."
+    },
+    "others": { "title": "Các tác nhân AI khác" },
+    "end": {
+      "title": "Lên lịch bài đăng, <accent>giữ quyền kiểm soát</accent>",
+      "text": "Hãy tạo tài khoản Postbiz và kết nối các mạng của bạn ngay bây giờ. Quyền truy cập cho tác nhân sẽ đến sau."
+    },
+    "hub": {
+      "title": "Các tác nhân AI sẽ có thể điều khiển <accent>Postbiz</accent>",
+      "intro": "Claude, ChatGPT, Cursor, Codex… Postbiz đang chuẩn bị máy chủ MCP, dòng lệnh và API công khai để tác nhân bạn chọn soạn và lên lịch bài đăng. Chưa có gì trong số này sẵn sàng: trang này cho thấy hướng đi của chúng tôi.",
+      "guides": "Đọc các hướng dẫn",
+      "routesTitle": "Ba cách truy cập dự kiến, <accent>chưa có cách nào tồn tại</accent>",
+      "mcp": { "title": "Máy chủ MCP", "text": "Tiêu chuẩn mà các trợ lý AI dùng để kết nối với ứng dụng của bạn." },
+      "cli": { "title": "Dòng lệnh", "text": "Dành cho các tác nhân làm việc trong terminal hoặc trình soạn mã." },
+      "api": { "title": "API công khai", "text": "Dành cho mọi công cụ khác và các tự động hóa của riêng bạn." },
+      "listTitle": "Tất cả tác nhân",
+      "listText": "Mỗi tác nhân một trang, nêu những gì nó sẽ làm được với Postbiz."
+    },
+    "mcp": {
+      "title": "Máy chủ MCP của <accent>Postbiz</accent>",
+      "intro": "MCP (Model Context Protocol) là tiêu chuẩn mà các trợ lý AI dùng để kết nối với ứng dụng của bạn. Máy chủ MCP của Postbiz đang được chuẩn bị: hiện chưa có.",
+      "all": "Xem các tác nhân",
+      "c1": {
+        "title": "Nó sẽ dùng để làm gì?",
+        "text": "Để trợ lý AI đọc lịch của bạn, chuẩn bị bản nháp và lên lịch bài đăng ngay từ cuộc trò chuyện."
+      },
+      "c2": {
+        "title": "Với những trợ lý nào?",
+        "text": "Với mọi trợ lý hoặc tác nhân biết dùng MCP: Claude, ChatGPT, Cursor, Codex và nhiều loại khác. Danh sách nằm ở trang các tác nhân."
+      },
+      "c3": {
+        "title": "Ai giữ quyền kiểm soát?",
+        "text": "Bạn. Trợ lý chuẩn bị, con người duyệt, và một bài đăng có kết quả không chắc chắn sẽ không bao giờ tự động được gửi lại."
+      }
+    }
+  },
   "meta": {
     "siteTitle": "Postbiz — Lên lịch bài đăng, trả lời mọi tin nhắn",
     "siteDescription": "Postbiz kết hợp lên lịch bài đăng và hộp thư hợp nhất cho tin nhắn riêng và bình luận trên Facebook, Instagram, X, LinkedIn, TikTok và YouTube.",
@@ -349,6 +441,9 @@
     "productPlanning": { "title": "Lên lịch đăng bài", "description": "Lên lịch bài đăng trên Facebook, Instagram, X, LinkedIn, TikTok và YouTube từ một lịch duy nhất." },
     "contact": { "title": "Liên hệ", "description": "Viết thư cho đội ngũ Postbiz." },
     "blog": { "title": "Blog", "description": "Hướng dẫn, mẹo và tin tức từ Postbiz: lên lịch bài đăng, trả lời tin nhắn, làm việc với tác nhân AI.", "categoryDescription": "Các bài viết trên blog Postbiz thuộc chuyên mục “{category}”." },
+    "agent": { "title": "Lên lịch bài đăng với {name}", "description": "Postbiz đang chuẩn bị quyền truy cập cho các tác nhân AI: sắp tới, {name} sẽ có thể soạn nháp và lên lịch bài đăng của bạn trên Facebook, Instagram, X, LinkedIn, TikTok và YouTube." },
+    "agents": { "title": "Tác nhân AI", "description": "Claude, ChatGPT, Cursor, Codex… Postbiz đang chuẩn bị máy chủ MCP, dòng lệnh và API công khai để tác nhân bạn chọn soạn và lên lịch bài đăng." },
+    "mcp": { "title": "Máy chủ MCP", "description": "Máy chủ MCP của Postbiz, đang được chuẩn bị: kết nối trợ lý AI với lịch đăng bài của bạn, vẫn do con người quyết định." },
     "terms": { "title": "Điều khoản sử dụng" },
     "privacy": { "title": "Chính sách quyền riêng tư" },
     "dataDeletion": { "title": "Xóa dữ liệu" },

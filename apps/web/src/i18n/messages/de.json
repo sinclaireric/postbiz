@@ -29,6 +29,9 @@
     "pricing": "Preise",
     "contact": "Kontakt",
     "blog": "Blog",
+    "agents": "KI-Agenten",
+    "agentsAll": "Alle KI-Agenten",
+    "mcp": "MCP-Server",
     "signIn": "Anmelden",
     "tryFree": "Kostenlos testen",
     "openMenu": "Menü öffnen",
@@ -340,6 +343,107 @@
     "backToBlog": "Zurück zum Blog",
     "notFound": { "title": "Artikel nicht gefunden", "text": "Dieser Artikel existiert nicht oder wurde verschoben." }
   },
+  "agents": {
+    "badge": "{name} + Postbiz",
+    "title": "Planen Sie Ihre Beiträge mit {name}",
+    "bullet1": "{name} + Postbiz: MCP-Server, Kommandozeile und öffentliche API, demnächst",
+    "bullet2": "Beiträge für sechs Netzwerke schreiben, planen und freigeben",
+    "kind": {
+      "chat": { "bullet": "In normaler Sprache fragen, im Kalender freigeben" },
+      "editor": { "bullet": "Beiträge im Agent-Bereich vorbereiten, ohne den Editor zu verlassen" },
+      "terminal": { "bullet": "Im Terminal fragen, im Kalender freigeben" },
+      "autonomous": { "bullet": "Ein Agent, der Ihre Beiträge fortlaufend vorbereitet – mit Ihrer Freigabe, bevor er handelt" },
+      "workspace": { "bullet": "Ziel vorgeben, Entwürfe im Kalender prüfen" }
+    },
+    "available": "Verfügbar",
+    "howCta": "So wird es funktionieren",
+    "fine": "Postbiz ist das Planungswerkzeug, das {name} steuern können wird. Behalten Sie immer einen Menschen im Spiel.",
+    "fineLink": "Leitfaden zu KI-Agenten",
+    "how": {
+      "title": "So wird es mit {name} funktionieren",
+      "s1": {
+        "title": "Netzwerke verbinden",
+        "text": "Verknüpfen Sie Ihre Seiten und Konten mit Postbiz. Dieser Schritt ist schon verfügbar, als Beta."
+      },
+      "s2": {
+        "title": "{name} verbinden",
+        "text": "Der MCP-Server, die Kommandozeile und die öffentliche API sind in Vorbereitung. Wir informieren alle, die sich anmelden."
+      },
+      "s3": {
+        "title": "Fragen, prüfen, planen",
+        "text": "{name} bereitet Entwürfe vor; Sie geben sie im Kalender frei, bevor sie veröffentlicht werden."
+      }
+    },
+    "demo": {
+      "badge": "Vorschau",
+      "user": "Bereite für nächste Woche drei Beiträge zu unserem neuen Angebot vor, einen pro Netzwerk.",
+      "agent": "Hier sind drei Entwürfe: LinkedIn, Instagram und X. Sie warten im Kalender auf Ihre Freigabe.",
+      "note": "Veranschaulichendes Beispiel: Diese Integration ist noch nicht verfügbar."
+    },
+    "can": {
+      "title": "Was {name} mit Postbiz tun können wird",
+      "c1": {
+        "title": "Entwürfe vorbereiten",
+        "text": "Einen Beitrag schreiben, für jedes Netzwerk anpassen und als Entwurf ablegen, ohne etwas zu veröffentlichen."
+      },
+      "c2": {
+        "title": "Planen",
+        "text": "Einen Zeitpunkt wählen und den Beitrag auf Facebook, Instagram, X, LinkedIn, TikTok oder YouTube planen."
+      },
+      "c3": { "title": "Den Kalender lesen", "text": "Wissen, was diese Woche geplant ist, bevor etwas vorgeschlagen wird." },
+      "c4": {
+        "title": "Die Kontrolle behalten",
+        "text": "Ein Mensch gibt frei. Ein Beitrag mit ungewissem Ausgang wird nie automatisch erneut gesendet."
+      }
+    },
+    "what": { "title": "Was ist {name}?" },
+    "networks": { "title": "Auf welchen Netzwerken?" },
+    "faq": {
+      "title": "Häufige Fragen zu {name}",
+      "q1": "Was ist {name}?",
+      "q2": "Kann ich {name} schon heute mit Postbiz nutzen?",
+      "a2": "Noch nicht. Der Zugang für Agenten (MCP-Server, Kommandozeile, öffentliche API) ist in Vorbereitung. Bis dahin können Sie {name} um Entwürfe bitten und sie selbst im Postbiz-Kalender planen.",
+      "q3": "Brauche ich einen API-Schlüssel?",
+      "a3": "Wie die Verbindung funktioniert, wird beim Start des Agenten-Zugangs erklärt. Aktuell müssen Sie keinen Schlüssel erstellen.",
+      "q4": "Veröffentlicht {name} ohne meine Freigabe?",
+      "a4": "Unser Prinzip: Der Agent bereitet vor, Sie entscheiden. Von {name} vorbereitete Beiträge warten im Kalender auf Ihre Freigabe.",
+      "q5": "Auf welchen Netzwerken kann {name} veröffentlichen?",
+      "a5": "Auf denen von Postbiz: Facebook, Instagram, X, LinkedIn, TikTok und YouTube. Der Stand jedes Netzwerks steht auf der Seite „Kanäle“."
+    },
+    "others": { "title": "Weitere KI-Agenten" },
+    "end": {
+      "title": "Planen Sie Ihre Beiträge, <accent>behalten Sie die Kontrolle</accent>",
+      "text": "Erstellen Sie jetzt Ihr Postbiz-Konto und verbinden Sie Ihre Netzwerke. Der Agenten-Zugang folgt danach."
+    },
+    "hub": {
+      "title": "Die KI-Agenten, die <accent>Postbiz</accent> steuern können werden",
+      "intro": "Claude, ChatGPT, Cursor, Codex … Postbiz bereitet einen MCP-Server, eine Kommandozeile und eine öffentliche API vor, damit der Agent Ihrer Wahl Ihre Beiträge schreibt und plant. Nichts davon ist schon verfügbar: Diese Seite zeigt, wohin wir wollen.",
+      "guides": "Leitfäden lesen",
+      "routesTitle": "Drei geplante Zugänge, <accent>keiner existiert bisher</accent>",
+      "mcp": { "title": "MCP-Server", "text": "Der Standard, mit dem KI-Assistenten sich an Ihre Apps anbinden." },
+      "cli": { "title": "Kommandozeile", "text": "Für Agenten, die in einem Terminal oder Code-Editor arbeiten." },
+      "api": { "title": "Öffentliche API", "text": "Für alle anderen Werkzeuge und Ihre eigenen Automatisierungen." },
+      "listTitle": "Alle Agenten",
+      "listText": "Eine Seite pro Agent, mit dem, was er mit Postbiz tun können wird."
+    },
+    "mcp": {
+      "title": "Der MCP-Server von <accent>Postbiz</accent>",
+      "intro": "MCP (Model Context Protocol) ist der Standard, mit dem KI-Assistenten sich an Ihre Apps anbinden. Der MCP-Server von Postbiz ist in Vorbereitung: Er ist noch nicht verfügbar.",
+      "all": "Agenten ansehen",
+      "c1": {
+        "title": "Wofür wird er gedacht sein?",
+        "text": "Damit ein KI-Assistent Ihren Kalender lesen, Entwürfe vorbereiten und Beiträge planen kann – direkt aus der Unterhaltung."
+      },
+      "c2": {
+        "title": "Mit welchen Assistenten?",
+        "text": "Mit jedem Assistenten oder Agenten, der MCP beherrscht: Claude, ChatGPT, Cursor, Codex und viele mehr. Die Liste steht auf der Agenten-Seite."
+      },
+      "c3": {
+        "title": "Wer behält die Kontrolle?",
+        "text": "Sie. Der Assistent bereitet vor, ein Mensch gibt frei, und ein Beitrag mit ungewissem Ausgang wird nie automatisch erneut gesendet."
+      }
+    }
+  },
   "meta": {
     "siteTitle": "Postbiz — Beiträge planen, alle Nachrichten beantworten",
     "siteDescription": "Postbiz vereint die Planung Ihrer Beiträge und einen einheitlichen Posteingang für die privaten Nachrichten und Kommentare von Facebook, Instagram, X, LinkedIn, TikTok und YouTube.",
@@ -349,6 +453,9 @@
     "productPlanning": { "title": "Beitragsplanung", "description": "Planen Sie Ihre Beiträge auf Facebook, Instagram, X, LinkedIn, TikTok und YouTube in einem einzigen Kalender." },
     "contact": { "title": "Kontakt", "description": "Schreiben Sie dem Postbiz-Team." },
     "blog": { "title": "Blog", "description": "Anleitungen, Tipps und Neuigkeiten von Postbiz: Beiträge planen, Nachrichten beantworten, mit KI-Agenten arbeiten.", "categoryDescription": "Artikel des Postbiz-Blogs in der Kategorie „{category}“." },
+    "agent": { "title": "Planen Sie Ihre Beiträge mit {name}", "description": "Postbiz bereitet den Zugang für KI-Agenten vor: Bald kann {name} Entwürfe schreiben und Ihre Beiträge auf Facebook, Instagram, X, LinkedIn, TikTok und YouTube planen." },
+    "agents": { "title": "KI-Agenten", "description": "Claude, ChatGPT, Cursor, Codex … Postbiz bereitet einen MCP-Server, eine Kommandozeile und eine öffentliche API vor, damit der Agent Ihrer Wahl Ihre Beiträge schreibt und plant." },
+    "mcp": { "title": "MCP-Server", "description": "Der MCP-Server von Postbiz, in Vorbereitung: Verbinden Sie einen KI-Assistenten mit Ihrem Veröffentlichungskalender, mit einem Menschen am Steuer." },
     "terms": { "title": "Nutzungsbedingungen" },
     "privacy": { "title": "Datenschutzerklärung" },
     "dataDeletion": { "title": "Datenlöschung" },

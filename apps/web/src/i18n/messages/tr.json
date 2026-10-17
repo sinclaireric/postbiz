@@ -29,6 +29,9 @@
     "pricing": "Fiyatlandırma",
     "contact": "İletişim",
     "blog": "Blog",
+    "agents": "Yapay zekâ ajanları",
+    "agentsAll": "Tüm yapay zekâ ajanları",
+    "mcp": "MCP sunucusu",
     "signIn": "Giriş yap",
     "tryFree": "Ücretsiz dene",
     "openMenu": "Menüyü aç",
@@ -340,6 +343,98 @@
     "backToBlog": "Bloga dön",
     "notFound": { "title": "Yazı bulunamadı", "text": "Bu yazı mevcut değil ya da taşınmış." }
   },
+  "agents": {
+    "badge": "{name} + Postbiz",
+    "title": "{name} ile gönderilerinizi planlayın",
+    "bullet1": "{name} + Postbiz: MCP sunucusu, komut satırı ve herkese açık API, yakında",
+    "bullet2": "Gönderilerinizi altı ağ için yazın, planlayın ve onaylayın",
+    "kind": {
+      "chat": { "bullet": "Günlük dille isteyin, takvimde onaylayın" },
+      "editor": { "bullet": "Düzenleyiciden çıkmadan, ajan panelinden gönderilerinizi hazırlayın" },
+      "terminal": { "bullet": "Terminalinizden isteyin, takvimde onaylayın" },
+      "autonomous": { "bullet": "Gönderilerinizi sürekli hazırlayan, harekete geçmeden önce onayınızı isteyen bir ajan" },
+      "workspace": { "bullet": "Bir hedef verin, taslakları takvimde inceleyin" }
+    },
+    "available": "Kullanılabilir",
+    "howCta": "Nasıl çalışacağını görün",
+    "fine": "Postbiz, {name} için yönetilebilecek planlama aracıdır. İşin içinde her zaman bir insan olsun.",
+    "fineLink": "Yapay zekâ ajanları rehberi",
+    "how": {
+      "title": "{name} ile nasıl çalışacak",
+      "s1": {
+        "title": "Ağlarınızı bağlayın",
+        "text": "Sayfalarınızı ve hesaplarınızı Postbiz'e bağlayın. Bu adım şimdiden beta olarak kullanılabilir."
+      },
+      "s2": {
+        "title": "{name} aracını bağlayın",
+        "text": "MCP sunucusu, komut satırı ve herkese açık API hazırlanıyor. Kayıt olanlara haber vereceğiz."
+      },
+      "s3": { "title": "İsteyin, inceleyin, planlayın", "text": "{name} taslakları hazırlar; siz yayınlanmadan önce takvimde onaylarsınız." }
+    },
+    "demo": {
+      "badge": "Önizleme",
+      "user": "Gelecek hafta için yeni teklifimiz hakkında, her ağa bir tane olmak üzere üç gönderi hazırla.",
+      "agent": "İşte üç taslak: LinkedIn, Instagram ve X için. Takvimde onayınızı bekliyorlar.",
+      "note": "Açıklayıcı örnek: bu entegrasyon henüz kullanılabilir değil."
+    },
+    "can": {
+      "title": "{name}, Postbiz ile neler yapabilecek",
+      "c1": {
+        "title": "Taslak hazırlamak",
+        "text": "Bir gönderi yazmak, her ağa göre uyarlamak ve hiçbir şey yayınlamadan taslak olarak kaydetmek."
+      },
+      "c2": { "title": "Planlamak", "text": "Bir zaman dilimi seçip Facebook, Instagram, X, LinkedIn, TikTok veya YouTube'da yayını planlamak." },
+      "c3": { "title": "Takvimi okumak", "text": "Bir şey önermeden önce bu hafta nelerin planlandığını bilmek." },
+      "c4": { "title": "Kontrolü elde tutmak", "text": "Onayı bir insan verir. Sonucu belirsiz bir yayın asla otomatik olarak yeniden denenmez." }
+    },
+    "what": { "title": "{name} nedir?" },
+    "networks": { "title": "Hangi ağlarda?" },
+    "faq": {
+      "title": "{name} hakkında sık sorulan sorular",
+      "q1": "{name} nedir?",
+      "q2": "{name} aracını bugün Postbiz ile kullanabilir miyim?",
+      "a2": "Henüz hayır. Ajanlar için erişim (MCP sunucusu, komut satırı, herkese açık API) hazırlanıyor. Bu arada {name} aracından taslak isteyip Postbiz takviminde kendiniz planlayabilirsiniz.",
+      "q3": "API anahtarı gerekecek mi?",
+      "a3": "Bağlanma yöntemi, ajan erişimi başladığında açıklanacak. Şimdilik oluşturmanız gereken bir anahtar yok.",
+      "q4": "{name} onayım olmadan yayın yapar mı?",
+      "a4": "İlkemiz şu: ajan hazırlar, siz karar verirsiniz. {name} tarafından hazırlanan gönderiler takvimde onayınızı bekler.",
+      "q5": "{name} hangi ağlarda yayın yapabilecek?",
+      "a5": "Postbiz'dekilerde: Facebook, Instagram, X, LinkedIn, TikTok ve YouTube. Her birinin durumu Kanallar sayfasında ayrıntılı olarak yer alıyor."
+    },
+    "others": { "title": "Diğer yapay zekâ ajanları" },
+    "end": {
+      "title": "Gönderilerinizi planlayın, <accent>kontrol sizde kalsın</accent>",
+      "text": "Postbiz hesabınızı şimdi oluşturun ve ağlarınızı bağlayın. Ajan erişimi daha sonra gelecek."
+    },
+    "hub": {
+      "title": "<accent>Postbiz</accent> aracını yönetebilecek yapay zekâ ajanları",
+      "intro": "Claude, ChatGPT, Cursor, Codex… Postbiz, seçtiğiniz ajanın gönderilerinizi yazıp planlayabilmesi için bir MCP sunucusu, bir komut satırı ve herkese açık bir API hazırlıyor. Bunların hiçbiri henüz kullanılabilir değil: bu sayfa nereye gittiğimizi gösteriyor.",
+      "guides": "Rehberleri okuyun",
+      "routesTitle": "Planlanan üç erişim yolu, <accent>henüz hiçbiri yok</accent>",
+      "mcp": { "title": "MCP sunucusu", "text": "Yapay zekâ asistanlarının uygulamalarınıza bağlanmak için kullandığı standart." },
+      "cli": { "title": "Komut satırı", "text": "Terminalde veya kod düzenleyicide çalışan ajanlar için." },
+      "api": { "title": "Herkese açık API", "text": "Diğer tüm araçlar ve kendi otomasyonlarınız için." },
+      "listTitle": "Tüm ajanlar",
+      "listText": "Her ajan için bir sayfa; Postbiz ile neler yapabileceği anlatılıyor."
+    },
+    "mcp": {
+      "title": "<accent>Postbiz</accent> MCP sunucusu",
+      "intro": "MCP (Model Context Protocol), yapay zekâ asistanlarının uygulamalarınıza bağlanmak için kullandığı standarttır. Postbiz MCP sunucusu hazırlanıyor: henüz kullanılabilir değil.",
+      "all": "Ajanları görün",
+      "c1": {
+        "title": "Ne işe yarayacak?",
+        "text": "Bir yapay zekâ asistanının takviminizi okumasını, taslak hazırlamasını ve yayın planlamasını doğrudan sohbetten yapmasını sağlayacak."
+      },
+      "c2": {
+        "title": "Hangi asistanlarla?",
+        "text": "MCP kullanabilen her asistan veya ajanla: Claude, ChatGPT, Cursor, Codex ve daha birçoğu. Liste ajanlar sayfasında."
+      },
+      "c3": {
+        "title": "Kontrol kimde kalır?",
+        "text": "Sizde. Asistan hazırlar, bir insan onaylar ve sonucu belirsiz bir yayın asla otomatik olarak yeniden denenmez."
+      }
+    }
+  },
   "meta": {
     "siteTitle": "Postbiz — Gönderilerinizi planlayın, tüm mesajlara yanıt verin",
     "siteDescription": "Postbiz, yayın planlamasını ve Facebook, Instagram, X, LinkedIn, TikTok ve YouTube için özel mesajlar ile yorumların birleşik gelen kutusunu tek çatı altında toplar.",
@@ -349,6 +444,9 @@
     "productPlanning": { "title": "Yayın planlama", "description": "Facebook, Instagram, X, LinkedIn, TikTok ve YouTube yayınlarınızı tek bir takvimden planlayın." },
     "contact": { "title": "İletişim", "description": "Postbiz ekibine yazın." },
     "blog": { "title": "Blog", "description": "Postbiz rehberleri, ipuçları ve haberleri: gönderilerinizi planlayın, mesajlarınızı yanıtlayın, yapay zekâ ajanlarıyla çalışın.", "categoryDescription": "Postbiz blogunda “{category}” kategorisindeki yazılar." },
+    "agent": { "title": "{name} ile gönderilerinizi planlayın", "description": "Postbiz, yapay zekâ ajanları için erişim hazırlıyor: yakında {name}, Facebook, Instagram, X, LinkedIn, TikTok ve YouTube gönderilerinizi taslak olarak yazıp planlayabilecek." },
+    "agents": { "title": "Yapay zekâ ajanları", "description": "Claude, ChatGPT, Cursor, Codex… Postbiz, seçtiğiniz ajanın gönderilerinizi yazıp planlayabilmesi için bir MCP sunucusu, bir komut satırı ve herkese açık bir API hazırlıyor." },
+    "mcp": { "title": "MCP sunucusu", "description": "Hazırlanmakta olan Postbiz MCP sunucusu: bir yapay zekâ asistanını yayın takviminize bağlayın, kontrol bir insanda kalsın." },
     "terms": { "title": "Kullanım koşulları" },
     "privacy": { "title": "Gizlilik politikası" },
     "dataDeletion": { "title": "Veri silme" },

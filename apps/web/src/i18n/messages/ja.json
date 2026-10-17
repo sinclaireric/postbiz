@@ -29,6 +29,9 @@
     "pricing": "料金",
     "contact": "お問い合わせ",
     "blog": "ブログ",
+    "agents": "AIエージェント",
+    "agentsAll": "すべてのAIエージェント",
+    "mcp": "MCPサーバー",
     "signIn": "ログイン",
     "tryFree": "無料で試す",
     "openMenu": "メニューを開く",
@@ -340,6 +343,77 @@
     "backToBlog": "ブログに戻る",
     "notFound": { "title": "記事が見つかりません", "text": "この記事は存在しないか、移動されました。" }
   },
+  "agents": {
+    "badge": "{name} + Postbiz",
+    "title": "{name}で投稿を予約",
+    "bullet1": "{name} + Postbiz:MCPサーバー、コマンドライン、公開APIを近日提供",
+    "bullet2": "6つのSNSへの投稿を作成・予約・承認",
+    "kind": {
+      "chat": { "bullet": "自然な言葉で依頼し、カレンダーで承認" },
+      "editor": { "bullet": "エディタを離れずに、エージェントパネルから投稿を準備" },
+      "terminal": { "bullet": "ターミナルから依頼し、カレンダーで承認" },
+      "autonomous": { "bullet": "投稿を継続的に準備し、実行前にあなたの承認を求めるエージェント" },
+      "workspace": { "bullet": "目標を伝えて、カレンダーで下書きを確認" }
+    },
+    "available": "利用可能",
+    "howCta": "今後の使い方を見る",
+    "fine": "Postbizは、{name}が操作できるようになる予約ツールです。常に人が確認する体制を保ってください。",
+    "fineLink": "AIエージェントガイド",
+    "how": {
+      "title": "{name}との使い方(予定)",
+      "s1": { "title": "SNSを接続", "text": "ページとアカウントをPostbizにリンクします。この手順はすでにベータで利用できます。" },
+      "s2": { "title": "{name}を接続", "text": "MCPサーバー、コマンドライン、公開APIは準備中です。登録者の方にはお知らせします。" },
+      "s3": { "title": "依頼・確認・予約", "text": "{name}が下書きを用意し、公開前にあなたがカレンダーで承認します。" }
+    },
+    "demo": {
+      "badge": "プレビュー",
+      "user": "来週の新プランについての投稿を3本、SNSごとに1本ずつ用意して。",
+      "agent": "下書きを3本用意しました。LinkedIn、Instagram、X向けです。カレンダーで承認をお待ちしています。",
+      "note": "イメージ例です。この連携はまだ利用できません。"
+    },
+    "can": {
+      "title": "{name}がPostbizでできるようになること",
+      "c1": { "title": "下書きの作成", "text": "投稿を書き、SNSごとに調整して下書きとして保存。何も公開しません。" },
+      "c2": { "title": "予約", "text": "時間帯を選び、Facebook、Instagram、X、LinkedIn、TikTok、YouTubeへの投稿を予約します。" },
+      "c3": { "title": "カレンダーの確認", "text": "何かを提案する前に、今週の予定を把握します。" },
+      "c4": { "title": "主導権はあなたに", "text": "承認するのは人です。結果が不明な投稿が自動で再実行されることはありません。" }
+    },
+    "what": { "title": "{name}とは?" },
+    "networks": { "title": "どのSNSに対応?" },
+    "faq": {
+      "title": "{name}に関するよくある質問",
+      "q1": "{name}とは?",
+      "q2": "今日から{name}をPostbizと使えますか?",
+      "a2": "まだです。エージェント向けアクセス(MCPサーバー、コマンドライン、公開API)は準備中です。それまでは、{name}に下書きを頼み、Postbizのカレンダーでご自身で予約してください。",
+      "q3": "APIキーは必要ですか?",
+      "a3": "接続方法は、エージェント向けアクセスの提供開始時にご案内します。現時点で作成するキーはありません。",
+      "q4": "{name}は私の承認なしに投稿しますか?",
+      "a4": "私たちの原則は、エージェントが準備し、あなたが決めること。{name}が用意した投稿は、カレンダーであなたの承認を待ちます。",
+      "q5": "{name}はどのSNSに投稿できますか?",
+      "a5": "Postbizと同じ、Facebook、Instagram、X、LinkedIn、TikTok、YouTubeです。各SNSの状況は「チャネル」ページに詳しく載っています。"
+    },
+    "others": { "title": "ほかのAIエージェント" },
+    "end": { "title": "投稿を予約して、<accent>主導権はそのまま</accent>", "text": "今すぐPostbizのアカウントを作成してSNSを接続しましょう。エージェント向けアクセスは今後提供されます。" },
+    "hub": {
+      "title": "<accent>Postbiz</accent>を操作できるようになるAIエージェント",
+      "intro": "Claude、ChatGPT、Cursor、Codex…。Postbizは、お好きなエージェントが投稿の下書きと予約を行えるよう、MCPサーバー、コマンドライン、公開APIを準備しています。いずれもまだ利用できません。このページは私たちの目指す方向を示しています。",
+      "guides": "ガイドを読む",
+      "routesTitle": "予定している3つの接続方法、<accent>いずれもまだありません</accent>",
+      "mcp": { "title": "MCPサーバー", "text": "AIアシスタントがアプリに接続するための標準規格です。" },
+      "cli": { "title": "コマンドライン", "text": "ターミナルやコードエディタで動くエージェント向け。" },
+      "api": { "title": "公開API", "text": "ほかのあらゆるツールや、独自の自動化向け。" },
+      "listTitle": "すべてのエージェント",
+      "listText": "エージェントごとに1ページ。Postbizでできるようになることを紹介します。"
+    },
+    "mcp": {
+      "title": "<accent>Postbiz</accent>のMCPサーバー",
+      "intro": "MCP(Model Context Protocol)は、AIアシスタントがアプリに接続するための標準規格です。PostbizのMCPサーバーは準備中で、まだ利用できません。",
+      "all": "エージェントを見る",
+      "c1": { "title": "何に使えるの?", "text": "AIアシスタントが会話の中から、カレンダーの確認、下書きの作成、投稿の予約を行えるようにします。" },
+      "c2": { "title": "どのアシスタントで?", "text": "MCPを扱えるアシスタントやエージェントなら何でも:Claude、ChatGPT、Cursor、Codexなど。一覧はエージェントのページにあります。" },
+      "c3": { "title": "主導権は誰に?", "text": "あなたです。アシスタントが準備し、人が承認し、結果が不明な投稿が自動で再実行されることはありません。" }
+    }
+  },
   "meta": {
     "siteTitle": "Postbiz — 投稿を予約して、すべてのメッセージに返信",
     "siteDescription": "Postbizは、投稿の予約と、Facebook・Instagram・X・LinkedIn・TikTok・YouTubeのダイレクトメッセージやコメントをまとめた統合受信トレイをひとつにしました。",
@@ -349,6 +423,9 @@
     "productPlanning": { "title": "投稿スケジュール", "description": "Facebook、Instagram、X、LinkedIn、TikTok、YouTubeへの投稿をひとつのカレンダーから予約。" },
     "contact": { "title": "お問い合わせ", "description": "Postbizチームへご連絡ください。" },
     "blog": { "title": "ブログ", "description": "Postbizのガイド、ヒント、最新情報:投稿の予約、メッセージへの返信、AIエージェントとの連携。", "categoryDescription": "Postbizブログの「{category}」カテゴリの記事。" },
+    "agent": { "title": "{name}で投稿を予約", "description": "PostbizはAIエージェント向けのアクセスを準備中です。近日中に、{name}がFacebook、Instagram、X、LinkedIn、TikTok、YouTubeの投稿の下書きと予約を行えるようになります。" },
+    "agents": { "title": "AIエージェント", "description": "Claude、ChatGPT、Cursor、Codex…。Postbizは、お好きなエージェントが投稿の下書きと予約を行えるよう、MCPサーバー、コマンドライン、公開APIを準備しています。" },
+    "mcp": { "title": "MCPサーバー", "description": "準備中のPostbiz MCPサーバー:AIアシスタントを投稿カレンダーにつなぎ、最終判断は人が行います。" },
     "terms": { "title": "利用規約" },
     "privacy": { "title": "プライバシーポリシー" },
     "dataDeletion": { "title": "データの削除" },

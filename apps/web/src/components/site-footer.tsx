@@ -17,6 +17,17 @@ export async function SiteFooter() {
       ],
     },
     {
+      title: t('header.agents'),
+      links: [
+        { href: '/claude', label: 'Claude' },
+        { href: '/chatgpt', label: 'ChatGPT' },
+        { href: '/claude-code', label: 'Claude Code' },
+        { href: '/cursor', label: 'Cursor' },
+        { href: '/mcp', label: t('header.mcp') },
+        { href: '/agent', label: t('header.agentsAll') },
+      ],
+    },
+    {
       title: t('footer.resources'),
       links: [
         { href: '/blog', label: t('footer.blog') },
@@ -37,8 +48,8 @@ export async function SiteFooter() {
 
   return (
     <footer className="border-t border-line bg-paper">
-      <Container className="grid gap-10 py-14 md:grid-cols-[1.4fr_repeat(3,1fr)]">
-        <div>
+      <Container className="grid gap-10 py-14 sm:grid-cols-3 lg:grid-cols-[1.5fr_repeat(4,1fr)]">
+        <div className="sm:col-span-3 lg:col-span-1">
           <Logo />
           <p className="mt-4 max-w-xs text-sm leading-relaxed text-muted">{t('footer.tagline')}</p>
           <div className="mt-5 -ms-3"><LanguageSwitcher variant="text" /></div>

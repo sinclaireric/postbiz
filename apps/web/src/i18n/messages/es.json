@@ -29,6 +29,9 @@
     "pricing": "Precios",
     "contact": "Contacto",
     "blog": "Blog",
+    "agents": "Agentes de IA",
+    "agentsAll": "Todos los agentes de IA",
+    "mcp": "Servidor MCP",
     "signIn": "Iniciar sesión",
     "tryFree": "Prueba gratuita",
     "openMenu": "Abrir el menú",
@@ -340,6 +343,98 @@
     "backToBlog": "Volver al blog",
     "notFound": { "title": "Artículo no encontrado", "text": "Este artículo no existe o se ha movido." }
   },
+  "agents": {
+    "badge": "{name} + Postbiz",
+    "title": "Programa tus publicaciones con {name}",
+    "bullet1": "{name} + Postbiz: servidor MCP, línea de comandos y API pública, próximamente",
+    "bullet2": "Redacta, programa y aprueba tus publicaciones en seis redes",
+    "kind": {
+      "chat": { "bullet": "Pídelo en lenguaje natural, aprueba en el calendario" },
+      "editor": { "bullet": "Prepara tus publicaciones desde el panel del agente, sin salir del editor" },
+      "terminal": { "bullet": "Pídelo desde tu terminal, aprueba en el calendario" },
+      "autonomous": { "bullet": "Un agente que prepara tus publicaciones de forma continua, con tu aprobación antes de actuar" },
+      "workspace": { "bullet": "Dale un objetivo y revisa los borradores en el calendario" }
+    },
+    "available": "Disponible",
+    "howCta": "Ver cómo funcionará",
+    "fine": "Postbiz es la herramienta de programación que {name} podrá manejar. Mantén siempre a una persona al mando.",
+    "fineLink": "Guía de agentes de IA",
+    "how": {
+      "title": "Cómo funcionará con {name}",
+      "s1": { "title": "Conecta tus redes", "text": "Vincula tus páginas y cuentas a Postbiz. Este paso ya está disponible, en beta." },
+      "s2": {
+        "title": "Conecta {name}",
+        "text": "El servidor MCP, la línea de comandos y la API pública están en preparación. Avisaremos a los inscritos."
+      },
+      "s3": { "title": "Pide, revisa, programa", "text": "{name} prepara borradores; tú los apruebas en el calendario antes de que salgan." }
+    },
+    "demo": {
+      "badge": "Vista previa",
+      "user": "Prepara tres publicaciones sobre nuestra nueva oferta para la semana que viene, una por red.",
+      "agent": "Aquí tienes tres borradores: LinkedIn, Instagram y X. Esperan tu aprobación en el calendario.",
+      "note": "Ejemplo ilustrativo: esta integración aún no está disponible."
+    },
+    "can": {
+      "title": "Lo que {name} podrá hacer con Postbiz",
+      "c1": { "title": "Preparar borradores", "text": "Redactar una publicación, adaptarla a cada red y dejarla como borrador, sin publicar nada." },
+      "c2": {
+        "title": "Programar",
+        "text": "Elegir una franja horaria y programar la publicación en Facebook, Instagram, X, LinkedIn, TikTok o YouTube."
+      },
+      "c3": { "title": "Leer el calendario", "text": "Saber qué está previsto esta semana antes de proponer nada." },
+      "c4": {
+        "title": "Mantener el control",
+        "text": "Una persona aprueba. Una publicación cuyo resultado es incierto nunca se reintenta automáticamente."
+      }
+    },
+    "what": { "title": "¿Qué es {name}?" },
+    "networks": { "title": "¿En qué redes?" },
+    "faq": {
+      "title": "Preguntas frecuentes sobre {name}",
+      "q1": "¿Qué es {name}?",
+      "q2": "¿Puedo usar {name} con Postbiz hoy?",
+      "a2": "Todavía no. El acceso para agentes (servidor MCP, línea de comandos, API pública) está en preparación. Mientras tanto, puedes pedirle borradores a {name} y programarlos tú mismo en el calendario de Postbiz.",
+      "q3": "¿Hará falta una clave de API?",
+      "a3": "La forma de conectarse se detallará cuando se lance el acceso para agentes. Por ahora no hay que crear ninguna clave.",
+      "q4": "¿Publicará {name} sin mi aprobación?",
+      "a4": "Nuestro principio: el agente prepara, tú decides. Las publicaciones preparadas por {name} esperan tu aprobación en el calendario.",
+      "q5": "¿En qué redes podrá publicar {name}?",
+      "a5": "En las de Postbiz: Facebook, Instagram, X, LinkedIn, TikTok y YouTube. El estado de cada una se detalla en la página Canales."
+    },
+    "others": { "title": "Otros agentes de IA" },
+    "end": {
+      "title": "Programa tus publicaciones, <accent>mantén el control</accent>",
+      "text": "Crea tu cuenta de Postbiz y conecta tus redes ahora. El acceso para agentes llegará después."
+    },
+    "hub": {
+      "title": "Los agentes de IA que podrán manejar <accent>Postbiz</accent>",
+      "intro": "Claude, ChatGPT, Cursor, Codex… Postbiz prepara un servidor MCP, una línea de comandos y una API pública para que el agente que elijas redacte y programe tus publicaciones. Nada de esto está disponible todavía: esta página muestra hacia dónde vamos.",
+      "guides": "Leer las guías",
+      "routesTitle": "Tres accesos previstos, <accent>ninguno existe todavía</accent>",
+      "mcp": { "title": "Servidor MCP", "text": "El estándar con el que los asistentes de IA se conectan a tus aplicaciones." },
+      "cli": { "title": "Línea de comandos", "text": "Para los agentes que trabajan en un terminal o en un editor de código." },
+      "api": { "title": "API pública", "text": "Para cualquier otra herramienta y tus propias automatizaciones." },
+      "listTitle": "Todos los agentes",
+      "listText": "Una página por agente, con lo que podrá hacer con Postbiz."
+    },
+    "mcp": {
+      "title": "El servidor MCP de <accent>Postbiz</accent>",
+      "intro": "MCP (Model Context Protocol) es el estándar con el que los asistentes de IA se conectan a tus aplicaciones. El servidor MCP de Postbiz está en preparación: todavía no está disponible.",
+      "all": "Ver los agentes",
+      "c1": {
+        "title": "¿Para qué servirá?",
+        "text": "Para que un asistente de IA lea tu calendario, prepare borradores y programe publicaciones, directamente desde la conversación."
+      },
+      "c2": {
+        "title": "¿Con qué asistentes?",
+        "text": "Con cualquier asistente o agente que sepa usar MCP: Claude, ChatGPT, Cursor, Codex y muchos más. La lista está en la página de agentes."
+      },
+      "c3": {
+        "title": "¿Quién mantiene el control?",
+        "text": "Tú. El asistente prepara, una persona aprueba, y una publicación cuyo resultado es incierto nunca se reintenta automáticamente."
+      }
+    }
+  },
   "meta": {
     "siteTitle": "Postbiz — Programa tus publicaciones, responde a todos tus mensajes",
     "siteDescription": "Postbiz reúne la programación de tus publicaciones y una bandeja de entrada unificada para los mensajes privados y comentarios de Facebook, Instagram, X, LinkedIn, TikTok y YouTube.",
@@ -349,6 +444,9 @@
     "productPlanning": { "title": "Programación de publicaciones", "description": "Programa tus publicaciones en Facebook, Instagram, X, LinkedIn, TikTok y YouTube desde un único calendario." },
     "contact": { "title": "Contacto", "description": "Escribe al equipo de Postbiz." },
     "blog": { "title": "Blog", "description": "Guías, consejos y novedades de Postbiz: programar tus publicaciones, responder a tus mensajes, trabajar con agentes de IA.", "categoryDescription": "Artículos del blog de Postbiz en la categoría «{category}»." },
+    "agent": { "title": "Programa tus publicaciones con {name}", "description": "Postbiz prepara el acceso de los agentes de IA: pronto, {name} podrá redactar borradores y programar tus publicaciones en Facebook, Instagram, X, LinkedIn, TikTok y YouTube." },
+    "agents": { "title": "Agentes de IA", "description": "Claude, ChatGPT, Cursor, Codex… Postbiz prepara un servidor MCP, una línea de comandos y una API pública para que el agente que elijas redacte y programe tus publicaciones." },
+    "mcp": { "title": "Servidor MCP", "description": "El servidor MCP de Postbiz, en preparación: conecta un asistente de IA con tu calendario de publicación, con una persona al mando." },
     "terms": { "title": "Condiciones de uso" },
     "privacy": { "title": "Política de privacidad" },
     "dataDeletion": { "title": "Eliminación de datos" },

@@ -29,6 +29,9 @@
     "pricing": "价格",
     "contact": "联系我们",
     "blog": "博客",
+    "agents": "AI 智能体",
+    "agentsAll": "所有 AI 智能体",
+    "mcp": "MCP 服务器",
     "signIn": "登录",
     "tryFree": "免费试用",
     "openMenu": "打开菜单",
@@ -340,6 +343,77 @@
     "backToBlog": "返回博客",
     "notFound": { "title": "找不到这篇文章", "text": "这篇文章不存在,或已被移动。" }
   },
+  "agents": {
+    "badge": "{name} + Postbiz",
+    "title": "用 {name} 排期你的发布",
+    "bullet1": "{name} + Postbiz:MCP 服务器、命令行与公开 API,即将推出",
+    "bullet2": "为六大平台起草、排期并审批你的帖子",
+    "kind": {
+      "chat": { "bullet": "用日常语言提出需求,在日历中审批" },
+      "editor": { "bullet": "在智能体面板中准备帖子,无需离开编辑器" },
+      "terminal": { "bullet": "在终端中提出需求,在日历中审批" },
+      "autonomous": { "bullet": "持续为你准备帖子的智能体,行动前征得你的同意" },
+      "workspace": { "bullet": "给它一个目标,在日历中检查草稿" }
+    },
+    "available": "已可用",
+    "howCta": "看看将如何运作",
+    "fine": "Postbiz 是 {name} 将来可以操作的排期工具。请始终让人参与其中。",
+    "fineLink": "AI 智能体指南",
+    "how": {
+      "title": "与 {name} 的协作方式",
+      "s1": { "title": "连接你的平台", "text": "把你的主页和账号关联到 Postbiz。这一步现已可用(测试版)。" },
+      "s2": { "title": "连接 {name}", "text": "MCP 服务器、命令行和公开 API 正在准备中。我们会通知已注册的用户。" },
+      "s3": { "title": "提出需求、检查、排期", "text": "{name} 准备草稿;发布前由你在日历中审批。" }
+    },
+    "demo": {
+      "badge": "预览",
+      "user": "为下周准备三条关于我们新方案的帖子,每个平台一条。",
+      "agent": "这是三份草稿:LinkedIn、Instagram 和 X。它们正在日历中等你审批。",
+      "note": "示例仅作说明:该集成尚未推出。"
+    },
+    "can": {
+      "title": "{name} 将能用 Postbiz 做什么",
+      "c1": { "title": "准备草稿", "text": "撰写帖子,针对每个平台调整,并存为草稿,不发布任何内容。" },
+      "c2": { "title": "排期", "text": "选择时间,并把帖子排期到 Facebook、Instagram、X、LinkedIn、TikTok 或 YouTube。" },
+      "c3": { "title": "查看日历", "text": "在提出任何建议之前,先了解本周的安排。" },
+      "c4": { "title": "保持掌控", "text": "由人审批。结果不确定的发布绝不会被自动重试。" }
+    },
+    "what": { "title": "{name} 是什么?" },
+    "networks": { "title": "支持哪些平台?" },
+    "faq": {
+      "title": "关于 {name} 的常见问题",
+      "q1": "{name} 是什么?",
+      "q2": "我今天就能把 {name} 和 Postbiz 一起使用吗?",
+      "a2": "还不能。智能体接入(MCP 服务器、命令行、公开 API)正在准备中。在此期间,你可以让 {name} 起草内容,再自己在 Postbiz 日历中排期。",
+      "q3": "需要 API 密钥吗?",
+      "a3": "连接方式会在智能体接入上线时说明。目前无需创建任何密钥。",
+      "q4": "{name} 会在未经我同意的情况下发布吗?",
+      "a4": "我们的原则:智能体负责准备,由你决定。{name} 准备的帖子会在日历中等待你的审批。",
+      "q5": "{name} 将能在哪些平台发布?",
+      "a5": "与 Postbiz 相同:Facebook、Instagram、X、LinkedIn、TikTok 和 YouTube。各平台的现状详见“渠道”页面。"
+    },
+    "others": { "title": "其他 AI 智能体" },
+    "end": { "title": "排期你的帖子,<accent>牢牢掌控</accent>", "text": "现在就创建 Postbiz 账号并连接你的平台。智能体接入随后推出。" },
+    "hub": {
+      "title": "将能操作 <accent>Postbiz</accent> 的 AI 智能体",
+      "intro": "Claude、ChatGPT、Cursor、Codex…… Postbiz 正在准备 MCP 服务器、命令行和公开 API,让你选择的智能体起草并排期你的帖子。目前这些都还不可用:本页展示我们的方向。",
+      "guides": "阅读指南",
+      "routesTitle": "计划中的三种接入方式,<accent>目前都还不存在</accent>",
+      "mcp": { "title": "MCP 服务器", "text": "AI 助手接入你的应用所用的标准。" },
+      "cli": { "title": "命令行", "text": "适用于在终端或代码编辑器中工作的智能体。" },
+      "api": { "title": "公开 API", "text": "适用于所有其他工具和你自己的自动化。" },
+      "listTitle": "所有智能体",
+      "listText": "每个智能体一个页面,说明它将能用 Postbiz 做什么。"
+    },
+    "mcp": {
+      "title": "<accent>Postbiz</accent> 的 MCP 服务器",
+      "intro": "MCP(Model Context Protocol)是 AI 助手接入你的应用所用的标准。Postbiz 的 MCP 服务器正在准备中,目前尚不可用。",
+      "all": "查看智能体",
+      "c1": { "title": "它有什么用?", "text": "让 AI 助手直接在对话中读取你的日历、准备草稿并排期发布。" },
+      "c2": { "title": "支持哪些助手?", "text": "任何会使用 MCP 的助手或智能体:Claude、ChatGPT、Cursor、Codex 等等。完整列表见智能体页面。" },
+      "c3": { "title": "谁来掌控?", "text": "你。助手负责准备,由人审批,结果不确定的发布绝不会被自动重试。" }
+    }
+  },
   "meta": {
     "siteTitle": "Postbiz — 安排帖子发布,回复所有消息",
     "siteDescription": "Postbiz 将帖子排期与统一收件箱合二为一,集中处理 Facebook、Instagram、X、LinkedIn、TikTok 和 YouTube 的私信与评论。",
@@ -349,6 +423,9 @@
     "productPlanning": { "title": "发布排期", "description": "在一个日历中安排 Facebook、Instagram、X、LinkedIn、TikTok 和 YouTube 的发布。" },
     "contact": { "title": "联系我们", "description": "给 Postbiz 团队留言。" },
     "blog": { "title": "博客", "description": "Postbiz 的指南、技巧与动态:排期发布、回复消息、与 AI 智能体协作。", "categoryDescription": "Postbiz 博客「{category}」分类下的文章。" },
+    "agent": { "title": "用 {name} 排期你的发布", "description": "Postbiz 正在为 AI 智能体准备接入:不久后,{name} 就能起草并排期你在 Facebook、Instagram、X、LinkedIn、TikTok 和 YouTube 上的帖子。" },
+    "agents": { "title": "AI 智能体", "description": "Claude、ChatGPT、Cursor、Codex…… Postbiz 正在准备 MCP 服务器、命令行和公开 API,让你选择的智能体起草并排期你的帖子。" },
+    "mcp": { "title": "MCP 服务器", "description": "Postbiz 的 MCP 服务器正在准备中:把 AI 助手接入你的发布日历,并始终由人把关。" },
     "terms": { "title": "使用条款" },
     "privacy": { "title": "隐私政策" },
     "dataDeletion": { "title": "数据删除" },
