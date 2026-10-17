@@ -80,7 +80,7 @@
   "home": {
     "badgeBeta": "Offene Beta",
     "badgeOpenSource": "Freie Software · AGPL-3.0",
-    "title": "Beiträge und Nachrichten, <accent>gesteuert von Ihren KI-Agenten</accent>",
+    "title": "Beiträge und Nachrichten, gesteuert von <agent>Ihren KI-Agenten</agent>",
     "subtitle": "Postbiz verbindet Ihre Konten bei Facebook, Instagram, X, LinkedIn, TikTok und YouTube: ein Kalender zum Planen, ein Posteingang zum Antworten. Schließen Sie den KI-Agenten Ihrer Wahl an (Claude, ChatGPT, Cursor …), damit er Beiträge für Sie entwirft und plant: MCP-Server, CLI und öffentliche API folgen in Kürze.",
     "ctaPrimary": "Kostenlos testen",
     "ctaPricing": "Preise ansehen",

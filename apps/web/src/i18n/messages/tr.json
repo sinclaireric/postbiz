@@ -80,7 +80,7 @@
   "home": {
     "badgeBeta": "Açık beta",
     "badgeOpenSource": "Özgür yazılım · AGPL-3.0",
-    "title": "Gönderiler ve mesajlar, <accent>yapay zekâ ajanlarınızın yönetiminde</accent>",
+    "title": "Gönderiler ve mesajlar, <agent>yapay zekâ ajanlarınız</agent> ile otopilotta",
     "subtitle": "Postbiz; Facebook, Instagram, X, LinkedIn, TikTok ve YouTube hesaplarınızı bağlar: planlamak için tek takvim, yanıtlamak için tek gelen kutusu. Seçtiğiniz yapay zekâ ajanını (Claude, ChatGPT, Cursor…) bağlayın; gönderileri sizin yerinize yazsın ve planlasın. MCP sunucusu, CLI ve herkese açık API yakında geliyor.",
     "ctaPrimary": "Ücretsiz dene",
     "ctaPricing": "Fiyatları gör",

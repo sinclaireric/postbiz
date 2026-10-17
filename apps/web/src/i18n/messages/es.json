@@ -80,7 +80,7 @@
   "home": {
     "badgeBeta": "Beta abierta",
     "badgeOpenSource": "Software libre · AGPL-3.0",
-    "title": "Publicaciones y mensajes, <accent>gestionados por tus agentes de IA</accent>",
+    "title": "Publicaciones y mensajes, gestionados por <agent>tus agentes de IA</agent>",
     "subtitle": "Postbiz conecta tus cuentas de Facebook, Instagram, X, LinkedIn, TikTok y YouTube: un solo calendario para programar y una sola bandeja para responder. Conecta el agente de IA que prefieras (Claude, ChatGPT, Cursor…) para redactar y programar publicaciones por ti: servidor MCP, CLI y API pública, próximamente.",
     "ctaPrimary": "Probar gratis",
     "ctaPricing": "Ver los precios",

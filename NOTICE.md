@@ -14,6 +14,11 @@ Postbiz via un réseau doit pouvoir obtenir le code source correspondant, y comp
 
 ## Marques
 
-« Postiz » et son logo appartiennent à leurs propriétaires et ne sont pas utilisés par Postbiz.
-Le site marketing de Postbiz s'inspire du *langage visuel* d'autres produits sans reprendre leurs
-textes, logos, polices, illustrations ni couleurs.
+« Postiz » et son logo appartiennent à leurs propriétaires et ne sont pas utilisés par Postbiz comme
+marque. Le site marketing de Postbiz s'inspire du *langage visuel* d'autres produits sans reprendre
+leurs textes, polices, illustrations ni couleurs. Exceptions, à connaître :
+
+| Élément | Origine | Précaution |
+|---|---|---|
+| `apps/web/public/agents/*.svg` : logos de Claude, ChatGPT, Claude Code, OpenClaw, Hermes Agent et Grok Bot, affichés dans le titre de l'accueil | Copiés depuis `postiz.com/svgs/agents/` | Marques de leurs propriétaires respectifs, montrées uniquement pour nommer les agents que Postbiz vise (le serveur MCP, la CLI et l'API publique ne sont **pas encore disponibles**). Aucun partenariat ni soutien n'est sous-entendu : à retirer à la demande d'un propriétaire, ou si la compatibilité n'est finalement pas proposée. |
+| `apps/web/public/videos/*.webm` : démonstrations de l'accueil | Captures de l'interface de Postiz (logo « postiz » visible), fournies par le propriétaire du projet Postbiz | Réutilisées avec l'accord de Gitroom indiqué par le propriétaire du projet : à confirmer par écrit. À remplacer par des captures de Postbiz dès que l'interface sera prête. |

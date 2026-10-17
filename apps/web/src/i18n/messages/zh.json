@@ -80,7 +80,7 @@
   "home": {
     "badgeBeta": "公开测试版",
     "badgeOpenSource": "自由软件 · AGPL-3.0",
-    "title": "帖子与消息,由<accent>你的 AI 智能体</accent>来管理",
+    "title": "帖子与消息,由<agent>你的 AI 智能体</agent>来管理",
     "subtitle": "Postbiz 连接你的 Facebook、Instagram、X、LinkedIn、TikTok 和 YouTube 账号:一个日历用于排期,一个收件箱用于回复。接入你选择的 AI 智能体(Claude、ChatGPT、Cursor…),让它替你撰写并排期帖子:MCP 服务器、CLI 和公共 API 即将推出。",
     "ctaPrimary": "免费试用",
     "ctaPricing": "查看价格",

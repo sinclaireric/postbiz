@@ -123,7 +123,7 @@
   "home": {
     "badgeBeta": "Open beta",
     "badgeOpenSource": "Open source · AGPL-3.0",
-    "title": "Posts and messages, <accent>run by your AI agents</accent>",
+    "title": "Posts and messages, run by <agent>your AI agents</agent>",
     "subtitle": "Postbiz connects your Facebook, Instagram, X, LinkedIn, TikTok and YouTube accounts: one calendar to schedule, one inbox to reply. Plug in the AI agent of your choice (Claude, ChatGPT, Cursor…) to draft and schedule posts for you: MCP server, CLI and public API coming soon.",
     "ctaPrimary": "Try for free",
     "ctaPricing": "See pricing",

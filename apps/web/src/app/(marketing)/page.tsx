@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { HeroTitle } from '@/components/hero-title';
 import { InboxPreview } from '@/components/inbox-preview';
 import { ProductShowcase } from '@/components/product-showcase';
 import { RichText, accentLimeTags, accentTags } from '@/components/rich-text';
@@ -55,9 +56,7 @@ export default async function HomePage() {
               <Badge tone="lime">{t('home.badgeBeta')}</Badge>
               <span className="text-sm text-muted">{t('home.badgeOpenSource')}</span>
             </div>
-            <h1 className="mt-6 text-[clamp(2.5rem,5.2vw,4.25rem)] leading-[1.04] font-semibold tracking-[-0.035em]">
-              <RichText t={t} k="home.title" tags={accentTags} />
-            </h1>
+            <HeroTitle className="mt-6 text-[clamp(2.5rem,5.2vw,4.25rem)] leading-[1.04] font-semibold tracking-[-0.035em]" />
             <p className="mt-6 max-w-xl text-lg leading-relaxed text-muted">{t('home.subtitle')}</p>
             <div className="mt-9 flex flex-wrap gap-3">
               <ButtonLink href="/signup" size="lg">{t('home.ctaPrimary')}</ButtonLink>
