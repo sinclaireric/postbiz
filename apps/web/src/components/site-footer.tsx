@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { getT } from '@/i18n/server';
+import { NETWORKS, networkName } from '@/lib/networks';
 import { LanguageSwitcher } from './language-switcher';
 import { Logo } from './logo';
 import { Container } from './ui';
@@ -15,6 +16,10 @@ export async function SiteFooter() {
         { href: '/canaux', label: t('footer.channels') },
         { href: '/tarifs', label: t('footer.pricing') },
       ],
+    },
+    {
+      title: t('header.channels'),
+      links: NETWORKS.map((n) => ({ href: `/canaux/${n.id}`, label: networkName(n.id) })),
     },
     {
       title: t('header.agents'),
@@ -48,7 +53,7 @@ export async function SiteFooter() {
 
   return (
     <footer className="border-t border-line bg-paper">
-      <Container className="grid gap-10 py-14 sm:grid-cols-3 lg:grid-cols-[1.5fr_repeat(4,1fr)]">
+      <Container className="grid gap-10 py-14 sm:grid-cols-3 lg:grid-cols-[1.5fr_repeat(5,1fr)]">
         <div className="sm:col-span-3 lg:col-span-1">
           <Logo />
           <p className="mt-4 max-w-xs text-sm leading-relaxed text-muted">{t('footer.tagline')}</p>

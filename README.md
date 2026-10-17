@@ -110,6 +110,20 @@ chemin et paramètres conservés (`apps/web/src/lib/alias-domains.ts`, testé). 
   l'application mobile **non traduits** ; polices : Jakarta pour le latin, polices système pour le cyrillique, l'arabe, l'hébreu et le CJK ;
   les traductions ont été rédigées sans relecture native et devront être relues avant un lancement dans ces langues.
 
+## Blog, pages d'agents et pages de canaux
+
+- **Blog** (`/blog`, mise en page du blog de Chatbase) : un article = un dossier `apps/web/content/blog/<identifiant>/` avec `fr.md` et `en.md`
+  (en-tête `title`, `description`, `date`, `category` parmi `agents|guides|product`, `cover` parmi `forest|lime|ink`, `coverTitle` court).
+  Les couvertures sont dessinées en CSS. Markdown rendu en éléments React (jamais de HTML brut). Un article absent dans une langue s'affiche dans
+  l'autre ; toutes les langues autres que le français affichent l'anglais. Flux RSS : `/blog/rss.xml` (`?lang=fr`). `sitemap.xml` et `robots.txt` sont
+  générés. Le test `lib/blog/blog.test.ts` valide tous les articles du dépôt (en-têtes, langues, liens internes).
+- **Agents IA** (`/<agent>`, `/agent`, `/mcp`) : 20 agents décrits dans `lib/agents.ts`, une même page pour tous (hero en dégradé avec mascotte en boucle, étapes, ce que
+  l'agent pourra faire, questions). **Le serveur MCP, la ligne de commande et l'API publique de Postbiz n'existent pas encore** : chaque page l'affiche (« Bientôt »,
+  conversation d'exemple marquée « Aperçu »). Ne rien y écrire sur l'installation tant que ces accès n'existent pas.
+- **Canaux** (`/canaux/<réseau>`) : une page par réseau géré (Facebook, Instagram, X, LinkedIn, TikTok, YouTube), alimentée par `lib/networks.ts` : si l'état d'un réseau y change,
+  la page change avec lui. Pas de page pour les réseaux que Postbiz ne gère pas.
+- Les vidéos de mascotte, les logos d'agents et de réseaux viennent de postiz.com : voir `NOTICE.md`.
+
 ## Tests
 
 ```bash

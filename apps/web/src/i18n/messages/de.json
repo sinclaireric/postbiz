@@ -32,6 +32,7 @@
     "agents": "KI-Agenten",
     "agentsAll": "Alle KI-Agenten",
     "mcp": "MCP-Server",
+    "channelsAll": "Alle Kanäle",
     "signIn": "Anmelden",
     "tryFree": "Kostenlos testen",
     "openMenu": "Menü öffnen",
@@ -444,6 +445,71 @@
       }
     }
   },
+  "channelPage": {
+    "title": "Planen Sie Ihre {network}-Beiträge in einem einzigen Kalender",
+    "lead": {
+      "facebook": "Planen Sie die Beiträge Ihrer Facebook-Seiten und beantworten Sie Messenger-Nachrichten und Kommentare im selben Posteingang.",
+      "instagram": "Planen Sie Ihre Instagram-Beiträge und beantworten Sie die privaten Nachrichten und Kommentare Ihres Business-Kontos, ohne Postbiz zu verlassen.",
+      "x": "Planen Sie Ihre Beiträge auf X im selben Kalender wie Ihre anderen Netzwerke. Nachrichten und Kommentare folgen, je nach Zugang der X-API.",
+      "linkedin": "Planen Sie Ihre LinkedIn-Beiträge im selben Kalender wie Ihre anderen Netzwerke. LinkedIn öffnet seine Nachrichten nicht für Tools von Drittanbietern; Kommentare von Seiten sind geplant.",
+      "tiktok": "Planen Sie Ihre TikTok-Beiträge in einem gemeinsamen Kalender. Nachrichten und Kommentare folgen, je nach Freigabe durch TikTok.",
+      "youtube": "Planen Sie Ihre YouTube-Beiträge und beantworten Sie die Kommentare Ihres Kanals im selben Postfach. YouTube hat keine privaten Nachrichten."
+    },
+    "ctaStatus": "Was möglich ist",
+    "status": { "title": "Was Postbiz auf {network} leistet" },
+    "c1": {
+      "title": "Im Voraus planen",
+      "text": "Bereiten Sie Ihre {network}-Beiträge vor, wenn Sie Zeit haben: Sie erscheinen zur gewählten Zeit, ohne dass Sie daran denken müssen."
+    },
+    "c2": {
+      "title": "Ein gemeinsamer Kalender",
+      "text": "Tag, Woche, Monat oder Liste: Das ganze Team sieht, was auf {network} und Ihren anderen Netzwerken geplant ist."
+    },
+    "inbox": {
+      "both": {
+        "title": "Nachrichten und Kommentare an einem Ort",
+        "text": "Beantworten Sie private Nachrichten und Kommentare von {network} im Posteingang, mit der verbleibenden Zeit jeder Unterhaltung."
+      },
+      "comments": {
+        "title": "Die Kommentare im Posteingang",
+        "text": "Beantworten Sie {network}-Kommentare im Posteingang, zusammen mit all Ihren anderen Netzwerken. {network} öffnet seine privaten Nachrichten nicht für Tools von Drittanbietern."
+      },
+      "soon": {
+        "title": "Der Posteingang kommt",
+        "text": "Nachrichten und Kommentare von {network} folgen, sobald das Netzwerk den Zugang gewährt. Der genaue Stand steht weiter oben."
+      }
+    },
+    "c4": {
+      "title": "Keine Dubletten, keine Überraschungen",
+      "text": "Ein {network}-Beitrag mit ungewissem Ausgang wird nie automatisch erneut gesendet: Sie prüfen im Netzwerk, bevor Sie entscheiden."
+    },
+    "visual": {
+      "title": "Alles an einem Ort",
+      "text": "Ihr Veröffentlichungskalender und der Posteingang Ihrer Netzwerke, einschließlich {network}, in einer einzigen App für das ganze Team."
+    },
+    "agents": {
+      "title": "{network} mit einem KI-Agenten steuern",
+      "text": "Claude, ChatGPT, Cursor … Postbiz bereitet einen MCP-Server, eine Kommandozeile und eine öffentliche API vor, damit der Agent Ihrer Wahl Ihre Beiträge vorbereitet. Noch nicht verfügbar."
+    },
+    "faq": {
+      "title": "Häufige Fragen zu {network}",
+      "q1": "Wie plane ich einen {network}-Beitrag mit Postbiz?",
+      "a1": "Verbinden Sie Ihr {network}-Konto mit Postbiz, öffnen Sie den Kalender, erstellen Sie einen Beitrag und wählen Sie Netzwerk und Zeit. Postbiz veröffentlicht ihn zur gewählten Zeit.",
+      "q2": "Was leistet Postbiz heute auf {network}?",
+      "a2": "Der genaue Stand von Veröffentlichung, privaten Nachrichten und Kommentaren steht weiter oben auf dieser Seite.",
+      "q3": "Kann man im Team arbeiten?",
+      "a3": "Ja. Die Rollen (Administrator, Mitglied, Leser) legen fest, wer planen und wer nur ansehen darf.",
+      "q4": "Kann ein KI-Agent auf {network} veröffentlichen?",
+      "a4": "Noch nicht: MCP-Server, Kommandozeile und öffentliche API von Postbiz sind in Vorbereitung. Siehe die Seite zu KI-Agenten.",
+      "q5": "Ist Postbiz für {network} kostenlos?",
+      "a5": "Die Postbiz-Beta ist kostenlos, ohne Kreditkarte. Die Tarife stehen auf der Seite „Preise“."
+    },
+    "others": { "title": "Weitere Kanäle" },
+    "end": {
+      "title": "Verbinden Sie {network} mit <accent>Postbiz</accent>",
+      "text": "Erstellen Sie Ihr Konto, verbinden Sie Ihre Netzwerke und planen Sie Ihren ersten Beitrag. Die Beta ist kostenlos, ohne Kreditkarte."
+    }
+  },
   "meta": {
     "siteTitle": "Postbiz — Beiträge planen, alle Nachrichten beantworten",
     "siteDescription": "Postbiz vereint die Planung Ihrer Beiträge und einen einheitlichen Posteingang für die privaten Nachrichten und Kommentare von Facebook, Instagram, X, LinkedIn, TikTok und YouTube.",
@@ -456,6 +522,7 @@
     "agent": { "title": "Planen Sie Ihre Beiträge mit {name}", "description": "Postbiz bereitet den Zugang für KI-Agenten vor: Bald kann {name} Entwürfe schreiben und Ihre Beiträge auf Facebook, Instagram, X, LinkedIn, TikTok und YouTube planen." },
     "agents": { "title": "KI-Agenten", "description": "Claude, ChatGPT, Cursor, Codex … Postbiz bereitet einen MCP-Server, eine Kommandozeile und eine öffentliche API vor, damit der Agent Ihrer Wahl Ihre Beiträge schreibt und plant." },
     "mcp": { "title": "MCP-Server", "description": "Der MCP-Server von Postbiz, in Vorbereitung: Verbinden Sie einen KI-Assistenten mit Ihrem Veröffentlichungskalender, mit einem Menschen am Steuer." },
+    "channel": { "title": "{network}-Beiträge planen", "description": "Planen Sie Ihre {network}-Beiträge mit Postbiz in einem gemeinsamen Kalender. Was das Netzwerk heute erlaubt: Veröffentlichen, private Nachrichten, Kommentare." },
     "terms": { "title": "Nutzungsbedingungen" },
     "privacy": { "title": "Datenschutzerklärung" },
     "dataDeletion": { "title": "Datenlöschung" },

@@ -32,6 +32,7 @@
     "agents": "Agenti IA",
     "agentsAll": "Tutti gli agenti IA",
     "mcp": "Server MCP",
+    "channelsAll": "Tutti i canali",
     "signIn": "Accedi",
     "tryFree": "Prova gratuita",
     "openMenu": "Apri il menu",
@@ -438,6 +439,71 @@
       }
     }
   },
+  "channelPage": {
+    "title": "Programma i tuoi post su {network} da un solo calendario",
+    "lead": {
+      "facebook": "Programma i post delle tue Pagine Facebook e rispondi ai messaggi di Messenger e ai commenti dalla stessa posta in arrivo.",
+      "instagram": "Programma i tuoi post su Instagram e rispondi ai messaggi privati e ai commenti del tuo account professionale, senza lasciare Postbiz.",
+      "x": "Programma i tuoi post su X dallo stesso calendario degli altri social. Messaggi e commenti seguiranno, in base all’accesso concesso dall’API di X.",
+      "linkedin": "Programma i tuoi post su LinkedIn dallo stesso calendario degli altri social. LinkedIn non apre la sua messaggistica a strumenti di terze parti; i commenti delle Pagine sono previsti.",
+      "tiktok": "Programma i tuoi post su TikTok da un calendario condiviso. Messaggi e commenti seguiranno, in base all’approvazione di TikTok.",
+      "youtube": "Programma i tuoi post su YouTube e rispondi ai commenti del tuo canale dalla stessa casella. YouTube non ha messaggi privati."
+    },
+    "ctaStatus": "Scopri cosa è possibile",
+    "status": { "title": "Cosa fa Postbiz su {network}" },
+    "c1": {
+      "title": "Programma in anticipo",
+      "text": "Prepara i tuoi post su {network} quando hai tempo: escono all’ora scelta, senza che tu debba pensarci."
+    },
+    "c2": {
+      "title": "Un calendario condiviso",
+      "text": "Giorno, settimana, mese o elenco: tutto il team vede cosa è previsto su {network} e sugli altri social."
+    },
+    "inbox": {
+      "both": {
+        "title": "Messaggi e commenti nello stesso posto",
+        "text": "Rispondi ai messaggi privati e ai commenti di {network} dalla posta in arrivo, con il tempo rimasto per ogni conversazione."
+      },
+      "comments": {
+        "title": "I commenti nella posta in arrivo",
+        "text": "Rispondi ai commenti di {network} dalla posta in arrivo, insieme a tutti gli altri social. {network} non apre i suoi messaggi privati a strumenti di terze parti."
+      },
+      "soon": {
+        "title": "La posta in arrivo sta arrivando",
+        "text": "Messaggi e commenti di {network} seguiranno non appena il social concederà l’accesso. Lo stato esatto è mostrato sopra."
+      }
+    },
+    "c4": {
+      "title": "Niente doppioni, niente sorprese",
+      "text": "Un post su {network} dall’esito incerto non viene mai rieseguito automaticamente: controlli sul social prima di decidere."
+    },
+    "visual": {
+      "title": "Tutto nello stesso posto",
+      "text": "Il tuo calendario di pubblicazione e la posta in arrivo dei tuoi social, {network} compreso, in un’unica app per tutto il team."
+    },
+    "agents": {
+      "title": "Pilota {network} con un agente IA",
+      "text": "Claude, ChatGPT, Cursor… Postbiz prepara un server MCP, una riga di comando e un’API pubblica perché l’agente che preferisci prepari i tuoi post. Non ancora disponibile."
+    },
+    "faq": {
+      "title": "Domande frequenti su {network}",
+      "q1": "Come programmo un post su {network} con Postbiz?",
+      "a1": "Collega il tuo account {network} a Postbiz, apri il calendario, crea un post e scegli il social e l’orario. Postbiz lo pubblica all’ora scelta.",
+      "q2": "Cosa fa Postbiz su {network} oggi?",
+      "a2": "Lo stato esatto di pubblicazione, messaggi privati e commenti è dettagliato più su, in questa pagina.",
+      "q3": "Si può lavorare in team?",
+      "a3": "Sì. I ruoli (amministratore, membro, lettore) definiscono chi può programmare e chi può solo consultare.",
+      "q4": "Un agente IA può pubblicare su {network}?",
+      "a4": "Non ancora: il server MCP, la riga di comando e l’API pubblica di Postbiz sono in preparazione. Vedi la pagina degli agenti IA.",
+      "q5": "Postbiz è gratuito per {network}?",
+      "a5": "La beta di Postbiz è gratuita, senza carta di credito. I piani sono dettagliati nella pagina Prezzi."
+    },
+    "others": { "title": "Altri canali" },
+    "end": {
+      "title": "Collega {network} a <accent>Postbiz</accent>",
+      "text": "Crea il tuo account, collega i tuoi social e programma il tuo primo post. La beta è gratuita, senza carta di credito."
+    }
+  },
   "meta": {
     "siteTitle": "Postbiz — Programma i tuoi post, rispondi a tutti i messaggi",
     "siteDescription": "Postbiz riunisce la programmazione delle tue pubblicazioni e una posta in arrivo unificata per i messaggi privati e i commenti di Facebook, Instagram, X, LinkedIn, TikTok e YouTube.",
@@ -450,6 +516,7 @@
     "agent": { "title": "Programma i tuoi post con {name}", "description": "Postbiz prepara l’accesso degli agenti IA: presto {name} potrà scrivere bozze e programmare i tuoi post su Facebook, Instagram, X, LinkedIn, TikTok e YouTube." },
     "agents": { "title": "Agenti IA", "description": "Claude, ChatGPT, Cursor, Codex… Postbiz prepara un server MCP, una riga di comando e un’API pubblica perché l’agente che preferisci scriva e programmi i tuoi post." },
     "mcp": { "title": "Server MCP", "description": "Il server MCP di Postbiz, in preparazione: collega un assistente IA al tuo calendario di pubblicazione, con una persona al comando." },
+    "channel": { "title": "Programma i tuoi post su {network}", "description": "Programma i tuoi post su {network} da un calendario condiviso con Postbiz. Cosa permette oggi il social: pubblicazione, messaggi privati, commenti." },
     "terms": { "title": "Condizioni d’uso" },
     "privacy": { "title": "Informativa sulla privacy" },
     "dataDeletion": { "title": "Eliminazione dei dati" },

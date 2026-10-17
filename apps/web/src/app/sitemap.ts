@@ -2,6 +2,7 @@ import type { MetadataRoute } from 'next';
 import { AI_AGENTS } from '@/lib/agents';
 import { CONTENT_DIR, loadPostsFrom } from '@/lib/blog/load';
 import { CATEGORIES } from '@/lib/blog/types';
+import { NETWORKS } from '@/lib/networks';
 import { siteUrl } from '@/lib/supabase/env';
 
 const PAGES = ['/', '/produit/inbox', '/produit/planification', '/canaux', '/tarifs', '/blog', '/agent', '/mcp', '/contact', '/cgu', '/confidentialite', '/suppression-des-donnees'];
@@ -11,6 +12,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const posts = await loadPostsFrom(CONTENT_DIR, 'en');
   return [
     ...PAGES.map((path) => ({ url: `${siteUrl}${path === '/' ? '' : path}` })),
+    ...NETWORKS.map((n) => ({ url: `${siteUrl}/canaux/${n.id}` })),
     ...AI_AGENTS.map((a) => ({ url: `${siteUrl}/${a.slug}` })),
     ...CATEGORIES.map((c) => ({ url: `${siteUrl}/blog/category/${c}` })),
     ...posts.map((p) => ({ url: `${siteUrl}/blog/${p.slug}`, lastModified: new Date(`${p.updated ?? p.date}T00:00:00Z`) })),

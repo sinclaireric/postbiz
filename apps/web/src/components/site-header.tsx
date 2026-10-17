@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { getT } from '@/i18n/server';
 import { AI_AGENTS } from '@/lib/agents';
+import { NETWORKS, networkName } from '@/lib/networks';
 import { LanguageSwitcher } from './language-switcher';
 import { Logo } from './logo';
 import { ButtonLink, Container } from './ui';
@@ -13,7 +14,6 @@ export async function SiteHeader() {
     { href: '/canaux', title: t('header.channels'), desc: t('header.channelsDesc') },
   ];
   const links = [
-    { href: '/canaux', label: t('header.channels') },
     { href: '/tarifs', label: t('header.pricing') },
     { href: '/blog', label: t('header.blog') },
     { href: '/contact', label: t('header.contact') },
@@ -71,6 +71,28 @@ export async function SiteHeader() {
                       {t('header.agentsAll')}
                     </Link>
                   </div>
+                </div>
+              </div>
+            </div>
+            <div className="group relative">
+              <button className="flex h-10 items-center gap-1 rounded-full px-3 text-[15px] font-medium text-ink/80 hover:text-ink" aria-haspopup="true">
+                {t('header.channels')}
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="m3 4.5 3 3 3-3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+              </button>
+              <div className="invisible absolute start-0 top-full w-[300px] pt-2 opacity-0 transition group-focus-within:visible group-focus-within:opacity-100 group-hover:visible group-hover:opacity-100">
+                <div className="rounded-2xl border border-line bg-surface p-2 shadow-[0_12px_40px_-12px_rgba(17,17,16,0.25)]">
+                  <ul>
+                    {NETWORKS.map((n) => (
+                      <li key={n.id}>
+                        <Link href={`/canaux/${n.id}`} className="flex items-center gap-3 rounded-xl px-3 py-2 text-[15px] font-medium hover:bg-wash">
+                          {/* eslint-disable-next-line @next/next/no-img-element -- petit SVG statique */}
+                          <img src={`/socials/${n.id}.svg`} alt="" width={24} height={24} className="h-6 w-6 shrink-0 rounded-[20%]" loading="lazy" />
+                          {networkName(n.id)}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                  <Link href="/canaux" className="mt-1 block rounded-xl border-t border-line px-3 py-2.5 text-[14px] font-semibold hover:bg-wash">{t('header.channelsAll')}</Link>
                 </div>
               </div>
             </div>

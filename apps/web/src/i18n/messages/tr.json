@@ -32,6 +32,7 @@
     "agents": "Yapay zekâ ajanları",
     "agentsAll": "Tüm yapay zekâ ajanları",
     "mcp": "MCP sunucusu",
+    "channelsAll": "Tüm kanallar",
     "signIn": "Giriş yap",
     "tryFree": "Ücretsiz dene",
     "openMenu": "Menüyü aç",
@@ -435,6 +436,68 @@
       }
     }
   },
+  "channelPage": {
+    "title": "{network} gönderilerinizi tek bir takvimden planlayın",
+    "lead": {
+      "facebook": "Facebook Sayfalarınızın gönderilerini planlayın; Messenger mesajlarına ve yorumlara aynı gelen kutusundan yanıt verin.",
+      "instagram": "Instagram gönderilerinizi planlayın; profesyonel hesabınızın özel mesajlarına ve yorumlarına Postbiz'den ayrılmadan yanıt verin.",
+      "x": "X gönderilerinizi diğer ağlarla aynı takvimden planlayın. Mesajlar ve yorumlar, X API'sinin verdiği erişime bağlı olarak sonradan gelecek.",
+      "linkedin": "LinkedIn gönderilerinizi diğer ağlarla aynı takvimden planlayın. LinkedIn mesajlaşmasını üçüncü taraf araçlara açmıyor; Sayfa yorumları planlanıyor.",
+      "tiktok": "TikTok gönderilerinizi ortak bir takvimden planlayın. Mesajlar ve yorumlar, TikTok'un onayına bağlı olarak sonradan gelecek.",
+      "youtube": "YouTube gönderilerinizi planlayın ve kanalınızın yorumlarına aynı gelen kutusundan yanıt verin. YouTube'da özel mesaj yoktur."
+    },
+    "ctaStatus": "Nelerin mümkün olduğunu görün",
+    "status": { "title": "Postbiz {network} üzerinde neler yapıyor" },
+    "c1": {
+      "title": "Önceden planlayın",
+      "text": "{network} gönderilerinizi vaktiniz olduğunda hazırlayın: seçtiğiniz saatte, siz düşünmeden yayınlanırlar."
+    },
+    "c2": { "title": "Ortak bir takvim", "text": "Gün, hafta, ay veya liste: tüm ekip {network} ve diğer ağlarda nelerin planlandığını görür." },
+    "inbox": {
+      "both": {
+        "title": "Mesajlar ve yorumlar tek yerde",
+        "text": "{network} özel mesajlarına ve yorumlarına gelen kutusundan yanıt verin; her sohbette kalan süre de görünür."
+      },
+      "comments": {
+        "title": "Yorumlar gelen kutusunda",
+        "text": "{network} yorumlarına diğer tüm ağlarınızla birlikte gelen kutusundan yanıt verin. {network} özel mesajlarını üçüncü taraf araçlara açmıyor."
+      },
+      "soon": {
+        "title": "Gelen kutusu yolda",
+        "text": "{network} mesajları ve yorumları, ağ erişim verir vermez gelecek. Kesin durum yukarıda gösteriliyor."
+      }
+    },
+    "c4": {
+      "title": "Tekrar yok, sürpriz yok",
+      "text": "Sonucu belirsiz bir {network} yayını asla otomatik olarak yeniden denenmez: karar vermeden önce ağda kontrol edersiniz."
+    },
+    "visual": {
+      "title": "Her şey tek yerde",
+      "text": "Yayın takviminiz ve {network} dahil ağlarınızın gelen kutusu, tüm ekip için tek bir uygulamada."
+    },
+    "agents": {
+      "title": "{network} ağını bir yapay zekâ ajanıyla yönetin",
+      "text": "Claude, ChatGPT, Cursor… Postbiz, seçtiğiniz ajanın gönderilerinizi hazırlayabilmesi için bir MCP sunucusu, bir komut satırı ve herkese açık bir API hazırlıyor. Henüz kullanılabilir değil."
+    },
+    "faq": {
+      "title": "{network} hakkında sık sorulan sorular",
+      "q1": "Postbiz ile bir {network} gönderisini nasıl planlarım?",
+      "a1": "{network} hesabınızı Postbiz'e bağlayın, takvimi açın, bir gönderi oluşturun, ağı ve saati seçin. Postbiz onu seçtiğiniz saatte yayınlar.",
+      "q2": "Postbiz bugün {network} üzerinde ne yapıyor?",
+      "a2": "Yayın, özel mesajlar ve yorumların kesin durumu bu sayfanın yukarısında ayrıntılı olarak yer alıyor.",
+      "q3": "Ekip olarak çalışılabilir mi?",
+      "a3": "Evet. Roller (yönetici, üye, izleyici) kimin planlama yapabileceğini, kimin yalnızca görüntüleyebileceğini belirler.",
+      "q4": "Bir yapay zekâ ajanı {network} üzerinde yayın yapabilir mi?",
+      "a4": "Henüz hayır: Postbiz MCP sunucusu, komut satırı ve herkese açık API hazırlanıyor. Yapay zekâ ajanları sayfasına bakın.",
+      "q5": "Postbiz {network} için ücretsiz mi?",
+      "a5": "Postbiz betası ücretsizdir, kredi kartı gerekmez. Planlar Fiyatlandırma sayfasında ayrıntılı olarak anlatılıyor."
+    },
+    "others": { "title": "Diğer kanallar" },
+    "end": {
+      "title": "{network} ağını <accent>Postbiz</accent>'e bağlayın",
+      "text": "Hesabınızı oluşturun, ağlarınızı bağlayın ve ilk gönderinizi planlayın. Beta ücretsizdir, kredi kartı gerekmez."
+    }
+  },
   "meta": {
     "siteTitle": "Postbiz — Gönderilerinizi planlayın, tüm mesajlara yanıt verin",
     "siteDescription": "Postbiz, yayın planlamasını ve Facebook, Instagram, X, LinkedIn, TikTok ve YouTube için özel mesajlar ile yorumların birleşik gelen kutusunu tek çatı altında toplar.",
@@ -447,6 +510,7 @@
     "agent": { "title": "{name} ile gönderilerinizi planlayın", "description": "Postbiz, yapay zekâ ajanları için erişim hazırlıyor: yakında {name}, Facebook, Instagram, X, LinkedIn, TikTok ve YouTube gönderilerinizi taslak olarak yazıp planlayabilecek." },
     "agents": { "title": "Yapay zekâ ajanları", "description": "Claude, ChatGPT, Cursor, Codex… Postbiz, seçtiğiniz ajanın gönderilerinizi yazıp planlayabilmesi için bir MCP sunucusu, bir komut satırı ve herkese açık bir API hazırlıyor." },
     "mcp": { "title": "MCP sunucusu", "description": "Hazırlanmakta olan Postbiz MCP sunucusu: bir yapay zekâ asistanını yayın takviminize bağlayın, kontrol bir insanda kalsın." },
+    "channel": { "title": "{network} gönderilerinizi planlayın", "description": "{network} gönderilerinizi Postbiz'in ortak takviminden planlayın. Ağın bugün izin verdikleri: yayın, özel mesajlar, yorumlar." },
     "terms": { "title": "Kullanım koşulları" },
     "privacy": { "title": "Gizlilik politikası" },
     "dataDeletion": { "title": "Veri silme" },

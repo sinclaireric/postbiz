@@ -32,6 +32,7 @@
     "agents": "Agentes de IA",
     "agentsAll": "Todos os agentes de IA",
     "mcp": "Servidor MCP",
+    "channelsAll": "Todos os canais",
     "signIn": "Entrar",
     "tryFree": "Teste grátis",
     "openMenu": "Abrir o menu",
@@ -429,6 +430,71 @@
       }
     }
   },
+  "channelPage": {
+    "title": "Agende suas publicações no {network} em um só calendário",
+    "lead": {
+      "facebook": "Agende as publicações das suas Páginas do Facebook e responda às mensagens do Messenger e aos comentários na mesma caixa de entrada.",
+      "instagram": "Agende suas publicações no Instagram e responda às mensagens privadas e aos comentários da sua conta profissional, sem sair do Postbiz.",
+      "x": "Agende suas publicações no X no mesmo calendário das outras redes. As mensagens e os comentários virão depois, conforme o acesso concedido pela API do X.",
+      "linkedin": "Agende suas publicações no LinkedIn no mesmo calendário das outras redes. O LinkedIn não abre sua mensageria a ferramentas de terceiros; os comentários de Páginas estão previstos.",
+      "tiktok": "Agende suas publicações no TikTok em um calendário compartilhado. As mensagens e os comentários virão depois, conforme a aprovação do TikTok.",
+      "youtube": "Agende suas publicações no YouTube e responda aos comentários do seu canal na mesma caixa. O YouTube não tem mensagens privadas."
+    },
+    "ctaStatus": "Ver o que é possível",
+    "status": { "title": "O que o Postbiz faz no {network}" },
+    "c1": {
+      "title": "Agende com antecedência",
+      "text": "Prepare suas publicações no {network} quando tiver tempo: elas saem no horário escolhido, sem você precisar pensar nisso."
+    },
+    "c2": {
+      "title": "Um calendário compartilhado",
+      "text": "Dia, semana, mês ou lista: toda a equipe vê o que está previsto no {network} e nas outras redes."
+    },
+    "inbox": {
+      "both": {
+        "title": "Mensagens e comentários no mesmo lugar",
+        "text": "Responda às mensagens privadas e aos comentários do {network} pela caixa de entrada, com o tempo restante de cada conversa."
+      },
+      "comments": {
+        "title": "Os comentários na caixa de entrada",
+        "text": "Responda aos comentários do {network} pela caixa de entrada, junto com todas as outras redes. O {network} não abre suas mensagens privadas a ferramentas de terceiros."
+      },
+      "soon": {
+        "title": "A caixa de entrada está chegando",
+        "text": "As mensagens e os comentários do {network} virão assim que a rede liberar o acesso. O estado exato aparece acima."
+      }
+    },
+    "c4": {
+      "title": "Sem duplicatas nem surpresas",
+      "text": "Uma publicação no {network} com resultado incerto nunca é reenviada automaticamente: você confere na rede antes de decidir."
+    },
+    "visual": {
+      "title": "Tudo no mesmo lugar",
+      "text": "Seu calendário de publicação e a caixa de entrada das suas redes, inclusive o {network}, em um só aplicativo para toda a equipe."
+    },
+    "agents": {
+      "title": "Controle o {network} com um agente de IA",
+      "text": "Claude, ChatGPT, Cursor… O Postbiz está preparando um servidor MCP, uma linha de comando e uma API pública para que o agente de sua escolha prepare suas publicações. Ainda não disponível."
+    },
+    "faq": {
+      "title": "Perguntas frequentes sobre o {network}",
+      "q1": "Como agendar uma publicação no {network} com o Postbiz?",
+      "a1": "Conecte sua conta do {network} ao Postbiz, abra o calendário, crie uma publicação e escolha a rede e o horário. O Postbiz a publica no horário escolhido.",
+      "q2": "O que o Postbiz faz no {network} hoje?",
+      "a2": "O estado exato da publicação, das mensagens privadas e dos comentários está detalhado mais acima nesta página.",
+      "q3": "Dá para trabalhar em equipe?",
+      "a3": "Sim. Os papéis (administrador, membro, leitor) definem quem pode agendar e quem só pode consultar.",
+      "q4": "Um agente de IA pode publicar no {network}?",
+      "a4": "Ainda não: o servidor MCP, a linha de comando e a API pública do Postbiz estão em preparação. Veja a página de agentes de IA.",
+      "q5": "O Postbiz é gratuito para o {network}?",
+      "a5": "O beta do Postbiz é gratuito, sem cartão de crédito. Os planos estão detalhados na página Preços."
+    },
+    "others": { "title": "Outros canais" },
+    "end": {
+      "title": "Conecte o {network} ao <accent>Postbiz</accent>",
+      "text": "Crie sua conta, conecte suas redes e agende sua primeira publicação. O beta é gratuito, sem cartão de crédito."
+    }
+  },
   "meta": {
     "siteTitle": "Postbiz — Agende seus posts, responda a todas as suas mensagens",
     "siteDescription": "O Postbiz reúne o agendamento das suas publicações e uma caixa de entrada unificada para as mensagens privadas e os comentários do Facebook, Instagram, X, LinkedIn, TikTok e YouTube.",
@@ -441,6 +507,7 @@
     "agent": { "title": "Agende suas publicações com {name}", "description": "O Postbiz está preparando o acesso dos agentes de IA: em breve, {name} poderá redigir rascunhos e agendar suas publicações no Facebook, Instagram, X, LinkedIn, TikTok e YouTube." },
     "agents": { "title": "Agentes de IA", "description": "Claude, ChatGPT, Cursor, Codex… O Postbiz está preparando um servidor MCP, uma linha de comando e uma API pública para que o agente de sua escolha redija e agende suas publicações." },
     "mcp": { "title": "Servidor MCP", "description": "O servidor MCP do Postbiz, em preparação: conecte um assistente de IA ao seu calendário de publicação, com uma pessoa no comando." },
+    "channel": { "title": "Agende suas publicações no {network}", "description": "Agende suas publicações no {network} em um calendário compartilhado com o Postbiz. O que a rede permite hoje: publicação, mensagens privadas, comentários." },
     "terms": { "title": "Termos de uso" },
     "privacy": { "title": "Política de privacidade" },
     "dataDeletion": { "title": "Exclusão de dados" },

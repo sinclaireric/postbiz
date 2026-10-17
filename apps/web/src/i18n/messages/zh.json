@@ -32,6 +32,7 @@
     "agents": "AI 智能体",
     "agentsAll": "所有 AI 智能体",
     "mcp": "MCP 服务器",
+    "channelsAll": "所有渠道",
     "signIn": "登录",
     "tryFree": "免费试用",
     "openMenu": "打开菜单",
@@ -414,6 +415,44 @@
       "c3": { "title": "谁来掌控?", "text": "你。助手负责准备,由人审批,结果不确定的发布绝不会被自动重试。" }
     }
   },
+  "channelPage": {
+    "title": "在一个日历中排期你的 {network} 发布",
+    "lead": {
+      "facebook": "排期你的 Facebook 主页帖子,并在同一个收件箱中回复 Messenger 消息和评论。",
+      "instagram": "排期你的 Instagram 帖子,并在不离开 Postbiz 的情况下回复商业账号的私信和评论。",
+      "x": "在与其他平台相同的日历中排期你的 X 帖子。消息和评论随后推出,取决于 X API 开放的权限。",
+      "linkedin": "在与其他平台相同的日历中排期你的 LinkedIn 帖子。LinkedIn 不向第三方工具开放私信;主页评论已在计划中。",
+      "tiktok": "在共享日历中排期你的 TikTok 帖子。消息和评论随后推出,取决于 TikTok 的审批。",
+      "youtube": "排期你的 YouTube 发布,并在同一个收件箱中回复频道评论。YouTube 没有私信。"
+    },
+    "ctaStatus": "看看能做什么",
+    "status": { "title": "Postbiz 在 {network} 上能做什么" },
+    "c1": { "title": "提前排期", "text": "有空时就准备好 {network} 帖子:它们会在你设定的时间发出,无需你再惦记。" },
+    "c2": { "title": "共享日历", "text": "按日、周、月或列表查看:整个团队都能看到 {network} 和其他平台上的安排。" },
+    "inbox": {
+      "both": { "title": "消息和评论集中在一处", "text": "在收件箱中回复 {network} 的私信和评论,并看到每个对话的剩余时间。" },
+      "comments": { "title": "评论进入收件箱", "text": "在收件箱中回复 {network} 的评论,与你的其他平台放在一起。{network} 不向第三方工具开放私信。" },
+      "soon": { "title": "收件箱即将到来", "text": "{network} 的消息和评论将在该平台开放权限后推出。具体状态见上方。" }
+    },
+    "c4": { "title": "没有重复,没有意外", "text": "结果不确定的 {network} 发布绝不会被自动重试:你先在平台上核实,再做决定。" },
+    "visual": { "title": "一切尽在一处", "text": "你的发布日历和各平台(包括 {network})的收件箱,整合在一个供整个团队使用的应用中。" },
+    "agents": { "title": "用 AI 智能体操作 {network}", "text": "Claude、ChatGPT、Cursor…… Postbiz 正在准备 MCP 服务器、命令行和公开 API,让你选择的智能体为你准备帖子。尚未推出。" },
+    "faq": {
+      "title": "关于 {network} 的常见问题",
+      "q1": "如何用 Postbiz 排期 {network} 帖子?",
+      "a1": "把你的 {network} 账号连接到 Postbiz,打开日历,创建帖子,选择平台和时间。Postbiz 会在设定的时间发布。",
+      "q2": "Postbiz 目前在 {network} 上能做什么?",
+      "a2": "发布、私信和评论的具体状态详见本页上方。",
+      "q3": "可以多人协作吗?",
+      "a3": "可以。角色(管理员、成员、查看者)决定谁能排期、谁只能查看。",
+      "q4": "AI 智能体可以在 {network} 上发布吗?",
+      "a4": "暂时不能:Postbiz 的 MCP 服务器、命令行和公开 API 正在准备中。请查看 AI 智能体页面。",
+      "q5": "Postbiz 在 {network} 上免费吗?",
+      "a5": "Postbiz 测试版免费,无需信用卡。套餐详情见“价格”页面。"
+    },
+    "others": { "title": "其他渠道" },
+    "end": { "title": "把 {network} 连接到 <accent>Postbiz</accent>", "text": "创建账号,连接你的平台,排期你的第一条帖子。测试版免费,无需信用卡。" }
+  },
   "meta": {
     "siteTitle": "Postbiz — 安排帖子发布,回复所有消息",
     "siteDescription": "Postbiz 将帖子排期与统一收件箱合二为一,集中处理 Facebook、Instagram、X、LinkedIn、TikTok 和 YouTube 的私信与评论。",
@@ -426,6 +465,7 @@
     "agent": { "title": "用 {name} 排期你的发布", "description": "Postbiz 正在为 AI 智能体准备接入:不久后,{name} 就能起草并排期你在 Facebook、Instagram、X、LinkedIn、TikTok 和 YouTube 上的帖子。" },
     "agents": { "title": "AI 智能体", "description": "Claude、ChatGPT、Cursor、Codex…… Postbiz 正在准备 MCP 服务器、命令行和公开 API,让你选择的智能体起草并排期你的帖子。" },
     "mcp": { "title": "MCP 服务器", "description": "Postbiz 的 MCP 服务器正在准备中:把 AI 助手接入你的发布日历,并始终由人把关。" },
+    "channel": { "title": "排期你的 {network} 发布", "description": "用 Postbiz 的共享日历排期你的 {network} 发布。该平台目前允许的功能:发布、私信、评论。" },
     "terms": { "title": "使用条款" },
     "privacy": { "title": "隐私政策" },
     "dataDeletion": { "title": "数据删除" },

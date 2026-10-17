@@ -32,6 +32,7 @@
     "agents": "Agentes de IA",
     "agentsAll": "Todos los agentes de IA",
     "mcp": "Servidor MCP",
+    "channelsAll": "Todos los canales",
     "signIn": "Iniciar sesión",
     "tryFree": "Prueba gratuita",
     "openMenu": "Abrir el menú",
@@ -435,6 +436,71 @@
       }
     }
   },
+  "channelPage": {
+    "title": "Programa tus publicaciones de {network} desde un solo calendario",
+    "lead": {
+      "facebook": "Programa las publicaciones de tus páginas de Facebook y responde a los mensajes de Messenger y a los comentarios desde la misma bandeja de entrada.",
+      "instagram": "Programa tus publicaciones de Instagram y responde a los mensajes privados y a los comentarios de tu cuenta profesional, sin salir de Postbiz.",
+      "x": "Programa tus publicaciones en X desde el mismo calendario que tus otras redes. Los mensajes y comentarios llegarán después, según el acceso que conceda la API de X.",
+      "linkedin": "Programa tus publicaciones de LinkedIn desde el mismo calendario que tus otras redes. LinkedIn no abre su mensajería a herramientas de terceros; los comentarios de las páginas están previstos.",
+      "tiktok": "Programa tus publicaciones de TikTok desde un calendario compartido. Los mensajes y comentarios llegarán después, según la aprobación de TikTok.",
+      "youtube": "Programa tus publicaciones de YouTube y responde a los comentarios de tu canal desde la misma bandeja. YouTube no tiene mensajes privados."
+    },
+    "ctaStatus": "Ver qué es posible",
+    "status": { "title": "Lo que Postbiz hace en {network}" },
+    "c1": {
+      "title": "Programa con antelación",
+      "text": "Prepara tus publicaciones de {network} cuando tengas tiempo: salen a la hora elegida, sin que tengas que pensar en ello."
+    },
+    "c2": {
+      "title": "Un calendario compartido",
+      "text": "Día, semana, mes o lista: todo el equipo ve lo previsto en {network} y en tus otras redes."
+    },
+    "inbox": {
+      "both": {
+        "title": "Mensajes y comentarios en un mismo lugar",
+        "text": "Responde a los mensajes privados y a los comentarios de {network} desde la bandeja de entrada, con el tiempo que queda en cada conversación."
+      },
+      "comments": {
+        "title": "Los comentarios en la bandeja de entrada",
+        "text": "Responde a los comentarios de {network} desde la bandeja de entrada, junto con todas tus otras redes. {network} no abre sus mensajes privados a herramientas de terceros."
+      },
+      "soon": {
+        "title": "La bandeja de entrada está en camino",
+        "text": "Los mensajes y comentarios de {network} llegarán en cuanto la red conceda el acceso. El estado exacto se muestra más arriba."
+      }
+    },
+    "c4": {
+      "title": "Sin duplicados ni sorpresas",
+      "text": "Una publicación de {network} cuyo resultado es incierto nunca se reintenta automáticamente: compruebas en la red antes de decidir."
+    },
+    "visual": {
+      "title": "Todo en un mismo lugar",
+      "text": "Tu calendario de publicación y la bandeja de entrada de tus redes, incluida {network}, en una sola aplicación para todo el equipo."
+    },
+    "agents": {
+      "title": "Maneja {network} con un agente de IA",
+      "text": "Claude, ChatGPT, Cursor… Postbiz prepara un servidor MCP, una línea de comandos y una API pública para que el agente que elijas prepare tus publicaciones. Todavía no disponible."
+    },
+    "faq": {
+      "title": "Preguntas frecuentes sobre {network}",
+      "q1": "¿Cómo programo una publicación de {network} con Postbiz?",
+      "a1": "Conecta tu cuenta de {network} a Postbiz, abre el calendario, crea una publicación y elige la red y la hora. Postbiz la publica a la hora elegida.",
+      "q2": "¿Qué hace Postbiz en {network} hoy?",
+      "a2": "El estado exacto de la publicación, los mensajes privados y los comentarios se detalla más arriba en esta página.",
+      "q3": "¿Se puede trabajar en equipo?",
+      "a3": "Sí. Los roles (administrador, miembro, lector) definen quién puede programar y quién solo puede consultar.",
+      "q4": "¿Puede un agente de IA publicar en {network}?",
+      "a4": "Todavía no: el servidor MCP, la línea de comandos y la API pública de Postbiz están en preparación. Consulta la página de agentes de IA.",
+      "q5": "¿Es Postbiz gratuito para {network}?",
+      "a5": "La beta de Postbiz es gratuita, sin tarjeta bancaria. Los planes se detallan en la página Precios."
+    },
+    "others": { "title": "Otros canales" },
+    "end": {
+      "title": "Conecta {network} a <accent>Postbiz</accent>",
+      "text": "Crea tu cuenta, conecta tus redes y programa tu primera publicación. La beta es gratuita, sin tarjeta bancaria."
+    }
+  },
   "meta": {
     "siteTitle": "Postbiz — Programa tus publicaciones, responde a todos tus mensajes",
     "siteDescription": "Postbiz reúne la programación de tus publicaciones y una bandeja de entrada unificada para los mensajes privados y comentarios de Facebook, Instagram, X, LinkedIn, TikTok y YouTube.",
@@ -447,6 +513,7 @@
     "agent": { "title": "Programa tus publicaciones con {name}", "description": "Postbiz prepara el acceso de los agentes de IA: pronto, {name} podrá redactar borradores y programar tus publicaciones en Facebook, Instagram, X, LinkedIn, TikTok y YouTube." },
     "agents": { "title": "Agentes de IA", "description": "Claude, ChatGPT, Cursor, Codex… Postbiz prepara un servidor MCP, una línea de comandos y una API pública para que el agente que elijas redacte y programe tus publicaciones." },
     "mcp": { "title": "Servidor MCP", "description": "El servidor MCP de Postbiz, en preparación: conecta un asistente de IA con tu calendario de publicación, con una persona al mando." },
+    "channel": { "title": "Programa tus publicaciones de {network}", "description": "Programa tus publicaciones de {network} desde un calendario compartido con Postbiz. Lo que la red permite hoy: publicación, mensajes privados, comentarios." },
     "terms": { "title": "Condiciones de uso" },
     "privacy": { "title": "Política de privacidad" },
     "dataDeletion": { "title": "Eliminación de datos" },

@@ -63,6 +63,7 @@
     "agents": "AI agents",
     "agentsAll": "All AI agents",
     "mcp": "MCP server",
+    "channelsAll": "All channels",
     "signIn": "Sign in",
     "tryFree": "Try for free",
     "openMenu": "Open menu",
@@ -669,6 +670,71 @@
       }
     }
   },
+  "channelPage": {
+    "title": "Schedule your {network} posts from a single calendar",
+    "lead": {
+      "facebook": "Schedule the posts of your Facebook Pages, then answer Messenger messages and comments from the same inbox.",
+      "instagram": "Schedule your Instagram posts and answer the private messages and comments of your professional account, without leaving Postbiz.",
+      "x": "Schedule your X posts from the same calendar as your other networks. Messages and comments will follow, depending on the access the X API grants.",
+      "linkedin": "Schedule your LinkedIn posts from the same calendar as your other networks. LinkedIn doesn’t open its messaging to third-party tools; Page comments are planned.",
+      "tiktok": "Schedule your TikTok posts from a shared calendar. Messages and comments will follow, depending on TikTok’s approval.",
+      "youtube": "Schedule your YouTube posts and answer your channel’s comments from the same inbox. YouTube has no private messages."
+    },
+    "ctaStatus": "See what’s possible",
+    "status": { "title": "What Postbiz does on {network}" },
+    "c1": {
+      "title": "Schedule ahead",
+      "text": "Prepare your {network} posts when you have the time: they go out at the time you chose, without you having to think about it."
+    },
+    "c2": {
+      "title": "A shared calendar",
+      "text": "Day, week, month or list: the whole team sees what’s planned on {network} and on your other networks."
+    },
+    "inbox": {
+      "both": {
+        "title": "Messages and comments in one place",
+        "text": "Answer {network} private messages and comments from the inbox, with the time left on every conversation."
+      },
+      "comments": {
+        "title": "Comments in the inbox",
+        "text": "Answer {network} comments from the inbox, alongside all your other networks. {network} doesn’t open its private messages to third-party tools."
+      },
+      "soon": {
+        "title": "The inbox is coming",
+        "text": "{network} messages and comments will follow as soon as the network grants access. The exact status is shown above."
+      }
+    },
+    "c4": {
+      "title": "No duplicates, no surprises",
+      "text": "A {network} post whose outcome is uncertain is never replayed automatically: you check on the network before deciding."
+    },
+    "visual": {
+      "title": "Everything in one place",
+      "text": "Your publishing calendar and the inbox of your networks, {network} included, in a single app for the whole team."
+    },
+    "agents": {
+      "title": "Drive {network} with an AI agent",
+      "text": "Claude, ChatGPT, Cursor… Postbiz is preparing an MCP server, a command line and a public API so the agent of your choice can prepare your posts. Not available yet."
+    },
+    "faq": {
+      "title": "Frequently asked questions about {network}",
+      "q1": "How do I schedule a {network} post with Postbiz?",
+      "a1": "Connect your {network} account to Postbiz, open the calendar, create a post, choose the network and the time. Postbiz publishes it at the time you chose.",
+      "q2": "What does Postbiz do on {network} today?",
+      "a2": "The exact status of publishing, private messages and comments is detailed further up this page.",
+      "q3": "Can we work as a team?",
+      "a3": "Yes. Roles (administrator, member, viewer) define who can schedule and who can only look.",
+      "q4": "Can an AI agent publish on {network}?",
+      "a4": "Not yet: the Postbiz MCP server, command line and public API are in the works. See the AI agents page.",
+      "q5": "Is Postbiz free for {network}?",
+      "a5": "The Postbiz beta is free, no credit card needed. Plans are detailed on the Pricing page."
+    },
+    "others": { "title": "Other channels" },
+    "end": {
+      "title": "Connect {network} to <accent>Postbiz</accent>",
+      "text": "Create your account, connect your networks and schedule your first post. The beta is free, no credit card needed."
+    }
+  },
   "meta": {
     "siteTitle": "Postbiz — Schedule your posts, answer all your messages",
     "siteDescription": "Postbiz combines post scheduling and a unified inbox for the private messages and comments of Facebook, Instagram, X, LinkedIn, TikTok and YouTube.",
@@ -696,6 +762,7 @@
     "agent": { "title": "Schedule your posts with {name}", "description": "Postbiz is preparing access for AI agents: soon, {name} will be able to draft and schedule your posts on Facebook, Instagram, X, LinkedIn, TikTok and YouTube." },
     "agents": { "title": "AI agents", "description": "Claude, ChatGPT, Cursor, Codex… Postbiz is preparing an MCP server, a command line and a public API so the agent of your choice can draft and schedule your posts." },
     "mcp": { "title": "MCP server", "description": "The Postbiz MCP server, in the works: connect an AI assistant to your publishing calendar, with a human in the loop." },
+    "channel": { "title": "Schedule your {network} posts", "description": "Schedule your {network} posts from a shared calendar with Postbiz. What the network allows today: publishing, private messages, comments." },
     "terms": {
       "title": "Terms of Service"
     },
