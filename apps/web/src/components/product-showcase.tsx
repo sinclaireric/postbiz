@@ -12,7 +12,7 @@ const VIDEOS: Record<Mode, string> = {
 
 /**
  * Démonstration vidéo du hero : une bascule choisit entre la planification « agentique » et la planification classique.
- * Pensée pour le panneau vert du hero (texte clair sur fond sombre). Une seule vidéo est chargée à la fois (l'autre ne
+ * Placée dans le cadre du hero (fond clair). Une seule vidéo est chargée à la fois (l'autre ne
  * l'est qu'au premier basculement) ; elle ne joue que lorsqu'elle est visible, et jamais d'elle-même pour qui demande
  * moins d'animations (les commandes du lecteur apparaissent alors).
  */
@@ -50,7 +50,7 @@ export function ProductShowcase({ className = '' }: { className?: string }) {
       type="button"
       aria-pressed={mode === m}
       onClick={() => setMode(m)}
-      className={`rounded-md px-1 font-medium leading-snug transition-colors ${align} ${mode === m ? 'text-white' : 'text-white/65 hover:text-white'}`}
+      className={`rounded-md px-1 font-medium leading-snug transition-colors ${align} ${mode === m ? 'text-ink' : 'text-muted hover:text-ink'}`}
     >
       {text}
     </button>
@@ -66,14 +66,14 @@ export function ProductShowcase({ className = '' }: { className?: string }) {
           tabIndex={-1}
           aria-hidden="true"
           onClick={() => setMode(mode === 'agentic' ? 'classic' : 'agentic')}
-          className="flex h-7 w-12 shrink-0 rounded-full bg-white/15 p-1 ring-1 ring-white/25"
+          className="flex h-7 w-12 shrink-0 rounded-full bg-wash p-1 ring-1 ring-line"
         >
-          <span className={`h-5 w-5 rounded-full bg-lime transition-[margin] duration-200 ${mode === 'agentic' ? 'ms-0' : 'ms-5'}`} />
+          <span className={`h-5 w-5 rounded-full bg-forest transition-[margin] duration-200 ${mode === 'agentic' ? 'ms-0' : 'ms-5'}`} />
         </button>
         {label('classic', t('home.showcase.classic'), 'text-start')}
       </div>
 
-      <div className="relative mt-5 aspect-[1920/1018] w-full overflow-hidden rounded-2xl bg-forest shadow-2xl shadow-black/40 ring-1 ring-white/15">
+      <div className="relative mt-5 aspect-[1920/1018] w-full overflow-hidden rounded-3xl bg-ink shadow-[0_40px_90px_-50px_rgba(17,17,16,0.45)] ring-1 ring-line">
         <video
           key={mode}
           ref={videoRef}

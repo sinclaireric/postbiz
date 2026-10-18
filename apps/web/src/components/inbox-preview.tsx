@@ -1,15 +1,14 @@
-import { NETWORKS } from '@/lib/networks';
+import { SocialIcon, socialName, type SocialId } from '@/components/social-icon';
 import { getT } from '@/i18n/server';
-
-const color = (id: string) => NETWORKS.find((n) => n.id === id)?.color ?? '#999';
 
 /** Aperçu statique de la boîte de réception. Données fictives, uniquement illustratives. */
 export async function InboxPreview({ className = '' }: { className?: string }) {
   const t = await getT();
-  const rows = [
+  const rows: { name: string; net: SocialId; text: string; time: string; unread: number; active?: boolean }[] = [
     { name: 'Léa Marchand', net: 'instagram', text: t('preview.row1'), time: t('preview.time1'), unread: 2, active: true },
-    { name: 'Karim B.', net: 'facebook', text: t('preview.row2'), time: t('preview.time2'), unread: 0 },
-    { name: t('preview.row3Name'), net: 'instagram', text: t('preview.row3'), time: t('preview.time3'), unread: 1 },
+    { name: 'Karim B.', net: 'messenger', text: t('preview.row2'), time: t('preview.time2'), unread: 0 },
+    { name: 'Thomas B.', net: 'whatsapp', text: t('home.demo.p7'), time: t('preview.time3'), unread: 1 },
+    { name: t('preview.row3Name'), net: 'instagram', text: t('preview.row3'), time: t('preview.time3'), unread: 0 },
     { name: 'Atelier Nord', net: 'youtube', text: t('preview.row4'), time: t('preview.time4'), unread: 0 },
   ];
 
@@ -32,7 +31,7 @@ export async function InboxPreview({ className = '' }: { className?: string }) {
             <li key={r.name} className={`flex gap-2.5 border-b border-line px-3 py-3 ${r.active ? 'bg-lime-soft/60' : ''}`}>
               <span className="relative mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-wash text-xs font-bold">
                 {r.name.slice(0, 1)}
-                <span className="absolute -end-0.5 -bottom-0.5 h-3 w-3 rounded-full border-2 border-surface" style={{ background: color(r.net) }} />
+                <SocialIcon id={r.net} size={16} className="absolute -end-1 -bottom-1 ring-2 ring-surface" />
               </span>
               <span className="min-w-0 flex-1">
                 <span className="flex items-center justify-between gap-2">
@@ -50,9 +49,9 @@ export async function InboxPreview({ className = '' }: { className?: string }) {
         <div className="flex min-h-[300px] flex-col">
           <div className="flex items-center justify-between border-b border-line px-4 py-3">
             <div className="flex items-center gap-2">
-              <span className="h-2.5 w-2.5 rounded-full" style={{ background: color('instagram') }} />
+              <SocialIcon id="instagram" size={16} />
               <span className="font-semibold">Léa Marchand</span>
-              <span className="text-subtle">· Instagram</span>
+              <span className="text-subtle">· {socialName('instagram')}</span>
             </div>
             <span className="rounded-full bg-ok-soft px-2.5 py-0.5 text-[11px] font-semibold text-ok">{t('preview.replyWithin')}</span>
           </div>

@@ -1,16 +1,24 @@
 import Link from 'next/link';
-import { HeroTitle } from '@/components/hero-title';
+import { Hero, type HeroMedia } from '@/components/hero/hero';
 import { InboxPreview } from '@/components/inbox-preview';
-import { ProductShowcase } from '@/components/product-showcase';
 import { RichText, accentLimeTags, accentTags } from '@/components/rich-text';
 import { Badge, ButtonLink, Container, Eyebrow } from '@/components/ui';
-import { getT } from '@/i18n/server';
+import { SocialIcon, socialName, type SocialId } from '@/components/social-icon';
+import { LOCALE_META } from '@/i18n/config';
+import { getLocale, getT } from '@/i18n/server';
 import { NETWORKS, networkName } from '@/lib/networks';
+
+/** Média du hero : `demo` = démonstration animée de l'application (modèle x.ai/bot), `video` = ancienne vidéo avec bascule entre deux planifications (gardée en sauvegarde). */
+const HERO_MEDIA: HeroMedia = 'demo';
 
 const H2 = 'mt-3 max-w-3xl text-[clamp(1.9rem,3.6vw,3rem)] leading-[1.1] font-semibold tracking-[-0.03em]';
 
+/** Les messageries soumises à la fenêtre de 24 heures, avec leur logo (le texte de l'intitulé est composé selon la langue : « A, B et C »). */
+const WINDOW_APPS: SocialId[] = ['messenger', 'instagram', 'whatsapp'];
+
 export default async function HomePage() {
-  const t = await getT();
+  const [t, locale] = await Promise.all([getT(), getLocale()]);
+  const windowApps = new Intl.ListFormat(LOCALE_META[locale].tag, { style: 'long', type: 'conjunction' }).format(WINDOW_APPS.map(socialName));
 
   const pillars = [
     { title: t('home.pillars.publish.title'), text: t('home.pillars.publish.text') },
@@ -48,27 +56,7 @@ export default async function HomePage() {
 
   return (
     <>
-      {/* HERO */}
-      <section className="border-b border-line">
-        <div className="mx-auto grid max-w-[1440px] lg:grid-cols-2">
-          <div className="flex flex-col justify-center px-5 py-16 sm:px-10 lg:py-24 xl:ps-[max(2.5rem,calc((100vw-1200px)/2+2rem))] xl:pe-16">
-            <div className="flex flex-wrap items-center gap-2">
-              <Badge tone="lime">{t('home.badgeBeta')}</Badge>
-              <span className="text-sm text-muted">{t('home.badgeOpenSource')}</span>
-            </div>
-            <HeroTitle className="mt-6 text-[clamp(2.5rem,5.2vw,4.25rem)] leading-[1.04] font-semibold tracking-[-0.035em]" />
-            <p className="mt-6 max-w-xl text-lg leading-relaxed text-muted">{t('home.subtitle')}</p>
-            <div className="mt-9 flex flex-wrap gap-3">
-              <ButtonLink href="/signup" size="lg">{t('home.ctaPrimary')}</ButtonLink>
-              <ButtonLink href="/tarifs" variant="secondary" size="lg">{t('home.ctaPricing')}</ButtonLink>
-            </div>
-            <p className="mt-4 text-sm text-subtle">{t('home.betaNote')}</p>
-          </div>
-          <div className="pattern-diamonds relative flex min-h-[420px] items-center justify-center overflow-hidden px-5 py-14 sm:px-10 lg:min-h-[640px]">
-            <ProductShowcase className="w-full max-w-[640px]" />
-          </div>
-        </div>
-      </section>
+      <Hero media={HERO_MEDIA} />
 
       {/* TROIS PILIERS */}
       <section className="py-20 sm:py-28">
@@ -93,7 +81,12 @@ export default async function HomePage() {
       <section className="pattern-diamonds text-white">
         <Container className="grid items-center gap-12 py-20 sm:py-24 lg:grid-cols-[1fr_1.1fr]">
           <div>
-            <Eyebrow className="!text-lime">{t('home.window.eyebrow')}</Eyebrow>
+            <div className="flex items-center gap-3">
+              <span className="flex gap-1.5" aria-hidden="true">
+                {WINDOW_APPS.map((id) => <SocialIcon key={id} id={id} size={26} />)}
+              </span>
+              <Eyebrow className="!text-lime">{windowApps}</Eyebrow>
+            </div>
             <h2 className={H2}><RichText t={t} k="home.window.title" tags={accentLimeTags} /></h2>
             <p className="mt-5 max-w-lg text-lg leading-relaxed text-white/80">{t('home.window.text')}</p>
             <ul className="mt-8 grid gap-3 text-white/90">
@@ -156,13 +149,19 @@ export default async function HomePage() {
             <p className="mt-5 max-w-md text-lg leading-relaxed text-muted">{t('home.channels.text')}</p>
             <ButtonLink href="/canaux" variant="secondary" className="mt-8">{t('home.channels.cta')}</ButtonLink>
           </div>
-          <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+          <ul className="grid grid-cols-2 gap-3 sm:grid-cols-4">
             {NETWORKS.map((n) => (
-              <li key={n.id} className="flex items-center gap-3 rounded-2xl border border-line bg-surface px-4 py-4">
-                <span className="h-3 w-3 rounded-full" style={{ background: n.color }} aria-hidden="true" />
+              <li key={n.id} className="flex flex-col items-start gap-3 rounded-2xl border border-line bg-surface px-4 py-4">
+                <SocialIcon id={n.id} size={36} />
                 <span className="font-semibold">{networkName(n.id)}</span>
               </li>
             ))}
+            {/* WhatsApp : pas encore un canal de Postbiz, annoncé comme tel (pas de pastille « bêta »). */}
+            <li className="flex flex-col items-start gap-3 rounded-2xl border border-dashed border-line bg-surface px-4 py-4">
+              <SocialIcon id="whatsapp" size={36} />
+              <span className="font-semibold">{socialName('whatsapp')}</span>
+              <Badge>{t('common.capability.soon')}</Badge>
+            </li>
           </ul>
         </Container>
       </section>

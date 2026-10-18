@@ -38,7 +38,7 @@ export function RotatingAgent({ generic, agents = AGENTS, interval = 2800 }: { g
   const rootRef = useRef<HTMLSpanElement>(null);
   const probeRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const [reduced, setReduced] = useState(false);
-  const [layout, setLayout] = useState<{ widths: number[]; usable: number[] } | null>(null);
+  const [layout, setLayout] = useState<{ widths: number[]; usable: number[]; shift: number } | null>(null);
   const [step, setStep] = useState(0);
 
   useEffect(() => {
@@ -54,18 +54,43 @@ export function RotatingAgent({ generic, agents = AGENTS, interval = 2800 }: { g
     const root = rootRef.current;
     if (!root || reduced) { setLayout(null); return; }
     const container = root.closest('h1') ?? root.parentElement ?? root;
+    /**
+     * Distance entre le haut d'une ligne et sa ligne de base, pour la police d'accent ou la police courante. Les deux polices ont
+     * des métriques différentes : sans correction, le libellé générique (serif italique) serait décalé de quelques pixels
+     * par rapport aux noms d'agents, et la hauteur du titre bougerait à chaque changement de mot.
+     */
+    const baselineOffset = (accent: boolean) => {
+      const line = document.createElement('span');
+      line.style.cssText = 'position:absolute;visibility:hidden;display:inline-block;white-space:nowrap;inset-inline-start:0;top:0';
+      if (accent) line.className = 'accent';
+      const marker = document.createElement('i');
+      marker.style.cssText = 'display:inline-block;width:0;height:0';
+      line.append('x', marker);
+      root.appendChild(line);
+      const offset = marker.getBoundingClientRect().bottom - line.getBoundingClientRect().top;
+      line.remove();
+      return offset;
+    };
     const measure = () => {
       const available = container.clientWidth;
       const widths = probeRefs.current.map((el) => Math.ceil(el?.getBoundingClientRect().width ?? 0));
       const usable = widths.map((w, i) => (w > 0 && w <= available ? i : -1)).filter((i) => i >= 0);
+      const shift = Math.round((baselineOffset(true) - baselineOffset(false)) * 100) / 100;
       setStep(0);
-      setLayout(usable.length > 1 ? { widths, usable } : null);
+      setLayout(usable.length > 1 ? { widths, usable, shift } : null);
     };
     measure();
     const observer = new ResizeObserver(measure);
     observer.observe(container);
     void document.fonts?.ready.then(measure);
-    return () => observer.disconnect();
+    // Pendant l'apparition du titre (rotation 3D, voir `.hero-word`), les mesures sont faussées : on mesure de nouveau à la fin.
+    const reveal = root.closest('.hero-word');
+    const onRevealEnd = (e: Event) => { if (e.target === reveal) measure(); };
+    reveal?.addEventListener('animationend', onRevealEnd);
+    return () => {
+      observer.disconnect();
+      reveal?.removeEventListener('animationend', onRevealEnd);
+    };
   }, [reduced, wordsKey]);
 
   useEffect(() => {
@@ -77,20 +102,20 @@ export function RotatingAgent({ generic, agents = AGENTS, interval = 2800 }: { g
   const n = layout?.usable.length ?? 0;
   const current = layout ? step % n : 0;
   const currentWord = layout ? layout.usable[current]! : 0;
+  const showBar = !layout || currentWord === 0;
 
   return (
     <span
       ref={rootRef}
-      className="accent relative inline-block"
-      style={{
-        // Barre citron sous le mot ; le clip-path coupe les mots qui glissent (en haut et en bas) sans toucher à la ligne de base.
-        backgroundImage: 'linear-gradient(var(--color-lime), var(--color-lime))',
-        backgroundRepeat: 'no-repeat',
-        backgroundSize: '100% 0.13em',
-        backgroundPosition: '0 96%',
-        ...(layout ? { clipPath: 'inset(-0.12em -0.3em)', width: layout.widths[currentWord], transition: `width ${DURATION}ms ${EASE}` } : {}),
-      }}
+      className="relative inline-block"
+      style={layout ? { clipPath: 'inset(-0.12em -0.3em)', width: layout.widths[currentWord], transition: `width ${DURATION}ms ${EASE}` } : undefined}
     >
+      {/* Barre citron : seulement sous le libellé générique (« vos agents IA »), jamais sous le nom d'un agent. */}
+      <span
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 bg-lime"
+        style={{ top: 'calc((100% - 0.13em) * 0.96)', height: '0.13em', opacity: showBar ? 1 : 0, transition: 'opacity 300ms ease' }}
+      />
       {layout ? (
         <>
           <span className="sr-only">{generic}</span>
@@ -104,9 +129,10 @@ export function RotatingAgent({ generic, agents = AGENTS, interval = 2800 }: { g
               <span
                 key={wordIndex}
                 aria-hidden="true"
-                className={`absolute top-0 flex items-center whitespace-nowrap ${GAP}`}
+                className={`absolute flex items-center whitespace-nowrap ${GAP} ${wordIndex === 0 ? 'accent' : ''}`}
                 style={{
                   insetInlineStart: 0,
+                  top: wordIndex === 0 ? -layout.shift : 0,
                   opacity: state === 'active' ? 1 : 0,
                   transform: `translateY(${state === 'active' ? 0 : state === 'leaving' ? -100 : 100}%)`,
                   transition: `transform ${DURATION}ms ${EASE}, opacity ${DURATION}ms ${EASE}`,
@@ -118,11 +144,11 @@ export function RotatingAgent({ generic, agents = AGENTS, interval = 2800 }: { g
             );
           })}
         </>
-      ) : generic}
+      ) : <span className="accent">{generic}</span>}
       {/* Sondes de mesure : invisibles, hors flux ; une place vide remplace chaque logo pour ne pas le charger deux fois. */}
       <span aria-hidden="true" className="pointer-events-none invisible absolute top-0 whitespace-nowrap" style={{ insetInlineStart: 0 }}>
         {words.map((w, i) => (
-          <span key={w.label} ref={(el) => { probeRefs.current[i] = el; }} className={`absolute top-0 flex items-center whitespace-nowrap ${GAP}`} style={{ insetInlineStart: 0 }}>
+          <span key={w.label} ref={(el) => { probeRefs.current[i] = el; }} className={`absolute top-0 flex items-center whitespace-nowrap ${GAP} ${i === 0 ? 'accent' : ''}`} style={{ insetInlineStart: 0 }}>
             {w.logo && <span className={LOGO_SPACER} />}
             {w.label}
           </span>
