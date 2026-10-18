@@ -12,6 +12,8 @@ export interface Plan {
   inherits?: PlanId;
   /** Clés de message des fonctionnalités propres à l'offre. */
   features: MessageKey[];
+  /** Parmi elles, celles qui ne sont pas encore disponibles (affichées « Bientôt »). À retirer d'ici quand elles existent. */
+  soon?: MessageKey[];
 }
 
 /** Remise appliquée au prix mensuel quand on paie à l'année. */
@@ -22,6 +24,7 @@ export const PLANS: Plan[] = [
     id: 'starter',
     monthly: 19,
     features: ['pricing.plans.starter.f1', 'pricing.plans.starter.f2', 'pricing.plans.starter.f3', 'pricing.plans.starter.f4', 'pricing.plans.starter.f5'],
+    soon: ['pricing.plans.starter.f5'],
   },
   {
     id: 'pro',
@@ -29,12 +32,14 @@ export const PLANS: Plan[] = [
     popular: true,
     inherits: 'starter',
     features: ['pricing.plans.pro.f1', 'pricing.plans.pro.f2', 'pricing.plans.pro.f3', 'pricing.plans.pro.f4', 'pricing.plans.pro.f5', 'pricing.plans.pro.f6'],
+    soon: ['pricing.plans.pro.f4', 'pricing.plans.pro.f5'],
   },
   {
     id: 'team',
     monthly: 119,
     inherits: 'pro',
     features: ['pricing.plans.team.f1', 'pricing.plans.team.f2', 'pricing.plans.team.f3', 'pricing.plans.team.f4', 'pricing.plans.team.f5'],
+    soon: ['pricing.plans.team.f4'],
   },
 ];
 

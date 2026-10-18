@@ -26,7 +26,7 @@ export default async function HomePage() {
   const features = [
     { title: t('home.features.inbox.title'), text: t('home.features.inbox.text'), beta: true },
     { title: t('home.features.calendar.title'), text: t('home.features.calendar.text'), beta: true },
-    { title: t('home.features.media.title'), text: t('home.features.media.text'), beta: true },
+    { title: t('home.features.media.title'), text: t('home.features.media.text'), beta: false },
     { title: t('home.features.team.title'), text: t('home.features.team.text'), beta: true },
     { title: t('home.features.mobile.title'), text: t('home.features.mobile.text'), beta: false },
     { title: t('home.features.stats.title'), text: t('home.features.stats.text'), beta: false },

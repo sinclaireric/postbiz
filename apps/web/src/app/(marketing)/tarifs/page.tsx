@@ -19,11 +19,11 @@ const ROWS: { key: MessageKey; hint?: boolean; values: [Cell, Cell, Cell] }[] = 
   { key: 'pricing.compare.rows.inbox', values: [true, true, true] },
   { key: 'pricing.compare.rows.mobile', hint: true, values: [true, true, true] },
   { key: 'pricing.compare.rows.assign', values: [false, true, true] },
-  { key: 'pricing.compare.rows.quick', values: [false, true, true] },
+  { key: 'pricing.compare.rows.quick', hint: true, values: [false, true, true] },
   { key: 'pricing.compare.rows.push', hint: true, values: [false, true, true] },
   { key: 'pricing.compare.rows.search', values: [false, true, true] },
   { key: 'pricing.compare.rows.roles', values: [false, false, true] },
-  { key: 'pricing.compare.rows.video', values: [false, false, true] },
+  { key: 'pricing.compare.rows.video', hint: true, values: [false, false, true] },
   { key: 'pricing.compare.rows.support', values: [false, false, true] },
 ];
 

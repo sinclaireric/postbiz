@@ -150,7 +150,7 @@
       "title": "Belki <accent>merak ediyorsunuzdur</accent>",
       "more": "Başka bir sorunuz mu var? <link>Bize yazın</link>.",
       "q1": "Hangi sosyal ağlar destekleniyor?",
-      "a1": "Yayın için Facebook, Instagram, X, LinkedIn, TikTok ve YouTube. Gelen kutusu kapsamı her ağın izin verdiklerine bağlıdır: ağ ağ ayrıntılar için Kanallar sayfasına bakın.",
+      "a1": "Facebook, Instagram, X, LinkedIn, TikTok ve YouTube Postbiz'e bağlanabilir. Postbiz'in her birinde neler yapabildiği (yayın, özel mesajlar, yorumlar) ağın izin verdiklerine göre değişir: Kanallar sayfası, ağ ağ kesin durumu gösterir.",
       "q2": "LinkedIn veya YouTube özel mesajlarına yanıt verebilir miyim?",
       "a2": "Hayır; özel bir anlaşma olmadan hiçbir üçüncü taraf araç da veremez: LinkedIn mesajlaşmasını uygulamalara açmaz, YouTube'da ise özel mesaj yoktur. Postbiz, YouTube yorumlarını ve mümkün olduğunda LinkedIn Sayfası yorumlarını gösterecektir.",
       "q3": "Neden «24 saatlik pencere»?",
@@ -291,7 +291,7 @@
     "intro": "Ağlarınızı ve saati seçin, gerisini Postbiz'e bırakın. Bir takvim neyin ne zaman yayınlanacağını ve neyin başarısız olduğunu gösterir.",
     "p1": { "title": "Tek içerik, birden çok ağ", "text": "Gerekirse metni ağa göre uyarlayın ve göndermeden önce kısıtlamaları (uzunluk, medya) kontrol edin." },
     "p2": { "title": "Asla çift gönderi yok", "text": "Bir yayının sonucu belirsizse Postbiz onu kendiliğinden yeniden göndermez: size bildirir, böylece önce ağda kontrol edebilirsiniz." },
-    "p3": { "title": "Uyarlanmış medya", "text": "Görseller ve videolar yayından önce her ağın gereksinimlerine göre dönüştürülür." },
+    "p3": { "title": "Uyarlanmış medya", "text": "Yakında: görseller ve videolar, yayınlanmadan önce her ağın gereksinimlerine göre dönüştürülecek." },
     "p4": { "title": "Taslaklar ve net durumlar", "text": "Taslak, planlandı, devam ediyor, yayınlandı, hata: her yayının hangi aşamada olduğunu her zaman bilirsiniz." },
     "p5": { "title": "Ekip çalışması", "text": "Üyeler hazırlar, yöneticiler onaylar; izinler veritabanı tarafından uygulanır." },
     "p6": { "title": "Yönlendirmeli yeniden bağlanma", "text": "Bir hesabın erişimi sona ererse bilgilendirilirsiniz ve tek tıkla yeniden bağlanırsınız." },
@@ -348,7 +348,7 @@
     "badge": "{name} + Postbiz",
     "title": "{name} ile gönderilerinizi planlayın",
     "bullet1": "{name} + Postbiz: MCP sunucusu, komut satırı ve herkese açık API, yakında",
-    "bullet2": "Gönderilerinizi altı ağ için yazın, planlayın ve onaylayın",
+    "bullet2": "Gönderilerinizi tek bir takvimden yazın, planlayın ve onaylayın",
     "kind": {
       "chat": { "bullet": "Günlük dille isteyin, takvimde onaylayın" },
       "editor": { "bullet": "Düzenleyiciden çıkmadan, ajan panelinden gönderilerinizi hazırlayın" },
@@ -440,11 +440,11 @@
     "title": "{network} gönderilerinizi tek bir takvimden planlayın",
     "lead": {
       "facebook": "Facebook Sayfalarınızın gönderilerini planlayın; Messenger mesajlarına ve yorumlara aynı gelen kutusundan yanıt verin.",
-      "instagram": "Instagram gönderilerinizi planlayın; profesyonel hesabınızın özel mesajlarına ve yorumlarına Postbiz'den ayrılmadan yanıt verin.",
+      "instagram": "Instagram profesyonel hesabınızı bağlayın ve özel mesajlara ve yorumlara Postbiz'den yanıt verin. Gönderi gönderimi, medya desteğiyle birlikte gelecek.",
       "x": "X gönderilerinizi diğer ağlarla aynı takvimden planlayın. Mesajlar ve yorumlar, X API'sinin verdiği erişime bağlı olarak sonradan gelecek.",
       "linkedin": "LinkedIn gönderilerinizi diğer ağlarla aynı takvimden planlayın. LinkedIn mesajlaşmasını üçüncü taraf araçlara açmıyor; Sayfa yorumları planlanıyor.",
-      "tiktok": "TikTok gönderilerinizi ortak bir takvimden planlayın. Mesajlar ve yorumlar, TikTok'un onayına bağlı olarak sonradan gelecek.",
-      "youtube": "YouTube gönderilerinizi planlayın ve kanalınızın yorumlarına aynı gelen kutusundan yanıt verin. YouTube'da özel mesaj yoktur."
+      "tiktok": "TikTok hesabınızı Postbiz'e bağlayın. Gönderi gönderimi video desteğiyle birlikte gelecek; mesajlar ve yorumlar, TikTok'un onayına bağlı olarak sonradan gelecek.",
+      "youtube": "YouTube kanalınızı bağlayın ve yorumlarına aynı gelen kutusundan yanıt verin. Video gönderimi daha sonra gelecek; YouTube'da özel mesaj yoktur."
     },
     "ctaStatus": "Nelerin mümkün olduğunu görün",
     "status": { "title": "Postbiz {network} üzerinde neler yapıyor" },
@@ -490,12 +490,18 @@
       "q4": "Bir yapay zekâ ajanı {network} üzerinde yayın yapabilir mi?",
       "a4": "Henüz hayır: Postbiz MCP sunucusu, komut satırı ve herkese açık API hazırlanıyor. Yapay zekâ ajanları sayfasına bakın.",
       "q5": "Postbiz {network} için ücretsiz mi?",
-      "a5": "Postbiz betası ücretsizdir, kredi kartı gerekmez. Planlar Fiyatlandırma sayfasında ayrıntılı olarak anlatılıyor."
+      "a5": "Postbiz betası ücretsizdir, kredi kartı gerekmez. Planlar Fiyatlandırma sayfasında ayrıntılı olarak anlatılıyor.",
+      "a1Soon": "Henüz değil: {network} hesabınızın bağlanması kullanılabilir, ancak gönderi gönderimi medya desteğiyle birlikte gelecek. Mümkün olur olmaz bu sayfa güncellenecek."
     },
     "others": { "title": "Diğer kanallar" },
     "end": {
       "title": "{network} ağını <accent>Postbiz</accent>'e bağlayın",
       "text": "Hesabınızı oluşturun, ağlarınızı bağlayın ve ilk gönderinizi planlayın. Beta ücretsizdir, kredi kartı gerekmez."
+    },
+    "titleSoon": "Postbiz'de {network}: çalışanlar ve yakında gelenler",
+    "c1Soon": {
+      "title": "Yayın özelliği yakında",
+      "text": "{network} hesabınızı şimdiden bağlayabilirsiniz. Gönderi gönderimi, medya desteğiyle birlikte gelecek."
     }
   },
   "meta": {

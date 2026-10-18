@@ -150,7 +150,7 @@
       "title": "Có thể bạn <accent>đang thắc mắc</accent>",
       "more": "Còn câu hỏi khác? <link>Hãy viết cho chúng tôi</link>.",
       "q1": "Những mạng xã hội nào được hỗ trợ?",
-      "a1": "Facebook, Instagram, X, LinkedIn, TikTok và YouTube để đăng bài. Với hộp thư, phạm vi hỗ trợ phụ thuộc vào những gì mỗi mạng cho phép: xem trang Kênh để biết chi tiết từng mạng.",
+      "a1": "Facebook, Instagram, X, LinkedIn, TikTok và YouTube đều có thể kết nối với Postbiz. Những gì Postbiz làm được trên từng mạng (đăng bài, tin nhắn riêng, bình luận) khác nhau tùy theo điều mạng cho phép: trang Kênh nêu tình trạng chính xác của từng mạng.",
       "q2": "Tôi có thể trả lời tin nhắn riêng trên LinkedIn hoặc YouTube không?",
       "a2": "Không, và không công cụ bên thứ ba nào làm được nếu không có thỏa thuận đặc biệt: LinkedIn không mở tính năng nhắn tin cho ứng dụng và YouTube không có tin nhắn riêng. Postbiz sẽ hiển thị bình luận YouTube và, khi có thể, bình luận trên Trang LinkedIn.",
       "q3": "Tại sao lại có «khung 24 giờ»?",
@@ -291,7 +291,7 @@
     "intro": "Chọn mạng xã hội và giờ đăng, để Postbiz đăng thay bạn. Một cuốn lịch cho thấy bài nào được đăng, khi nào và bài nào bị lỗi.",
     "p1": { "title": "Một nội dung, nhiều mạng", "text": "Điều chỉnh nội dung theo từng mạng khi cần và kiểm tra các ràng buộc (độ dài, media) trước khi gửi." },
     "p2": { "title": "Không bao giờ đăng trùng", "text": "Nếu kết quả của một bài đăng chưa rõ, Postbiz sẽ không tự gửi lại: chúng tôi báo cho bạn để bạn kiểm tra trên mạng xã hội trước." },
-    "p3": { "title": "Media được điều chỉnh phù hợp", "text": "Ảnh và video được chuyển đổi theo yêu cầu của từng mạng trước khi đăng." },
+    "p3": { "title": "Media được điều chỉnh phù hợp", "text": "Sắp có: hình ảnh và video sẽ được chuyển đổi theo yêu cầu của từng mạng trước khi đăng." },
     "p4": { "title": "Bản nháp và trạng thái rõ ràng", "text": "Nháp, đã lên lịch, đang đăng, đã đăng, lỗi: bạn luôn biết mỗi bài đang ở bước nào." },
     "p5": { "title": "Làm việc nhóm", "text": "Thành viên soạn bài, quản trị viên duyệt; quyền hạn được cơ sở dữ liệu thực thi." },
     "p6": { "title": "Kết nối lại có hướng dẫn", "text": "Nếu quyền truy cập của một tài khoản hết hạn, bạn sẽ được báo và kết nối lại chỉ với một cú nhấp." },
@@ -348,7 +348,7 @@
     "badge": "{name} + Postbiz",
     "title": "Lên lịch bài đăng với {name}",
     "bullet1": "{name} + Postbiz: máy chủ MCP, dòng lệnh và API công khai, sắp ra mắt",
-    "bullet2": "Soạn, lên lịch và duyệt bài đăng cho sáu mạng xã hội",
+    "bullet2": "Soạn, lên lịch và duyệt bài đăng từ một lịch duy nhất",
     "kind": {
       "chat": { "bullet": "Yêu cầu bằng ngôn ngữ thường ngày, duyệt trong lịch" },
       "editor": { "bullet": "Chuẩn bị bài đăng từ bảng điều khiển của tác nhân, không rời trình soạn thảo" },
@@ -437,11 +437,11 @@
     "title": "Lên lịch bài đăng {network} từ một lịch duy nhất",
     "lead": {
       "facebook": "Lên lịch bài đăng cho các Trang Facebook và trả lời tin nhắn Messenger cùng bình luận từ cùng một hộp thư.",
-      "instagram": "Lên lịch bài đăng Instagram và trả lời tin nhắn riêng cùng bình luận của tài khoản doanh nghiệp, không rời Postbiz.",
+      "instagram": "Kết nối tài khoản doanh nghiệp Instagram và trả lời tin nhắn riêng cùng bình luận ngay trong Postbiz. Việc gửi bài đăng sẽ đến cùng với hỗ trợ phương tiện.",
       "x": "Lên lịch bài đăng trên X từ cùng lịch với các mạng khác. Tin nhắn và bình luận sẽ đến sau, tùy quyền truy cập mà API của X cấp.",
       "linkedin": "Lên lịch bài đăng LinkedIn từ cùng lịch với các mạng khác. LinkedIn không mở tin nhắn cho công cụ bên thứ ba; bình luận của Trang đã được lên kế hoạch.",
-      "tiktok": "Lên lịch bài đăng TikTok từ lịch chung. Tin nhắn và bình luận sẽ đến sau, tùy vào sự chấp thuận của TikTok.",
-      "youtube": "Lên lịch bài đăng YouTube và trả lời bình luận của kênh từ cùng một hộp thư. YouTube không có tin nhắn riêng."
+      "tiktok": "Kết nối tài khoản TikTok với Postbiz. Việc gửi bài đăng sẽ đến cùng với hỗ trợ video; tin nhắn và bình luận sẽ đến sau, tùy vào sự chấp thuận của TikTok.",
+      "youtube": "Kết nối kênh YouTube và trả lời bình luận của kênh từ cùng một hộp thư. Việc gửi video sẽ đến sau; YouTube không có tin nhắn riêng."
     },
     "ctaStatus": "Xem những gì có thể làm",
     "status": { "title": "Postbiz làm được gì trên {network}" },
@@ -490,12 +490,18 @@
       "q4": "Tác nhân AI có thể đăng trên {network} không?",
       "a4": "Chưa: máy chủ MCP, dòng lệnh và API công khai của Postbiz đang được chuẩn bị. Xem trang các tác nhân AI.",
       "q5": "Postbiz có miễn phí cho {network} không?",
-      "a5": "Bản beta của Postbiz miễn phí, không cần thẻ tín dụng. Chi tiết các gói ở trang Bảng giá."
+      "a5": "Bản beta của Postbiz miễn phí, không cần thẻ tín dụng. Chi tiết các gói ở trang Bảng giá.",
+      "a1Soon": "Chưa: việc kết nối tài khoản {network} đã có, nhưng việc gửi bài đăng sẽ đến cùng với hỗ trợ phương tiện. Trang này sẽ được cập nhật ngay khi có thể."
     },
     "others": { "title": "Các kênh khác" },
     "end": {
       "title": "Kết nối {network} với <accent>Postbiz</accent>",
       "text": "Tạo tài khoản, kết nối các mạng và lên lịch bài đăng đầu tiên. Bản beta miễn phí, không cần thẻ tín dụng."
+    },
+    "titleSoon": "{network} trong Postbiz: những gì đã có, những gì sắp có",
+    "c1Soon": {
+      "title": "Tính năng đăng bài sắp có",
+      "text": "Bạn đã có thể kết nối tài khoản {network}. Việc gửi bài đăng sẽ đến cùng với hỗ trợ phương tiện (hình ảnh, video)."
     }
   },
   "meta": {

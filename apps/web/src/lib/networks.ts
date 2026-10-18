@@ -13,16 +13,19 @@ export interface Network {
 
 /**
  * État réel de chaque réseau. « none » = le réseau ne permet pas (ou plus) l'accès par API tierce.
+ * Publication : le worker publie sur Facebook, X et LinkedIn (texte). Instagram, TikTok et YouTube exigent un média et
+ * `apps/uploader` n'est pas branché : leurs fournisseurs refusent la publication (apps/worker/src/providers). À repasser en
+ * « beta » le jour où l'envoi de médias fonctionne.
  * Ce tableau alimente la page Canaux : il ne doit rien promettre qui ne soit pas dans la feuille de route.
  * Les noms de marque ne se traduisent pas (`NETWORK_NAME`) ; les explications sont dans les messages (`networks.<id>.note`).
  */
 export const NETWORKS: Network[] = [
   { id: 'facebook', color: '#1877f2', publish: 'beta', dm: 'beta', comments: 'beta' },
-  { id: 'instagram', color: '#e1306c', publish: 'beta', dm: 'beta', comments: 'beta' },
+  { id: 'instagram', color: '#e1306c', publish: 'soon', dm: 'beta', comments: 'beta' },
   { id: 'x', color: '#111110', publish: 'beta', dm: 'soon', comments: 'soon' },
   { id: 'linkedin', color: '#0a66c2', publish: 'beta', dm: 'none', comments: 'soon' },
-  { id: 'tiktok', color: '#fe2c55', publish: 'beta', dm: 'soon', comments: 'soon' },
-  { id: 'youtube', color: '#ff0000', publish: 'beta', dm: 'none', comments: 'beta' },
+  { id: 'tiktok', color: '#fe2c55', publish: 'soon', dm: 'soon', comments: 'soon' },
+  { id: 'youtube', color: '#ff0000', publish: 'soon', dm: 'none', comments: 'beta' },
 ];
 
 export const NETWORK_NAME: Record<Network['id'], string> = {

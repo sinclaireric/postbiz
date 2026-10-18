@@ -150,7 +150,7 @@
       "title": "Sie fragen <accent>sich vielleicht</accent>",
       "more": "Noch eine Frage? <link>Schreiben Sie uns</link>.",
       "q1": "Welche Netzwerke werden unterstützt?",
-      "a1": "Facebook, Instagram, X, LinkedIn, TikTok und YouTube für die Veröffentlichung. Beim Posteingang hängt die Abdeckung davon ab, was das jeweilige Netzwerk erlaubt: Details je Netzwerk finden Sie auf der Seite Kanäle.",
+      "a1": "Facebook, Instagram, X, LinkedIn, TikTok und YouTube lassen sich mit Postbiz verbinden. Was Postbiz auf jedem davon kann (veröffentlichen, private Nachrichten, Kommentare), hängt davon ab, was das Netzwerk erlaubt: Die Seite „Kanäle“ zeigt den genauen Stand, Netzwerk für Netzwerk.",
       "q2": "Kann ich private Nachrichten von LinkedIn oder YouTube beantworten?",
       "a2": "Nein, und kein Drittanbieter-Tool kann das ohne Sondervereinbarung: LinkedIn öffnet sein Nachrichtensystem nicht für Apps, und YouTube hat keine privaten Nachrichten. Postbiz zeigt YouTube-Kommentare an und, sobald verfügbar, auch Kommentare von LinkedIn-Seiten.",
       "q3": "Warum ein „24-Stunden-Fenster“?",
@@ -291,7 +291,7 @@
     "intro": "Wählen Sie Ihre Netzwerke und die Uhrzeit und lassen Sie Postbiz für Sie veröffentlichen. Ein Kalender zeigt, was wann erscheint und was fehlgeschlagen ist.",
     "p1": { "title": "Ein Inhalt, mehrere Netzwerke", "text": "Passen Sie den Text bei Bedarf pro Netzwerk an und prüfen Sie die Vorgaben (Länge, Medien) vor dem Versand." },
     "p2": { "title": "Nie doppelt", "text": "Wenn das Ergebnis einer Veröffentlichung unsicher ist, sendet Postbiz sie nicht von selbst erneut: Es sagt Ihnen Bescheid, damit Sie zuerst im Netzwerk nachsehen." },
-    "p3": { "title": "Angepasste Medien", "text": "Bilder und Videos werden vor der Veröffentlichung an die Anforderungen jedes Netzwerks angepasst." },
+    "p3": { "title": "Angepasste Medien", "text": "Demnächst: Bilder und Videos werden vor der Veröffentlichung an die Anforderungen jedes Netzwerks angepasst." },
     "p4": { "title": "Entwürfe und klare Status", "text": "Entwurf, geplant, in Arbeit, veröffentlicht, Fehler: Sie wissen immer, wo jeder Beitrag steht." },
     "p5": { "title": "Teamarbeit", "text": "Mitglieder bereiten vor, Administratoren geben frei; die Berechtigungen setzt die Datenbank durch." },
     "p6": { "title": "Geführte Wiederverbindung", "text": "Läuft der Zugriff auf ein Konto ab, werden Sie benachrichtigt und verbinden sich mit einem Klick neu." },
@@ -348,7 +348,7 @@
     "badge": "{name} + Postbiz",
     "title": "Planen Sie Ihre Beiträge mit {name}",
     "bullet1": "{name} + Postbiz: MCP-Server, Kommandozeile und öffentliche API, demnächst",
-    "bullet2": "Beiträge für sechs Netzwerke schreiben, planen und freigeben",
+    "bullet2": "Beiträge in einem einzigen Kalender schreiben, planen und freigeben",
     "kind": {
       "chat": { "bullet": "In normaler Sprache fragen, im Kalender freigeben" },
       "editor": { "bullet": "Beiträge im Agent-Bereich vorbereiten, ohne den Editor zu verlassen" },
@@ -449,11 +449,11 @@
     "title": "Planen Sie Ihre {network}-Beiträge in einem einzigen Kalender",
     "lead": {
       "facebook": "Planen Sie die Beiträge Ihrer Facebook-Seiten und beantworten Sie Messenger-Nachrichten und Kommentare im selben Posteingang.",
-      "instagram": "Planen Sie Ihre Instagram-Beiträge und beantworten Sie die privaten Nachrichten und Kommentare Ihres Business-Kontos, ohne Postbiz zu verlassen.",
+      "instagram": "Verbinden Sie Ihr Instagram-Business-Konto und beantworten Sie private Nachrichten und Kommentare in Postbiz. Das Senden von Beiträgen kommt mit der Unterstützung für Medien.",
       "x": "Planen Sie Ihre Beiträge auf X im selben Kalender wie Ihre anderen Netzwerke. Nachrichten und Kommentare folgen, je nach Zugang der X-API.",
       "linkedin": "Planen Sie Ihre LinkedIn-Beiträge im selben Kalender wie Ihre anderen Netzwerke. LinkedIn öffnet seine Nachrichten nicht für Tools von Drittanbietern; Kommentare von Seiten sind geplant.",
-      "tiktok": "Planen Sie Ihre TikTok-Beiträge in einem gemeinsamen Kalender. Nachrichten und Kommentare folgen, je nach Freigabe durch TikTok.",
-      "youtube": "Planen Sie Ihre YouTube-Beiträge und beantworten Sie die Kommentare Ihres Kanals im selben Postfach. YouTube hat keine privaten Nachrichten."
+      "tiktok": "Verbinden Sie Ihr TikTok-Konto mit Postbiz. Das Senden von Beiträgen kommt mit der Unterstützung für Videos; Nachrichten und Kommentare folgen, je nach Freigabe durch TikTok.",
+      "youtube": "Verbinden Sie Ihren YouTube-Kanal und beantworten Sie seine Kommentare im selben Postfach. Das Senden von Videos kommt später; YouTube hat keine privaten Nachrichten."
     },
     "ctaStatus": "Was möglich ist",
     "status": { "title": "Was Postbiz auf {network} leistet" },
@@ -502,12 +502,18 @@
       "q4": "Kann ein KI-Agent auf {network} veröffentlichen?",
       "a4": "Noch nicht: MCP-Server, Kommandozeile und öffentliche API von Postbiz sind in Vorbereitung. Siehe die Seite zu KI-Agenten.",
       "q5": "Ist Postbiz für {network} kostenlos?",
-      "a5": "Die Postbiz-Beta ist kostenlos, ohne Kreditkarte. Die Tarife stehen auf der Seite „Preise“."
+      "a5": "Die Postbiz-Beta ist kostenlos, ohne Kreditkarte. Die Tarife stehen auf der Seite „Preise“.",
+      "a1Soon": "Noch nicht: Die Verbindung Ihres {network}-Kontos ist verfügbar, das Senden von Beiträgen kommt aber erst mit der Unterstützung für Medien. Diese Seite wird aktualisiert, sobald es möglich ist."
     },
     "others": { "title": "Weitere Kanäle" },
     "end": {
       "title": "Verbinden Sie {network} mit <accent>Postbiz</accent>",
       "text": "Erstellen Sie Ihr Konto, verbinden Sie Ihre Netzwerke und planen Sie Ihren ersten Beitrag. Die Beta ist kostenlos, ohne Kreditkarte."
+    },
+    "titleSoon": "{network} in Postbiz: was funktioniert, was kommt",
+    "c1Soon": {
+      "title": "Das Veröffentlichen kommt",
+      "text": "Sie können Ihr {network}-Konto schon verbinden. Das Senden von Beiträgen kommt mit der Unterstützung für Medien."
     }
   },
   "meta": {

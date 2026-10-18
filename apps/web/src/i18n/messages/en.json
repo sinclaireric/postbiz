@@ -241,7 +241,7 @@
       "title": "You may be <accent>wondering</accent>",
       "more": "Another question? <link>Write to us</link>.",
       "q1": "Which networks are supported?",
-      "a1": "Facebook, Instagram, X, LinkedIn, TikTok and YouTube for publishing. For the inbox, coverage depends on what each network allows: see the Channels page for network-by-network details.",
+      "a1": "Facebook, Instagram, X, LinkedIn, TikTok and YouTube all connect to Postbiz. What Postbiz can do on each (publish, private messages, comments) varies with what the network allows: the Channels page gives the exact status, network by network.",
       "q2": "Can I reply to private messages on LinkedIn or YouTube?",
       "a2": "No, and no third-party tool can without a special agreement: LinkedIn does not open its messaging to apps, and YouTube has no private messages. Postbiz will show YouTube comments, and LinkedIn Page comments as soon as they are available.",
       "q3": "Why a “24-hour window”?",
@@ -524,7 +524,7 @@
     },
     "p3": {
       "title": "Adapted media",
-      "text": "Images and videos are converted to each network’s requirements before publishing."
+      "text": "Coming soon: images and videos will be converted to each network’s requirements before publishing."
     },
     "p4": {
       "title": "Drafts and clear states",
@@ -591,7 +591,7 @@
     "badge": "{name} + Postbiz",
     "title": "Schedule your posts with {name}",
     "bullet1": "{name} + Postbiz: MCP server, command line and public API, coming soon",
-    "bullet2": "Draft, schedule and approve your posts on six networks",
+    "bullet2": "Draft, schedule and approve your posts from a single calendar",
     "kind": {
       "chat": { "bullet": "Ask in plain language, approve in the calendar" },
       "editor": { "bullet": "Prepare your posts from the agent panel, without leaving the editor" },
@@ -674,11 +674,11 @@
     "title": "Schedule your {network} posts from a single calendar",
     "lead": {
       "facebook": "Schedule the posts of your Facebook Pages, then answer Messenger messages and comments from the same inbox.",
-      "instagram": "Schedule your Instagram posts and answer the private messages and comments of your professional account, without leaving Postbiz.",
+      "instagram": "Connect your Instagram professional account and answer private messages and comments from Postbiz. Sending posts arrives with media support.",
       "x": "Schedule your X posts from the same calendar as your other networks. Messages and comments will follow, depending on the access the X API grants.",
       "linkedin": "Schedule your LinkedIn posts from the same calendar as your other networks. LinkedIn doesn’t open its messaging to third-party tools; Page comments are planned.",
-      "tiktok": "Schedule your TikTok posts from a shared calendar. Messages and comments will follow, depending on TikTok’s approval.",
-      "youtube": "Schedule your YouTube posts and answer your channel’s comments from the same inbox. YouTube has no private messages."
+      "tiktok": "Connect your TikTok account to Postbiz. Sending posts arrives with video support; messages and comments will follow, depending on TikTok’s approval.",
+      "youtube": "Connect your YouTube channel and answer its comments from the same inbox. Sending videos comes later; YouTube has no private messages."
     },
     "ctaStatus": "See what’s possible",
     "status": { "title": "What Postbiz does on {network}" },
@@ -727,13 +727,16 @@
       "q4": "Can an AI agent publish on {network}?",
       "a4": "Not yet: the Postbiz MCP server, command line and public API are in the works. See the AI agents page.",
       "q5": "Is Postbiz free for {network}?",
-      "a5": "The Postbiz beta is free, no credit card needed. Plans are detailed on the Pricing page."
+      "a5": "The Postbiz beta is free, no credit card needed. Plans are detailed on the Pricing page.",
+      "a1Soon": "Not yet: connecting your {network} account is available, but sending posts arrives with media support. This page will be updated as soon as it is possible."
     },
     "others": { "title": "Other channels" },
     "end": {
       "title": "Connect {network} to <accent>Postbiz</accent>",
       "text": "Create your account, connect your networks and schedule your first post. The beta is free, no credit card needed."
-    }
+    },
+    "titleSoon": "{network} in Postbiz: what works, what’s coming",
+    "c1Soon": { "title": "Publishing is coming", "text": "You can already connect your {network} account. Sending posts arrives with media support." }
   },
   "meta": {
     "siteTitle": "Postbiz — Schedule your posts, answer all your messages",

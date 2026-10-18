@@ -15,6 +15,8 @@ export async function ChannelPage({ network }: { network: Network }) {
   const name = networkName(network.id);
   const icon = `/socials/${network.id}.svg`;
 
+  // Publication pas encore disponible sur ce réseau : la page le dit au lieu de promettre un envoi à l'heure choisie.
+  const publishSoon = network.publish !== 'beta';
   const inbox: 'both' | 'comments' | 'soon' =
     network.dm === 'beta' && network.comments === 'beta' ? 'both' : network.comments === 'beta' ? 'comments' : 'soon';
 
@@ -24,13 +26,15 @@ export async function ChannelPage({ network }: { network: Network }) {
     { label: t('channelsPage.comments'), cap: network.comments },
   ];
   const cards = [
-    { title: t('channelPage.c1.title'), text: t('channelPage.c1.text', { network: name }) },
+    publishSoon
+      ? { title: t('channelPage.c1Soon.title'), text: t('channelPage.c1Soon.text', { network: name }) }
+      : { title: t('channelPage.c1.title'), text: t('channelPage.c1.text', { network: name }) },
     { title: t('channelPage.c2.title'), text: t('channelPage.c2.text', { network: name }) },
     { title: t(`channelPage.inbox.${inbox}.title`), text: t(`channelPage.inbox.${inbox}.text`, { network: name }) },
     { title: t('channelPage.c4.title'), text: t('channelPage.c4.text', { network: name }) },
   ];
   const faq = [
-    { q: t('channelPage.faq.q1', { network: name }), a: t('channelPage.faq.a1', { network: name }) },
+    { q: t('channelPage.faq.q1', { network: name }), a: t(publishSoon ? 'channelPage.faq.a1Soon' : 'channelPage.faq.a1', { network: name }) },
     { q: t('channelPage.faq.q2', { network: name }), a: `${t(networkNoteKey(network.id))} ${t('channelPage.faq.a2')}` },
     { q: t('channelPage.faq.q3'), a: t('channelPage.faq.a3') },
     { q: t('channelPage.faq.q4', { network: name }), a: t('channelPage.faq.a4') },
@@ -52,7 +56,7 @@ export async function ChannelPage({ network }: { network: Network }) {
             </svg>
           </div>
           <h1 className="mt-7 max-w-4xl text-[clamp(2.4rem,5.4vw,4.5rem)] leading-[1.04] font-extrabold tracking-[-0.035em] text-balance">
-            {t('channelPage.title', { network: name })}
+            {t(publishSoon ? 'channelPage.titleSoon' : 'channelPage.title', { network: name })}
           </h1>
           <p className="mt-6 max-w-2xl text-lg leading-relaxed text-white/80">{t(`channelPage.lead.${network.id}`)}</p>
           <div className="mt-9 flex flex-wrap justify-center gap-3">

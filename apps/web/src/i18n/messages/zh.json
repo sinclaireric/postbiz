@@ -150,7 +150,7 @@
       "title": "也许你<accent>正想问</accent>",
       "more": "还有其他问题?<link>给我们留言</link>。",
       "q1": "支持哪些社交网络?",
-      "a1": "发布支持 Facebook、Instagram、X、LinkedIn、TikTok 和 YouTube。收件箱的覆盖范围取决于各网络的开放程度:详情请查看“渠道”页面。",
+      "a1": "Facebook、Instagram、X、LinkedIn、TikTok 和 YouTube 都可以连接到 Postbiz。Postbiz 在每个平台上能做什么(发布、私信、评论)取决于该平台的开放程度:“渠道”页面按平台列出了确切状态。",
       "q2": "我能回复 LinkedIn 或 YouTube 的私信吗?",
       "a2": "不能,没有特殊协议的话任何第三方工具都做不到:LinkedIn 不向应用开放私信,YouTube 也没有私信。Postbiz 会显示 YouTube 评论,待条件允许后还会显示 LinkedIn 主页评论。",
       "q3": "为什么有“24 小时窗口”?",
@@ -291,7 +291,7 @@
     "intro": "选择社交网络和时间,让 Postbiz 替你发布。日历会显示将要发布的内容、发布时间以及失败的帖子。",
     "p1": { "title": "一份内容,多个网络", "text": "必要时按网络调整文案,并在发送前检查限制(长度、媒体)。" },
     "p2": { "title": "绝不重复发布", "text": "如果某次发布的结果不确定,Postbiz 不会自行重发:它会提醒你,让你先到该网络上确认。" },
-    "p3": { "title": "媒体自动适配", "text": "图片和视频在发布前会按各网络的要求进行转换。" },
+    "p3": { "title": "媒体自动适配", "text": "即将推出:图片和视频将在发布前按各平台的要求自动转换。" },
     "p4": { "title": "草稿与清晰的状态", "text": "草稿、已排期、发布中、已发布、出错:你始终清楚每条帖子进行到哪一步。" },
     "p5": { "title": "团队协作", "text": "成员负责准备,管理员负责审批;权限由数据库强制执行。" },
     "p6": { "title": "引导式重新连接", "text": "如果某个账号的授权过期,你会收到提醒,一键即可重新连接。" },
@@ -348,7 +348,7 @@
     "badge": "{name} + Postbiz",
     "title": "用 {name} 排期你的发布",
     "bullet1": "{name} + Postbiz:MCP 服务器、命令行与公开 API,即将推出",
-    "bullet2": "为六大平台起草、排期并审批你的帖子",
+    "bullet2": "在一个日历中起草、排期并审批你的帖子",
     "kind": {
       "chat": { "bullet": "用日常语言提出需求,在日历中审批" },
       "editor": { "bullet": "在智能体面板中准备帖子,无需离开编辑器" },
@@ -419,11 +419,11 @@
     "title": "在一个日历中排期你的 {network} 发布",
     "lead": {
       "facebook": "排期你的 Facebook 主页帖子,并在同一个收件箱中回复 Messenger 消息和评论。",
-      "instagram": "排期你的 Instagram 帖子,并在不离开 Postbiz 的情况下回复商业账号的私信和评论。",
+      "instagram": "连接你的 Instagram 商业账号,并在 Postbiz 中回复私信和评论。发布功能将随媒体支持一起推出。",
       "x": "在与其他平台相同的日历中排期你的 X 帖子。消息和评论随后推出,取决于 X API 开放的权限。",
       "linkedin": "在与其他平台相同的日历中排期你的 LinkedIn 帖子。LinkedIn 不向第三方工具开放私信;主页评论已在计划中。",
-      "tiktok": "在共享日历中排期你的 TikTok 帖子。消息和评论随后推出,取决于 TikTok 的审批。",
-      "youtube": "排期你的 YouTube 发布,并在同一个收件箱中回复频道评论。YouTube 没有私信。"
+      "tiktok": "把你的 TikTok 账号连接到 Postbiz。发布功能将随视频支持一起推出;消息和评论随后推出,取决于 TikTok 的审批。",
+      "youtube": "连接你的 YouTube 频道,并在同一个收件箱中回复频道评论。视频发布稍后推出;YouTube 没有私信。"
     },
     "ctaStatus": "看看能做什么",
     "status": { "title": "Postbiz 在 {network} 上能做什么" },
@@ -448,10 +448,13 @@
       "q4": "AI 智能体可以在 {network} 上发布吗?",
       "a4": "暂时不能:Postbiz 的 MCP 服务器、命令行和公开 API 正在准备中。请查看 AI 智能体页面。",
       "q5": "Postbiz 在 {network} 上免费吗?",
-      "a5": "Postbiz 测试版免费,无需信用卡。套餐详情见“价格”页面。"
+      "a5": "Postbiz 测试版免费,无需信用卡。套餐详情见“价格”页面。",
+      "a1Soon": "暂时不能:{network} 账号的连接已可用,但发布功能将随媒体支持一起推出。一旦可用,本页会更新。"
     },
     "others": { "title": "其他渠道" },
-    "end": { "title": "把 {network} 连接到 <accent>Postbiz</accent>", "text": "创建账号,连接你的平台,排期你的第一条帖子。测试版免费,无需信用卡。" }
+    "end": { "title": "把 {network} 连接到 <accent>Postbiz</accent>", "text": "创建账号,连接你的平台,排期你的第一条帖子。测试版免费,无需信用卡。" },
+    "titleSoon": "Postbiz 中的 {network}:已可用与即将推出",
+    "c1Soon": { "title": "发布功能即将推出", "text": "你现在就可以连接 {network} 账号。发布功能将随媒体支持一起推出。" }
   },
   "meta": {
     "siteTitle": "Postbiz — 安排帖子发布,回复所有消息",

@@ -62,7 +62,7 @@ export function PricingPlans() {
             <ul className="mt-7 grid gap-3 border-t border-line pt-6 text-[15px]">
               {p.inherits && <li className="font-semibold">{t('pricing.inherits', { plan: t(planNameKey(p.inherits)) })}</li>}
               {p.features.map((f) => (
-                <li key={f} className="flex gap-2.5"><Check /><span>{t(f)}</span></li>
+                <li key={f} className="flex gap-2.5"><Check /><span>{t(f)}{p.soon?.includes(f) && <span className="ms-2 rounded-full bg-wash px-2 py-0.5 text-xs font-semibold text-muted">{t('pricing.compare.soon')}</span>}</span></li>
               ))}
             </ul>
           </article>

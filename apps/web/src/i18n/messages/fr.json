@@ -241,7 +241,7 @@
       "title": "Vous vous <accent>demandez</accent>",
       "more": "Une autre question ? <link>Écrivez-nous</link>.",
       "q1": "Quels réseaux sont pris en charge ?",
-      "a1": "Facebook, Instagram, X, LinkedIn, TikTok et YouTube pour la publication. Pour la boîte de réception, la couverture dépend de ce que chaque réseau autorise : voir la page Canaux pour le détail réseau par réseau.",
+      "a1": "Facebook, Instagram, X, LinkedIn, TikTok et YouTube se connectent à Postbiz. Ce que Postbiz sait faire sur chacun (publier, messages privés, commentaires) varie selon ce que le réseau autorise : la page Canaux donne l’état exact, réseau par réseau.",
       "q2": "Puis-je répondre aux messages privés de LinkedIn ou de YouTube ?",
       "a2": "Non, et aucun outil tiers ne le peut sans accord spécial : LinkedIn n’ouvre pas sa messagerie aux applications, et YouTube n’a pas de messages privés. Postbiz affichera les commentaires YouTube, et les commentaires de Pages LinkedIn dès qu’ils seront disponibles.",
       "q3": "Pourquoi une « fenêtre de 24 heures » ?",
@@ -524,7 +524,7 @@
     },
     "p3": {
       "title": "Médias adaptés",
-      "text": "Images et vidéos sont converties aux exigences de chaque réseau avant la publication."
+      "text": "Bientôt : les images et vidéos seront converties aux exigences de chaque réseau avant la publication."
     },
     "p4": {
       "title": "Brouillons et états clairs",
@@ -591,7 +591,7 @@
     "badge": "{name} + Postbiz",
     "title": "Planifiez vos publications avec {name}",
     "bullet1": "{name} + Postbiz : serveur MCP, ligne de commande et API publique, bientôt",
-    "bullet2": "Rédigez, planifiez et validez vos posts sur six réseaux",
+    "bullet2": "Rédigez, planifiez et validez vos posts depuis un seul calendrier",
     "kind": {
       "chat": { "bullet": "Demandez en langage naturel, validez dans le calendrier" },
       "editor": { "bullet": "Préparez vos posts depuis le panneau de l’agent, sans quitter l’éditeur" },
@@ -689,11 +689,11 @@
     "title": "Planifiez vos publications {network} depuis un seul calendrier",
     "lead": {
       "facebook": "Planifiez les publications de vos Pages Facebook, puis répondez aux messages Messenger et aux commentaires depuis la même boîte de réception.",
-      "instagram": "Planifiez vos publications Instagram et répondez aux messages privés et aux commentaires de votre compte professionnel, sans quitter Postbiz.",
+      "instagram": "Connectez votre compte professionnel Instagram et répondez aux messages privés et aux commentaires depuis Postbiz. L’envoi des publications arrive avec la prise en charge des médias.",
       "x": "Planifiez vos posts sur X depuis le même calendrier que vos autres réseaux. Les messages et commentaires suivront, selon l’accès accordé par l’API de X.",
       "linkedin": "Planifiez vos publications LinkedIn depuis le même calendrier que vos autres réseaux. LinkedIn n’ouvre pas sa messagerie aux outils tiers ; les commentaires de Pages sont prévus.",
-      "tiktok": "Planifiez vos publications TikTok depuis un calendrier partagé. Les messages et commentaires suivront, selon l’approbation de TikTok.",
-      "youtube": "Planifiez vos publications YouTube et répondez aux commentaires de votre chaîne depuis la même boîte. YouTube n’a pas de messages privés."
+      "tiktok": "Connectez votre compte TikTok à Postbiz. L’envoi des publications arrive avec la prise en charge des vidéos ; les messages et commentaires suivront, selon l’approbation de TikTok.",
+      "youtube": "Connectez votre chaîne YouTube et répondez à ses commentaires depuis la même boîte. L’envoi des vidéos arrive plus tard ; YouTube n’a pas de messages privés."
     },
     "ctaStatus": "Voir ce qui est possible",
     "status": { "title": "Ce que Postbiz fait sur {network}" },
@@ -742,12 +742,18 @@
       "q4": "Un agent IA peut-il publier sur {network} ?",
       "a4": "Pas encore : le serveur MCP, la ligne de commande et l’API publique de Postbiz sont en préparation. Voir la page des agents IA.",
       "q5": "Postbiz est-il gratuit pour {network} ?",
-      "a5": "La bêta de Postbiz est gratuite, sans carte bancaire. Les offres sont détaillées sur la page Tarifs."
+      "a5": "La bêta de Postbiz est gratuite, sans carte bancaire. Les offres sont détaillées sur la page Tarifs.",
+      "a1Soon": "Pas encore : la connexion de votre compte {network} est disponible, mais l’envoi des publications arrive avec la prise en charge des médias. Cette page sera mise à jour dès qu’il sera possible."
     },
     "others": { "title": "Autres canaux" },
     "end": {
       "title": "Connectez {network} à <accent>Postbiz</accent>",
       "text": "Créez votre compte, connectez vos réseaux et planifiez votre première publication. La bêta est gratuite, sans carte bancaire."
+    },
+    "titleSoon": "{network} dans Postbiz : ce qui marche, ce qui arrive",
+    "c1Soon": {
+      "title": "La publication arrive",
+      "text": "Vous pouvez déjà connecter votre compte {network}. L’envoi des publications arrive avec la prise en charge des médias."
     }
   },
   "meta": {

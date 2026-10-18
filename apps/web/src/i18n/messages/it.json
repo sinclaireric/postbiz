@@ -150,7 +150,7 @@
       "title": "Forse ti <accent>stai chiedendo</accent>",
       "more": "Un’altra domanda? <link>Scrivici</link>.",
       "q1": "Quali social sono supportati?",
-      "a1": "Facebook, Instagram, X, LinkedIn, TikTok e YouTube per la pubblicazione. Per la posta in arrivo, la copertura dipende da ciò che ogni social consente: consulta la pagina Canali per il dettaglio social per social.",
+      "a1": "Facebook, Instagram, X, LinkedIn, TikTok e YouTube si collegano a Postbiz. Ciò che Postbiz sa fare su ciascuno (pubblicare, messaggi privati, commenti) varia in base a ciò che il social consente: la pagina Canali indica lo stato esatto, social per social.",
       "q2": "Posso rispondere ai messaggi privati di LinkedIn o YouTube?",
       "a2": "No, e nessuno strumento di terze parti può farlo senza un accordo speciale: LinkedIn non apre la sua messaggistica alle app e YouTube non ha messaggi privati. Postbiz mostrerà i commenti di YouTube e, appena disponibili, quelli delle Pagine LinkedIn.",
       "q3": "Perché una «finestra di 24 ore»?",
@@ -291,7 +291,7 @@
     "intro": "Scegli i tuoi social e l’orario, e lascia che Postbiz pubblichi al posto tuo. Un calendario mostra cosa esce, quando, e cosa è fallito.",
     "p1": { "title": "Un contenuto, più social", "text": "Adatta il testo per social se serve e verifica i vincoli (lunghezza, media) prima dell’invio." },
     "p2": { "title": "Mai doppioni", "text": "Se l’esito di una pubblicazione è incerto, Postbiz non la reinvia da solo: te lo segnala, così controlli prima sul social." },
-    "p3": { "title": "Media adattati", "text": "Immagini e video vengono convertiti secondo i requisiti di ogni social prima della pubblicazione." },
+    "p3": { "title": "Media adattati", "text": "Presto: immagini e video saranno convertiti secondo i requisiti di ogni social prima della pubblicazione." },
     "p4": { "title": "Bozze e stati chiari", "text": "Bozza, programmata, in corso, pubblicata, errore: sai sempre a che punto è ogni pubblicazione." },
     "p5": { "title": "Lavoro di squadra", "text": "I membri preparano, gli amministratori approvano; i permessi sono applicati dal database." },
     "p6": { "title": "Ricollegamento guidato", "text": "Se l’accesso a un account scade, vieni avvisato e ti ricolleghi con un clic." },
@@ -348,7 +348,7 @@
     "badge": "{name} + Postbiz",
     "title": "Programma i tuoi post con {name}",
     "bullet1": "{name} + Postbiz: server MCP, riga di comando e API pubblica, in arrivo",
-    "bullet2": "Scrivi, programma e approva i tuoi post su sei social",
+    "bullet2": "Scrivi, programma e approva i tuoi post da un solo calendario",
     "kind": {
       "chat": { "bullet": "Chiedi in linguaggio naturale, approva nel calendario" },
       "editor": { "bullet": "Prepara i tuoi post dal pannello dell’agente, senza lasciare l’editor" },
@@ -443,11 +443,11 @@
     "title": "Programma i tuoi post su {network} da un solo calendario",
     "lead": {
       "facebook": "Programma i post delle tue Pagine Facebook e rispondi ai messaggi di Messenger e ai commenti dalla stessa posta in arrivo.",
-      "instagram": "Programma i tuoi post su Instagram e rispondi ai messaggi privati e ai commenti del tuo account professionale, senza lasciare Postbiz.",
+      "instagram": "Collega il tuo account professionale Instagram e rispondi ai messaggi privati e ai commenti da Postbiz. L’invio dei post arriverà con il supporto per i contenuti multimediali.",
       "x": "Programma i tuoi post su X dallo stesso calendario degli altri social. Messaggi e commenti seguiranno, in base all’accesso concesso dall’API di X.",
       "linkedin": "Programma i tuoi post su LinkedIn dallo stesso calendario degli altri social. LinkedIn non apre la sua messaggistica a strumenti di terze parti; i commenti delle Pagine sono previsti.",
-      "tiktok": "Programma i tuoi post su TikTok da un calendario condiviso. Messaggi e commenti seguiranno, in base all’approvazione di TikTok.",
-      "youtube": "Programma i tuoi post su YouTube e rispondi ai commenti del tuo canale dalla stessa casella. YouTube non ha messaggi privati."
+      "tiktok": "Collega il tuo account TikTok a Postbiz. L’invio dei post arriverà con il supporto per i video; messaggi e commenti seguiranno, in base all’approvazione di TikTok.",
+      "youtube": "Collega il tuo canale YouTube e rispondi ai suoi commenti dalla stessa casella. L’invio dei video arriverà più avanti; YouTube non ha messaggi privati."
     },
     "ctaStatus": "Scopri cosa è possibile",
     "status": { "title": "Cosa fa Postbiz su {network}" },
@@ -496,12 +496,18 @@
       "q4": "Un agente IA può pubblicare su {network}?",
       "a4": "Non ancora: il server MCP, la riga di comando e l’API pubblica di Postbiz sono in preparazione. Vedi la pagina degli agenti IA.",
       "q5": "Postbiz è gratuito per {network}?",
-      "a5": "La beta di Postbiz è gratuita, senza carta di credito. I piani sono dettagliati nella pagina Prezzi."
+      "a5": "La beta di Postbiz è gratuita, senza carta di credito. I piani sono dettagliati nella pagina Prezzi.",
+      "a1Soon": "Non ancora: il collegamento del tuo account {network} è disponibile, ma l’invio dei post arriverà con il supporto per i contenuti multimediali. Questa pagina sarà aggiornata appena sarà possibile."
     },
     "others": { "title": "Altri canali" },
     "end": {
       "title": "Collega {network} a <accent>Postbiz</accent>",
       "text": "Crea il tuo account, collega i tuoi social e programma il tuo primo post. La beta è gratuita, senza carta di credito."
+    },
+    "titleSoon": "{network} in Postbiz: cosa funziona, cosa sta arrivando",
+    "c1Soon": {
+      "title": "La pubblicazione sta arrivando",
+      "text": "Puoi già collegare il tuo account {network}. L’invio dei post arriverà con il supporto per i contenuti multimediali."
     }
   },
   "meta": {
