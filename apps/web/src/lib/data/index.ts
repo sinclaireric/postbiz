@@ -1,13 +1,14 @@
 import { cache } from 'react';
 import { isDemo } from '@/lib/supabase/env';
 import { createClient } from '@/lib/supabase/server';
+import { accountIdentity, workspaceName, type AccountIdentity } from '@/lib/workspace-name';
 import { DEMO_CONTEXT, demoOrgName, demoRepositories } from './demo';
 import { createSupabaseRepositories } from './supabase';
 import type { AppContext, OrgRole, Repositories } from './types';
 
 export type SessionState =
   | { status: 'anonymous' }
-  | { status: 'no-org'; user: { id: string; email: string } }
+  | { status: 'no-org'; user: { id: string } & AccountIdentity }
   | { status: 'ready'; ctx: AppContext };
 
 /** Qui est connecté, et dans quelle organisation ? Mis en cache pour la durée d'une requête. */
@@ -27,7 +28,7 @@ export const getSession = cache(async (): Promise<SessionState> => {
     .limit(1)
     .maybeSingle();
   const org = Array.isArray(m?.organizations) ? m?.organizations[0] : m?.organizations;
-  if (!m || !org) return { status: 'no-org', user: { id: user.id, email: user.email ?? '' } };
+  if (!m || !org) return { status: 'no-org', user: { id: user.id, ...accountIdentity(user) } };
 
   const { data: profile } = await supabase.from('profiles').select('display_name').eq('id', user.id).maybeSingle();
   return {
@@ -46,12 +47,11 @@ export async function getRepositories(ctx: AppContext): Promise<Repositories> {
 }
 
 /**
- * Première connexion : crée l'organisation de l'utilisateur sans lui poser de question (comme Postiz),
- * puis l'envoie vers l'onboarding. Idempotent côté base (ensure_organization).
+ * Première connexion : crée l'organisation de l'utilisateur sans lui poser de question (comme Postiz), nommée d'après
+ * l'entreprise saisie à l'inscription, puis l'envoie vers l'onboarding. Idempotent côté base (ensure_organization).
  */
-export async function provisionOrganization(user: { email: string }, displayName?: string | null): Promise<boolean> {
+export async function provisionOrganization(identity: AccountIdentity): Promise<boolean> {
   const supabase = await createClient();
-  const base = (displayName ?? '').trim() || user.email.split('@')[0] || '';
-  const { error } = await supabase.rpc('ensure_organization', { p_name: base ? `Espace de ${base}` : null });
+  const { error } = await supabase.rpc('ensure_organization', { p_name: workspaceName(identity) });
   return !error;
 }

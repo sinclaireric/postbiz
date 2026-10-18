@@ -17,6 +17,13 @@ export const FLOW: Record<Scenario, { tab: Tab; seconds: number }[]> = {
   manual: [{ tab: 'calendar', seconds: 13.4 }, { tab: 'inbox', seconds: 0 }],
 };
 
+/** Déroulé en boucle (écran d'inscription) : agent, calendrier, inbox, puis on repart de l'agent. */
+export const LOOP_FLOW: { tab: Tab; seconds: number }[] = [
+  { tab: 'agent', seconds: 11.6 },
+  { tab: 'calendar', seconds: 7.4 },
+  { tab: 'inbox', seconds: 11.4 },
+];
+
 /** Conversations de la liste (la première est celle qui s'ouvre). Noms propres et pseudos : jamais traduits. */
 export interface DemoThread {
   name: string;

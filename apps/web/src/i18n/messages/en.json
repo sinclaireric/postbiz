@@ -836,6 +836,8 @@
   "auth": {
     "email": "E-mail",
     "emailPlaceholder": "you@example.com",
+    "company": "Company",
+    "companyPlaceholder": "Your company name",
     "password": "Password",
     "confirmPassword": "Confirm password",
     "newPassword": "New password",
@@ -847,7 +849,7 @@
     "googleSignup": "Sign up with Google",
     "termsLink": "Terms",
     "privacyLink": "Privacy",
-    "asideTitle": "One inbox for <accent>all your messages</accent>",
+    "asideTitle": "Your social media content, <accent>managed more easily</accent>",
     "login": {
       "title": "Welcome back",
       "subtitle": "Sign in to get back to your messages and your posts.",
@@ -885,6 +887,7 @@
     "linkErrors": {
       "lien": "This link is no longer valid. Request a new one.",
       "google": "Signing in with Google failed. Please try again.",
+      "annule": "Google sign-in was cancelled. You can try again whenever you like.",
       "organisation": "We could not create your workspace. Please try again in a moment."
     },
     "messages": {
@@ -899,6 +902,8 @@
       "passwordCurrentRequired": "Enter your password.",
       "passwordShort": "The password must contain at least {min} characters.",
       "passwordLong": "The password cannot exceed {max} characters.",
+      "companyRequired": "Enter your company name.",
+      "companyLong": "The name can’t be longer than {max} characters.",
       "passwordMismatch": "The two passwords do not match."
     },
     "errors": {

@@ -552,6 +552,8 @@
   "auth": {
     "email": "البريد الإلكتروني",
     "emailPlaceholder": "you@example.com",
+    "company": "الشركة",
+    "companyPlaceholder": "اسم شركتك",
     "password": "كلمة المرور",
     "confirmPassword": "تأكيد كلمة المرور",
     "newPassword": "كلمة مرور جديدة",
@@ -563,7 +565,7 @@
     "googleSignup": "التسجيل باستخدام Google",
     "termsLink": "الشروط",
     "privacyLink": "الخصوصية",
-    "asideTitle": "صندوق واحد <accent>لجميع رسائلك</accent>",
+    "asideTitle": "محتوى شبكاتك الاجتماعية، <accent>أسهل في الإدارة</accent>",
     "login": {
       "title": "مرحبًا بعودتك",
       "subtitle": "سجّل الدخول لتجد رسائلك ومنشوراتك.",
@@ -601,6 +603,7 @@
     "linkErrors": {
       "lien": "هذا الرابط لم يعد صالحًا. اطلب رابطًا جديدًا.",
       "google": "فشل تسجيل الدخول عبر Google. حاول مرة أخرى.",
+      "annule": "تم إلغاء تسجيل الدخول عبر Google. يمكنك المحاولة مرة أخرى متى شئت.",
       "organisation": "تعذّر إنشاء مساحة العمل الخاصة بك. حاول مرة أخرى بعد قليل."
     },
     "messages": {
@@ -615,6 +618,8 @@
       "passwordCurrentRequired": "أدخل كلمة المرور الخاصة بك.",
       "passwordShort": "يجب أن تحتوي كلمة المرور على {min} أحرف على الأقل.",
       "passwordLong": "لا يمكن أن تتجاوز كلمة المرور {max} حرفًا.",
+      "companyRequired": "أدخل اسم شركتك.",
+      "companyLong": "لا يمكن أن يتجاوز الاسم {max} حرفًا.",
       "passwordMismatch": "كلمتا المرور غير متطابقتين."
     },
     "errors": {

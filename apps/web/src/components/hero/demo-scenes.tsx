@@ -173,7 +173,7 @@ function PostCard({ idx, labels, fresh, start }: { idx: number; labels: DemoLabe
  * Le calendrier de la semaine. Option « agent » : les trois publications de l'agent s'y posent. Option « manuelle » : le
  * curseur ouvre « Nouvelle publication », choisit un canal, écrit le texte et programme (déroulé de la vidéo « classique »).
  */
-export function CalendarScene({ labels, scenario }: { labels: DemoLabels; scenario: Scenario }) {
+export function CalendarScene({ labels, scenario, compact = false }: { labels: DemoLabels; scenario: Scenario; compact?: boolean }) {
   const t = useT();
   const manual = scenario === 'manual';
   const fresh = NEW_POSTS[scenario];
@@ -185,8 +185,8 @@ export function CalendarScene({ labels, scenario }: { labels: DemoLabels; scenar
     <div className="relative flex min-h-0 flex-1 flex-col">
       <Header title={t('app.nav.calendar')}>
         <div className="flex items-center gap-2.5">
-          <span className="hidden text-[12px] text-ink/55 xl:inline">{labels.range}</span>
-          <span className="hidden items-center rounded-full border border-line p-0.5 text-[11.5px] md:flex">
+          <span className={`hidden text-[12px] text-ink/55 ${compact ? '' : 'xl:inline'}`}>{labels.range}</span>
+          <span className={`hidden items-center rounded-full border border-line p-0.5 text-[11.5px] ${compact ? '' : 'md:flex'}`}>
             <span className="px-2 py-0.5 text-ink/55">{t('app.calendar.day')}</span>
             <span className="rounded-full bg-lime-soft px-2 py-0.5 font-medium text-forest">{t('app.calendar.week')}</span>
             <span className="px-2 py-0.5 text-ink/55">{t('app.calendar.month')}</span>
@@ -195,9 +195,13 @@ export function CalendarScene({ labels, scenario }: { labels: DemoLabels; scenar
         </div>
       </Header>
 
-      <div className="relative grid min-h-0 flex-1 grid-cols-3 md:grid-cols-7">
+      <div className={`relative grid min-h-0 flex-1 ${compact ? 'grid-cols-5' : 'grid-cols-3 md:grid-cols-7'}`}>
         {labels.days.map((d, i) => (
-          <div key={i} className={`demo-fade flex-col border-line md:flex md:border-s ${i >= 1 && i <= 3 ? 'flex border-s' : 'hidden'} ${i >= 5 ? 'bg-wash/50' : ''}`} style={at(0.05 * i)}>
+          <div
+            key={i}
+            className={`demo-fade flex-col border-line ${compact ? (i < 5 ? 'flex border-s' : 'hidden') : `md:flex md:border-s ${i >= 1 && i <= 3 ? 'flex border-s' : 'hidden'}`} ${i >= 5 ? 'bg-wash/50' : ''}`}
+            style={at(0.05 * i)}
+          >
             <p className="px-2 pt-2 pb-1 text-center text-[11px] text-ink/50 uppercase">
               {d.weekday}
               <span className={`mx-auto mt-1 flex size-7 items-center justify-center rounded-full text-[13px] font-semibold normal-case ${i === 1 ? 'bg-ink text-white' : 'text-ink'}`}>{d.day}</span>
@@ -347,7 +351,7 @@ function ThreadAvatar({ thread }: { thread: DemoThread }) {
 }
 
 /** Une conversation Instagram : le client écrit, la réponse se tape et part, le client remercie. */
-export function InboxScene({ labels }: { labels: DemoLabels }) {
+export function InboxScene({ labels, compact = false }: { labels: DemoLabels; compact?: boolean }) {
   const t = useT();
   const reply = t('home.demo.reply');
   const first = THREADS[0]!;
@@ -355,7 +359,7 @@ export function InboxScene({ labels }: { labels: DemoLabels }) {
     <div className="flex min-h-0 flex-1 flex-col">
       <Header title={t('app.nav.inbox')} />
       <div className="flex min-h-0 flex-1">
-        <aside className="hidden w-[260px] shrink-0 flex-col border-e border-line md:flex">
+        <aside className={`shrink-0 flex-col border-e border-line ${compact ? 'flex w-[216px]' : 'hidden w-[260px] md:flex'}`}>
           <div className="mx-3 mt-3 flex h-8 items-center gap-2 rounded-[10px] bg-ink/5 px-2.5 text-[13px] text-ink/40">
             <SearchIcon />
             {t('home.demo.search')}
@@ -386,7 +390,7 @@ export function InboxScene({ labels }: { labels: DemoLabels }) {
               <span className="truncate">{first.name}</span>
               <span className="shrink-0 font-normal text-ink/45">· {logoName(first.logo)}</span>
             </span>
-            <span className="hidden shrink-0 items-center gap-1 rounded-full bg-lime-soft px-2.5 py-0.5 text-[11px] font-medium text-forest sm:flex">
+            <span className={`hidden shrink-0 items-center gap-1 rounded-full bg-lime-soft px-2.5 py-0.5 text-[11px] font-medium text-forest ${compact ? '' : 'sm:flex'}`}>
               <ClockIcon />
               {t('home.demo.replyWindow')}
             </span>

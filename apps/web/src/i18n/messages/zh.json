@@ -531,6 +531,8 @@
   "auth": {
     "email": "电子邮件",
     "emailPlaceholder": "you@example.com",
+    "company": "公司",
+    "companyPlaceholder": "你的公司名称",
     "password": "密码",
     "confirmPassword": "确认密码",
     "newPassword": "新密码",
@@ -542,7 +544,7 @@
     "googleSignup": "使用 Google 注册",
     "termsLink": "条款",
     "privacyLink": "隐私",
-    "asideTitle": "一个收件箱,<accent>收纳你的所有消息</accent>",
+    "asideTitle": "你的社交网络内容,<accent>管理更轻松</accent>",
     "login": {
       "title": "欢迎回来",
       "subtitle": "登录以找回你的消息和帖子。",
@@ -580,6 +582,7 @@
     "linkErrors": {
       "lien": "此链接已失效,请重新申请。",
       "google": "Google 登录失败,请重试。",
+      "annule": "已取消使用 Google 登录。你可以随时重试。",
       "organisation": "无法创建你的工作区,请稍后重试。"
     },
     "messages": {
@@ -594,6 +597,8 @@
       "passwordCurrentRequired": "请输入你的密码。",
       "passwordShort": "密码至少需要 {min} 个字符。",
       "passwordLong": "密码不能超过 {max} 个字符。",
+      "companyRequired": "请输入公司名称。",
+      "companyLong": "名称不能超过 {max} 个字符。",
       "passwordMismatch": "两次输入的密码不一致。"
     },
     "errors": {

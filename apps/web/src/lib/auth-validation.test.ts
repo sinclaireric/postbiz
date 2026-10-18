@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { authErrorKey, normalizeEmail, validateEmail, validatePassword } from './auth-validation';
+import { authErrorKey, normalizeCompany, normalizeEmail, validateCompany, validateEmail, validatePassword } from './auth-validation';
 import { safeNext } from './safe-redirect';
 
 describe('validation des formulaires', () => {
@@ -14,6 +14,14 @@ describe('validation des formulaires', () => {
     expect(validatePassword('12345678')).toBeNull();
     expect(validatePassword('x'.repeat(73))).toEqual({ key: 'auth.validation.passwordLong', params: { max: 72 } });
     expect(validatePassword('')).toEqual({ key: 'auth.validation.passwordRequired' });
+  });
+  it('exige un nom d’entreprise, sans espaces superflus, de 120 caractères au maximum', () => {
+    expect(normalizeCompany('  Atelier \n  Nova ')).toBe('Atelier Nova');
+    expect(normalizeCompany(null)).toBe('');
+    expect(validateCompany('')).toEqual({ key: 'auth.validation.companyRequired' });
+    expect(validateCompany('Atelier Nova')).toBeNull();
+    expect(validateCompany('é'.repeat(120))).toBeNull();
+    expect(validateCompany('é'.repeat(121))).toEqual({ key: 'auth.validation.companyLong', params: { max: 120 } });
   });
   it('ramène les erreurs Supabase à nos clés', () => {
     expect(authErrorKey('Invalid login credentials')).toBe('auth.errors.invalidCredentials');

@@ -576,6 +576,8 @@
   "auth": {
     "email": "E-mail",
     "emailPlaceholder": "voce@exemplo.com",
+    "company": "Empresa",
+    "companyPlaceholder": "Nome da sua empresa",
     "password": "Senha",
     "confirmPassword": "Confirmar a senha",
     "newPassword": "Nova senha",
@@ -587,7 +589,7 @@
     "googleSignup": "Cadastrar-se com o Google",
     "termsLink": "Termos",
     "privacyLink": "Privacidade",
-    "asideTitle": "Uma só caixa para <accent>todas as suas mensagens</accent>",
+    "asideTitle": "O conteúdo das suas redes sociais, <accent>gerido com mais facilidade</accent>",
     "login": {
       "title": "Bem-vindo de volta",
       "subtitle": "Entre para reencontrar suas mensagens e suas publicações.",
@@ -625,6 +627,7 @@
     "linkErrors": {
       "lien": "Este link não é mais válido. Peça um novo.",
       "google": "O login com o Google falhou. Tente novamente.",
+      "annule": "O login com o Google foi cancelado. Você pode tentar novamente quando quiser.",
       "organisation": "Não foi possível criar seu espaço de trabalho. Tente novamente em instantes."
     },
     "messages": {
@@ -639,6 +642,8 @@
       "passwordCurrentRequired": "Informe sua senha.",
       "passwordShort": "A senha deve ter pelo menos {min} caracteres.",
       "passwordLong": "A senha não pode ter mais de {max} caracteres.",
+      "companyRequired": "Informe o nome da sua empresa.",
+      "companyLong": "O nome não pode ter mais de {max} caracteres.",
       "passwordMismatch": "As duas senhas não coincidem."
     },
     "errors": {

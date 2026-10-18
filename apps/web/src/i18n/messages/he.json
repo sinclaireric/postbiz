@@ -549,6 +549,8 @@
   "auth": {
     "email": "דוא״ל",
     "emailPlaceholder": "you@example.com",
+    "company": "חברה",
+    "companyPlaceholder": "שם החברה שלכם",
     "password": "סיסמה",
     "confirmPassword": "אימות סיסמה",
     "newPassword": "סיסמה חדשה",
@@ -560,7 +562,7 @@
     "googleSignup": "הרשמה עם Google",
     "termsLink": "תנאים",
     "privacyLink": "פרטיות",
-    "asideTitle": "תיבה אחת ל<accent>כל ההודעות שלכם</accent>",
+    "asideTitle": "התוכן ברשתות החברתיות שלכם, <accent>מנוהל בקלות רבה יותר</accent>",
     "login": {
       "title": "ברוכים השבים",
       "subtitle": "התחברו כדי לחזור להודעות ולפרסומים שלכם.",
@@ -598,6 +600,7 @@
     "linkErrors": {
       "lien": "הקישור הזה אינו תקף עוד. בקשו קישור חדש.",
       "google": "ההתחברות עם Google נכשלה. נסו שוב.",
+      "annule": "ההתחברות עם Google בוטלה. אפשר לנסות שוב בכל עת.",
       "organisation": "לא ניתן ליצור את מרחב העבודה שלכם. נסו שוב בעוד רגע."
     },
     "messages": {
@@ -612,6 +615,8 @@
       "passwordCurrentRequired": "הזינו את הסיסמה שלכם.",
       "passwordShort": "הסיסמה חייבת להכיל לפחות {min} תווים.",
       "passwordLong": "הסיסמה לא יכולה לעלות על {max} תווים.",
+      "companyRequired": "הזינו את שם החברה.",
+      "companyLong": "השם לא יכול להכיל יותר מ-{max} תווים.",
       "passwordMismatch": "שתי הסיסמאות אינן זהות."
     },
     "errors": {

@@ -579,6 +579,8 @@
   "auth": {
     "email": "Email",
     "emailPlaceholder": "ban@example.com",
+    "company": "Công ty",
+    "companyPlaceholder": "Tên công ty của bạn",
     "password": "Mật khẩu",
     "confirmPassword": "Xác nhận mật khẩu",
     "newPassword": "Mật khẩu mới",
@@ -590,7 +592,7 @@
     "googleSignup": "Đăng ký với Google",
     "termsLink": "Điều khoản",
     "privacyLink": "Quyền riêng tư",
-    "asideTitle": "Một hộp thư cho <accent>tất cả tin nhắn của bạn</accent>",
+    "asideTitle": "Nội dung mạng xã hội của bạn, <accent>được quản lý dễ dàng hơn</accent>",
     "login": {
       "title": "Chào mừng bạn trở lại",
       "subtitle": "Đăng nhập để xem lại tin nhắn và bài đăng của bạn.",
@@ -628,6 +630,7 @@
     "linkErrors": {
       "lien": "Liên kết này không còn hiệu lực. Hãy yêu cầu liên kết mới.",
       "google": "Đăng nhập bằng Google không thành công. Vui lòng thử lại.",
+      "annule": "Đã hủy đăng nhập bằng Google. Bạn có thể thử lại bất cứ lúc nào.",
       "organisation": "Không thể tạo không gian làm việc của bạn. Vui lòng thử lại sau giây lát."
     },
     "messages": {
@@ -642,6 +645,8 @@
       "passwordCurrentRequired": "Vui lòng nhập mật khẩu của bạn.",
       "passwordShort": "Mật khẩu phải có ít nhất {min} ký tự.",
       "passwordLong": "Mật khẩu không được vượt quá {max} ký tự.",
+      "companyRequired": "Nhập tên công ty của bạn.",
+      "companyLong": "Tên không được dài quá {max} ký tự.",
       "passwordMismatch": "Hai mật khẩu không khớp."
     },
     "errors": {

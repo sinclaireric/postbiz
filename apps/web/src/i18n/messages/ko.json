@@ -534,6 +534,8 @@
   "auth": {
     "email": "이메일",
     "emailPlaceholder": "you@example.com",
+    "company": "회사",
+    "companyPlaceholder": "회사 이름",
     "password": "비밀번호",
     "confirmPassword": "비밀번호 확인",
     "newPassword": "새 비밀번호",
@@ -545,7 +547,7 @@
     "googleSignup": "Google로 가입하기",
     "termsLink": "이용약관",
     "privacyLink": "개인정보",
-    "asideTitle": "<accent>모든 메시지</accent>를 위한 하나의 받은편지함",
+    "asideTitle": "소셜 네트워크 콘텐츠를 <accent>더 쉽게 관리하세요</accent>",
     "login": {
       "title": "다시 오신 것을 환영합니다",
       "subtitle": "로그인하여 메시지와 게시물로 돌아가세요.",
@@ -583,6 +585,7 @@
     "linkErrors": {
       "lien": "이 링크는 더 이상 유효하지 않습니다. 새 링크를 요청하세요.",
       "google": "Google 로그인에 실패했습니다. 다시 시도해 주세요.",
+      "annule": "Google 로그인이 취소되었습니다. 언제든지 다시 시도할 수 있습니다.",
       "organisation": "워크스페이스를 만들 수 없습니다. 잠시 후 다시 시도해 주세요."
     },
     "messages": {
@@ -597,6 +600,8 @@
       "passwordCurrentRequired": "현재 비밀번호를 입력하세요.",
       "passwordShort": "비밀번호는 {min}자 이상이어야 합니다.",
       "passwordLong": "비밀번호는 {max}자를 넘을 수 없습니다.",
+      "companyRequired": "회사 이름을 입력하세요.",
+      "companyLong": "이름은 {max}자를 넘을 수 없습니다.",
       "passwordMismatch": "두 비밀번호가 일치하지 않습니다."
     },
     "errors": {

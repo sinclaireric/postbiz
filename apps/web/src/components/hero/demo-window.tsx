@@ -5,7 +5,7 @@ import { NavIcon, type NavIconName } from '@/components/app/nav-icons';
 import { LogoMark } from '@/components/logo';
 import { useT } from '@/i18n/client';
 import type { MessageKey } from '@/i18n/types';
-import { FLOW, type DemoLabels, type Scenario, type Tab } from './demo-data';
+import { FLOW, LOOP_FLOW, type DemoLabels, type Scenario, type Tab } from './demo-data';
 import { AgentScene, CalendarScene, CursorArrow, InboxScene } from './demo-scenes';
 
 /** Délai avant la première scène : le cadre arrive à 0,8 s (voir globals.css) et met 1 s à se poser. Ensuite, quasi immédiat. */
@@ -33,7 +33,23 @@ const vars = (v: Record<string, string | number>) => v as CSSProperties;
  * du rail se cliquent : la scène choisie se joue seule, sans enchaîner. Tout est décoratif (aria-hidden, inert) : un texte
  * caché décrit la scène aux lecteurs d'écran. Les animations sont en CSS ; seul l'enchaînement des onglets passe par un minuteur.
  */
-export function HeroDemo({ labels }: { labels: DemoLabels }) {
+interface HeroDemoProps {
+  labels: DemoLabels;
+  /** Affiche la bascule « agent IA / manuelle » au-dessus de la fenêtre (le hero) ; sinon, seule l'option agent est jouée. */
+  options?: boolean;
+  /** Rejoue le déroulé sans fin (agent → calendrier → inbox → agent…) au lieu de s'arrêter sur l'inbox. */
+  loop?: boolean;
+  /** Fenêtre étroite : cinq jours au calendrier, pas de liste de conversations. */
+  compact?: boolean;
+  /** Onglets cliquables. Faux : tout est décoratif (écran d'inscription, dont le panneau est déjà masqué aux lecteurs d'écran). */
+  interactive?: boolean;
+  /** Délai avant la première scène (secondes). */
+  start?: number;
+  /** Classes de taille de la fenêtre. */
+  panelClassName?: string;
+}
+
+export function HeroDemo({ labels, options = true, loop = false, compact = false, interactive = true, start = FIRST_START, panelClassName = 'h-[580px] md:h-[640px]' }: HeroDemoProps) {
   const t = useT();
   const [scenario, setScenario] = useState<Scenario>('agent');
   const [tab, setTab] = useState<Tab>('agent');
@@ -46,11 +62,12 @@ export function HeroDemo({ labels }: { labels: DemoLabels }) {
   const panel = useRef<HTMLDivElement>(null);
   const seen = useRef(false);
   const [waiting, setWaiting] = useState(false);
-  const lead = epoch === 0 ? FIRST_START : RESTART;
+  const lead = epoch === 0 ? start : RESTART;
   // Onglet suivant du déroulé : un curseur va le cliquer juste avant le changement de scène (on le voit « aller sur le calendrier »).
-  const steps = FLOW[scenario];
+  const steps = loop ? LOOP_FLOW : FLOW[scenario];
   const stepIndex = steps.findIndex((s) => s.tab === tab);
-  const nextTab = auto && !reduced ? steps[stepIndex + 1]?.tab : undefined;
+  const followingStep = loop ? steps[(stepIndex + 1) % steps.length] : steps[stepIndex + 1];
+  const nextTab = auto && !reduced ? followingStep?.tab : undefined;
   const sceneLength = steps[stepIndex]?.seconds ?? 0;
   const [nav, setNav] = useState<{ x: number; y: number; sx: number; sy: number } | null>(null);
 
@@ -107,14 +124,14 @@ export function HeroDemo({ labels }: { labels: DemoLabels }) {
   useEffect(() => {
     if (!auto || waiting || reduced) return;
     const step = steps[stepIndex];
-    const next = steps[stepIndex + 1];
+    const next = loop ? steps[(stepIndex + 1) % steps.length] : steps[stepIndex + 1];
     if (!step || !next) return;
     const id = window.setTimeout(() => {
       setTab(next.tab);
       setEpoch((n) => n + 1);
     }, (lead + step.seconds) * 1000);
     return () => window.clearTimeout(id);
-  }, [auto, waiting, reduced, steps, stepIndex, epoch, lead]);
+  }, [auto, waiting, reduced, loop, steps, stepIndex, epoch, lead]);
 
   const chooseScenario = (next: Scenario) => {
     setScenario(next);
@@ -150,10 +167,11 @@ export function HeroDemo({ labels }: { labels: DemoLabels }) {
   );
 
   const description: MessageKey = tab === 'agent' ? 'home.demo.descAgent' : tab === 'inbox' ? 'home.demo.descInbox' : scenario === 'manual' ? 'home.demo.descManual' : 'home.demo.descCalendar';
-  const scene = tab === 'agent' ? <AgentScene labels={labels} /> : tab === 'inbox' ? <InboxScene labels={labels} /> : <CalendarScene labels={labels} scenario={scenario} />;
+  const scene = tab === 'agent' ? <AgentScene labels={labels} /> : tab === 'inbox' ? <InboxScene labels={labels} compact={compact} /> : <CalendarScene labels={labels} scenario={scenario} compact={compact} />;
 
   return (
-    <div role="region" aria-label={t('home.demo.regionLabel')}>
+    <div {...(interactive ? { role: 'region', 'aria-label': t('home.demo.regionLabel') } : { 'aria-hidden': true, inert: true })}>
+      {options && (
       <div role="group" aria-label={t('home.showcase.switchLabel')} className="mx-auto mb-5 grid max-w-xl grid-cols-[1fr_auto_1fr] items-center gap-3 text-sm sm:gap-4 sm:text-base">
         {option('agent', t('home.showcase.agentic'), 'text-end')}
         {/* Interrupteur décoratif : les deux boutons de texte portent l'état pour le clavier et les lecteurs d'écran. */}
@@ -168,18 +186,16 @@ export function HeroDemo({ labels }: { labels: DemoLabels }) {
         </button>
         {option('manual', t('home.demo.optManual'), 'text-start')}
       </div>
+      )}
 
       <div
         ref={panel}
         id="hero-demo-panel"
-        className="relative flex h-[580px] flex-col gap-2 overflow-hidden rounded-3xl bg-wash p-2 text-start text-ink shadow-[0_40px_90px_-50px_rgba(17,17,16,0.45)] ring-1 ring-line md:h-[640px] md:flex-row"
+        className={`relative flex flex-col gap-2 overflow-hidden rounded-3xl bg-wash p-2 text-start text-ink shadow-[0_40px_90px_-50px_rgba(17,17,16,0.45)] ring-1 ring-line md:flex-row ${panelClassName}`}
       >
         {/* Rail d'onglets de l'application (en barre sur mobile). */}
         <nav
-          role="tablist"
-          aria-orientation="vertical"
-          aria-label={t('app.nav.label')}
-          onKeyDown={onRailKey}
+          {...(interactive ? { role: 'tablist', 'aria-orientation': 'vertical', 'aria-label': t('app.nav.label'), onKeyDown: onRailKey } : {})}
           className="flex shrink-0 items-center justify-around gap-1 rounded-2xl border border-line bg-surface p-1.5 md:w-[84px] md:flex-col md:justify-start md:p-2 md:pt-3"
         >
           <span className="mb-3 hidden md:block" aria-hidden="true"><LogoMark size={36} /></span>
@@ -197,17 +213,15 @@ export function HeroDemo({ labels }: { labels: DemoLabels }) {
             }
             const active = tab === item.tab;
             const pressing = item.tab === nextTab;
+            const Item = interactive ? 'button' : 'span';
             return (
-              <button
+              <Item
                 key={item.tab}
                 id={`hero-nav-${item.tab}`}
-                type="button"
-                role="tab"
-                aria-selected={active}
-                aria-controls="hero-demo-content"
-                tabIndex={active ? 0 : -1}
-                onClick={() => chooseTab(item.tab!)}
-                className={`relative flex min-w-0 flex-1 flex-col items-center gap-1 rounded-xl px-1 py-2 text-[10px] font-medium transition-colors md:w-full md:flex-none ${active ? 'bg-lime-soft text-forest' : 'text-ink/60 hover:bg-wash hover:text-ink'}`}
+                {...(interactive
+                  ? { type: 'button' as const, role: 'tab', 'aria-selected': active, 'aria-controls': 'hero-demo-content', tabIndex: active ? 0 : -1, onClick: () => chooseTab(item.tab!) }
+                  : {})}
+                className={`relative flex min-w-0 flex-1 flex-col items-center gap-1 rounded-xl px-1 py-2 text-[10px] font-medium transition-colors md:w-full md:flex-none ${active ? 'bg-lime-soft text-forest' : `text-ink/60 ${interactive ? 'hover:bg-wash hover:text-ink' : ''}`}`}
               >
                 {/* L'onglet que le curseur va cliquer « s'enfonce » : l'élément est remonté à chaque scène pour rejouer l'animation. */}
                 <span
@@ -219,13 +233,13 @@ export function HeroDemo({ labels }: { labels: DemoLabels }) {
                   {body}
                 </span>
                 {item.tab === 'inbox' && <span aria-hidden="true" className="absolute end-1/4 top-1 flex size-4 items-center justify-center rounded-full bg-danger text-[9px] font-bold text-white md:end-2.5">1</span>}
-              </button>
+              </Item>
             );
           })}
         </nav>
 
-        <div id="hero-demo-content" role="tabpanel" aria-labelledby={`hero-nav-${tab}`} className="relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-2xl border border-line bg-surface">
-          <p className="sr-only">{t(description)}</p>
+        <div id="hero-demo-content" {...(interactive ? { role: 'tabpanel', 'aria-labelledby': `hero-nav-${tab}` } : {})} className="relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-2xl border border-line bg-surface">
+          {interactive && <p className="sr-only">{t(description)}</p>}
           <div
             key={`${scenario}-${tab}-${epoch}`}
             aria-hidden="true"

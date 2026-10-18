@@ -534,6 +534,8 @@
   "auth": {
     "email": "メールアドレス",
     "emailPlaceholder": "you@example.com",
+    "company": "会社名",
+    "companyPlaceholder": "会社名を入力",
     "password": "パスワード",
     "confirmPassword": "パスワード(確認)",
     "newPassword": "新しいパスワード",
@@ -545,7 +547,7 @@
     "googleSignup": "Googleで登録",
     "termsLink": "利用規約",
     "privacyLink": "プライバシー",
-    "asideTitle": "<accent>すべてのメッセージ</accent>を、ひとつの受信トレイに",
+    "asideTitle": "SNSのコンテンツを、<accent>もっとかんたんに管理</accent>",
     "login": {
       "title": "おかえりなさい",
       "subtitle": "ログインして、メッセージと投稿に戻りましょう。",
@@ -583,6 +585,7 @@
     "linkErrors": {
       "lien": "このリンクは無効になりました。新しいリンクをリクエストしてください。",
       "google": "Googleでのログインに失敗しました。もう一度お試しください。",
+      "annule": "Googleでのログインはキャンセルされました。いつでもやり直せます。",
       "organisation": "ワークスペースを作成できませんでした。しばらくしてからもう一度お試しください。"
     },
     "messages": {
@@ -597,6 +600,8 @@
       "passwordCurrentRequired": "現在のパスワードを入力してください。",
       "passwordShort": "パスワードは{min}文字以上で入力してください。",
       "passwordLong": "パスワードは{max}文字以内で入力してください。",
+      "companyRequired": "会社名を入力してください。",
+      "companyLong": "名前は{max}文字以内で入力してください。",
       "passwordMismatch": "2つのパスワードが一致しません。"
     },
     "errors": {

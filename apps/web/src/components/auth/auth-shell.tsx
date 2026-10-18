@@ -1,10 +1,13 @@
 import Link from 'next/link';
 import type { ReactNode } from 'react';
-import { InboxPreview } from '@/components/inbox-preview';
+import { AuthDemo } from '@/components/auth/auth-demo';
 import { LanguageSwitcher } from '@/components/language-switcher';
 import { Logo } from '@/components/logo';
-import { RichText, accentLimeTags } from '@/components/rich-text';
+import { RichText } from '@/components/rich-text';
 import { getT } from '@/i18n/server';
+
+/** Mot en valeur du titre du panneau : insécable, pour que la fin de la phrase ne se coupe pas entre deux lignes. */
+const asideTags = { accent: (text: string) => <span className="accent whitespace-nowrap text-lime">{text}</span> };
 
 /** Écran partagé : formulaire à gauche, panneau de marque à droite (masqué sur mobile). */
 export async function AuthShell({
@@ -53,11 +56,11 @@ export async function AuthShell({
       </div>
 
       <aside className="pattern-diamonds relative hidden items-center justify-center overflow-hidden p-10 lg:flex" aria-hidden="true">
-        <div className="w-full max-w-[560px]">
-          <p className="mb-6 max-w-md text-[2rem] leading-[1.1] font-semibold tracking-[-0.03em] text-white">
-            <RichText t={t} k="auth.asideTitle" tags={accentLimeTags} />
+        <div className="w-full max-w-[640px]">
+          <p className="mb-6 max-w-[34rem] text-[2rem] leading-[1.1] font-semibold tracking-[-0.03em] text-wrap text-white">
+            <RichText t={t} k="auth.asideTitle" tags={asideTags} />
           </p>
-          <InboxPreview />
+          <AuthDemo />
         </div>
       </aside>
     </div>

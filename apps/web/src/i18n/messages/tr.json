@@ -579,6 +579,8 @@
   "auth": {
     "email": "E-posta",
     "emailPlaceholder": "siz@ornek.com",
+    "company": "Şirket",
+    "companyPlaceholder": "Şirketinizin adı",
     "password": "Parola",
     "confirmPassword": "Parolayı onaylayın",
     "newPassword": "Yeni parola",
@@ -590,7 +592,7 @@
     "googleSignup": "Google ile kaydol",
     "termsLink": "Koşullar",
     "privacyLink": "Gizlilik",
-    "asideTitle": "<accent>Tüm mesajlarınız</accent> için tek bir gelen kutusu",
+    "asideTitle": "Sosyal ağ içeriğiniz, <accent>daha kolay yönetilir</accent>",
     "login": {
       "title": "Tekrar hoş geldiniz",
       "subtitle": "Mesajlarınızı ve yayınlarınızı bulmak için giriş yapın.",
@@ -628,6 +630,7 @@
     "linkErrors": {
       "lien": "Bu bağlantı artık geçerli değil. Yeni bir tane isteyin.",
       "google": "Google ile giriş başarısız oldu. Lütfen tekrar deneyin.",
+      "annule": "Google ile giriş iptal edildi. Dilediğiniz zaman tekrar deneyebilirsiniz.",
       "organisation": "Çalışma alanınız oluşturulamadı. Birazdan tekrar deneyin."
     },
     "messages": {
@@ -642,6 +645,8 @@
       "passwordCurrentRequired": "Parolanızı girin.",
       "passwordShort": "Parola en az {min} karakter içermelidir.",
       "passwordLong": "Parola en fazla {max} karakter olabilir.",
+      "companyRequired": "Şirketinizin adını girin.",
+      "companyLong": "Ad en fazla {max} karakter olabilir.",
       "passwordMismatch": "İki parola eşleşmiyor."
     },
     "errors": {

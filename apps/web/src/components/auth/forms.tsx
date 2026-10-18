@@ -5,6 +5,7 @@ import { useActionState } from 'react';
 import { forgotPassword, login, resetPassword, signup, type FormState } from '@/app/(auth)/actions';
 import { RichText } from '@/components/rich-text';
 import { useT } from '@/i18n/client';
+import { MAX_COMPANY_LENGTH } from '@/lib/auth-validation';
 import { Field, FormMessage, PasswordField, SubmitButton } from './fields';
 
 const initial: FormState = {};
@@ -34,9 +35,9 @@ export function SignupForm() {
   const [state, action] = useActionState(signup, initial);
   return (
     <form action={action} className="grid gap-5" noValidate>
-      <Field label={t('auth.email')} name="email" type="email" autoComplete="email" placeholder={t('auth.emailPlaceholder')} dir="ltr" required />
+      <Field label={t('auth.email')} name="email" type="email" autoComplete="email" placeholder={t('auth.emailPlaceholder')} dir="ltr" defaultValue={state.values?.email} required />
       <PasswordField label={t('auth.password')} name="password" autoComplete="new-password" required minLength={8} />
-      <PasswordField label={t('auth.confirmPassword')} name="confirm" autoComplete="new-password" required minLength={8} />
+      <Field label={t('auth.company')} name="company" autoComplete="organization" placeholder={t('auth.companyPlaceholder')} maxLength={MAX_COMPANY_LENGTH} defaultValue={state.values?.company} required />
       <FormMessage error={state.error} message={state.message} />
       <SubmitButton pending={t('auth.signup.pending')}>{t('auth.signup.submit')}</SubmitButton>
       <p className="text-center text-sm text-muted">

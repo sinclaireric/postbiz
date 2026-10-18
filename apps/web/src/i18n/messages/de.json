@@ -591,6 +591,8 @@
   "auth": {
     "email": "E-Mail",
     "emailPlaceholder": "sie@beispiel.de",
+    "company": "Unternehmen",
+    "companyPlaceholder": "Name Ihres Unternehmens",
     "password": "Passwort",
     "confirmPassword": "Passwort bestätigen",
     "newPassword": "Neues Passwort",
@@ -602,7 +604,7 @@
     "googleSignup": "Mit Google registrieren",
     "termsLink": "Bedingungen",
     "privacyLink": "Datenschutz",
-    "asideTitle": "Ein Posteingang für <accent>alle Ihre Nachrichten</accent>",
+    "asideTitle": "Ihre Social-Media-Inhalte, <accent>einfacher verwaltet</accent>",
     "login": {
       "title": "Willkommen zurück",
       "subtitle": "Melden Sie sich an, um Ihre Nachrichten und Beiträge wiederzufinden.",
@@ -640,6 +642,7 @@
     "linkErrors": {
       "lien": "Dieser Link ist nicht mehr gültig. Fordern Sie einen neuen an.",
       "google": "Die Anmeldung mit Google ist fehlgeschlagen. Bitte versuchen Sie es erneut.",
+      "annule": "Die Anmeldung mit Google wurde abgebrochen. Sie können es jederzeit erneut versuchen.",
       "organisation": "Ihr Arbeitsbereich konnte nicht erstellt werden. Bitte versuchen Sie es gleich noch einmal."
     },
     "messages": {
@@ -654,6 +657,8 @@
       "passwordCurrentRequired": "Geben Sie Ihr Passwort ein.",
       "passwordShort": "Das Passwort muss mindestens {min} Zeichen enthalten.",
       "passwordLong": "Das Passwort darf höchstens {max} Zeichen lang sein.",
+      "companyRequired": "Geben Sie den Namen Ihres Unternehmens ein.",
+      "companyLong": "Der Name darf höchstens {max} Zeichen lang sein.",
       "passwordMismatch": "Die beiden Passwörter stimmen nicht überein."
     },
     "errors": {

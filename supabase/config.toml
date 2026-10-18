@@ -3,3 +3,6 @@ project_id = "postbiz"
 
 [functions.webhook-meta]
 verify_jwt = false
+
+[functions.send-push]
+verify_jwt = false   # appelée par pg_net avec un secret partagé (x-push-secret), pas par un client

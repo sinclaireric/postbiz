@@ -854,6 +854,8 @@
   "auth": {
     "email": "E-mail",
     "emailPlaceholder": "vous@exemple.fr",
+    "company": "Entreprise",
+    "companyPlaceholder": "Nom de votre entreprise",
     "password": "Mot de passe",
     "confirmPassword": "Confirmer le mot de passe",
     "newPassword": "Nouveau mot de passe",
@@ -865,7 +867,7 @@
     "googleSignup": "S’inscrire avec Google",
     "termsLink": "Conditions",
     "privacyLink": "Confidentialité",
-    "asideTitle": "Une seule boîte pour <accent>tous vos messages</accent>",
+    "asideTitle": "Le contenu de vos réseaux sociaux, <accent>géré plus facilement</accent>",
     "login": {
       "title": "Bon retour",
       "subtitle": "Connectez-vous pour retrouver vos messages et vos publications.",
@@ -903,6 +905,7 @@
     "linkErrors": {
       "lien": "Ce lien n’est plus valide. Demandez-en un nouveau.",
       "google": "La connexion avec Google a échoué. Réessayez.",
+      "annule": "Connexion avec Google annulée. Vous pouvez réessayer quand vous voulez.",
       "organisation": "Impossible de créer votre espace de travail. Réessayez dans un instant."
     },
     "messages": {
@@ -917,6 +920,8 @@
       "passwordCurrentRequired": "Saisissez votre mot de passe.",
       "passwordShort": "Le mot de passe doit contenir au moins {min} caractères.",
       "passwordLong": "Le mot de passe ne peut pas dépasser {max} caractères.",
+      "companyRequired": "Saisissez le nom de votre entreprise.",
+      "companyLong": "Le nom ne peut pas dépasser {max} caractères.",
       "passwordMismatch": "Les deux mots de passe ne correspondent pas."
     },
     "errors": {

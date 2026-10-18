@@ -74,9 +74,10 @@ et recharge la tranche concernée ; un retour au premier plan recharge tout.
 - **Réglages du compositeur sans effet côté serveur** : étiquettes, répétition, délai, relayeurs, carrousel. L'interface les affiche (héritage de postiz-mobile) mais rien n'est enregistré.
 - **Connexion d'un canal** : impossible depuis l'application (OAuth côté serveur pas encore écrit) ; l'écran renvoie vers le web. Optionnel : `EXPO_PUBLIC_WEB_URL`.
 - **Statistiques** : retirées de la navigation, aucune donnée n'existe en base.
-- **Envoi des notifications push** : l'application enregistre les jetons, mais **aucune Edge Function n'envoie encore de push**.
-  Elle devra lire `push_tokens` et appeler l'API Expo Push (`https://exp.host/--/api/v2/push/send`) avec une charge `data` contenant `conversation_id` pour ouvrir la conversation.
-  Un jeton déjà enregistré par un autre compte (appareil prêté sans déconnexion) ne peut pas être repris côté client à cause de la RLS : prévoir une fonction SQL dédiée ou un nettoyage côté serveur (`DeviceNotRegistered`).
+- **Notifications push** : envoyées par l'Edge Function `send-push` (voir le README racine, « Notifications push »), **jamais exécutée contre un vrai projet Supabase ni Expo**.
+  Elle pousse chaque ligne de `notifications` et chaque message entrant ; la charge `data` contient `conversation_id` (ouvre `/conversation/<id>`).
+  L'enregistrement du jeton passe par le RPC `claim_push_token`, qui reprend aussi un jeton encore lié à un autre compte (appareil prêté).
+  Les jetons en `DeviceNotRegistered` sont supprimés côté serveur à l'envoi ; les reçus Expo (envoi différé) ne sont pas relus.
 - Le sélecteur d'heure du calendrier reste en 12 h (am/pm) ; le reste de l'interface est en 24 h.
 - Les connexions Google/Apple de la maquette d'origine ont été retirées (non branchées).
 

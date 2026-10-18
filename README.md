@@ -13,14 +13,15 @@ Planifiez vos publications et répondez à tous vos messages et commentaires dep
 | Application : onboarding en 3 étapes, calendrier (jour/semaine/mois/liste), boîte de réception, médias, canaux, réglages, notifications | ✅ Fonctionne en **mode démo** ; branchement Supabase écrit mais **non testé sur un projet réel** |
 | Onboarding « à la Postiz » : organisation créée automatiquement, modale plein écran ouverte par `?onboarding=true` | ✅ Étapes 1 (canaux) et 3 (prise en main) ; l'étape 2 (agents IA, MCP, CLI) est affichée « Bientôt » car ces fonctions n'existent pas encore |
 | Pages « Agent », « Analyses », « Facturation » du menu | ❌ Affichées grisées « Bientôt disponible » |
-| Base Supabase : schéma, RLS multi-organisations, file d'envoi, ingestion des messages | ✅ Migrations testées (49 tests dans PGlite, sans Docker) |
+| Base Supabase : schéma, RLS multi-organisations, file d'envoi, ingestion des messages | ✅ Migrations testées (88 tests dans PGlite, sans Docker) |
 | Webhooks Meta : signature, normalisation, Edge Function `webhook-meta` | ✅ Logique testée ; **fonction non déployée ni exécutée sous Deno** |
 | Worker : publication (Facebook, X, LinkedIn : texte), envoi de réponses Messenger/Instagram/commentaires | ✅ Logique testée avec des réseaux simulés ; **jamais exécuté contre les vraies API** |
 | Connexion des canaux par OAuth (Meta, X, LinkedIn, YouTube, TikTok), choix des Pages, déconnexion, rafraîchissement des jetons | ✅ Écrit et testé **avec des réseaux simulés uniquement** ; **jamais exécuté contre les vraies API** (aucune application de réseau n'est créée) ; flux non essayé dans un navigateur avec un vrai projet Supabase. Voir ci-dessous |
 | Envoi d'images/vidéos, Instagram / TikTok / YouTube en publication | ❌ Pas encore (`apps/uploader` à brancher) |
 | Inbox X, LinkedIn (commentaires), TikTok, YouTube (commentaires) | ❌ Pas encore |
-| App mobile (`apps/mobile`) | 🟡 Branchée à Supabase (auth, organisation, calendrier, création de posts, inbox + Realtime, enregistrement des jetons push) ; **compile, mais jamais testée sur un vrai projet ni sur appareil**. Pas encore : envoi de médias, envoi des push (aucune Edge Function), connexion de canaux |
-| Facturation (Stripe), invitation de membres, envoi des notifications push, statistiques | ❌ Pas encore |
+| App mobile (`apps/mobile`) | 🟡 Branchée à Supabase (auth, organisation, calendrier, création de posts, inbox + Realtime, enregistrement des jetons push) ; **compile, mais jamais testée sur un vrai projet ni sur appareil**. Pas encore : envoi de médias, connexion de canaux |
+| Notifications push (Expo) : Edge Function `send-push`, déclenchée par la base, suppression des jetons morts, reprise d'un jeton par un autre compte | ✅ Logique et SQL testés (Expo simulé, pg_net/Vault émulés) ; **fonction non déployée ni exécutée sous Deno, jamais essayée contre Expo ni sur appareil**. Reçus Expo non relus. Voir ci-dessous |
+| Facturation (Stripe), invitation de membres, statistiques | ❌ Pas encore |
 
 Voir `docs/PLAN-MVP.md` pour le plan complet et `docs/RESEAUX.md` pour les démarches auprès de chaque réseau
 (ce sont elles, pas le code, qui fixeront la date de lancement).
@@ -53,6 +54,42 @@ Une vidéo de présentation peut remplacer la check-list de l'étape 3 via `NEXT
 6. Worker : `pnpm dev:worker` (ajoutez `WORKER_DRY_RUN=1` pour tout essayer sans contacter aucun réseau).
 7. Webhooks Meta : `supabase functions deploy webhook-meta --no-verify-jwt`, puis
    `supabase secrets set META_APP_SECRET=… META_WEBHOOK_VERIFY_TOKEN=…` (voir `docs/RESEAUX.md`).
+
+## Notifications push
+
+L'application mobile enregistre un jeton Expo par appareil (`claim_push_token`). L'Edge Function `send-push` l'utilise pour prévenir :
+
+- l'auteur ou les administrateurs visés par une ligne de `notifications` (écrite par le worker : réponse non envoyée, publication en erreur, canal à reconnecter) ;
+- à chaque **message entrant** (`messages.direction = 'in'`) : l'agent assigné à la conversation, ou à défaut tous les administrateurs et membres de l'organisation (pas les lecteurs).
+
+La charge `data` contient `conversation_id` quand la notification concerne une conversation (l'app ouvre `/conversation/<id>`, sinon `/notifications`).
+Le worker écrit `conversationId` dans `notifications.data` : la fonction le normalise.
+
+**Pourquoi un déclenchement par la base (triggers + `pg_net`) plutôt qu'un appel depuis le worker** : les messages entrants sont écrits par l'Edge Function
+`webhook-meta` (RPC `ingest_message`), pas par le worker ; seule la base voit à la fois les messages et les notifications, quelle que soit l'origine de l'écriture
+(worker, fonctions, futurs écrivains), sans coupler le worker au push. Contrepartie : `pg_net` est asynchrone et ne rejoue pas, un push peut donc se perdre
+(la notification et le message restent en base et dans l'application) ; le trigger n'empêche jamais l'écriture qui l'a déclenché.
+
+Mise en route (après les migrations, dont `20261019000001_push.sql`) :
+
+```bash
+supabase functions deploy send-push --no-verify-jwt
+supabase secrets set PUSH_WEBHOOK_SECRET=<chaîne aléatoire, ex. openssl rand -hex 32>
+# facultatif, si « Enhanced Security for Push Notifications » est activé chez Expo : supabase secrets set EXPO_ACCESS_TOKEN=…
+```
+
+Puis, dans l'éditeur SQL (extensions `pg_net` et Vault activées : *Database → Extensions*), avec **la même** valeur de secret :
+
+```sql
+select vault.create_secret('https://<ref-projet>.supabase.co/functions/v1/send-push', 'push_function_url');
+select vault.create_secret('<le même secret>', 'push_function_secret');
+```
+
+Tant que ces deux secrets n'existent pas, les triggers ne font rien. Les jetons qu'Expo déclare en `DeviceNotRegistered` sont supprimés de `push_tokens`.
+
+> ⚠️ **Non exécuté** : aucune Edge Function n'a été lancée sous Deno ni déployée, `pg_net` et le Vault ne sont qu'émulés dans les tests, et rien n'a été envoyé
+> à l'API Expo ni reçu sur un appareil. Les **reçus** Expo (`getReceipts`, où apparaît la plupart des `DeviceNotRegistered` en pratique) ne sont pas relus : seuls
+> les refus immédiats suppriment un jeton ; une tâche planifiée qui relit les reçus reste à écrire. Pas de préférences de notification par utilisateur ni de mise en sourdine.
 
 ## Connexion des canaux (OAuth)
 

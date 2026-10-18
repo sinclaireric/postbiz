@@ -26,8 +26,8 @@ async function fetchExpoToken(): Promise<string | null> {
 }
 
 /**
- * Demande l'autorisation, récupère le jeton Expo et l'enregistre dans `push_tokens` (RLS : user_id = auth.uid()).
- * Ne fait rien sur le web ni sur simulateur (pas de jeton push). L'envoi des notifications est du ressort du serveur.
+ * Demande l'autorisation, récupère le jeton Expo et l'enregistre dans `push_tokens` via `claim_push_token`.
+ * Ne fait rien sur le web ni sur simulateur (pas de jeton push). L'envoi des notifications est fait par l'Edge Function `send-push`.
  */
 export async function registerForPush(userId: string): Promise<PushStatus> {
   if (Platform.OS === "web" || !Device.isDevice) return "unsupported";
@@ -47,10 +47,12 @@ export async function registerForPush(userId: string): Promise<PushStatus> {
   if (!token) return "unsupported";
   registeredToken = token;
 
-  // `token` est unique : si cet appareil est déjà enregistré pour ce compte, la ligne est simplement mise à jour.
-  const { error } = await supabase
-    .from("push_tokens")
-    .upsert({ user_id: userId, token, platform: Platform.OS === "ios" ? "ios" : "android" }, { onConflict: "token" });
+  // `token` est unique : le RPC (SECURITY DEFINER) reprend aussi un jeton encore lié à un autre compte (appareil prêté),
+  // ce que la RLS de push_tokens interdit à un upsert client.
+  const { error } = await supabase.rpc("claim_push_token", {
+    p_token: token,
+    p_platform: Platform.OS === "ios" ? "ios" : "android",
+  });
   if (error) console.warn("[push] enregistrement du jeton impossible :", error.message);
   return "granted";
 }
