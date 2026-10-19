@@ -565,6 +565,7 @@
     "dataDeletion": { "title": "Eliminazione dei dati" },
     "login": { "title": "Accedi" },
     "signup": { "title": "Crea un account" },
+    "verify": { "title": "Controlla la tua casella di posta" },
     "forgot": { "title": "Password dimenticata" },
     "reset": { "title": "Nuova password" },
     "app": "Applicazione",
@@ -637,11 +638,22 @@
       "lien": "Questo link non è più valido. Richiedine uno nuovo.",
       "google": "L’accesso con Google non è riuscito. Riprova.",
       "annule": "Accesso con Google annullato. Puoi riprovare quando vuoi.",
+      "confirmation": "Questo link di conferma non è più valido. Se hai già confermato l’indirizzo, accedi; altrimenti crea di nuovo l’account con lo stesso indirizzo per ricevere un nuovo link.",
       "organisation": "Impossibile creare il tuo spazio di lavoro. Riprova tra un istante."
+    },
+    "verify": {
+      "title": "Controlla la tua casella di posta",
+      "subtitle": "Grazie per esserti registrato! Apri il link di conferma che ti abbiamo appena inviato per attivare l’account e configurare il tuo spazio.",
+      "sentTo": "E-mail inviata a",
+      "missing": "Non è arrivato nulla? Controlla la cartella spam, poi invia di nuovo l’e-mail.",
+      "resend": "Invia di nuovo l’e-mail",
+      "resendIn": "Invia di nuovo tra {seconds} s",
+      "resent": "E-mail inviata di nuovo. Controlla la posta in arrivo.",
+      "other": "Usa un altro indirizzo",
+      "already": "Hai già confermato?"
     },
     "messages": {
       "demo": "Modalità demo: Supabase non è configurato. Imposta NEXT_PUBLIC_SUPABASE_URL e NEXT_PUBLIC_SUPABASE_ANON_KEY.",
-      "signupDone": "Account creato. Apri il link che ti abbiamo appena inviato per e-mail per confermare il tuo indirizzo.",
       "forgotDone": "Se esiste un account per questo indirizzo, gli è appena stato inviato un link di reimpostazione."
     },
     "validation": {

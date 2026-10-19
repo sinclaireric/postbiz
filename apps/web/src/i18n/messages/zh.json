@@ -511,6 +511,7 @@
     "dataDeletion": { "title": "数据删除" },
     "login": { "title": "登录" },
     "signup": { "title": "创建账号" },
+    "verify": { "title": "请查看你的邮箱" },
     "forgot": { "title": "忘记密码" },
     "reset": { "title": "新密码" },
     "app": "应用",
@@ -583,11 +584,22 @@
       "lien": "此链接已失效,请重新申请。",
       "google": "Google 登录失败,请重试。",
       "annule": "已取消使用 Google 登录。你可以随时重试。",
+      "confirmation": "此确认链接已失效。如果你已确认邮箱,请直接登录;否则请使用同一邮箱地址重新注册,以获取新的链接。",
       "organisation": "无法创建你的工作区,请稍后重试。"
+    },
+    "verify": {
+      "title": "请查看你的邮箱",
+      "subtitle": "感谢注册!请打开我们刚刚发送的确认链接,激活账户并设置你的工作区。",
+      "sentTo": "邮件已发送至",
+      "missing": "没收到?请查看垃圾邮件文件夹,然后重新发送邮件。",
+      "resend": "重新发送邮件",
+      "resendIn": "{seconds} 秒后可重新发送",
+      "resent": "邮件已重新发送,请查看收件箱。",
+      "other": "使用其他邮箱地址",
+      "already": "已经确认了?"
     },
     "messages": {
       "demo": "演示模式:Supabase 未配置。请设置 NEXT_PUBLIC_SUPABASE_URL 和 NEXT_PUBLIC_SUPABASE_ANON_KEY。",
-      "signupDone": "账号已创建。请打开我们刚刚发送到你邮箱的链接以确认邮箱地址。",
       "forgotDone": "如果该邮箱对应有账号,我们刚刚已向其发送了重置链接。"
     },
     "validation": {

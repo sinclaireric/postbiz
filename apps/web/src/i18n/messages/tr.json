@@ -559,6 +559,7 @@
     "dataDeletion": { "title": "Veri silme" },
     "login": { "title": "Giriş yap" },
     "signup": { "title": "Hesap oluştur" },
+    "verify": { "title": "Gelen kutunuzu kontrol edin" },
     "forgot": { "title": "Parolamı unuttum" },
     "reset": { "title": "Yeni parola" },
     "app": "Uygulama",
@@ -631,11 +632,22 @@
       "lien": "Bu bağlantı artık geçerli değil. Yeni bir tane isteyin.",
       "google": "Google ile giriş başarısız oldu. Lütfen tekrar deneyin.",
       "annule": "Google ile giriş iptal edildi. Dilediğiniz zaman tekrar deneyebilirsiniz.",
+      "confirmation": "Bu onay bağlantısı artık geçerli değil. Adresinizi zaten onayladıysanız giriş yapın; onaylamadıysanız yeni bir bağlantı almak için aynı adresle yeniden kaydolun.",
       "organisation": "Çalışma alanınız oluşturulamadı. Birazdan tekrar deneyin."
+    },
+    "verify": {
+      "title": "Gelen kutunuzu kontrol edin",
+      "subtitle": "Kaydolduğunuz için teşekkürler! Hesabınızı etkinleştirmek ve çalışma alanınızı kurmak için az önce gönderdiğimiz onay bağlantısını açın.",
+      "sentTo": "E-postanın gönderildiği adres",
+      "missing": "Bir şey gelmedi mi? Spam klasörünüze bakın, ardından e-postayı yeniden gönderin.",
+      "resend": "E-postayı yeniden gönder",
+      "resendIn": "{seconds} sn sonra yeniden gönder",
+      "resent": "E-posta yeniden gönderildi. Gelen kutunuzu kontrol edin.",
+      "other": "Başka bir adres kullan",
+      "already": "Zaten onayladınız mı?"
     },
     "messages": {
       "demo": "Demo modu: Supabase yapılandırılmadı. NEXT_PUBLIC_SUPABASE_URL ve NEXT_PUBLIC_SUPABASE_ANON_KEY değişkenlerini tanımlayın.",
-      "signupDone": "Hesap oluşturuldu. Adresinizi doğrulamak için size e-postayla gönderdiğimiz bağlantıyı açın.",
       "forgotDone": "Bu adres için bir hesap varsa, ona az önce bir sıfırlama bağlantısı gönderildi."
     },
     "validation": {

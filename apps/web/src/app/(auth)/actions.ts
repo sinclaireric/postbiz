@@ -1,10 +1,11 @@
 'use server';
 
+import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { authOrigin } from '@/lib/auth-callback';
+import { AFTER_CONFIRMATION, authOrigin, SIGNUP_EMAIL_COOKIE, SIGNUP_EMAIL_MAX_AGE } from '@/lib/auth-callback';
 import { authErrorKey, normalizeCompany, normalizeEmail, validateCompany, validateEmail, validatePassword } from '@/lib/auth-validation';
 import type { FormError } from '@/lib/form-error';
-import { getT } from '@/i18n/server';
+import { getLocale, getT } from '@/i18n/server';
 import { isDemo, siteUrl } from '@/lib/supabase/env';
 import { createClient } from '@/lib/supabase/server';
 import { safeNext } from '@/lib/safe-redirect';
@@ -55,15 +56,41 @@ export async function signup(_: FormState, formData: FormData): Promise<FormStat
     email,
     password,
     options: {
-      // Le nom de l'entreprise nomme l'espace de travail, créé à la première arrivée dans l'app (comme sur mobile).
-      data: { company },
-      emailRedirectTo: `${siteUrl}/auth/callback?next=${encodeURIComponent('/app/calendrier?onboarding=true')}`,
+      // `company` nomme l'espace de travail, créé à la première arrivée dans l'app (comme sur mobile). `source` et `locale`
+      // servent au modèle d'e-mail Supabase : lien de confirmation du site, dans la langue de l'inscription.
+      data: { company, locale: await getLocale(), source: 'web' },
+      // Repli pour un modèle d'e-mail resté par défaut : lien à code, valable dans le navigateur de l'inscription.
+      emailRedirectTo: `${siteUrl}/auth/callback?next=${encodeURIComponent(AFTER_CONFIRMATION)}`,
     },
   });
   if (error) return refused({ key: authErrorKey(error.message) });
-  if (data.session) redirect('/app/calendrier?onboarding=true'); // confirmation par e-mail désactivée côté Supabase
+  if (data.session) redirect(AFTER_CONFIRMATION); // confirmation par e-mail désactivée côté Supabase
+
+  // Compte créé, adresse à confirmer : écran « Vérifiez votre boîte mail ». L'adresse y est gardée dans un cookie plutôt que dans l'URL.
+  (await cookies()).set(SIGNUP_EMAIL_COOKIE, email, {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
+    maxAge: SIGNUP_EMAIL_MAX_AGE,
+    path: '/signup',
+  });
+  redirect('/signup/verification');
+}
+
+/** « Renvoyer l'e-mail » de l'écran de vérification : même lien, pour l'adresse de l'inscription en cours. */
+export async function resendConfirmation(): Promise<FormState> {
+  if (isDemo) return demoError();
+  const email = (await cookies()).get(SIGNUP_EMAIL_COOKIE)?.value ?? '';
+  if (validateEmail(email)) redirect('/signup');
+  const supabase = await createClient();
+  const { error } = await supabase.auth.resend({
+    type: 'signup',
+    email,
+    options: { emailRedirectTo: `${siteUrl}/auth/callback?next=${encodeURIComponent(AFTER_CONFIRMATION)}` },
+  });
+  if (error) return failure({ key: authErrorKey(error.message) });
   const t = await getT();
-  return { message: t('auth.messages.signupDone') };
+  return { message: t('auth.verify.resent') };
 }
 
 export async function forgotPassword(_: FormState, formData: FormData): Promise<FormState> {

@@ -36,7 +36,7 @@ export function authErrorKey(message: string | undefined): MessageKey {
   const m = (message ?? '').toLowerCase();
   if (m.includes('invalid login credentials')) return 'auth.errors.invalidCredentials';
   if (m.includes('email not confirmed')) return 'auth.errors.emailNotConfirmed';
-  if (m.includes('rate limit') || m.includes('too many')) return 'auth.errors.rateLimit';
+  if (m.includes('rate limit') || m.includes('too many') || m.includes('for security purposes')) return 'auth.errors.rateLimit';
   if (m.includes('password should be') || m.includes('weak password')) return 'auth.errors.weakPassword';
   if (m.includes('same password')) return 'auth.errors.samePassword';
   return 'auth.errors.generic';

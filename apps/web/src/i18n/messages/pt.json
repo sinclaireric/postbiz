@@ -556,6 +556,7 @@
     "dataDeletion": { "title": "Exclusão de dados" },
     "login": { "title": "Entrar" },
     "signup": { "title": "Criar uma conta" },
+    "verify": { "title": "Verifique seu e-mail" },
     "forgot": { "title": "Esqueci a senha" },
     "reset": { "title": "Nova senha" },
     "app": "Aplicativo",
@@ -628,11 +629,22 @@
       "lien": "Este link não é mais válido. Peça um novo.",
       "google": "O login com o Google falhou. Tente novamente.",
       "annule": "O login com o Google foi cancelado. Você pode tentar novamente quando quiser.",
+      "confirmation": "Este link de confirmação não é mais válido. Se você já confirmou seu endereço, entre na conta; caso contrário, crie a conta novamente com o mesmo endereço para receber um novo link.",
       "organisation": "Não foi possível criar seu espaço de trabalho. Tente novamente em instantes."
+    },
+    "verify": {
+      "title": "Verifique seu e-mail",
+      "subtitle": "Obrigado por se cadastrar! Abra o link de confirmação que acabamos de enviar para ativar sua conta e configurar seu espaço.",
+      "sentTo": "E-mail enviado para",
+      "missing": "Não recebeu nada? Verifique a caixa de spam e reenvie o e-mail.",
+      "resend": "Reenviar e-mail",
+      "resendIn": "Reenviar em {seconds} s",
+      "resent": "E-mail reenviado. Verifique sua caixa de entrada.",
+      "other": "Usar outro endereço",
+      "already": "Já confirmou?"
     },
     "messages": {
       "demo": "Modo demonstração: o Supabase não está configurado. Informe NEXT_PUBLIC_SUPABASE_URL e NEXT_PUBLIC_SUPABASE_ANON_KEY.",
-      "signupDone": "Conta criada. Abra o link que acabamos de enviar por e-mail para confirmar seu endereço.",
       "forgotDone": "Se existir uma conta para este endereço, um link de redefinição acabou de ser enviado."
     },
     "validation": {

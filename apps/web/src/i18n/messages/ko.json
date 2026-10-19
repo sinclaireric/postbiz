@@ -514,6 +514,7 @@
     "dataDeletion": { "title": "데이터 삭제" },
     "login": { "title": "로그인" },
     "signup": { "title": "계정 만들기" },
+    "verify": { "title": "받은편지함을 확인하세요" },
     "forgot": { "title": "비밀번호 찾기" },
     "reset": { "title": "새 비밀번호" },
     "app": "앱",
@@ -586,11 +587,22 @@
       "lien": "이 링크는 더 이상 유효하지 않습니다. 새 링크를 요청하세요.",
       "google": "Google 로그인에 실패했습니다. 다시 시도해 주세요.",
       "annule": "Google 로그인이 취소되었습니다. 언제든지 다시 시도할 수 있습니다.",
+      "confirmation": "이 확인 링크는 더 이상 유효하지 않습니다. 이미 주소를 확인했다면 로그인하세요. 아니라면 같은 주소로 다시 가입해 새 링크를 받으세요.",
       "organisation": "워크스페이스를 만들 수 없습니다. 잠시 후 다시 시도해 주세요."
+    },
+    "verify": {
+      "title": "받은편지함을 확인하세요",
+      "subtitle": "가입해 주셔서 감사합니다! 방금 보낸 확인 링크를 열어 계정을 활성화하고 워크스페이스를 설정하세요.",
+      "sentTo": "이메일 발송 주소",
+      "missing": "메일이 오지 않았나요? 스팸 메일함을 확인한 뒤 이메일을 다시 보내세요.",
+      "resend": "이메일 다시 보내기",
+      "resendIn": "{seconds}초 후 다시 보내기",
+      "resent": "이메일을 다시 보냈습니다. 받은편지함을 확인하세요.",
+      "other": "다른 주소 사용",
+      "already": "이미 확인하셨나요?"
     },
     "messages": {
       "demo": "데모 모드: Supabase가 설정되지 않았습니다. NEXT_PUBLIC_SUPABASE_URL과 NEXT_PUBLIC_SUPABASE_ANON_KEY를 설정하세요.",
-      "signupDone": "계정이 만들어졌습니다. 방금 이메일로 보내 드린 링크를 열어 주소를 확인하세요.",
       "forgotDone": "이 주소로 가입된 계정이 있다면 방금 재설정 링크를 보냈습니다."
     },
     "validation": {

@@ -571,6 +571,7 @@
     "dataDeletion": { "title": "Datenlöschung" },
     "login": { "title": "Anmelden" },
     "signup": { "title": "Konto erstellen" },
+    "verify": { "title": "Prüfen Sie Ihr Postfach" },
     "forgot": { "title": "Passwort vergessen" },
     "reset": { "title": "Neues Passwort" },
     "app": "Anwendung",
@@ -643,11 +644,22 @@
       "lien": "Dieser Link ist nicht mehr gültig. Fordern Sie einen neuen an.",
       "google": "Die Anmeldung mit Google ist fehlgeschlagen. Bitte versuchen Sie es erneut.",
       "annule": "Die Anmeldung mit Google wurde abgebrochen. Sie können es jederzeit erneut versuchen.",
+      "confirmation": "Dieser Bestätigungslink ist nicht mehr gültig. Wenn Sie Ihre Adresse bereits bestätigt haben, melden Sie sich an; andernfalls registrieren Sie sich erneut mit derselben Adresse, um einen neuen Link zu erhalten.",
       "organisation": "Ihr Arbeitsbereich konnte nicht erstellt werden. Bitte versuchen Sie es gleich noch einmal."
+    },
+    "verify": {
+      "title": "Prüfen Sie Ihr Postfach",
+      "subtitle": "Danke für Ihre Anmeldung! Öffnen Sie den Bestätigungslink, den wir Ihnen gerade geschickt haben, um Ihr Konto zu aktivieren und Ihren Bereich einzurichten.",
+      "sentTo": "E-Mail gesendet an",
+      "missing": "Nichts angekommen? Schauen Sie im Spam-Ordner nach und senden Sie die E-Mail erneut.",
+      "resend": "E-Mail erneut senden",
+      "resendIn": "Erneut senden in {seconds} s",
+      "resent": "E-Mail erneut gesendet. Prüfen Sie Ihren Posteingang.",
+      "other": "Andere Adresse verwenden",
+      "already": "Schon bestätigt?"
     },
     "messages": {
       "demo": "Demomodus: Supabase ist nicht konfiguriert. Tragen Sie NEXT_PUBLIC_SUPABASE_URL und NEXT_PUBLIC_SUPABASE_ANON_KEY ein.",
-      "signupDone": "Konto erstellt. Öffnen Sie den Link, den wir Ihnen gerade per E-Mail geschickt haben, um Ihre Adresse zu bestätigen.",
       "forgotDone": "Falls zu dieser Adresse ein Konto existiert, wurde ihr soeben ein Link zum Zurücksetzen gesendet."
     },
     "validation": {

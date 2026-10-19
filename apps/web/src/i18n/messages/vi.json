@@ -559,6 +559,7 @@
     "dataDeletion": { "title": "Xóa dữ liệu" },
     "login": { "title": "Đăng nhập" },
     "signup": { "title": "Tạo tài khoản" },
+    "verify": { "title": "Kiểm tra hộp thư của bạn" },
     "forgot": { "title": "Quên mật khẩu" },
     "reset": { "title": "Mật khẩu mới" },
     "app": "Ứng dụng",
@@ -631,11 +632,22 @@
       "lien": "Liên kết này không còn hiệu lực. Hãy yêu cầu liên kết mới.",
       "google": "Đăng nhập bằng Google không thành công. Vui lòng thử lại.",
       "annule": "Đã hủy đăng nhập bằng Google. Bạn có thể thử lại bất cứ lúc nào.",
+      "confirmation": "Liên kết xác nhận này không còn hiệu lực. Nếu bạn đã xác nhận địa chỉ, hãy đăng nhập; nếu chưa, hãy đăng ký lại bằng cùng địa chỉ để nhận liên kết mới.",
       "organisation": "Không thể tạo không gian làm việc của bạn. Vui lòng thử lại sau giây lát."
+    },
+    "verify": {
+      "title": "Kiểm tra hộp thư của bạn",
+      "subtitle": "Cảm ơn bạn đã đăng ký! Hãy mở liên kết xác nhận chúng tôi vừa gửi để kích hoạt tài khoản và thiết lập không gian làm việc.",
+      "sentTo": "Email đã gửi tới",
+      "missing": "Chưa nhận được gì? Hãy xem trong thư rác, rồi gửi lại email.",
+      "resend": "Gửi lại email",
+      "resendIn": "Gửi lại sau {seconds} giây",
+      "resent": "Đã gửi lại email. Hãy kiểm tra hộp thư đến.",
+      "other": "Dùng địa chỉ khác",
+      "already": "Đã xác nhận rồi?"
     },
     "messages": {
       "demo": "Chế độ demo: Supabase chưa được cấu hình. Hãy khai báo NEXT_PUBLIC_SUPABASE_URL và NEXT_PUBLIC_SUPABASE_ANON_KEY.",
-      "signupDone": "Đã tạo tài khoản. Hãy mở liên kết chúng tôi vừa gửi qua email để xác nhận địa chỉ của bạn.",
       "forgotDone": "Nếu tồn tại tài khoản cho địa chỉ này, một liên kết đặt lại mật khẩu vừa được gửi đến đó."
     },
     "validation": {

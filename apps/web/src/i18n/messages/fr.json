@@ -836,6 +836,9 @@
     "signup": {
       "title": "Créer un compte"
     },
+    "verify": {
+      "title": "Vérifiez votre boîte mail"
+    },
     "forgot": {
       "title": "Mot de passe oublié"
     },
@@ -906,11 +909,22 @@
       "lien": "Ce lien n’est plus valide. Demandez-en un nouveau.",
       "google": "La connexion avec Google a échoué. Réessayez.",
       "annule": "Connexion avec Google annulée. Vous pouvez réessayer quand vous voulez.",
+      "confirmation": "Ce lien de confirmation n’est plus valide. Si vous avez déjà confirmé votre adresse, connectez-vous ; sinon, créez à nouveau votre compte avec la même adresse pour recevoir un nouveau lien.",
       "organisation": "Impossible de créer votre espace de travail. Réessayez dans un instant."
+    },
+    "verify": {
+      "title": "Vérifiez votre boîte mail",
+      "subtitle": "Merci de votre inscription ! Ouvrez le lien de confirmation que nous venons d’envoyer pour activer votre compte et configurer votre espace.",
+      "sentTo": "E-mail envoyé à",
+      "missing": "Rien reçu ? Regardez dans vos courriers indésirables, puis renvoyez l’e-mail.",
+      "resend": "Renvoyer l’e-mail",
+      "resendIn": "Renvoyer dans {seconds} s",
+      "resent": "E-mail renvoyé. Vérifiez votre boîte de réception.",
+      "other": "Utiliser une autre adresse",
+      "already": "Déjà confirmé ?"
     },
     "messages": {
       "demo": "Mode démo : Supabase n’est pas configuré. Renseignez NEXT_PUBLIC_SUPABASE_URL et NEXT_PUBLIC_SUPABASE_ANON_KEY.",
-      "signupDone": "Compte créé. Ouvrez le lien que nous venons de vous envoyer par e-mail pour confirmer votre adresse.",
       "forgotDone": "Si un compte existe pour cette adresse, un lien de réinitialisation vient de lui être envoyé."
     },
     "validation": {

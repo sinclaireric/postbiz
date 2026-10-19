@@ -818,6 +818,9 @@
     "signup": {
       "title": "Create an account"
     },
+    "verify": {
+      "title": "Check your inbox"
+    },
     "forgot": {
       "title": "Forgot password"
     },
@@ -888,11 +891,22 @@
       "lien": "This link is no longer valid. Request a new one.",
       "google": "Signing in with Google failed. Please try again.",
       "annule": "Google sign-in was cancelled. You can try again whenever you like.",
+      "confirmation": "This confirmation link is no longer valid. If you already confirmed your address, sign in; otherwise, sign up again with the same address to get a new link.",
       "organisation": "We could not create your workspace. Please try again in a moment."
+    },
+    "verify": {
+      "title": "Check your inbox",
+      "subtitle": "Thanks for signing up! Open the confirmation link we just sent to activate your account and set up your workspace.",
+      "sentTo": "E-mail sent to",
+      "missing": "Nothing yet? Check your spam folder, then resend the e-mail.",
+      "resend": "Resend e-mail",
+      "resendIn": "Resend in {seconds}s",
+      "resent": "E-mail sent again. Check your inbox.",
+      "other": "Use a different address",
+      "already": "Already confirmed?"
     },
     "messages": {
       "demo": "Demo mode: Supabase is not configured. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.",
-      "signupDone": "Account created. Open the link we just sent you by e-mail to confirm your address.",
       "forgotDone": "If an account exists for this address, a reset link has just been sent to it."
     },
     "validation": {
