@@ -7,6 +7,7 @@ export interface WorkerConfig {
   refreshIntervalMs: number;
   postBatch: number;
   messageBatch: number;
+  commentBatch: number;
 }
 
 export function loadConfig(env: NodeJS.ProcessEnv = process.env): WorkerConfig {
@@ -22,5 +23,6 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): WorkerConfig {
     refreshIntervalMs: int(env.WORKER_REFRESH_INTERVAL_MS, 60_000),
     postBatch: int(env.WORKER_POST_BATCH, 5),
     messageBatch: int(env.WORKER_MESSAGE_BATCH, 20),
+    commentBatch: int(env.WORKER_COMMENT_BATCH, 10),
   };
 }

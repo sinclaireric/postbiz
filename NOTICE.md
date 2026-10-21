@@ -11,6 +11,7 @@ Postbiz via un réseau doit pouvoir obtenir le code source correspondant, y comp
 | `apps/mobile` | `gitroomhq/postiz-mobile` | Dépôt sans licence. **Utilisé avec l'autorisation de ses auteurs** : conserver la preuve écrite et demander l'ajout d'une licence. |
 | `apps/uploader` | `gitroomhq/postiz-uploader` | Dépôt sans licence. **Utilisé avec l'autorisation de ses auteurs** : idem. |
 | `packages/*`, `apps/worker` | Écrits pour Postbiz, avec des idées reprises de `postiz-app` (AGPL-3.0) | AGPL-3.0 |
+| `apps/web/src/lib/text/style.ts`, `apps/web/src/lib/text/length.ts`, `apps/web/src/components/calendar/post-editor.tsx`, `emoji-picker.tsx` | Éditeur de publication : le gras et le souligné en caractères Unicode (alphabet gras sans empattement, trait souligné combinant), le décompte des caractères de X et le sélecteur d'émojis reprennent l'approche de l'éditeur de `postiz-app` (AGPL-3.0). Code réécrit pour un champ texte simple ; le sélecteur utilise `emoji-picker-react` (MIT). | AGPL-3.0 |
 
 ## Marques
 

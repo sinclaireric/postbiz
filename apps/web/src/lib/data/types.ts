@@ -12,6 +12,12 @@ export interface AppContext {
 
 export type PostState = 'draft' | 'queued' | 'publishing' | 'published' | 'error' | 'unknown';
 
+/**
+ * Où en est le premier commentaire : `pending` attend la publication, `posting` est en cours d'envoi par le worker, `posted` est publié,
+ * `failed` a été refusé par le réseau (rien n'est parti : on peut réessayer), `unknown` a une issue incertaine (à vérifier sur le réseau).
+ */
+export type FirstCommentState = 'pending' | 'posting' | 'posted' | 'failed' | 'unknown';
+
 export interface PostItem {
   id: string;
   groupId: string;
@@ -22,6 +28,10 @@ export interface PostItem {
   state: PostState;
   error: string | null;
   releaseUrl: string | null;
+  /** Commentaire publié sous la publication, juste après elle (Facebook, LinkedIn, X). */
+  firstComment: string | null;
+  firstCommentState: FirstCommentState | null;
+  firstCommentError: string | null;
 }
 
 export interface IntegrationItem {
@@ -40,7 +50,8 @@ export interface MemberItem {
 }
 
 export interface CreatePostInput {
-  integrationIds: string[];
+  /** Un canal par entrée ; le premier commentaire n'est donné qu'aux canaux qui savent le publier. */
+  targets: { integrationId: string; firstComment: string | null }[];
   content: string;
   publishAt: string | null; // ISO UTC
   mode: 'draft' | 'schedule';
@@ -55,6 +66,8 @@ export interface PostsRepository {
   list(): Promise<PostItem[]>;
   create(input: CreatePostInput): Promise<Result>;
   remove(groupId: string): Promise<Result>;
+  /** Remet en file un premier commentaire refusé par le réseau (état `failed`) ; le worker le republie. */
+  retryFirstComment(postId: string): Promise<Result>;
 }
 
 export interface NotificationItem {
@@ -90,8 +103,32 @@ export interface MediaRepository {
   list(): Promise<MediaItem[]>;
 }
 
+/** Limites d'une fiche : les mêmes que dans la base (migration knowledge). */
+export const KNOWLEDGE_LIMITS = { title: 120, content: 20_000, items: 100 } as const;
+
+export interface KnowledgeItem {
+  id: string;
+  title: string;
+  content: string;
+  updatedAt: string;
+}
+
+export interface KnowledgeInput {
+  title: string;
+  content: string;
+}
+
+/** Fiches que l'assistant IA lit pour écrire dans la voix de l'organisation (ton, offres, produits, questions fréquentes). */
+export interface KnowledgeRepository {
+  list(): Promise<KnowledgeItem[]>;
+  create(input: KnowledgeInput): Promise<Result>;
+  update(id: string, input: KnowledgeInput): Promise<Result>;
+  remove(id: string): Promise<Result>;
+}
+
 export interface Repositories {
   media: MediaRepository;
+  knowledge: KnowledgeRepository;
   inbox: InboxRepository;
   posts: PostsRepository;
   workspace: WorkspaceRepository;

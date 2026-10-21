@@ -6,7 +6,7 @@ export const integration = (o: Partial<WorkerIntegration> = {}): WorkerIntegrati
 });
 
 export const post = (o: Partial<WorkerPost> = {}): WorkerPost => ({
-  id: 'post-1', orgId: 'org-1', integrationId: 'int-1', content: 'Bonjour', media: [], settings: {}, createdBy: 'user-1', ...o,
+  id: 'post-1', orgId: 'org-1', integrationId: 'int-1', content: 'Bonjour', media: [], settings: {}, createdBy: 'user-1', releaseId: null, firstComment: null, ...o,
 });
 
 export const conversation = (o: Partial<WorkerConversation> = {}): WorkerConversation => ({
@@ -24,6 +24,8 @@ export function fakeDb(o: Partial<{ [K in keyof WorkerDb]: WorkerDb[K] }> = {}) 
     getChildren: vi.fn(async () => []),
     markPublished: vi.fn(async () => {}),
     markPostFailed: vi.fn(async () => {}),
+    completeFirstComment: vi.fn(async () => {}),
+    failFirstComment: vi.fn(async () => {}),
     getConversation: vi.fn(async () => conversation()),
     completeMessage: vi.fn(async () => {}),
     failMessage: vi.fn(async () => {}),

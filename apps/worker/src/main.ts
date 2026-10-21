@@ -26,7 +26,7 @@ async function main() {
 
   while (!stopping) {
     try {
-      await tick({ supabase, db, providers }, { posts: cfg.postBatch, messages: cfg.messageBatch }, log);
+      await tick({ supabase, db, providers }, { posts: cfg.postBatch, messages: cfg.messageBatch, comments: cfg.commentBatch }, log);
     } catch (e) {
       log('passage en échec', (e as Error).message);
     }

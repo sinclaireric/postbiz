@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { deletePostAction } from '@/app/app/(shell)/calendrier/actions';
+import { deletePostAction, retryFirstCommentAction } from '@/app/app/(shell)/calendrier/actions';
 import { Modal } from '@/components/app/modal';
 import { NetworkDot, NetworkLabel } from '@/components/app/network-dot';
 import { Badge, Button } from '@/components/ui';
@@ -13,7 +13,7 @@ import {
   HOURS, addDays, dayKey, defaultTimeForDay, groupPosts, isPastSlot, monthGrid, rangeLabel, sameDay, shiftAnchor, slotKey, slotStart,
   toLocalInputValue, weekDays, type CalendarView as View,
 } from '@/lib/calendar/logic';
-import type { IntegrationItem, PostItem, PostState } from '@/lib/data/types';
+import type { FirstCommentState, IntegrationItem, KnowledgeItem, PostItem, PostState } from '@/lib/data/types';
 import { ChannelsPanel } from './channels-panel';
 import { Composer } from './composer';
 
@@ -31,6 +31,11 @@ const CHIP: Record<PostState, string> = {
   published: 'border-ok/30 bg-ok-soft text-ok',
   error: 'border-warn/50 bg-warn-soft text-warn',
   unknown: 'border-warn/50 bg-warn-soft text-warn',
+};
+const COMMENT_TONE: Record<FirstCommentState, 'neutral' | 'ok' | 'warn' | 'lime'> = { pending: 'neutral', posting: 'lime', posted: 'ok', failed: 'warn', unknown: 'warn' };
+const COMMENT_KEY: Record<FirstCommentState, MessageKey> = {
+  pending: 'app.calendar.commentState.pending', posting: 'app.calendar.commentState.posting', posted: 'app.calendar.commentState.posted',
+  failed: 'app.calendar.commentState.failed', unknown: 'app.calendar.commentState.unknown',
 };
 const DELETABLE: PostState[] = ['draft', 'queued', 'error', 'unknown'];
 const HATCH = 'bg-[repeating-linear-gradient(135deg,transparent_0_6px,rgba(17,17,16,0.045)_6px_7px)]';
@@ -74,7 +79,7 @@ const Chevron = ({ dir }: { dir: 'left' | 'right' }) => (
   <svg className="rtl:rotate-180" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d={dir === 'left' ? 'm10 3-5 5 5 5' : 'm6 3 5 5-5 5'} stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" /></svg>
 );
 
-export function CalendarView({ posts, integrations, canWrite }: { posts: PostItem[]; integrations: IntegrationItem[]; canWrite: boolean }) {
+export function CalendarView({ posts, integrations, knowledge, aiEnabled, canWrite }: { posts: PostItem[]; integrations: IntegrationItem[]; knowledge: KnowledgeItem[]; aiEnabled: boolean; canWrite: boolean }) {
   const t = useT();
   // Les dates dépendent du fuseau du navigateur : on les calcule après le montage pour éviter tout décalage serveur/client.
   const [now, setNow] = useState<Date | null>(null);
@@ -189,8 +194,8 @@ export function CalendarView({ posts, integrations, canWrite }: { posts: PostIte
       </section>
 
       {composer !== null && (
-        <Modal title={t('app.composer.title')} onClose={() => setComposer(null)} width="max-w-2xl">
-          <Composer integrations={integrations} canWrite={canWrite} initialLocal={composer} embedded onSaved={() => setComposer(null)} />
+        <Modal title={t('app.composer.title')} onClose={() => setComposer(null)} width="max-w-6xl" header={false}>
+          <Composer integrations={integrations} knowledge={knowledge} aiEnabled={aiEnabled} canWrite={canWrite} initialLocal={composer} onSaved={() => setComposer(null)} onClose={() => setComposer(null)} />
         </Modal>
       )}
       {detail && <PostDialog post={detail} canWrite={canWrite} onClose={() => setDetail(null)} />}
@@ -330,6 +335,22 @@ function PostDialog({ post, canWrite, onClose }: { post: PostItem; canWrite: boo
       {post.publishAt && <p className="mt-2 text-sm text-muted">{formatDateTime(t.locale, post.publishAt)}</p>}
       <p className="mt-4 max-h-64 overflow-y-auto whitespace-pre-wrap rounded-2xl bg-paper p-4 text-[15px] leading-relaxed">{post.content || <span className="text-subtle">{t('app.calendar.noText')}</span>}</p>
       {post.error && <p role="alert" className="mt-3 rounded-xl bg-warn-soft px-4 py-3 text-sm text-warn">{post.error}</p>}
+      {post.firstComment && post.firstCommentState && (
+        <div className="mt-4">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <h3 className="text-xs font-bold tracking-wide text-muted uppercase">{t('app.calendar.firstComment')}</h3>
+            <Badge tone={COMMENT_TONE[post.firstCommentState]}>{t(COMMENT_KEY[post.firstCommentState])}</Badge>
+          </div>
+          <p className="mt-2 max-h-40 overflow-y-auto whitespace-pre-wrap rounded-2xl bg-paper p-3.5 text-[14px] leading-relaxed">{post.firstComment}</p>
+          {post.firstCommentError && <p role="alert" className="mt-2 rounded-xl bg-warn-soft px-4 py-2.5 text-sm text-warn">{post.firstCommentError}</p>}
+          {canWrite && post.firstCommentState === 'failed' && (
+            <form action={async (fd) => { await retryFirstCommentAction(fd); onClose(); }} className="mt-2.5">
+              <input type="hidden" name="postId" value={post.id} />
+              <Button type="submit" variant="secondary" size="sm">{t('app.calendar.retryComment')}</Button>
+            </form>
+          )}
+        </div>
+      )}
       <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
         {post.releaseUrl ? <a href={post.releaseUrl} target="_blank" rel="noopener noreferrer" className="text-sm font-semibold underline underline-offset-4">{t('app.calendar.viewPost')}</a> : <span />}
         {canWrite && DELETABLE.includes(post.state) && (

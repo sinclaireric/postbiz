@@ -5,7 +5,7 @@ import { redirect } from 'next/navigation';
 import { getT } from '@/i18n/server';
 import { getRepositories, getSession } from '@/lib/data';
 import { errorText } from '@/lib/form-error';
-import { validatePost, type PostMode } from '@/lib/posts/logic';
+import { supportsFirstComment, validatePost, type PostMode } from '@/lib/posts/logic';
 
 export interface PostFormState {
   errors?: string[];
@@ -24,6 +24,7 @@ export async function createPostAction(_: PostFormState, formData: FormData): Pr
   const ids = formData.getAll('integrationId').map(String);
   const publishAtRaw = String(formData.get('publishAt') ?? '');
   const publishAt = publishAtRaw ? publishAtRaw : null;
+  const firstComment = String(formData.get('firstComment') ?? '').replace(/\r\n/g, '\n').trim();
 
   const repos = await getRepositories(ctx);
   const integrations = await repos.workspace.integrations();
@@ -33,11 +34,12 @@ export async function createPostAction(_: PostFormState, formData: FormData): Pr
     return { errors: [t('app.composer.errReconnect', { names: inactive.map((i) => i.name).join(', ') })] };
   }
 
-  const errors = validatePost({ content, networkIds: chosen.map((i) => i.networkId), publishAt, mode });
+  const errors = validatePost({ content, networkIds: chosen.map((i) => i.networkId), publishAt, mode, firstComment });
   if (errors.length > 0) return { errors: errors.map((e) => errorText(t, e)) };
 
   const res = await repos.posts.create({
-    integrationIds: chosen.map((i) => i.id),
+    // Le premier commentaire part avec les canaux qui savent le publier ; les autres reçoivent la publication seule.
+    targets: chosen.map((i) => ({ integrationId: i.id, firstComment: firstComment && supportsFirstComment(i.networkId) ? firstComment : null })),
     content,
     publishAt: publishAt ? new Date(publishAt).toISOString() : null,
     mode,
@@ -52,5 +54,14 @@ export async function deletePostAction(formData: FormData): Promise<void> {
   if (session.status !== 'ready' || session.ctx.org.role === 'viewer') return;
   const repos = await getRepositories(session.ctx);
   await repos.posts.remove(String(formData.get('groupId') ?? ''));
+  revalidatePath('/app/calendrier');
+}
+
+/** « Réessayer » sous un premier commentaire refusé par le réseau : il repart en file, le worker le republie. */
+export async function retryFirstCommentAction(formData: FormData): Promise<void> {
+  const session = await getSession();
+  if (session.status !== 'ready' || session.ctx.org.role === 'viewer') return;
+  const repos = await getRepositories(session.ctx);
+  await repos.posts.retryFirstComment(String(formData.get('postId') ?? ''));
   revalidatePath('/app/calendrier');
 }

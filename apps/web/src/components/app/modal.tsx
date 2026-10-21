@@ -13,8 +13,8 @@ const FOCUSABLE = 'a[href], button:not([disabled]), textarea, input, select, [ta
  * Toujours montée après une action de l'utilisateur, jamais au rendu serveur.
  */
 export function Modal({
-  title, onClose, children, width = 'max-w-xl', closeOnBackdrop = true,
-}: { title: string; onClose: () => void; children: ReactNode; width?: string; closeOnBackdrop?: boolean }) {
+  title, onClose, children, width = 'max-w-xl', closeOnBackdrop = true, actions, header = true,
+}: { title: string; onClose: () => void; children: ReactNode; width?: string; closeOnBackdrop?: boolean; actions?: ReactNode; header?: boolean }) {
   const t = useT();
   const ref = useRef<HTMLDivElement>(null);
   const onCloseRef = useRef(onClose);
@@ -51,13 +51,18 @@ export function Modal({
   return createPortal(
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/50 p-4 backdrop-blur-[2px]" onMouseDown={(e) => { if (closeOnBackdrop && e.target === e.currentTarget) onClose(); }}>
       <div ref={ref} role="dialog" aria-modal="true" aria-label={title} tabIndex={-1} className={`max-h-[92dvh] w-full ${width} overflow-y-auto rounded-3xl border border-line bg-surface p-6 shadow-[0_30px_80px_-20px_rgba(0,0,0,0.45)] outline-none`}>
-        <div className="flex items-start justify-between gap-4">
-          <h2 className="text-lg font-semibold">{title}</h2>
-          <button type="button" onClick={onClose} aria-label={t('app.modal.close')} className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-muted hover:bg-wash hover:text-ink">
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="m2 2 10 10M12 2 2 12" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" /></svg>
-          </button>
-        </div>
-        <div className="mt-4">{children}</div>
+        {header && (
+          <div className="flex items-start justify-between gap-4">
+            <h2 className="text-lg font-semibold">{title}</h2>
+            <div className="flex shrink-0 items-center gap-2">
+              {actions}
+              <button type="button" onClick={onClose} aria-label={t('app.modal.close')} className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-muted hover:bg-wash hover:text-ink">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="m2 2 10 10M12 2 2 12" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" /></svg>
+              </button>
+            </div>
+          </div>
+        )}
+        <div className={header ? 'mt-4' : ''}>{children}</div>
       </div>
     </div>,
     document.body,

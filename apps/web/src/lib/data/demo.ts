@@ -3,7 +3,7 @@ import type {
   ConversationDetail, ConversationStatus, ConversationSummary, InboxRepository, MessageItem, NetworkId, NoteItem,
 } from '@/lib/inbox/types';
 import type {
-  AppContext, CreatePostInput, IntegrationItem, MemberItem, NotificationItem, PostItem, PostsRepository, Repositories, Result, WorkspaceRepository,
+  AppContext, CreatePostInput, IntegrationItem, KnowledgeInput, KnowledgeItem, KnowledgeRepository, MemberItem, NotificationItem, PostItem, PostsRepository, Repositories, Result, WorkspaceRepository,
 } from './types';
 
 // Mode démo : données d'exemple en mémoire, partagées par tous les visiteurs du serveur de développement.
@@ -27,6 +27,7 @@ interface Store {
   integrations: IntegrationItem[];
   members: MemberItem[];
   posts: PostItem[];
+  knowledge: KnowledgeItem[];
   orgName: string;
   seq: number;
 }
@@ -106,9 +107,10 @@ function seed(): Store {
     { id: 'i3', networkId: 'youtube', name: 'Maison Lune TV', username: null, pictureUrl: null, status: 'refresh_needed' },
   ];
 
-  const post = (n: number, networkId: NetworkId, accountName: string, content: string, hours: number, state: PostItem['state'], error: string | null = null): PostItem => ({
+  const post = (n: number, networkId: NetworkId, accountName: string, content: string, hours: number, state: PostItem['state'], error: string | null = null, comment: Pick<PostItem, 'firstComment' | 'firstCommentState' | 'firstCommentError'> | null = null): PostItem => ({
     id: `p${n}`, groupId: `g${n}`, networkId, accountName, content,
     publishAt: new Date(T0 + hours * H).toISOString(), state, error, releaseUrl: state === 'published' ? 'https://example.com/post' : null,
+    firstComment: comment?.firstComment ?? null, firstCommentState: comment?.firstCommentState ?? null, firstCommentError: comment?.firstCommentError ?? null,
   });
 
   return {
@@ -124,11 +126,17 @@ function seed(): Store {
       { userId: 'u4', name: 'Léo', role: 'viewer' },
     ],
     posts: [
-      post(1, 'facebook', 'Maison Lune', 'Nouvelle collection d’automne : les premières pièces arrivent demain 🍂', -20, 'published'),
-      post(2, 'facebook', 'Maison Lune', 'Atelier ouvert ce samedi, venez découvrir le savoir-faire.', 20, 'queued'),
+      post(1, 'facebook', 'Maison Lune', 'Nouvelle collection d’automne : les premières pièces arrivent demain 🍂', -20, 'published', null, { firstComment: 'Dites-nous en commentaire laquelle vous préférez 👇', firstCommentState: 'posted', firstCommentError: null }),
+      post(2, 'facebook', 'Maison Lune', 'Atelier ouvert ce samedi, venez découvrir le savoir-faire.', 20, 'queued', null, { firstComment: 'Adresse et horaires : 12 rue des Tanneurs, 10 h – 17 h.', firstCommentState: 'pending', firstCommentError: null }),
       post(3, 'instagram', 'maison.lune', 'Coulisses de l’atelier — épisode 3', 28, 'queued'),
       post(4, 'youtube', 'Maison Lune TV', 'Finition à l’huile : le guide complet', 52, 'draft'),
       post(5, 'facebook', 'Maison Lune', 'Rappel : -10 % jusqu’à dimanche.', -3, 'error', 'Le jeton d’accès a expiré : reconnectez le canal.'),
+      post(6, 'linkedin', 'Camille Moreau', 'Trois gestes de l’atelier qui font la durée d’un meuble.', -30, 'published', null, { firstComment: 'Le guide complet est sur notre site (lien en bio).', firstCommentState: 'failed', firstCommentError: 'LinkedIn a refusé le commentaire : accès insuffisant.' }),
+    ],
+    knowledge: [
+      { id: 'k1', title: 'Ton de la marque', updatedAt: ago(30 * H), content: 'Maison Lune est un atelier de mobilier en bois massif, à Lyon. Nous tutoyons nos clients, avec un ton chaleureux et simple. Jamais de jargon ni de promesses exagérées. Nous parlons de matière, de geste et de durée.' },
+      { id: 'k2', title: 'Offres en cours', updatedAt: ago(8 * H), content: 'Livraison offerte dès 60 € d’achat en France. -10 % sur la collection d’automne jusqu’à dimanche. Reprise gratuite de l’ancien meuble pour tout achat d’une table.' },
+      { id: 'k3', title: 'Questions fréquentes', updatedAt: ago(2 * H), content: 'Délai de fabrication : 3 à 4 semaines. Finitions : huile naturelle ou cire. Garantie 5 ans. Atelier ouvert au public le samedi de 10 h à 17 h.' },
     ],
   };
 }
@@ -184,12 +192,13 @@ const posts: PostsRepository = {
   async create(input: CreatePostInput): Promise<Result> {
     const s = store();
     const groupId = id('g');
-    for (const iid of input.integrationIds) {
-      const integ = s.integrations.find((i) => i.id === iid);
+    for (const target of input.targets) {
+      const integ = s.integrations.find((i) => i.id === target.integrationId);
       if (!integ) return { ok: false, error: { key: 'app.errors.channelNotFound' } };
       s.posts.push({
         id: id('p'), groupId, networkId: integ.networkId, accountName: integ.name, content: input.content.trim(),
         publishAt: input.publishAt, state: input.mode === 'schedule' ? 'queued' : 'draft', error: null, releaseUrl: null,
+        firstComment: target.firstComment, firstCommentState: target.firstComment ? 'pending' : null, firstCommentError: null,
       });
     }
     return { ok: true };
@@ -197,6 +206,13 @@ const posts: PostsRepository = {
   async remove(groupId) {
     const s = store();
     s.posts = s.posts.filter((p) => !(p.groupId === groupId && (p.state === 'draft' || p.state === 'queued' || p.state === 'error')));
+    return { ok: true };
+  },
+  async retryFirstComment(postId) {
+    const p = store().posts.find((x) => x.id === postId);
+    if (!p || p.state !== 'published' || p.firstCommentState !== 'failed') return { ok: false, error: { key: 'app.errors.generic' } };
+    p.firstCommentState = 'pending';
+    p.firstCommentError = null;
     return { ok: true };
   },
 };
@@ -219,5 +235,26 @@ export function demoConnectChannel(networkId: NetworkId, name: string): Result {
 
 const media = { async list() { return []; } };
 
-export const demoRepositories: Repositories = { inbox, posts, workspace, media };
+const knowledge: KnowledgeRepository = {
+  async list() {
+    return [...store().knowledge].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+  },
+  async create(input: KnowledgeInput): Promise<Result> {
+    store().knowledge.push({ id: id('k'), title: input.title.trim(), content: input.content.trim(), updatedAt: new Date().toISOString() });
+    return { ok: true };
+  },
+  async update(itemId, input) {
+    const item = store().knowledge.find((k) => k.id === itemId);
+    if (!item) return { ok: false, error: { key: 'app.knowledge.errSave' } };
+    Object.assign(item, { title: input.title.trim(), content: input.content.trim(), updatedAt: new Date().toISOString() });
+    return { ok: true };
+  },
+  async remove(itemId) {
+    const s = store();
+    s.knowledge = s.knowledge.filter((k) => k.id !== itemId);
+    return { ok: true };
+  },
+};
+
+export const demoRepositories: Repositories = { inbox, posts, workspace, media, knowledge };
 export const demoOrgName = () => store().orgName;

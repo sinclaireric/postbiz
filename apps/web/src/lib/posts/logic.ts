@@ -1,6 +1,7 @@
 import type { FormError } from '@/lib/form-error';
 import type { NetworkId } from '@/lib/inbox/types';
 import { networkName } from '@/lib/networks';
+import { countLength } from '@/lib/text/length';
 
 export interface NetworkRule {
   /** Longueur maximale du texte (approximative : les réseaux comptent différemment liens et émojis). */
@@ -18,6 +19,18 @@ export const NETWORK_RULES: Record<NetworkId, NetworkRule> = {
   youtube: { maxLength: 5_000, requiresMedia: true },
 };
 
+/**
+ * Réseaux où le worker sait publier un premier commentaire (sous la publication, juste après), et la longueur maximale d'un commentaire
+ * (approximative, comme celle des publications). Sur X c'est une réponse à sa propre publication. Instagram, TikTok et YouTube
+ * n'ont pas de publication par l'application pour l'instant : pas de premier commentaire non plus.
+ */
+export const FIRST_COMMENT_RULES: Partial<Record<NetworkId, { maxLength: number }>> = {
+  facebook: { maxLength: 8_000 },
+  linkedin: { maxLength: 1_250 },
+  x: { maxLength: 280 },
+};
+export const supportsFirstComment = (id: NetworkId) => id in FIRST_COMMENT_RULES;
+
 export type PostMode = 'draft' | 'schedule';
 
 export interface PostInput {
@@ -27,6 +40,8 @@ export interface PostInput {
   publishAt: string | null;
   mode: PostMode;
   hasMedia?: boolean;
+  /** Premier commentaire, publié sous la publication sur les réseaux qui le permettent. */
+  firstComment?: string;
   now?: Date;
 }
 
@@ -60,7 +75,19 @@ export function validatePost(input: PostInput): FormError[] {
 
   for (const id of networks) {
     const max = NETWORK_RULES[id].maxLength;
-    if (text.length > max) errors.push({ key: 'app.validation.tooLong', params: { network: networkName(id), length: text.length, max } });
+    const length = countLength(id, text);
+    if (length > max) errors.push({ key: 'app.validation.tooLong', params: { network: networkName(id), length, max } });
+  }
+
+  const comment = (input.firstComment ?? '').trim();
+  if (comment) {
+    const supported = networks.filter(supportsFirstComment);
+    if (supported.length === 0) errors.push({ key: 'app.validation.firstCommentUnsupported' });
+    for (const id of supported) {
+      const max = FIRST_COMMENT_RULES[id]!.maxLength;
+      const length = countLength(id, comment);
+      if (length > max) errors.push({ key: 'app.validation.firstCommentTooLong', params: { network: networkName(id), length, max } });
+    }
   }
   return errors;
 }

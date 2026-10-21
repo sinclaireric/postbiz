@@ -19,6 +19,9 @@ export interface WorkerPost {
   media: unknown[];
   settings: Record<string, unknown>;
   createdBy: string | null;
+  /** Identifiant de la publication chez le réseau, une fois publiée. */
+  releaseId: string | null;
+  firstComment: string | null;
 }
 
 export interface WorkerMessage {
@@ -49,6 +52,8 @@ export interface WorkerDb {
   getChildren(postId: string): Promise<WorkerPost[]>;
   markPublished(postId: string, r: { releaseId: string; releaseUrl: string | null }): Promise<void>;
   markPostFailed(postId: string, state: 'error' | 'unknown', message: string): Promise<void>;
+  completeFirstComment(postId: string, commentId: string): Promise<void>;
+  failFirstComment(postId: string, state: 'failed' | 'unknown', message: string): Promise<void>;
 
   // messages sortants
   getConversation(id: string): Promise<WorkerConversation | null>;
@@ -92,7 +97,7 @@ export function createSupabaseWorkerDb(supabase: SupabaseClient, decrypt: (enc: 
     async getChildren(postId) {
       const { data, error } = await supabase.from('posts').select('id, org_id, integration_id, content, media, settings, created_by').eq('parent_post_id', postId).is('deleted_at', null).order('position', { ascending: true });
       check(error, 'lecture du fil');
-      return (data ?? []).map((p: Row) => ({ id: p.id, orgId: p.org_id, integrationId: p.integration_id, content: p.content, media: p.media ?? [], settings: p.settings ?? {}, createdBy: p.created_by }));
+      return (data ?? []).map((p: Row) => ({ id: p.id, orgId: p.org_id, integrationId: p.integration_id, content: p.content, media: p.media ?? [], settings: p.settings ?? {}, createdBy: p.created_by, releaseId: null, firstComment: null }));
     },
 
     async markPublished(postId, r) {
@@ -104,6 +109,17 @@ export function createSupabaseWorkerDb(supabase: SupabaseClient, decrypt: (enc: 
     async markPostFailed(postId, state, message) {
       const { error } = await supabase.from('posts').update({ state, error: message.slice(0, 1000), locked_until: null }).eq('id', postId).eq('state', 'publishing');
       check(error, 'enregistrement de l’échec');
+    },
+
+    async completeFirstComment(postId, commentId) {
+      // Condition sur l'état : on ne conclut que pour un commentaire réellement « en cours » (jamais un commentaire déjà balayé).
+      const { error } = await supabase.from('posts').update({ first_comment_state: 'posted', first_comment_id: commentId, first_comment_error: null, locked_until: null }).eq('id', postId).eq('first_comment_state', 'posting');
+      check(error, 'enregistrement du commentaire');
+    },
+
+    async failFirstComment(postId, state, message) {
+      const { error } = await supabase.from('posts').update({ first_comment_state: state, first_comment_error: message.slice(0, 1000), locked_until: null }).eq('id', postId).eq('first_comment_state', 'posting');
+      check(error, 'enregistrement de l’échec du commentaire');
     },
 
     async getConversation(id) {

@@ -14,6 +14,9 @@ export const dryRunProvider = (id: string): SocialProvider => ({
   async publish({ posts }): Promise<PublishResult[]> {
     return posts.map((p) => ({ releaseId: `dry-run-${p.id}`, releaseUrl: null }));
   },
+  async comment({ releaseId }) {
+    return { commentId: `dry-run-comment-${releaseId}` };
+  },
 });
 
 export type ProviderRegistry = (networkId: string) => SocialProvider | null;

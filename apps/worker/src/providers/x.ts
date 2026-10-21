@@ -27,4 +27,20 @@ export const createXProvider = (fetchImpl: Fetch = fetch, env: Env = process.env
     if (!id) throw new OutcomeUnknownError('X n’a pas renvoyé d’identifiant de publication. Vérifiez sur le compte avant de republier.');
     return [{ releaseId: id, releaseUrl: `https://x.com/i/web/status/${id}` }];
   },
+  // Sur X, le « premier commentaire » est une réponse à sa propre publication.
+  async comment({ accessToken, releaseId, text }) {
+    const res = await mutate(
+      fetchImpl,
+      'https://api.x.com/2/tweets',
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${accessToken}` },
+        body: JSON.stringify({ text, reply: { in_reply_to_tweet_id: releaseId } }),
+      },
+      { provider: 'X', subject: 'comment' }
+    );
+    const id = res.json?.data?.id as string | undefined;
+    if (!id) throw new OutcomeUnknownError('X n’a pas renvoyé d’identifiant de réponse. Vérifiez sous la publication avant de recommenter.');
+    return { commentId: id };
+  },
 });

@@ -4,8 +4,9 @@ import { replyWindow, validateReply } from '@/lib/inbox/logic';
 import type {
   ConversationDetail, ConversationStatus, ConversationSummary, InboxRepository, MessageItem, NetworkId, NoteItem,
 } from '@/lib/inbox/types';
+import { KNOWLEDGE_LIMITS } from './types';
 import type {
-  AppContext, CreatePostInput, IntegrationItem, MediaItem, MemberItem, NotificationItem, OrgRole, PostItem, PostsRepository, Repositories, Result, WorkspaceRepository,
+  AppContext, CreatePostInput, IntegrationItem, KnowledgeInput, KnowledgeItem, KnowledgeRepository, MediaItem, MemberItem, NotificationItem, OrgRole, PostItem, PostsRepository, Repositories, Result, WorkspaceRepository,
 } from './types';
 
 // Implémentation Supabase. Toutes les requêtes passent par la clé « anon » + la session de l'utilisateur :
@@ -116,7 +117,7 @@ export function createSupabaseRepositories(supabase: SupabaseClient, ctx: AppCon
     async list() {
       const { data, error } = await supabase
         .from('posts')
-        .select('id, group_id, content, publish_at, state, error, release_url, integrations(provider, name)')
+        .select('id, group_id, content, publish_at, state, error, release_url, first_comment, first_comment_state, first_comment_error, integrations(provider, name)')
         .eq('org_id', ctx.org.id)
         .is('deleted_at', null)
         .is('parent_post_id', null)
@@ -128,15 +129,17 @@ export function createSupabaseRepositories(supabase: SupabaseClient, ctx: AppCon
         return {
           id: p.id, groupId: p.group_id, networkId: (integ?.provider ?? 'facebook') as NetworkId, accountName: integ?.name ?? '',
           content: p.content, publishAt: p.publish_at, state: p.state, error: p.error ?? null, releaseUrl: p.release_url ?? null,
+          firstComment: p.first_comment ?? null, firstCommentState: p.first_comment_state ?? null, firstCommentError: p.first_comment_error ?? null,
         };
       });
     },
 
     async create(input: CreatePostInput) {
       const groupId = crypto.randomUUID();
-      const rows = input.integrationIds.map((integration_id) => ({
-        org_id: ctx.org.id, integration_id, group_id: groupId, content: input.content.trim(),
+      const rows = input.targets.map((target) => ({
+        org_id: ctx.org.id, integration_id: target.integrationId, group_id: groupId, content: input.content.trim(),
         publish_at: input.publishAt, state: input.mode === 'schedule' ? 'queued' : 'draft', created_by: ctx.user.id,
+        first_comment: target.firstComment,
       }));
       const { error } = await supabase.from('posts').insert(rows);
       return error ? fail(GENERIC_ERROR) : { ok: true };
@@ -150,6 +153,11 @@ export function createSupabaseRepositories(supabase: SupabaseClient, ctx: AppCon
         .eq('org_id', ctx.org.id)
         .in('state', ['draft', 'queued', 'error', 'unknown']);
       return error ? fail(GENERIC_ERROR) : { ok: true };
+    },
+
+    async retryFirstComment(postId) {
+      const { data, error } = await supabase.rpc('retry_first_comment', { p_post_id: postId });
+      return error || data !== true ? fail(GENERIC_ERROR) : { ok: true };
     },
   };
 
@@ -210,5 +218,40 @@ export function createSupabaseRepositories(supabase: SupabaseClient, ctx: AppCon
     },
   };
 
-  return { inbox, posts, workspace, media };
+  const knowledge: KnowledgeRepository = {
+    async list() {
+      const { data } = await supabase
+        .from('knowledge_items')
+        .select('id, title, content, updated_at')
+        .eq('org_id', ctx.org.id)
+        .order('updated_at', { ascending: false })
+        .limit(KNOWLEDGE_LIMITS.items);
+      return (data ?? []).map((k: Row): KnowledgeItem => ({ id: k.id, title: k.title, content: k.content, updatedAt: k.updated_at }));
+    },
+
+    async create(input: KnowledgeInput) {
+      const { error } = await supabase.from('knowledge_items').insert({
+        org_id: ctx.org.id, title: input.title.trim(), content: input.content.trim(), created_by: ctx.user.id,
+      });
+      if (error?.message?.includes('knowledge_items_limit')) return fail({ key: 'app.knowledge.errLimit', params: { max: KNOWLEDGE_LIMITS.items } });
+      return error ? fail({ key: 'app.knowledge.errSave' }) : { ok: true };
+    },
+
+    async update(id, input) {
+      const { data, error } = await supabase
+        .from('knowledge_items')
+        .update({ title: input.title.trim(), content: input.content.trim() })
+        .eq('id', id)
+        .eq('org_id', ctx.org.id)
+        .select('id');
+      return error || !data?.length ? fail({ key: 'app.knowledge.errSave' }) : { ok: true };
+    },
+
+    async remove(id) {
+      const { error } = await supabase.from('knowledge_items').delete().eq('id', id).eq('org_id', ctx.org.id);
+      return error ? fail({ key: 'app.knowledge.errSave' }) : { ok: true };
+    },
+  };
+
+  return { inbox, posts, workspace, media, knowledge };
 }

@@ -25,4 +25,19 @@ export const createFacebookProvider = (fetchImpl: Fetch = fetch): SocialProvider
     if (!id) throw new OutcomeUnknownError('Facebook n’a pas renvoyé d’identifiant de publication. Vérifiez sur la Page avant de republier.');
     return [{ releaseId: id, releaseUrl: `https://www.facebook.com/${id}` }];
   },
+  async comment({ accessToken, releaseId, text }) {
+    const res = await mutate(
+      fetchImpl,
+      `https://graph.facebook.com/${VERSION}/${releaseId}/comments`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${accessToken}` },
+        body: JSON.stringify({ message: text }),
+      },
+      { provider: 'Facebook', subject: 'comment' }
+    );
+    const id = res.json?.id as string | undefined;
+    if (!id) throw new OutcomeUnknownError('Facebook n’a pas renvoyé d’identifiant de commentaire. Vérifiez sous la publication avant de recommenter.');
+    return { commentId: id };
+  },
 });
