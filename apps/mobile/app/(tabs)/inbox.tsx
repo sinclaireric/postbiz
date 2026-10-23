@@ -2,14 +2,16 @@ import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { memo, useCallback, useMemo, useState } from "react";
+import Animated, { FadeInDown } from "react-native-reanimated";
 import { ActivityIndicator, FlatList, Pressable, RefreshControl, Text, TextInput, View } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { ChannelPicker } from "@/components/home/channel-picker";
+import { haptic } from "@/lib/haptics";
 import { HeaderActions } from "@/components/home/header-actions";
 import { ChannelAvatar } from "@/components/ui/channel-avatar";
 import { EmptyState, IconPill, OutlineButton, SegmentedPill, Sheet } from "@/components/ui/kit";
-import { MainTabNavbar, TAB_BAR_HEIGHT } from "@/components/ui/main-tab-navbar";
+import { TAB_BAR_HEIGHT } from "@/components/ui/main-tab-navbar";
 import { showToast } from "@/components/ui/toast";
 import { filterConversations, formatRelative, replyWindow, sortConversations } from "@/lib/inbox/logic";
 import type { ConversationSummary } from "@/lib/inbox/types";
@@ -29,19 +31,19 @@ const Row = memo(function Row({ c, now, onPress, avatar }: { c: ConversationSumm
       <ChannelAvatar avatar={avatar} network={c.networkId} name={c.contactName} size={46} />
       <View className="min-w-0 flex-1 gap-[2px]">
         <View className="flex-row items-center justify-between gap-2">
-          <Text numberOfLines={1} className={`flex-1 font-jakarta text-[16px] text-ink ${unread ? "font-bold" : "font-semibold"}`}>{c.contactName}</Text>
-          <Text className="font-jakarta text-[12px] text-ink-muted">{formatRelative(c.lastMessageAt, now)}</Text>
+          <Text numberOfLines={1} className={`flex-1 font-jakarta text-[14.5px] text-ink ${unread ? "font-bold" : "font-semibold"}`}>{c.contactName}</Text>
+          <Text className="font-jakarta text-[11px] text-ink-muted">{formatRelative(c.lastMessageAt, now)}</Text>
         </View>
-        <Text numberOfLines={2} className={`font-jakarta text-[14px] leading-[20px] ${unread ? "text-ink" : "text-ink-soft"}`}>{c.lastMessagePreview || "—"}</Text>
+        <Text numberOfLines={2} className={`font-jakarta text-[12.5px] leading-[18px] ${unread ? "text-ink" : "text-ink-soft"}`}>{c.lastMessagePreview || "—"}</Text>
         <View className="flex-row items-center gap-2 pt-[2px]">
-          <Text numberOfLines={1} className="shrink font-jakarta text-[12px] text-ink-muted">{c.accountName}</Text>
-          {c.status !== "closed" && window.state === "urgent" ? <Text className="font-jakarta text-[12px] font-semibold text-[#B45309]">{window.label}</Text> : null}
-          {c.status !== "closed" && window.state === "expired" ? <Text className="font-jakarta text-[12px] font-semibold text-text-critical">Fenêtre expirée</Text> : null}
+          <Text numberOfLines={1} className="shrink font-jakarta text-[11px] text-ink-muted">{c.accountName}</Text>
+          {c.status !== "closed" && window.state === "urgent" ? <Text className="font-jakarta text-[11px] font-semibold text-[#B45309]">{window.label}</Text> : null}
+          {c.status !== "closed" && window.state === "expired" ? <Text className="font-jakarta text-[11px] font-semibold text-text-critical">Fenêtre expirée</Text> : null}
         </View>
       </View>
       {unread ? (
         <View className="min-w-[22px] items-center rounded-full bg-brand px-[7px] py-[2px]">
-          <Text className="font-jakarta text-[12px] font-bold text-ink">{c.unreadCount}</Text>
+          <Text className="font-jakarta text-[11px] font-bold text-ink">{c.unreadCount}</Text>
         </View>
       ) : null}
     </Pressable>
@@ -119,10 +121,10 @@ export default function CommunityScreen() {
 
       <View className="flex-row items-center justify-between px-4 pb-3 pt-2">
         <View className="flex-row items-center gap-3">
-          <Text className="font-jakarta text-[32px] font-semibold text-ink">Messages</Text>
+          <Text className="font-jakarta text-[27px] font-semibold text-ink">Messages</Text>
           {unreadTotal > 0 ? (
             <View className="h-[34px] min-w-[34px] items-center justify-center rounded-full bg-brand px-2">
-              <Text className="font-jakarta text-[15px] font-bold text-ink">{unreadTotal > 99 ? "99+" : unreadTotal}</Text>
+              <Text className="font-jakarta text-[13.5px] font-bold text-ink">{unreadTotal > 99 ? "99+" : unreadTotal}</Text>
             </View>
           ) : null}
         </View>
@@ -143,7 +145,7 @@ export default function CommunityScreen() {
       {searching ? (
         <View className="mx-4 mb-3 h-[48px] flex-row items-center gap-2 rounded-full bg-card px-4">
           <Ionicons name="search" size={18} color="#9A9890" />
-          <TextInput className="flex-1 font-jakarta text-[16px] text-ink" placeholder="Contact ou message" placeholderTextColor="#9A9890" value={query} onChangeText={setQuery} autoFocus autoCorrect={false} />
+          <TextInput className="flex-1 font-jakarta text-[14.5px] text-ink" placeholder="Contact ou message" placeholderTextColor="#9A9890" value={query} onChangeText={setQuery} autoFocus autoCorrect={false} />
         </View>
       ) : null}
 
@@ -158,7 +160,11 @@ export default function CommunityScreen() {
           keyExtractor={(c) => c.id}
           contentContainerStyle={{ paddingHorizontal: 16, gap: 10, paddingBottom: TAB_BAR_HEIGHT + Math.max(insets.bottom, 8) + 72 }}
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor="#2F4A00" />}
-          renderItem={({ item }) => <Row c={item} now={now} avatar={avatarFor(item)} onPress={() => router.push(`/conversation/${item.id}` as never)} />}
+          renderItem={({ item, index }) => (
+            <Animated.View entering={FadeInDown.duration(350).delay(Math.min(index, 8) * 40)}>
+              <Row c={item} now={now} avatar={avatarFor(item)} onPress={() => router.push(`/conversation/${item.id}` as never)} />
+            </Animated.View>
+          )}
           ListEmptyComponent={
             <EmptyState
               icon={kind === "comment_thread" ? "chatbubble-outline" : "mail-outline"}
@@ -181,8 +187,6 @@ export default function CommunityScreen() {
         />
       </View>
 
-      <MainTabNavbar activeTab="community" />
-
       <Sheet visible={filterOpen} onClose={() => setFilterOpen(false)} title="Filtrer">
         <View className="overflow-hidden rounded-[22px] bg-card">
           {(
@@ -192,10 +196,10 @@ export default function CommunityScreen() {
               ["closed", "Résolues", "Conversations fermées"],
             ] as [View_, string, string][]
           ).map(([id, label, hint], i) => (
-            <Pressable key={id} onPress={() => { setView(id); setFilterOpen(false); }} className={`flex-row items-center gap-3 px-5 py-4 ${i > 0 ? "border-t border-line" : ""}`}>
+            <Pressable key={id} onPress={() => { haptic.select(); setView(id); setFilterOpen(false); }} className={`flex-row items-center gap-3 px-5 py-4 ${i > 0 ? "border-t border-line" : ""}`}>
               <View className="flex-1">
-                <Text className="font-jakarta text-[17px] text-ink">{label}</Text>
-                <Text className="font-jakarta text-[13px] text-ink-soft">{hint}</Text>
+                <Text className="font-jakarta text-[15px] text-ink">{label}</Text>
+                <Text className="font-jakarta text-[12px] text-ink-soft">{hint}</Text>
               </View>
               {view === id ? <Ionicons name="checkmark" size={22} color="#2F4A00" /> : null}
             </Pressable>
@@ -205,7 +209,7 @@ export default function CommunityScreen() {
 
       <Sheet visible={resolveOpen} onClose={() => setResolveOpen(false)} title="Résoudre">
         <View className="gap-3 pb-2">
-          <Text className="font-jakarta text-[15px] leading-[22px] text-ink-soft">
+          <Text className="font-jakarta text-[13.5px] leading-[19.5px] text-ink-soft">
             Choisissez quelles conversations {kind === "comment_thread" ? "de commentaires" : "privées"}
             {channelName ? ` de ${channelName}` : ""} marquer comme résolues.
           </Text>

@@ -7,15 +7,17 @@ import { StatusBar } from "expo-status-bar";
 import * as WebBrowser from "expo-web-browser";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Pressable, RefreshControl, SectionList, Text, View } from "react-native";
+import Animated, { FadeIn, FadeInDown } from "react-native-reanimated";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { ChannelPicker } from "@/components/home/channel-picker";
+import { haptic } from "@/lib/haptics";
 import { DateJumpSheet } from "@/components/home/date-jump-sheet";
 import { HeaderActions } from "@/components/home/header-actions";
 import { PostCard } from "@/components/home/post-card";
 import { WeekStrip } from "@/components/home/week-strip";
 import { ConfirmSheet, EmptyState, IconCircle, Pill, SegmentedPill, Sheet } from "@/components/ui/kit";
-import { MainTabNavbar, TAB_BAR_HEIGHT } from "@/components/ui/main-tab-navbar";
+import { TAB_BAR_HEIGHT } from "@/components/ui/main-tab-navbar";
 import { showToast } from "@/components/ui/toast";
 import { useChannelsStore } from "@/store/channels-store";
 import { useOrgStore } from "@/store/org-store";
@@ -159,7 +161,7 @@ export default function PublishScreen() {
       <StatusBar style="dark" />
 
       <View className="flex-row items-center justify-between px-4 pb-3 pt-2">
-        <Text className="font-jakarta text-[32px] font-semibold text-ink">Publier</Text>
+        <Text className="font-jakarta text-[27px] font-semibold text-ink">Publier</Text>
         <HeaderActions />
       </View>
 
@@ -167,7 +169,7 @@ export default function PublishScreen() {
         <ChannelPicker channels={channels} value={activeChannel} onChange={setChannelId} compact={calendarMode} />
         {calendarMode ? (
           <Pill onPress={() => setJumpOpen(true)}>
-            <Text className="font-jakarta text-[16px] font-medium capitalize text-ink">{monthLabel}</Text>
+            <Text className="font-jakarta text-[14.5px] font-medium capitalize text-ink">{monthLabel}</Text>
             <Ionicons name="swap-vertical" size={16} color="#141414" />
           </Pill>
         ) : null}
@@ -188,14 +190,20 @@ export default function PublishScreen() {
         contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: bottomSpace }}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor="#2F4A00" />}
         renderSectionHeader={({ section }) => (
-          <Text className="pb-3 pt-4 font-jakarta text-[20px] font-semibold text-ink">{capFirst(section.title)}</Text>
+          <Text className="pb-3 pt-4 font-jakarta text-[17px] font-semibold text-ink">{capFirst(section.title)}</Text>
         )}
-        renderItem={({ item }) => (
-          <View className="pb-3">
+        renderItem={({ item, index }) => (
+          <Animated.View entering={FadeInDown.duration(380).delay(Math.min(index, 8) * 45)} style={{ paddingBottom: 12 }}>
             <PostCard post={item} onPress={() => router.push(`/post/${item.id}` as never)} onMenu={setMenuPost} />
-          </View>
+          </Animated.View>
         )}
-        ListEmptyComponent={loaded ? <EmptyState {...empty} /> : undefined}
+        ListEmptyComponent={
+          loaded ? (
+            <Animated.View entering={FadeIn.duration(350)}>
+              <EmptyState {...empty} />
+            </Animated.View>
+          ) : undefined
+        }
         showsVerticalScrollIndicator={false}
       />
 
@@ -213,8 +221,6 @@ export default function PublishScreen() {
           />
         </View>
       )}
-
-      <MainTabNavbar activeTab="publish" />
 
       <DateJumpSheet visible={jumpOpen} onClose={() => setJumpOpen(false)} selectedDate={selectedDate} onSelect={(d) => setSelectedDate(startOfDay(d))} hasPosts={hasPosts} />
 
@@ -240,13 +246,14 @@ export default function PublishScreen() {
               <Pressable
                 key={row.label}
                 onPress={() => {
+                  haptic.tap();
                   setMenuPost(null);
                   setTimeout(() => void row.run(), 250);
                 }}
                 className={`flex-row items-center gap-4 px-5 py-4 ${i > 0 ? "border-t border-line" : ""}`}
               >
                 <Ionicons name={row.icon} size={22} color={row.danger ? "#D92D20" : "#141414"} />
-                <Text className={`font-jakarta text-[17px] ${row.danger ? "text-text-critical" : "text-ink"}`}>{row.label}</Text>
+                <Text className={`font-jakarta text-[15px] ${row.danger ? "text-text-critical" : "text-ink"}`}>{row.label}</Text>
               </Pressable>
             ))}
           </View>

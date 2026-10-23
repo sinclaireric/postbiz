@@ -35,16 +35,16 @@ export default function EnableNotificationsScreen() {
         <View className="h-[96px] w-[96px] items-center justify-center rounded-full bg-brand-soft">
           <Ionicons name="notifications" size={44} color="#2F4A00" />
         </View>
-        <Text className="text-center font-jakarta text-[28px] font-semibold text-ink">Restez informé(e)</Text>
-        <Text className="text-center font-jakarta text-[17px] leading-[25px] text-ink">
+        <Text className="text-center font-jakarta text-[24px] font-semibold text-ink">Restez informé(e)</Text>
+        <Text className="text-center font-jakarta text-[15px] leading-[22px] text-ink">
           Nous pouvons vous prévenir quand un client vous écrit, quand une publication part ou quand elle échoue.
         </Text>
-        <Text className="text-center font-jakarta text-[15px] leading-[22px] text-ink-soft">Vous pourrez désactiver les notifications à tout moment dans les paramètres.</Text>
+        <Text className="text-center font-jakarta text-[13.5px] leading-[19.5px] text-ink-soft">Vous pourrez désactiver les notifications à tout moment dans les paramètres.</Text>
       </View>
       <View className="gap-2 px-6 pb-4">
         <PrimaryButton label="Activer les notifications" onPress={enable} loading={busy} />
         <Pressable className="h-[52px] items-center justify-center" onPress={done}>
-          <Text className="font-jakarta text-[17px] font-medium text-brand-ink">Ignorer</Text>
+          <Text className="font-jakarta text-[15px] font-medium text-brand-ink">Ignorer</Text>
         </Pressable>
       </View>
     </SafeAreaView>

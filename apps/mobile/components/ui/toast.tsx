@@ -10,6 +10,8 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 
+import { haptic } from "@/lib/haptics";
+
 type ToastType = "success" | "error" | "info";
 
 type ToastState = {
@@ -33,6 +35,8 @@ let globalShowToast: ((message: string, type?: ToastType) => void) | null =
   null;
 
 export function showToast(message: string, type: ToastType = "success") {
+  if (type === "success") haptic.success();
+  else if (type === "error") haptic.error();
   globalShowToast?.(message, type);
 }
 

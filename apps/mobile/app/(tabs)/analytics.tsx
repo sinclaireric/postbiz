@@ -5,14 +5,16 @@ import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ActivityIndicator, Pressable, RefreshControl, ScrollView, Text, View } from "react-native";
+import Animated, { FadeInDown } from "react-native-reanimated";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { ChannelPicker } from "@/components/home/channel-picker";
+import { haptic } from "@/lib/haptics";
 import { HeaderActions } from "@/components/home/header-actions";
 import { PostCard } from "@/components/home/post-card";
 import { LineChart, type ChartPoint } from "@/components/ui/line-chart";
 import { Pill } from "@/components/ui/kit";
-import { MainTabNavbar, TAB_BAR_HEIGHT } from "@/components/ui/main-tab-navbar";
+import { TAB_BAR_HEIGHT } from "@/components/ui/main-tab-navbar";
 import { Popover, useAnchor } from "@/components/ui/popover";
 import { DEMO } from "@/lib/demo";
 import { supabase } from "@/lib/supabase";
@@ -47,21 +49,23 @@ function Delta({ now, before }: { now: number; before: number | null }) {
   return (
     <View className="flex-row items-center gap-1">
       <Ionicons name={diff === 0 ? "remove" : up ? "trending-up" : "trending-down"} size={15} color={diff === 0 ? "#9A9890" : up ? "#0A7A3B" : "#B42318"} />
-      <Text className="font-jakarta text-[13px] font-semibold" style={{ color: diff === 0 ? "#9A9890" : up ? "#0A7A3B" : "#B42318" }}>
+      <Text className="font-jakarta text-[12px] font-semibold" style={{ color: diff === 0 ? "#9A9890" : up ? "#0A7A3B" : "#B42318" }}>
         {diff === 0 ? "=" : `${up ? "+" : ""}${pct === null ? diff : `${pct} %`}`}
       </Text>
-      <Text className="font-jakarta text-[12px] text-ink-muted">vs période préc.</Text>
+      <Text className="font-jakarta text-[11px] text-ink-muted">vs période préc.</Text>
     </View>
   );
 }
 
-function Kpi({ label, value, before, tint }: { label: string; value: number; before?: number | null; tint?: string }) {
+function Kpi({ label, value, before, tint, index = 0 }: { label: string; value: number; before?: number | null; tint?: string; index?: number }) {
   return (
-    <View className="min-w-[46%] flex-1 gap-1 rounded-[22px] border border-line bg-card p-4">
-      <Text className="font-jakarta text-[15px] font-semibold text-ink">{label}</Text>
-      <Text className="font-jakarta text-[34px] font-semibold" style={{ color: tint ?? "#141414" }}>{value}</Text>
-      {before !== undefined ? <Delta now={value} before={before} /> : <View className="h-[19px]" />}
-    </View>
+    <Animated.View entering={FadeInDown.duration(420).delay(index * 60)} style={{ minWidth: "46%", flex: 1 }}>
+      <View className="gap-1 rounded-[22px] border border-line bg-card p-4">
+        <Text className="font-jakarta text-[13.5px] font-semibold text-ink">{label}</Text>
+        <Text className="font-jakarta text-[29px] font-semibold" style={{ color: tint ?? "#141414" }}>{value}</Text>
+        {before !== undefined ? <Delta now={value} before={before} /> : <View className="h-[19px]" />}
+      </View>
+    </Animated.View>
   );
 }
 
@@ -178,7 +182,7 @@ export default function InsightsScreen() {
       <StatusBar style="dark" />
 
       <View className="flex-row items-center justify-between px-4 pb-3 pt-2">
-        <Text numberOfLines={1} className="mr-3 flex-1 font-jakarta text-[32px] font-semibold text-ink">{channel ? channel.name : "Insights"}</Text>
+        <Text numberOfLines={1} className="mr-3 flex-1 font-jakarta text-[27px] font-semibold text-ink">{channel ? channel.name : "Insights"}</Text>
         <HeaderActions />
       </View>
 
@@ -187,7 +191,7 @@ export default function InsightsScreen() {
         <View ref={periodMenu.ref} collapsable={false}>
           <Pill onPress={periodMenu.open}>
             <Ionicons name="calendar-outline" size={18} color="#141414" />
-            <Text className="font-jakarta text-[15px] font-medium text-ink">{days} j</Text>
+            <Text className="font-jakarta text-[13.5px] font-medium text-ink">{days} j</Text>
             <Ionicons name="chevron-down" size={16} color="#141414" />
           </Pill>
         </View>
@@ -199,74 +203,72 @@ export default function InsightsScreen() {
         showsVerticalScrollIndicator={false}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor="#2F4A00" />}
       >
-        <Text className="font-jakarta text-[13px] text-ink-soft">{period.label}</Text>
+        <Text className="font-jakarta text-[12px] text-ink-soft">{period.label}</Text>
 
-        <View className="gap-3">
-          <Text className="font-jakarta text-[22px] font-semibold text-ink">Points clés</Text>
+        <Animated.View entering={FadeInDown.duration(450).delay(150)} style={{ gap: 12 }}>
+          <Text className="font-jakarta text-[19px] font-semibold text-ink">Points clés</Text>
           <View className="gap-3 rounded-[22px] border border-line bg-card p-4">
             <View className="flex-row items-center gap-2">
               <Ionicons name="sparkles" size={18} color="#2F4A00" />
-              <Text className="flex-1 font-jakarta text-[17px] font-semibold text-ink">{insight.title}</Text>
+              <Text className="flex-1 font-jakarta text-[15px] font-semibold text-ink">{insight.title}</Text>
             </View>
-            <Text className="font-jakarta text-[15px] leading-[22px] text-ink-soft">{insight.text}</Text>
+            <Text className="font-jakarta text-[13.5px] leading-[19.5px] text-ink-soft">{insight.text}</Text>
             <Pressable onPress={insight.go} className="h-[44px] items-center justify-center self-start rounded-full bg-brand px-5">
-              <Text className="font-jakarta text-[15px] font-semibold text-ink">{insight.cta}</Text>
+              <Text className="font-jakarta text-[13.5px] font-semibold text-ink">{insight.cta}</Text>
             </Pressable>
           </View>
-        </View>
+        </Animated.View>
 
         <View className="gap-3">
-          <Text className="font-jakarta text-[22px] font-semibold text-ink">Résumé</Text>
+          <Text className="font-jakarta text-[19px] font-semibold text-ink">Résumé</Text>
           <View className="flex-row flex-wrap gap-3">
-            <Kpi label="Publications" value={stats.publishedNow} before={stats.publishedPrev} />
-            <Kpi label="À venir" value={stats.upcoming} />
-            <Kpi label="Messages reçus" value={stats.receivedNow} before={messages === null ? undefined : stats.receivedPrev} />
-            <Kpi label="Réponses envoyées" value={stats.repliesNow} before={messages === null ? undefined : stats.repliesPrev} />
-            <Kpi label="Brouillons" value={stats.drafts} />
-            <Kpi label="Échecs" value={stats.failed} tint={stats.failed > 0 ? "#B42318" : undefined} />
+            <Kpi label="Publications" value={stats.publishedNow} before={stats.publishedPrev}  index={0} />
+            <Kpi label="À venir" value={stats.upcoming}  index={1} />
+            <Kpi label="Messages reçus" value={stats.receivedNow} before={messages === null ? undefined : stats.receivedPrev}  index={2} />
+            <Kpi label="Réponses envoyées" value={stats.repliesNow} before={messages === null ? undefined : stats.repliesPrev}  index={3} />
+            <Kpi label="Brouillons" value={stats.drafts}  index={4} />
+            <Kpi label="Échecs" value={stats.failed} tint={stats.failed > 0 ? "#B42318" : undefined} index={5} />
           </View>
         </View>
 
-        <View className="gap-3">
-          <Text className="font-jakarta text-[22px] font-semibold text-ink">Publications récentes</Text>
+        <Animated.View entering={FadeInDown.duration(450).delay(350)} style={{ gap: 12 }}>
+          <Text className="font-jakarta text-[19px] font-semibold text-ink">Publications récentes</Text>
           {stats.recent.length === 0 ? (
-            <Text className="font-jakarta text-[15px] text-ink-soft">Aucune publication envoyée sur cette période.</Text>
+            <Text className="font-jakarta text-[13.5px] text-ink-soft">Aucune publication envoyée sur cette période.</Text>
           ) : (
             stats.recent.map((p) => <PostCard key={p.id} post={p} onPress={() => router.push(`/post/${p.id}` as never)} onMenu={() => router.push(`/post/${p.id}` as never)} />)
           )}
-        </View>
+        </Animated.View>
 
-        <View className="gap-3">
+        <Animated.View entering={FadeInDown.duration(450).delay(450)} style={{ gap: 12 }}>
           <View>
-            <Text className="font-jakarta text-[22px] font-semibold text-ink">Métriques</Text>
-            <Text className="font-jakarta text-[13px] text-ink-soft">
+            <Text className="font-jakarta text-[19px] font-semibold text-ink">Métriques</Text>
+            <Text className="font-jakarta text-[12px] text-ink-soft">
               {format(addDays(new Date(), -(days - 1)), "d MMM", { locale: fr })} – {format(new Date(), "d MMM", { locale: fr })}
             </Text>
           </View>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8 }}>
             {METRICS.map((m) => (
-              <Pressable key={m.id} onPress={() => setMetric(m.id)} className={`h-[44px] flex-row items-center gap-2 rounded-full border px-4 ${metric === m.id ? "border-brand bg-brand" : "border-line bg-card"}`}>
+              <Pressable key={m.id} onPress={() => { haptic.select(); setMetric(m.id); }} className={`h-[44px] flex-row items-center gap-2 rounded-full border px-4 ${metric === m.id ? "border-brand bg-brand" : "border-line bg-card"}`}>
                 <Ionicons name={m.icon} size={18} color="#141414" />
-                <Text className="font-jakarta text-[15px] font-medium text-ink">{m.label}</Text>
+                <Text className="font-jakarta text-[13.5px] font-medium text-ink">{m.label}</Text>
               </Pressable>
             ))}
           </ScrollView>
           <View className="rounded-[22px] border border-line bg-card p-4">
             {messages === null && metric !== "published" ? <ActivityIndicator color="#2F4A00" /> : <LineChart points={stats.chart[metric]} />}
           </View>
-        </View>
+        </Animated.View>
 
-        <Text className="font-jakarta text-[12px] leading-[18px] text-ink-muted">
+        <Text className="font-jakarta text-[11px] leading-[16px] text-ink-muted">
           Ces chiffres viennent de Postbiz. Les statistiques d’audience des réseaux (abonnés, impressions, réactions) arriveront plus tard.
         </Text>
       </ScrollView>
 
-      <MainTabNavbar activeTab="insights" />
-
       <Popover anchor={periodMenu.anchor} onClose={periodMenu.close} width={230}>
         {PERIODS.map((p, i) => (
-          <Pressable key={p.days} onPress={() => { setDays(p.days); periodMenu.close(); }} className={`flex-row items-center justify-between px-5 py-4 ${i > 0 ? "border-t border-line" : ""}`}>
-            <Text className="font-jakarta text-[16px] text-ink">{p.label}</Text>
+          <Pressable key={p.days} onPress={() => { haptic.select(); setDays(p.days); periodMenu.close(); }} className={`flex-row items-center justify-between px-5 py-4 ${i > 0 ? "border-t border-line" : ""}`}>
+            <Text className="font-jakarta text-[14.5px] text-ink">{p.label}</Text>
             {days === p.days ? <Ionicons name="checkmark" size={20} color="#2F4A00" /> : null}
           </Pressable>
         ))}

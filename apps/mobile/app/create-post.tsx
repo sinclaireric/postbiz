@@ -8,12 +8,18 @@ import { BackHandler, KeyboardAvoidingView, Platform, Pressable, ScrollView, Tex
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useEffect } from "react";
 
+import { MediaPickerSheet } from "@/components/media/media-picker-sheet";
+import { haptic } from "@/lib/haptics";
+import { MediaThumb } from "@/components/media/media-thumb";
 import { PostPreview } from "@/components/post-preview/post-preview";
 import { ChannelAvatar } from "@/components/ui/channel-avatar";
 import { DateTimeSheet } from "@/components/ui/datetime-sheet";
-import { IconCircle, OutlineButton, PrimaryButton, Sheet } from "@/components/ui/kit";
+import { Appear, IconCircle, OutlineButton, PrimaryButton, Sheet } from "@/components/ui/kit";
 import { showToast } from "@/components/ui/toast";
 import { NETWORK_LIMITS } from "@/lib/agent";
+import { mediaByIds, type MediaItem } from "@/lib/media";
+import { validateMedia } from "@/lib/media-rules";
+import { useOrgStore } from "@/store/org-store";
 import { formatNetworkLabel } from "@/lib/networks";
 import { useChannelsStore } from "@/store/channels-store";
 import { usePostsStore, type SaveAction } from "@/store/posts-store";
@@ -40,6 +46,8 @@ export default function CreatePostScreen() {
     if (params.channelId) return [params.channelId];
     return channels.length > 0 && channels.length <= 3 ? channels.map((c) => c.id) : [];
   });
+  const [attached, setAttached] = useState<MediaItem[]>([]);
+  const [mediaSheet, setMediaSheet] = useState(false);
   const selectionTouched = useRef(false);
   const [overrides, setOverrides] = useState<Record<string, string>>({});
   const [publishAt, setPublishAt] = useState<Date>(() => (initialEdit ? new Date(initialEdit.scheduledAt) : params.dateTime ? new Date(params.dateTime) : nextHour()));
@@ -56,7 +64,7 @@ export default function CreatePostScreen() {
 
   const selectedChannels = useMemo(() => channels.filter((c) => selected.includes(c.id)), [channels, selected]);
   const editing = !!editId;
-  const hasContent = blocks.some((b) => b.trim()) || Object.values(overrides).some((o) => o.trim());
+  const hasContent = blocks.some((b) => b.trim()) || Object.values(overrides).some((o) => o.trim()) || attached.length > 0;
 
   const threadFor = (c: Channel) => (overrides[c.id] !== undefined ? [overrides[c.id]] : blocks).map((t) => t.trim()).filter(Boolean);
   const limitOf = (c: Channel) => NETWORK_LIMITS[c.network] ?? Infinity;
@@ -64,8 +72,12 @@ export default function CreatePostScreen() {
 
   const problems: string[] = [];
   if (selectedChannels.length === 0) problems.push("Choisissez au moins un canal.");
-  if (selectedChannels.length > 0 && selectedChannels.some((c) => threadFor(c).length === 0)) problems.push("Écrivez un texte.");
+  if (selectedChannels.length > 0 && attached.length === 0 && selectedChannels.some((c) => threadFor(c).length === 0)) problems.push("Écrivez un texte ou ajoutez un média.");
   for (const c of selectedChannels) if (lengthOf(c) > limitOf(c)) problems.push(`${formatNetworkLabel(c.network)} : ${lengthOf(c)} / ${limitOf(c)} caractères.`);
+  // Médias : mêmes règles que sur le web (formats, nombre, mélange), pour ne pas programmer ce que le réseau refuserait à l'heure dite.
+  // Elles ne bloquent pas un brouillon (on peut ajouter le média plus tard).
+  const mediaProblems = selectedChannels.flatMap((c) => validateMedia(c.network, formatNetworkLabel(c.network), attached));
+  const scheduleProblems = [...new Set([...problems, ...mediaProblems])];
   const inPast = publishAt.getTime() < Date.now() + 60_000;
 
   const requestClose = () => {
@@ -83,6 +95,14 @@ export default function CreatePostScreen() {
 
   const touch = () => setDirty(true);
 
+  // Modification d'une publication : on retrouve ses médias (taille, type) pour les contrôles de format.
+  const orgId = useOrgStore((st) => st.current?.id);
+  useEffect(() => {
+    if (!initialEdit?.media?.length || !orgId) return;
+    void mediaByIds(orgId, initialEdit.media.map((m) => m.id)).then(setAttached);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [orgId]);
+
   // Les canaux peuvent arriver après l'ouverture de l'écran : tant que rien n'a été choisi, on propose tous les canaux (jusqu'à 3).
   useEffect(() => {
     if (selectionTouched.current || initialEdit || params.channelId) return;
@@ -90,8 +110,9 @@ export default function CreatePostScreen() {
   }, [channels.length]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const submit = async (action: SaveAction) => {
-    if (problems.length > 0) {
-      showToast(problems[0], "error");
+    const blocking = action === "draft" ? problems : scheduleProblems;
+    if (blocking.length > 0) {
+      showToast(blocking[0], "error");
       return;
     }
     if (action === "calendar" && inPast) {
@@ -100,7 +121,13 @@ export default function CreatePostScreen() {
     }
     setSaving(true);
     const items = selectedChannels.map((c) => ({ channelId: c.id, thread: threadFor(c) }));
-    const result = await usePostsStore.getState().savePosts({ action, publishAt, items: editId ? [items[0]] : items, editPostId: editId });
+    const result = await usePostsStore.getState().savePosts({
+      action,
+      publishAt,
+      items: editId ? [items[0]] : items,
+      editPostId: editId,
+      media: attached.map((m) => ({ id: m.id, kind: m.kind, alt: m.alt })),
+    });
     setSaving(false);
     if (!result.ok) {
       showToast(result.error, "error");
@@ -122,6 +149,8 @@ export default function CreatePostScreen() {
     setOverrides({});
     setPublishAt(new Date(p.scheduledAt));
     setDraftsSheet(false);
+    setAttached([]);
+    if (p.media?.length && orgId) void mediaByIds(orgId, p.media.map((m) => m.id)).then(setAttached);
   };
 
   const removePost = async () => {
@@ -143,7 +172,7 @@ export default function CreatePostScreen() {
       <KeyboardAvoidingView className="flex-1" behavior={Platform.OS === "ios" ? "padding" : undefined}>
         <View className="h-[64px] flex-row items-center justify-between gap-3 px-4">
           <IconCircle icon="close" label="Fermer" onPress={requestClose} />
-          <Text numberOfLines={1} className="flex-1 text-center font-jakarta text-[18px] font-semibold text-ink">
+          <Text numberOfLines={1} className="flex-1 text-center font-jakarta text-[16px] font-semibold text-ink">
             {editing ? "Modifier le post" : "Nouveau post"}
           </Text>
           <IconCircle icon="ellipsis-vertical" label="Plus d’actions" onPress={() => setMenuSheet(true)} />
@@ -169,24 +198,24 @@ export default function CreatePostScreen() {
                 <Ionicons name="add" size={26} color="#141414" />
               </Pressable>
             )}
-            {selectedChannels.length === 0 ? <Text className="font-jakarta text-[14px] text-ink-soft">Choisissez où publier</Text> : null}
+            {selectedChannels.length === 0 ? <Text className="font-jakarta text-[12.5px] text-ink-soft">Choisissez où publier</Text> : null}
           </ScrollView>
 
           <View className="mx-4 flex-row rounded-full bg-chip-bg p-[4px]">
             {(["write", "preview"] as const).map((t) => (
-              <Pressable key={t} onPress={() => setTab(t)} className={`h-[38px] flex-1 items-center justify-center rounded-full ${tab === t ? "bg-card" : ""}`}>
-                <Text className={`font-jakarta text-[15px] ${tab === t ? "font-semibold text-ink" : "text-ink-soft"}`}>{t === "write" ? "Rédaction" : "Aperçu"}</Text>
+              <Pressable key={t} onPress={() => { if (t !== tab) haptic.select(); setTab(t); }} className={`h-[38px] flex-1 items-center justify-center rounded-full ${tab === t ? "bg-card" : ""}`}>
+                <Text className={`font-jakarta text-[13.5px] ${tab === t ? "font-semibold text-ink" : "text-ink-soft"}`}>{t === "write" ? "Rédaction" : "Aperçu"}</Text>
               </Pressable>
             ))}
           </View>
 
           {tab === "write" ? (
-            <>
+            <Appear key="write" style={{ gap: 16 }}>
               <View className="gap-3 px-4">
                 {blocks.map((b, i) => (
                   <View key={i} className="rounded-[22px] border border-line bg-card p-4">
                     <TextInput
-                      className="min-h-[110px] font-jakarta text-[18px] leading-[26px] text-ink"
+                      className="min-h-[110px] font-jakarta text-[16px] leading-[23px] text-ink"
                       style={{ textAlignVertical: "top" }}
                       placeholder={i === 0 ? "Commencez à écrire…" : "Suite du fil…"}
                       placeholderTextColor="#9A9890"
@@ -201,30 +230,48 @@ export default function CreatePostScreen() {
                     />
                     {blocks.length > 1 ? (
                       <Pressable hitSlop={8} className="self-end pt-1" onPress={() => { setBlocks((cur) => cur.filter((_, j) => j !== i)); touch(); }}>
-                        <Text className="font-jakarta text-[13px] font-semibold text-text-critical">Retirer ce message</Text>
+                        <Text className="font-jakarta text-[12px] font-semibold text-text-critical">Retirer ce message</Text>
                       </Pressable>
                     ) : null}
                   </View>
                 ))}
                 <Pressable hitSlop={6} className="flex-row items-center gap-2 self-start py-1" onPress={() => { setBlocks((cur) => [...cur, ""]); touch(); }}>
                   <Ionicons name="add-circle-outline" size={20} color="#2F4A00" />
-                  <Text className="font-jakarta text-[14px] font-semibold text-brand-ink">Ajouter un message au fil</Text>
+                  <Text className="font-jakarta text-[12.5px] font-semibold text-brand-ink">Ajouter un message au fil</Text>
                 </Pressable>
               </View>
 
+              {attached.length > 0 ? (
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 16, paddingVertical: 4, gap: 10 }}>
+                  {attached.map((m) => (
+                    <View key={m.id}>
+                      <MediaThumb uri={m.thumbUrl ?? (m.kind === "image" ? m.url : null)} kind={m.kind} size={88} radius={16} />
+                      <Pressable
+                        accessibilityLabel={`Retirer ${m.name}`}
+                        hitSlop={8}
+                        onPress={() => { haptic.tap(); setAttached((cur) => cur.filter((x) => x.id !== m.id)); touch(); }}
+                        className="absolute -right-1 -top-1 h-[26px] w-[26px] items-center justify-center rounded-full bg-ink"
+                      >
+                        <Ionicons name="close" size={15} color="#FFFFFF" />
+                      </Pressable>
+                    </View>
+                  ))}
+                </ScrollView>
+              ) : null}
+
               <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 16, gap: 8 }}>
-                <Pressable onPress={() => showToast("L’envoi d’images et de vidéos arrive bientôt.", "info")} className="h-[48px] flex-row items-center gap-2 rounded-full bg-chip-bg px-5">
+                <Pressable onPress={() => setMediaSheet(true)} className="h-[48px] flex-row items-center gap-2 rounded-full bg-chip-bg px-5">
                   <Ionicons name="attach" size={20} color="#141414" />
-                  <Text className="font-jakarta text-[15px] font-medium text-ink">Joindre une photo ou vidéo</Text>
+                  <Text className="font-jakarta text-[13.5px] font-medium text-ink">{attached.length > 0 ? `Médias (${attached.length})` : "Joindre une photo ou vidéo"}</Text>
                 </Pressable>
                 <Pressable onPress={() => router.replace("/(tabs)/agent" as never)} className="h-[48px] flex-row items-center gap-2 rounded-full bg-chip-bg px-5">
                   <Ionicons name="sparkles-outline" size={19} color="#141414" />
-                  <Text className="font-jakarta text-[15px] font-medium text-ink">Écrire avec l’agent</Text>
+                  <Text className="font-jakarta text-[13.5px] font-medium text-ink">Écrire avec l’agent</Text>
                 </Pressable>
                 {drafts.length > 0 ? (
                   <Pressable onPress={() => setDraftsSheet(true)} className="h-[48px] flex-row items-center gap-2 rounded-full bg-chip-bg px-5">
                     <Ionicons name="folder-open-outline" size={20} color="#141414" />
-                    <Text className="font-jakarta text-[15px] font-medium text-ink">Ouvrir un brouillon</Text>
+                    <Text className="font-jakarta text-[13.5px] font-medium text-ink">Ouvrir un brouillon</Text>
                   </Pressable>
                 ) : null}
               </ScrollView>
@@ -238,10 +285,10 @@ export default function CreatePostScreen() {
                       <View className="flex-row items-center gap-3">
                         <ChannelAvatar avatar={c.avatar} network={c.network} name={c.name} size={36} />
                         <View className="min-w-0 flex-1">
-                          <Text numberOfLines={1} className="font-jakarta text-[15px] font-semibold text-ink">{c.name}</Text>
-                          <Text className="font-jakarta text-[12px] text-ink-soft">{formatNetworkLabel(c.network)}</Text>
+                          <Text numberOfLines={1} className="font-jakarta text-[13.5px] font-semibold text-ink">{c.name}</Text>
+                          <Text className="font-jakarta text-[11px] text-ink-soft">{formatNetworkLabel(c.network)}</Text>
                         </View>
-                        <Text className={`font-jakarta text-[13px] font-semibold ${over ? "text-text-critical" : "text-ink-soft"}`}>
+                        <Text className={`font-jakarta text-[12px] font-semibold ${over ? "text-text-critical" : "text-ink-soft"}`}>
                           {lengthOf(c)}
                           {Number.isFinite(limitOf(c)) ? ` / ${limitOf(c)}` : ""}
                         </Text>
@@ -249,53 +296,55 @@ export default function CreatePostScreen() {
                       {custom ? (
                         <View className="mt-3 gap-2">
                           <TextInput
-                            className="min-h-[80px] rounded-[16px] border border-line bg-canvas p-3 font-jakarta text-[16px] leading-[22px] text-ink"
+                            className="min-h-[80px] rounded-[16px] border border-line bg-canvas p-3 font-jakarta text-[14.5px] leading-[19.5px] text-ink"
                             style={{ textAlignVertical: "top" }}
                             multiline
                             value={overrides[c.id]}
                             onChangeText={(t) => { setOverrides((cur) => ({ ...cur, [c.id]: t })); touch(); }}
                           />
                           <Pressable hitSlop={8} onPress={() => setOverrides((cur) => { const n = { ...cur }; delete n[c.id]; return n; })}>
-                            <Text className="font-jakarta text-[13px] font-semibold text-brand-ink">Revenir au texte commun</Text>
+                            <Text className="font-jakarta text-[12px] font-semibold text-brand-ink">Revenir au texte commun</Text>
                           </Pressable>
                         </View>
                       ) : blocks.length === 1 ? (
                         <Pressable hitSlop={8} className="mt-3" onPress={() => { setOverrides((cur) => ({ ...cur, [c.id]: blocks[0] })); touch(); }}>
-                          <Text className="font-jakarta text-[14px] font-semibold text-brand-ink">Personnaliser le texte pour {formatNetworkLabel(c.network)}</Text>
+                          <Text className="font-jakarta text-[12.5px] font-semibold text-brand-ink">Personnaliser le texte pour {formatNetworkLabel(c.network)}</Text>
                         </Pressable>
                       ) : null}
                     </View>
                   );
                 })}
               </View>
-            </>
+            </Appear>
           ) : (
-            <View className="gap-5 px-4">
-              {selectedChannels.length === 0 ? <Text className="font-jakarta text-[15px] text-ink-soft">Choisissez un canal pour voir l’aperçu.</Text> : null}
+            <Appear key="preview" style={{ gap: 20, paddingHorizontal: 16 }}>
+              {selectedChannels.length === 0 ? <Text className="font-jakarta text-[13.5px] text-ink-soft">Choisissez un canal pour voir l’aperçu.</Text> : null}
               {selectedChannels.map((c) => (
-                <PostPreview key={c.id} network={c.network} name={c.name} username={c.username} avatar={c.avatar || undefined} thread={threadFor(c).length ? threadFor(c) : [""]} date={publishAt.toISOString()} />
+                <PostPreview key={c.id} network={c.network} name={c.name} username={c.username} avatar={c.avatar || undefined} thread={threadFor(c).length ? threadFor(c) : [""]} date={publishAt.toISOString()} media={attached.map((m) => ({ kind: m.kind, uri: m.thumbUrl ?? (m.kind === "image" ? m.url : null) }))} />
               ))}
-              <Text className="font-jakarta text-[12px] text-ink-muted">Aperçu indicatif : l’affichage réel dépend du réseau et de l’appareil.</Text>
-            </View>
+              <Text className="font-jakarta text-[11px] text-ink-muted">Aperçu indicatif : l’affichage réel dépend du réseau et de l’appareil.</Text>
+            </Appear>
           )}
         </ScrollView>
       </KeyboardAvoidingView>
 
+      <MediaPickerSheet visible={mediaSheet} onClose={() => setMediaSheet(false)} initial={attached} onConfirm={(items) => { setAttached(items); setMediaSheet(false); touch(); }} />
+
       <Sheet visible={channelSheet} onClose={() => setChannelSheet(false)} title="Choisir les canaux" right={<IconCircle icon="checkmark" label="Terminé" onPress={() => setChannelSheet(false)} active />}>
         <View className="mb-2 flex-row">
           <Pressable className="h-[40px] items-center justify-center rounded-full bg-chip-bg px-4" onPress={() => { selectionTouched.current = true; setSelected(selected.length === channels.length ? [] : channels.map((c) => c.id)); }}>
-            <Text className="font-jakarta text-[14px] font-medium text-ink">{selected.length === channels.length ? "Désélectionner tous les canaux" : "Sélectionner tous les canaux"}</Text>
+            <Text className="font-jakarta text-[12.5px] font-medium text-ink">{selected.length === channels.length ? "Désélectionner tous les canaux" : "Sélectionner tous les canaux"}</Text>
           </Pressable>
         </View>
         <View className="overflow-hidden rounded-[22px] bg-card">
           {channels.map((c, i) => {
             const on = selected.includes(c.id);
             return (
-              <Pressable key={c.id} onPress={() => { selectionTouched.current = true; setSelected((cur) => (on ? cur.filter((x) => x !== c.id) : [...cur, c.id])); touch(); }} className={`flex-row items-center gap-3 px-4 py-3 ${i > 0 ? "border-t border-line" : ""}`}>
+              <Pressable key={c.id} onPress={() => { haptic.select(); selectionTouched.current = true; setSelected((cur) => (on ? cur.filter((x) => x !== c.id) : [...cur, c.id])); touch(); }} className={`flex-row items-center gap-3 px-4 py-3 ${i > 0 ? "border-t border-line" : ""}`}>
                 <ChannelAvatar avatar={c.avatar} network={c.network} name={c.name} size={44} />
                 <View className="min-w-0 flex-1">
-                  <Text numberOfLines={1} className="font-jakarta text-[16px] font-medium text-ink">{c.name}</Text>
-                  <Text className="font-jakarta text-[13px] text-ink-soft">{formatNetworkLabel(c.network)}</Text>
+                  <Text numberOfLines={1} className="font-jakarta text-[14.5px] font-medium text-ink">{c.name}</Text>
+                  <Text className="font-jakarta text-[12px] text-ink-soft">{formatNetworkLabel(c.network)}</Text>
                 </View>
                 <View className={`h-[26px] w-[26px] items-center justify-center rounded-full border ${on ? "border-brand bg-brand" : "border-[#C9C7C0]"}`}>
                   {on ? <Ionicons name="checkmark" size={16} color="#141414" /> : null}
@@ -307,7 +356,7 @@ export default function CreatePostScreen() {
             <View className="h-[44px] w-[44px] items-center justify-center rounded-full bg-chip-bg">
               <Ionicons name="add" size={22} color="#141414" />
             </View>
-            <Text className="font-jakarta text-[16px] text-ink">Connecter un nouveau canal</Text>
+            <Text className="font-jakarta text-[14.5px] text-ink">Connecter un nouveau canal</Text>
           </Pressable>
         </View>
       </Sheet>
@@ -318,7 +367,7 @@ export default function CreatePostScreen() {
             {selectedChannels.slice(0, 6).map((c) => (
               <ChannelAvatar key={c.id} avatar={c.avatar} network={c.network} name={c.name} size={34} />
             ))}
-            <Text className="flex-1 pl-1 font-jakarta text-[14px] text-ink-soft">
+            <Text className="flex-1 pl-1 font-jakarta text-[12.5px] text-ink-soft">
               {selectedChannels.length > 1 ? `${selectedChannels.length} canaux` : "1 canal"}
             </Text>
           </View>
@@ -326,25 +375,25 @@ export default function CreatePostScreen() {
           <Pressable onPress={() => setDateSheet(true)} className="flex-row items-center gap-3 rounded-[20px] border border-line bg-card px-4 py-4">
             <Ionicons name="calendar-outline" size={22} color="#141414" />
             <View className="flex-1">
-              <Text className="font-jakarta text-[12px] text-ink-soft">Date de publication</Text>
-              <Text className="font-jakarta text-[16px] font-semibold text-ink">{capFirst(format(publishAt, "EEEE d MMMM 'à' HH:mm", { locale: fr }))}</Text>
+              <Text className="font-jakarta text-[11px] text-ink-soft">Date de publication</Text>
+              <Text className="font-jakarta text-[14.5px] font-semibold text-ink">{capFirst(format(publishAt, "EEEE d MMMM 'à' HH:mm", { locale: fr }))}</Text>
             </View>
-            <Text className="font-jakarta text-[14px] font-semibold text-brand-ink">Modifier</Text>
+            <Text className="font-jakarta text-[12.5px] font-semibold text-brand-ink">Modifier</Text>
           </Pressable>
 
-          {problems.length > 0 ? (
+          {scheduleProblems.length > 0 ? (
             <View className="rounded-[16px] bg-[#FDE7E4] px-4 py-3">
-              {problems.map((p) => (
-                <Text key={p} className="font-jakarta text-[13px] text-text-critical">{p}</Text>
+              {scheduleProblems.map((p) => (
+                <Text key={p} className="font-jakarta text-[12px] text-text-critical">{p}</Text>
               ))}
             </View>
           ) : null}
-          {problems.length === 0 && inPast ? <Text className="font-jakarta text-[13px] text-text-critical">La date est dans le passé : choisissez-en une autre pour programmer.</Text> : null}
+          {scheduleProblems.length === 0 && inPast ? <Text className="font-jakarta text-[12px] text-text-critical">La date est dans le passé : choisissez-en une autre pour programmer.</Text> : null}
 
-          <PrimaryButton label={editing ? "Enregistrer et programmer" : "Programmer"} onPress={() => submit("calendar")} loading={saving} disabled={problems.length > 0 || inPast} />
-          <OutlineButton label="Publier maintenant" onPress={() => submit("now")} disabled={problems.length > 0 || saving} />
+          <PrimaryButton label={editing ? "Enregistrer et programmer" : "Programmer"} onPress={() => submit("calendar")} loading={saving} disabled={scheduleProblems.length > 0 || inPast} />
+          <OutlineButton label="Publier maintenant" onPress={() => submit("now")} disabled={scheduleProblems.length > 0 || saving} />
           <Pressable className="h-[48px] items-center justify-center" disabled={saving} onPress={() => submit("draft")}>
-            <Text className="font-jakarta text-[16px] font-semibold text-brand-ink">Enregistrer en brouillon</Text>
+            <Text className="font-jakarta text-[14.5px] font-semibold text-brand-ink">Enregistrer en brouillon</Text>
           </Pressable>
         </View>
       </Sheet>
@@ -358,8 +407,8 @@ export default function CreatePostScreen() {
               <Pressable key={d.id} onPress={() => openDraft(d.id)} className={`flex-row items-center gap-3 px-4 py-3 ${i > 0 ? "border-t border-line" : ""}`}>
                 <ChannelAvatar avatar={d.authorAvatar} network={d.network} name={d.authorName} size={40} />
                 <View className="min-w-0 flex-1">
-                  <Text numberOfLines={2} className="font-jakarta text-[15px] text-ink">{htmlToPlain(d.content) || "(sans texte)"}</Text>
-                  <Text className="font-jakarta text-[12px] text-ink-soft">{formatNetworkLabel(d.network)}</Text>
+                  <Text numberOfLines={2} className="font-jakarta text-[13.5px] text-ink">{htmlToPlain(d.content) || "(sans texte)"}</Text>
+                  <Text className="font-jakarta text-[11px] text-ink-soft">{formatNetworkLabel(d.network)}</Text>
                 </View>
               </Pressable>
             ))}
@@ -371,12 +420,12 @@ export default function CreatePostScreen() {
         <View className="overflow-hidden rounded-[22px] bg-card">
           {[
             { icon: "save-outline" as const, label: "Enregistrer en brouillon", run: () => submit("draft") },
-            { icon: "backspace-outline" as const, label: "Effacer le texte", run: () => { setBlocks([""]); setOverrides({}); touch(); } },
+            { icon: "backspace-outline" as const, label: "Effacer le texte", run: () => { setBlocks([""]); setOverrides({}); setAttached([]); touch(); } },
             ...(editing ? [{ icon: "trash-outline" as const, label: "Supprimer la publication", danger: true, run: removePost }] : []),
           ].map((row, i) => (
             <Pressable key={row.label} onPress={() => { setMenuSheet(false); setTimeout(() => void row.run(), 250); }} className={`flex-row items-center gap-4 px-5 py-4 ${i > 0 ? "border-t border-line" : ""}`}>
               <Ionicons name={row.icon} size={22} color={"danger" in row && row.danger ? "#D92D20" : "#141414"} />
-              <Text className={`font-jakarta text-[17px] ${"danger" in row && row.danger ? "text-text-critical" : "text-ink"}`}>{row.label}</Text>
+              <Text className={`font-jakarta text-[15px] ${"danger" in row && row.danger ? "text-text-critical" : "text-ink"}`}>{row.label}</Text>
             </Pressable>
           ))}
         </View>
@@ -384,11 +433,11 @@ export default function CreatePostScreen() {
 
       <Sheet visible={leaveSheet} onClose={() => setLeaveSheet(false)} title="Quitter ?">
         <View className="gap-3 pb-2">
-          <Text className="font-jakarta text-[15px] text-ink-soft">Votre texte n’est pas enregistré.</Text>
+          <Text className="font-jakarta text-[13.5px] text-ink-soft">Votre texte n’est pas enregistré.</Text>
           <PrimaryButton label="Enregistrer en brouillon" onPress={() => { setLeaveSheet(false); void submit("draft"); }} />
           <OutlineButton label="Abandonner" danger onPress={() => { setDirty(false); setLeaveSheet(false); router.back(); }} />
           <Pressable className="h-[44px] items-center justify-center" onPress={() => setLeaveSheet(false)}>
-            <Text className="font-jakarta text-[16px] font-semibold text-brand-ink">Continuer à écrire</Text>
+            <Text className="font-jakarta text-[14.5px] font-semibold text-brand-ink">Continuer à écrire</Text>
           </Pressable>
         </View>
       </Sheet>

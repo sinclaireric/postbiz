@@ -3,6 +3,7 @@ import { useRouter } from "expo-router";
 import { Pressable, Text, View } from "react-native";
 
 import { IconCircle } from "@/components/ui/kit";
+import { haptic } from "@/lib/haptics";
 import { Popover, useAnchor } from "@/components/ui/popover";
 import { useAuthStore } from "@/store/auth-store";
 import { useOrgStore } from "@/store/org-store";
@@ -49,20 +50,20 @@ export function HeaderActions() {
           onPress={open}
           className="h-[44px] w-[44px] items-center justify-center rounded-full bg-brand"
         >
-          <Text className="font-jakarta text-[17px] font-bold text-ink">{(org?.name?.[0] ?? email?.[0] ?? "P").toUpperCase()}</Text>
+          <Text className="font-jakarta text-[15px] font-bold text-ink">{(org?.name?.[0] ?? email?.[0] ?? "P").toUpperCase()}</Text>
         </Pressable>
       </View>
 
       <Popover anchor={anchor} onClose={close} width={290}>
         <View className="border-b border-line px-5 py-4">
-          <Text numberOfLines={1} className="font-jakarta text-[17px] font-semibold text-ink">{org?.name ?? "Postbiz"}</Text>
-          <Text numberOfLines={1} className="font-jakarta text-[13px] text-ink-soft">{email}</Text>
+          <Text numberOfLines={1} className="font-jakarta text-[15px] font-semibold text-ink">{org?.name ?? "Postbiz"}</Text>
+          <Text numberOfLines={1} className="font-jakarta text-[12px] text-ink-soft">{email}</Text>
         </View>
         <View className="py-1">
           {rows.map((r) => (
-            <Pressable key={r.label} onPress={r.onPress} className="flex-row items-center gap-4 px-5 py-4">
+            <Pressable key={r.label} onPress={() => { haptic.tap(); r.onPress(); }} className="flex-row items-center gap-4 px-5 py-4">
               <Ionicons name={r.icon} size={22} color={r.danger ? "#D92D20" : "#141414"} />
-              <Text className={`font-jakarta text-[16px] ${r.danger ? "text-text-critical" : "text-ink"}`}>{r.label}</Text>
+              <Text className={`font-jakarta text-[14.5px] ${r.danger ? "text-text-critical" : "text-ink"}`}>{r.label}</Text>
             </Pressable>
           ))}
         </View>

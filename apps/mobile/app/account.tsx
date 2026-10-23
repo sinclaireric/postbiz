@@ -8,7 +8,7 @@ import { ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Field, PasswordField } from "@/components/ui/field";
-import { PageHeader, PrimaryButton, Row, Sheet } from "@/components/ui/kit";
+import { Appear, PageHeader, PrimaryButton, Row, Sheet } from "@/components/ui/kit";
 import { showToast } from "@/components/ui/toast";
 import { getPushPermission, registerForPush, type PushStatus } from "@/lib/push";
 import { useAuthStore } from "@/store/auth-store";
@@ -16,12 +16,12 @@ import { useOrgStore, type OrgRole } from "@/store/org-store";
 
 const ROLE: Record<OrgRole, string> = { admin: "Administrateur", member: "Membre", viewer: "Lecteur" };
 
-function Group({ title, children }: { title: string; children: React.ReactNode }) {
+function Group({ title, children, index = 0 }: { title: string; children: React.ReactNode; index?: number }) {
   return (
-    <View className="gap-2">
-      <Text className="px-1 font-jakarta text-[18px] font-semibold text-ink">{title}</Text>
+    <Appear index={index} style={{ gap: 8 }}>
+      <Text className="px-1 font-jakarta text-[16px] font-semibold text-ink">{title}</Text>
       <View className="overflow-hidden rounded-[22px] bg-card">{children}</View>
-    </View>
+    </Appear>
   );
 }
 
@@ -72,7 +72,7 @@ export default function AccountScreen() {
       <StatusBar style="dark" />
       <PageHeader title="Paramètres du compte" onBack={() => router.back()} />
       <ScrollView className="flex-1 px-4" contentContainerStyle={{ gap: 24, paddingBottom: 40 }} showsVerticalScrollIndicator={false}>
-        <Group title="Compte">
+        <Group title="Compte" index={0}>
           <Row icon="notifications-outline" label="Notifications push" value={pushValue} onPress={togglePush} />
           <Row icon="at-outline" label="E-mail" value={user?.email ?? "—"} chevron={false} />
           <Row icon="key-outline" label="Changer le mot de passe" onPress={() => setPwOpen(true)} />
@@ -81,20 +81,22 @@ export default function AccountScreen() {
           <Row icon="images-outline" label="Médias" onPress={() => router.push("/media")} last />
         </Group>
 
-        <Group title="Organisation">
+        <Group title="Organisation" index={1}>
           <Row icon="business-outline" label="Nom" value={org?.name ?? "—"} chevron={false} />
           <Row icon="shield-checkmark-outline" label="Rôle" value={org ? ROLE[org.role] : "—"} chevron={false} last />
         </Group>
 
-        <Group title="À propos">
+        <Group title="À propos" index={2}>
           <Row icon="document-text-outline" label="Conditions d’utilisation" onPress={() => WebBrowser.openBrowserAsync("https://www.getpostbiz.com/cgu")} />
           <Row icon="lock-closed-outline" label="Politique de confidentialité" onPress={() => WebBrowser.openBrowserAsync("https://www.getpostbiz.com/confidentialite")} />
           <Row icon="information-circle-outline" label="Version" value={Constants.expoConfig?.version ?? ""} chevron={false} last />
         </Group>
 
+        <Appear index={3}>
         <View className="overflow-hidden rounded-[22px] bg-card">
           <Row icon="log-out-outline" label="Se déconnecter" danger last onPress={() => void useAuthStore.getState().signOut()} chevron={false} />
         </View>
+        </Appear>
       </ScrollView>
 
       <Sheet visible={pwOpen} onClose={() => setPwOpen(false)} title="Mot de passe">

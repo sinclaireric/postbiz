@@ -71,7 +71,7 @@ export default function ResetPasswordScreen() {
           />
         </>
       ) : (
-        <Text className="font-jakarta text-[15px] text-ink-soft">Ouvrez le lien reçu par e-mail sur cet appareil pour choisir un nouveau mot de passe.</Text>
+        <Text className="font-jakarta text-[13.5px] text-ink-soft">Ouvrez le lien reçu par e-mail sur cet appareil pour choisir un nouveau mot de passe.</Text>
       )}
     </AuthShell>
   );

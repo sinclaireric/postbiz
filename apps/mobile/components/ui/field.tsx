@@ -9,11 +9,11 @@ export const Field = forwardRef<TextInputInstance, Props>(function Field({ label
   const [focused, setFocused] = useState(false);
   return (
     <View className="gap-2">
-      <Text className="font-jakarta text-[14px] font-semibold text-ink">{label}</Text>
-      <View className={`h-[56px] flex-row items-center rounded-[16px] border bg-card px-4 ${error ? "border-text-critical" : focused ? "border-ink" : "border-line"}`}>
+      <Text className="font-jakarta text-[12.5px] font-semibold text-ink">{label}</Text>
+      <View className={`h-[52px] flex-row items-center rounded-[16px] border bg-card px-4 ${error ? "border-text-critical" : focused ? "border-ink" : "border-line"}`}>
         <TextInput
           ref={ref}
-          className="flex-1 font-jakarta text-[16px] text-ink"
+          className="flex-1 font-jakarta text-[14.5px] text-ink"
           placeholderTextColor="#9A9890"
           selectionColor="#141414"
           autoCapitalize="none"
@@ -30,7 +30,7 @@ export const Field = forwardRef<TextInputInstance, Props>(function Field({ label
         />
         {right}
       </View>
-      {hint ? <Text className={`font-jakarta text-[12px] ${error ? "text-text-critical" : "text-ink-soft"}`}>{hint}</Text> : null}
+      {hint ? <Text className={`font-jakarta text-[11px] ${error ? "text-text-critical" : "text-ink-soft"}`}>{hint}</Text> : null}
     </View>
   );
 });

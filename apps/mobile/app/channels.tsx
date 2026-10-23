@@ -4,7 +4,7 @@ import { FlatList, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { ChannelAvatar } from "@/components/ui/channel-avatar";
-import { EmptyState, IconCircle, PageHeader } from "@/components/ui/kit";
+import { Appear, EmptyState, IconCircle, PageHeader } from "@/components/ui/kit";
 import { formatNetworkLabel } from "@/lib/networks";
 import { useChannelsStore } from "@/store/channels-store";
 import { useOrgStore } from "@/store/org-store";
@@ -37,25 +37,27 @@ export default function ChannelsScreen() {
             primary={canWrite ? { label: "Connecter un canal", onPress: () => router.push("/add-channel") } : undefined}
           />
         }
-        renderItem={({ item }) => {
+        renderItem={({ item, index }) => {
           const st = STATUS[item.status ?? "active"] ?? STATUS.active;
           return (
+            <Appear index={index}>
             <View className="flex-row items-center gap-4 rounded-[22px] border border-line bg-card p-4">
               <ChannelAvatar avatar={item.avatar} network={item.network} name={item.name} size={48} />
               <View className="min-w-0 flex-1">
-                <Text numberOfLines={1} className="font-jakarta text-[17px] font-semibold text-ink">{item.name}</Text>
-                <Text numberOfLines={1} className="font-jakarta text-[14px] text-ink-soft">
+                <Text numberOfLines={1} className="font-jakarta text-[15px] font-semibold text-ink">{item.name}</Text>
+                <Text numberOfLines={1} className="font-jakarta text-[12.5px] text-ink-soft">
                   {formatNetworkLabel(item.network)}
                   {item.username ? ` · @${item.username}` : ""}
                 </Text>
               </View>
               <View className="rounded-full px-3 py-[5px]" style={{ backgroundColor: st.bg }}>
-                <Text className="font-jakarta text-[12px] font-semibold" style={{ color: st.fg }}>{st.label}</Text>
+                <Text className="font-jakarta text-[11px] font-semibold" style={{ color: st.fg }}>{st.label}</Text>
               </View>
             </View>
+            </Appear>
           );
         }}
-        ListFooterComponent={channels.length > 0 ? <Text className="px-2 pt-2 text-center font-jakarta text-[12px] text-ink-muted">Pour reconnecter ou retirer un canal, utilisez Postbiz sur le web.</Text> : undefined}
+        ListFooterComponent={channels.length > 0 ? <Text className="px-2 pt-2 text-center font-jakarta text-[11px] text-ink-muted">Pour reconnecter ou retirer un canal, utilisez Postbiz sur le web.</Text> : undefined}
       />
     </SafeAreaView>
   );

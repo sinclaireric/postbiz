@@ -2,24 +2,20 @@ import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useCallback, useEffect, useState } from "react";
-import { ActivityIndicator, FlatList, Pressable, RefreshControl, Text, useWindowDimensions, View } from "react-native";
+import { ActivityIndicator, FlatList, Pressable, RefreshControl, useWindowDimensions, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { ConfirmSheet, PageHeader } from "@/components/ui/kit";
-import { Image } from "@/components/ui/image";
+import { MediaThumb } from "@/components/media/media-thumb";
+import { haptic } from "@/lib/haptics";
+import Reanimated, { ZoomIn } from "react-native-reanimated";
+
+import { ConfirmSheet, EmptyState, PageHeader } from "@/components/ui/kit";
 import { showToast } from "@/components/ui/toast";
 import { deleteMedia, listMedia, pickAndUpload, type MediaItem } from "@/lib/media";
 import { useOrgStore } from "@/store/org-store";
 
-const GAP = 6;
+const GAP = 8;
 const COLUMNS = 3;
-
-const STATUS_LABEL: Record<MediaItem["status"], string> = {
-  uploaded: "Envoyé",
-  processing: "Traitement…",
-  ready: "",
-  failed: "Échec",
-};
 
 export default function MediaScreen() {
   const router = useRouter();
@@ -34,7 +30,7 @@ export default function MediaScreen() {
   const size = (width - 32 - GAP * (COLUMNS - 1)) / COLUMNS;
 
   const load = useCallback(async () => {
-    if (orgId) setItems(await listMedia(orgId));
+    if (orgId) setItems((await listMedia(orgId)).items);
   }, [orgId]);
 
   useEffect(() => {
@@ -46,7 +42,7 @@ export default function MediaScreen() {
     const result = await pickAndUpload();
     setBusy(false);
     if (!result.ok) showToast(result.error, "error");
-    else if (result.count) showToast(`${result.count} média${result.count > 1 ? "s" : ""} ajouté${result.count > 1 ? "s" : ""}`, "success");
+    else if (result.items?.length) showToast(`${result.items.length} média${result.items.length > 1 ? "s" : ""} ajouté${result.items.length > 1 ? "s" : ""}`, "success");
     await load();
   };
 
@@ -54,15 +50,16 @@ export default function MediaScreen() {
     if (!toDelete) return;
     const target = toDelete;
     setToDelete(null);
-    const result = await deleteMedia(target);
-    showToast(result.ok ? "Média supprimé" : result.error, result.ok ? "success" : "error");
+    const result = await deleteMedia([target]);
+    if (!result.ok) showToast(result.error, "error");
+    else if (result.blocked) showToast("Ce média est utilisé par une publication en attente : il est conservé.", "info");
+    else showToast("Média supprimé", "success");
     await load();
   };
 
   return (
     <SafeAreaView className="flex-1 bg-canvas" edges={["top"]}>
       <StatusBar style="dark" />
-
       <PageHeader
         title="Médias"
         onBack={() => router.back()}
@@ -87,7 +84,7 @@ export default function MediaScreen() {
           key={COLUMNS}
           keyExtractor={(m) => m.id}
           columnWrapperStyle={{ gap: GAP }}
-          contentContainerStyle={{ gap: GAP, paddingBottom: 24 }}
+          contentContainerStyle={{ gap: GAP, paddingBottom: 32 }}
           refreshControl={
             <RefreshControl
               refreshing={refreshing}
@@ -99,45 +96,20 @@ export default function MediaScreen() {
               }}
             />
           }
-          renderItem={({ item }) => {
-            const isVideo = item.mimeType?.startsWith("video/");
-            return (
-              <Pressable
-                onLongPress={canWrite ? () => setToDelete(item) : undefined}
-                style={{ width: size, height: size }}
-                className="overflow-hidden rounded-[8px] bg-chip-bg"
-              >
-                {item.url && !isVideo ? (
-                  <Image source={{ uri: item.url }} style={{ width: size, height: size }} contentFit="cover" />
-                ) : (
-                  <View className="flex-1 items-center justify-center">
-                    <Ionicons name={isVideo ? "videocam-outline" : "image-outline"} size={28} color="#9A9AA0" />
-                  </View>
-                )}
-                {isVideo ? (
-                  <View className="absolute bottom-1 left-1 rounded bg-black/60 px-1">
-                    <Ionicons name="play" size={12} color="#FFFFFF" />
-                  </View>
-                ) : null}
-                {STATUS_LABEL[item.status] ? (
-                  <View className="absolute right-1 top-1 rounded bg-black/60 px-1">
-                    <Text className="font-jakarta text-[10px] text-white">{STATUS_LABEL[item.status]}</Text>
-                  </View>
-                ) : null}
-              </Pressable>
-            );
-          }}
+          renderItem={({ item, index }) => (
+            <Reanimated.View entering={ZoomIn.duration(300).delay(Math.min(index, 12) * 35)}>
+            <Pressable onLongPress={canWrite ? () => { haptic.medium(); setToDelete(item); } : undefined} delayLongPress={350}>
+              <MediaThumb uri={item.thumbUrl ?? (item.kind === "image" ? item.url : null)} kind={item.kind} size={size} />
+            </Pressable>
+            </Reanimated.View>
+          )}
           ListEmptyComponent={
-            <View className="items-center px-8 pt-16">
-              <Text className="text-center font-jakarta text-h4 font-semibold text-text-primary">Aucun média pour l’instant</Text>
-              <Text className="mt-2 text-center font-jakarta text-body-1 text-text-secondary">
-                Ajoutez des images ou des vidéos : elles seront stockées dans votre espace privé.
-                {canWrite ? "\nAppui long sur un média pour le supprimer." : ""}
-              </Text>
-              <Text className="mt-3 text-center font-jakarta text-[12px] text-text-secondary">
-                L’ajout d’un média à une publication n’est pas encore disponible.
-              </Text>
-            </View>
+            <EmptyState
+              icon="images-outline"
+              title="Aucun média pour l’instant"
+              text={canWrite ? "Ajoutez des images ou des vidéos depuis votre téléphone : vous pourrez ensuite les joindre à vos publications. Appui long sur un média pour le supprimer." : "Les médias de votre organisation apparaîtront ici."}
+              primary={canWrite ? { label: "Ajouter des médias", onPress: upload } : undefined}
+            />
           }
         />
       )}
@@ -145,7 +117,7 @@ export default function MediaScreen() {
       <ConfirmSheet
         visible={toDelete !== null}
         title="Supprimer ce média ?"
-        message="Le fichier sera supprimé de votre médiathèque."
+        message="Le fichier sera supprimé de votre médiathèque. S’il est utilisé par une publication en attente, il est conservé."
         confirmLabel="Oui, supprimer"
         danger
         onConfirm={remove}

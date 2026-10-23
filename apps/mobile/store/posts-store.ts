@@ -1,10 +1,12 @@
 import { create } from "zustand";
 
 import { fail, GENERIC_ERROR, ok, type Result } from "@/lib/errors";
+import { normalizeProvider } from "@/lib/networks";
 import { supabase } from "@/lib/supabase";
 import { useAuthStore } from "@/store/auth-store";
 import { useOrgStore } from "@/store/org-store";
-import type { ChannelNetwork, PostStatus, ScheduledPost } from "@/types";
+import { mediaByIds } from "@/lib/media";
+import type { ChannelNetwork, PostMediaItem, PostStatus, ScheduledPost } from "@/types";
 import { htmlToPlain, plainToHtml } from "@/utils/text";
 import { uuidv4 } from "@/utils/uuid";
 
@@ -34,7 +36,7 @@ function toStatus(state: string): PostStatus {
   }
 }
 
-function buildPosts(rows: Row[]): ScheduledPost[] {
+function buildPosts(rows: Row[], library: Map<string, PostMediaItem>): ScheduledPost[] {
   const children = new Map<string, Row[]>();
   for (const r of rows) {
     if (r.parent_post_id) children.set(r.parent_post_id, [...(children.get(r.parent_post_id) ?? []), r]);
@@ -53,13 +55,18 @@ function buildPosts(rows: Row[]): ScheduledPost[] {
         category: "Social",
         scheduledAt: r.publish_at,
         channelId: r.integration_id,
-        network: (integ?.provider ?? "facebook") as ChannelNetwork,
+        network: normalizeProvider(integ?.provider ?? "facebook"),
         authorName: integ?.name ?? "",
         authorAvatar: integ?.picture_url ?? "",
         status: toStatus(r.state),
         dbState: r.state,
         errorMessage: r.error ?? undefined,
         releaseUrl: r.release_url ?? undefined,
+        // Un média supprimé de la médiathèque disparaît de l'affichage, pas de la publication.
+        media: (Array.isArray(r.media) ? r.media : []).flatMap((m: Row): PostMediaItem[] => {
+          const item = library.get(String(m.media_id));
+          return item ? [{ ...item, alt: typeof m.alt === "string" ? m.alt : item.alt }] : [];
+        }),
         composerPosts: thread.map((t) => ({ id: t.id, content: plainToHtml(t.content ?? ""), imageUris: [] })),
       };
     });
@@ -69,6 +76,8 @@ export type SaveAction = "calendar" | "draft" | "now";
 
 export type SavePostsInput = {
   action: SaveAction;
+  /** Médias joints (les mêmes pour tous les canaux), dans l'ordre d'affichage. */
+  media?: { id: string; kind: "image" | "video"; alt: string }[];
   publishAt: Date;
   /** Un élément par canal ; `thread` = textes bruts, le premier est la racine. */
   items: { channelId: string; thread: string[] }[];
@@ -117,7 +126,7 @@ export const usePostsStore = create<PostsState>((set, get) => {
       const since = new Date(Date.now() - HISTORY_DAYS * 86_400_000).toISOString();
       const { data, error } = await supabase
         .from("posts")
-        .select("id, group_id, integration_id, parent_post_id, position, content, publish_at, state, error, release_url, integrations(provider, name, picture_url)")
+        .select("id, group_id, integration_id, parent_post_id, position, content, publish_at, state, error, release_url, media, integrations(provider, name, picture_url)")
         .eq("org_id", orgId)
         .is("deleted_at", null)
         .gte("publish_at", since)
@@ -127,10 +136,15 @@ export const usePostsStore = create<PostsState>((set, get) => {
         set({ error: "Impossible de charger les publications.", loaded: true });
         return;
       }
-      set({ posts: buildPosts(data ?? []), loaded: true, error: null });
+      // Médias joints : un seul aller-retour pour tout le calendrier (vignettes signées).
+      const wanted = [...new Set((data ?? []).flatMap((r: Row) => (Array.isArray(r.media) ? r.media : []).map((m: Row) => String(m.media_id))))] as string[];
+      const library = new Map<string, PostMediaItem>(
+        (await mediaByIds(orgId, wanted).catch(() => [])).map((m) => [m.id, { id: m.id, kind: m.kind, name: m.name, alt: m.alt, thumbUrl: m.thumbUrl ?? (m.kind === "image" ? m.url : null) }]),
+      );
+      set({ posts: buildPosts(data ?? [], library), loaded: true, error: null });
     },
 
-    savePosts: async ({ action, publishAt, items, editPostId }) => {
+    savePosts: async ({ action, publishAt, items, editPostId, media = [] }) => {
       const ctx = context();
       if ("ok" in ctx) return ctx;
       const { orgId, userId } = ctx;
@@ -140,11 +154,14 @@ export const usePostsStore = create<PostsState>((set, get) => {
       const when = (action === "now" ? new Date() : publishAt).toISOString();
 
       for (const item of items) {
-        if (item.thread.every((t) => !t.trim())) return fail("Écrivez un texte avant d’enregistrer.");
+        if (item.thread.every((t) => !t.trim()) && media.length === 0) return fail("Écrivez un texte ou ajoutez un média avant d’enregistrer.");
       }
       if (action === "calendar" && publishAt.getTime() < Date.now() + 60_000) {
         return fail("La date de publication doit être dans le futur.");
       }
+
+      // Forme attendue par la base et le worker : [{ media_id, type, alt? }] (le chemin du fichier est relu au moment de publier).
+      const mediaJson = media.map((m) => ({ media_id: m.id, type: m.kind, ...(m.alt.trim() ? { alt: m.alt.trim().slice(0, 1500) } : {}) }));
 
       const threadRows = (rootId: string, integrationId: string, groupId: string, thread: string[]) =>
         thread.slice(1).map((content, i) => ({
@@ -166,7 +183,7 @@ export const usePostsStore = create<PostsState>((set, get) => {
           const item = items[0];
           const { data: updated, error } = await supabase
             .from("posts")
-            .update({ content: item.thread[0].trim(), publish_at: when, state })
+            .update({ content: (item.thread[0] ?? "").trim(), publish_at: when, state, media: mediaJson })
             .eq("id", editPostId)
             .select("id, integration_id, group_id");
           if (error) return fail(GENERIC_ERROR);
@@ -187,7 +204,8 @@ export const usePostsStore = create<PostsState>((set, get) => {
             org_id: orgId,
             integration_id: item.channelId,
             group_id: groupId,
-            content: item.thread[0].trim(),
+            content: (item.thread[0] ?? "").trim(),
+            media: mediaJson,
             publish_at: when,
             state,
             created_by: userId,
@@ -250,6 +268,7 @@ export const usePostsStore = create<PostsState>((set, get) => {
       const result = await get().savePosts({
         action: "draft",
         publishAt: new Date(source.scheduledAt),
+        media: (source.media ?? []).map((m) => ({ id: m.id, kind: m.kind, alt: m.alt })),
         items: [{ channelId: source.channelId, thread }],
       });
       if (!result.ok) return result;

@@ -5,6 +5,8 @@ import type { ReactNode } from "react";
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { Appear } from "@/components/ui/kit";
+
 /** Cadre commun des écrans de connexion : retour, titre, contenu défilant, pied de page fixe. */
 export function AuthShell({ title, subtitle, children, footer, back = true }: { title: string; subtitle?: string; children: ReactNode; footer?: ReactNode; back?: boolean }) {
   const router = useRouter();
@@ -27,11 +29,13 @@ export function AuthShell({ title, subtitle, children, footer, back = true }: { 
           ) : null}
         </View>
         <ScrollView className="flex-1" contentContainerStyle={{ paddingHorizontal: 24, paddingTop: 8, paddingBottom: 24, gap: 20 }} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
-          <View className="gap-3">
-            <Text className="font-jakarta text-[32px] font-semibold leading-[40px] text-ink">{title}</Text>
-            {subtitle ? <Text className="font-jakarta text-[16px] leading-[24px] text-ink-soft">{subtitle}</Text> : null}
-          </View>
-          {children}
+          <Appear index={0} style={{ gap: 12 }}>
+            <Text className="font-jakarta text-[27px] font-semibold leading-[35px] text-ink">{title}</Text>
+            {subtitle ? <Text className="font-jakarta text-[14.5px] leading-[21px] text-ink-soft">{subtitle}</Text> : null}
+          </Appear>
+          <Appear index={2} style={{ gap: 20 }}>
+            {children}
+          </Appear>
         </ScrollView>
         {footer ? <View className="gap-4 px-6 pb-4 pt-2">{footer}</View> : null}
       </KeyboardAvoidingView>

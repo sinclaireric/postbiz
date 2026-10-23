@@ -56,16 +56,16 @@ export default function AddChannelScreen() {
               <NetworkGlyph network={n.id} size={24} />
             </View>
             <View className="flex-1">
-              <Text className="font-jakarta text-[17px] font-semibold text-ink">{formatNetworkLabel(n.id)}</Text>
-              <Text className="font-jakarta text-[14px] text-ink-soft">{n.hint}</Text>
+              <Text className="font-jakarta text-[15px] font-semibold text-ink">{formatNetworkLabel(n.id)}</Text>
+              <Text className="font-jakarta text-[12.5px] text-ink-soft">{n.hint}</Text>
             </View>
             <Ionicons name="add" size={26} color="#2F4A00" />
           </Pressable>
         ))}
-        <Text className="px-2 pt-2 font-jakarta text-[13px] leading-[19px] text-ink-soft">
+        <Text className="px-2 pt-2 font-jakarta text-[12px] leading-[17px] text-ink-soft">
           La connexion s’ouvre sur Postbiz web, car l’autorisation passe par chaque réseau. Connectez-vous avec le même compte, choisissez « Connecter », puis fermez la fenêtre pour revenir ici : vos canaux se mettent à jour.
         </Text>
-        {!WEB_URL ? <Text className="px-2 font-jakarta text-[13px] text-text-critical">EXPO_PUBLIC_WEB_URL n’est pas configurée.</Text> : null}
+        {!WEB_URL ? <Text className="px-2 font-jakarta text-[12px] text-text-critical">EXPO_PUBLIC_WEB_URL n’est pas configurée.</Text> : null}
       </ScrollView>
     </SafeAreaView>
   );

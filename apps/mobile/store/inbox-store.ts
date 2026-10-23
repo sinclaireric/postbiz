@@ -3,6 +3,7 @@ import { create } from "zustand";
 import { replyWindow, validateReply } from "@/lib/inbox/logic";
 import type { ConversationStatus, ConversationSummary, MessageItem, NetworkId } from "@/lib/inbox/types";
 import { fail, GENERIC_ERROR, ok, type Result } from "@/lib/errors";
+import { normalizeProvider } from "@/lib/networks";
 import { supabase } from "@/lib/supabase";
 import { useAuthStore } from "@/store/auth-store";
 import { useOrgStore } from "@/store/org-store";
@@ -26,7 +27,7 @@ function toSummary(r: Row, names: Map<string, string>): ConversationSummary {
   const contact = one<Row>(r.contacts);
   return {
     id: r.id,
-    networkId: (integ?.provider ?? "facebook") as NetworkId,
+    networkId: normalizeProvider(integ?.provider ?? "facebook") as NetworkId,
     accountName: integ?.name ?? "",
     kind: r.kind,
     contactName: contact?.name ?? contact?.username ?? "Contact inconnu",

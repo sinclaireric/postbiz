@@ -3,6 +3,7 @@ import { useRouter } from "expo-router";
 import { Pressable, Text, View } from "react-native";
 
 import { formatNetworkLabel } from "@/lib/networks";
+import { haptic } from "@/lib/haptics";
 import { ChannelAvatar } from "@/components/ui/channel-avatar";
 import { Popover, useAnchor } from "@/components/ui/popover";
 import type { Channel } from "@/types";
@@ -31,6 +32,7 @@ export function ChannelPicker({
   const current = channels.find((c) => c.id === value) ?? null;
 
   const pick = (id: string | null) => {
+    haptic.select();
     onChange(id);
     close();
   };
@@ -52,7 +54,7 @@ export function ChannelPicker({
           </View>
         )}
         {compact ? null : (
-          <Text numberOfLines={1} className="max-w-[170px] font-jakarta text-[16px] font-medium text-ink">
+          <Text numberOfLines={1} className="max-w-[170px] font-jakarta text-[14.5px] font-medium text-ink">
             {current ? current.name : allLabel}
           </Text>
         )}
@@ -65,7 +67,7 @@ export function ChannelPicker({
             <View className="h-[42px] w-[42px] items-center justify-center rounded-full bg-chip-bg">
               <Ionicons name="apps" size={20} color="#141414" />
             </View>
-            <Text className="flex-1 font-jakarta text-[17px] font-semibold text-ink">{allLabel}</Text>
+            <Text className="flex-1 font-jakarta text-[15px] font-semibold text-ink">{allLabel}</Text>
             {!value ? <Ionicons name="checkmark" size={22} color="#2F4A00" /> : null}
           </Pressable>
         ) : null}
@@ -74,8 +76,8 @@ export function ChannelPicker({
           <Pressable key={c.id} onPress={() => pick(c.id)} className="flex-row items-center gap-3 px-4 py-3">
             <ChannelAvatar avatar={c.avatar} network={c.network} name={c.name} size={42} />
             <View className="min-w-0 flex-1">
-              <Text numberOfLines={1} className="font-jakarta text-[16px] font-medium text-ink">{c.name}</Text>
-              <Text numberOfLines={1} className="font-jakarta text-[13px] text-ink-soft">
+              <Text numberOfLines={1} className="font-jakarta text-[14.5px] font-medium text-ink">{c.name}</Text>
+              <Text numberOfLines={1} className="font-jakarta text-[12px] text-ink-soft">
                 {formatNetworkLabel(c.network)}
                 {c.status && c.status !== "active" ? " · à reconnecter" : ""}
               </Text>
@@ -94,7 +96,7 @@ export function ChannelPicker({
           <View className="h-[42px] w-[42px] items-center justify-center rounded-full bg-chip-bg">
             <Ionicons name="add" size={22} color="#141414" />
           </View>
-          <Text className="font-jakarta text-[16px] text-ink">Ajouter un canal</Text>
+          <Text className="font-jakarta text-[14.5px] text-ink">Ajouter un canal</Text>
         </Pressable>
       </Popover>
     </View>

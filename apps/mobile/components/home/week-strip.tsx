@@ -1,3 +1,4 @@
+import { haptic } from "@/lib/haptics";
 import { addDays, addWeeks, format, isSameDay, isToday, startOfWeek } from "date-fns";
 import { fr } from "date-fns/locale";
 import { useMemo, useRef } from "react";
@@ -38,10 +39,10 @@ export function WeekStrip({
       {days.map((d) => {
         const selected = isSameDay(d, selectedDate);
         return (
-          <Pressable key={d.toISOString()} onPress={() => onSelect(d)} className="flex-1 items-center gap-2" accessibilityLabel={format(d, "EEEE d MMMM", { locale: fr })}>
-            <Text className="font-jakarta text-[13px] font-semibold uppercase text-ink-soft">{format(d, "EEE", { locale: fr })}</Text>
+          <Pressable key={d.toISOString()} onPress={() => { haptic.select(); onSelect(d); }} className="flex-1 items-center gap-2" accessibilityLabel={format(d, "EEEE d MMMM", { locale: fr })}>
+            <Text className="font-jakarta text-[12px] font-semibold uppercase text-ink-soft">{format(d, "EEE", { locale: fr })}</Text>
             <View className={`h-[46px] w-[46px] items-center justify-center rounded-full ${selected ? "bg-brand" : ""}`}>
-              <Text className={`font-jakarta text-[22px] ${selected ? "font-semibold text-ink" : isToday(d) ? "font-bold text-brand-ink" : "text-ink"}`}>{format(d, "d")}</Text>
+              <Text className={`font-jakarta text-[19px] ${selected ? "font-semibold text-ink" : isToday(d) ? "font-bold text-brand-ink" : "text-ink"}`}>{format(d, "d")}</Text>
             </View>
             <View className={`h-[6px] w-[6px] rounded-full ${hasPosts(d) ? "bg-brand-ink" : ""}`} />
           </Pressable>

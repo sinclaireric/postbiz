@@ -1,5 +1,6 @@
 import { create } from "zustand";
 
+import { normalizeProvider } from "@/lib/networks";
 import { supabase } from "@/lib/supabase";
 import type { Channel, ChannelNetwork } from "@/types";
 
@@ -34,7 +35,7 @@ export const useChannelsStore = create<ChannelsState>((set) => ({
       channels: (data ?? []).map((i) => ({
         id: i.id as string,
         name: i.name as string,
-        network: i.provider as ChannelNetwork,
+        network: normalizeProvider(i.provider as string),
         avatar: (i.picture_url as string | null) ?? "",
         username: i.username as string | null,
         status: i.status as Channel["status"],

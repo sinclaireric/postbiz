@@ -30,14 +30,14 @@ export function CreateOrganizationScreen({ retryOnly = false }: { retryOnly?: bo
       <View className="flex-1 justify-center gap-6 px-6">
         {retryOnly ? (
           <>
-            <Text className="font-jakarta text-[32px] font-semibold leading-[40px] text-ink">Chargement impossible</Text>
-            <Text className="font-jakarta text-[16px] leading-[24px] text-ink-soft">Vos organisations n’ont pas pu être chargées. Vérifiez votre connexion.</Text>
+            <Text className="font-jakarta text-[27px] font-semibold leading-[35px] text-ink">Chargement impossible</Text>
+            <Text className="font-jakarta text-[14.5px] leading-[21px] text-ink-soft">Vos organisations n’ont pas pu être chargées. Vérifiez votre connexion.</Text>
             <PrimaryButton label="Réessayer" onPress={() => void useOrgStore.getState().load()} />
           </>
         ) : (
           <>
-            <Text className="font-jakarta text-[32px] font-semibold leading-[40px] text-ink">Créez votre organisation</Text>
-            <Text className="font-jakarta text-[16px] leading-[24px] text-ink-soft">Elle regroupe vos canaux, vos publications et votre boîte de réception.</Text>
+            <Text className="font-jakarta text-[27px] font-semibold leading-[35px] text-ink">Créez votre organisation</Text>
+            <Text className="font-jakarta text-[14.5px] leading-[21px] text-ink-soft">Elle regroupe vos canaux, vos publications et votre boîte de réception.</Text>
             <Field
               label="Nom de l’organisation"
               value={name}
@@ -54,7 +54,7 @@ export function CreateOrganizationScreen({ retryOnly = false }: { retryOnly?: bo
           </>
         )}
         <Pressable className="h-[48px] items-center justify-center" onPress={() => void useAuthStore.getState().signOut()}>
-          <Text className="font-jakarta text-[16px] font-semibold text-ink">Se déconnecter</Text>
+          <Text className="font-jakarta text-[14.5px] font-semibold text-ink">Se déconnecter</Text>
         </Pressable>
       </View>
     </SafeAreaView>

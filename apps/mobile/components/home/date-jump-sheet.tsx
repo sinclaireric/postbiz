@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Pressable, Text, View } from "react-native";
 
 import { Sheet } from "@/components/ui/kit";
+import { haptic } from "@/lib/haptics";
 
 /** « Aller à une date » : calendrier du mois avec un point sous les jours qui ont des publications, et raccourcis. */
 export function DateJumpSheet({
@@ -30,6 +31,7 @@ export function DateJumpSheet({
   const title = format(month, "MMMM yyyy", { locale: fr });
 
   const pick = (d: Date) => {
+    haptic.select();
     onSelect(d);
     onClose();
   };
@@ -45,7 +47,7 @@ export function DateJumpSheet({
   return (
     <Sheet visible={visible} onClose={onClose} title="Aller à une date">
       <View className="mb-2 flex-row items-center justify-between">
-        <Text className="font-jakarta text-[17px] font-semibold capitalize text-ink">{title}</Text>
+        <Text className="font-jakarta text-[15px] font-semibold capitalize text-ink">{title}</Text>
         <View className="flex-row gap-1">
           <Pressable className="h-10 w-10 items-center justify-center" onPress={() => setMonth(addMonths(month, -1))} accessibilityLabel="Mois précédent">
             <Ionicons name="chevron-back" size={22} color="#141414" />
@@ -58,7 +60,7 @@ export function DateJumpSheet({
 
       <View className="flex-row pb-1">
         {weeks[0].map((d) => (
-          <Text key={d.toISOString()} className="flex-1 text-center font-jakarta text-[12px] font-semibold uppercase text-ink-muted">
+          <Text key={d.toISOString()} className="flex-1 text-center font-jakarta text-[11px] font-semibold uppercase text-ink-muted">
             {format(d, "EEE", { locale: fr })}
           </Text>
         ))}
@@ -71,7 +73,7 @@ export function DateJumpSheet({
             return (
               <Pressable key={d.toISOString()} onPress={() => pick(d)} className="h-[54px] flex-1 items-center justify-center">
                 <View className={`h-[44px] w-[44px] items-center justify-center rounded-full ${selected ? "bg-brand" : ""}`}>
-                  <Text className={`font-jakarta text-[17px] ${!inMonth ? "text-ink-muted/50" : selected ? "font-semibold text-ink" : isToday(d) ? "font-bold text-brand-ink" : "text-ink"}`}>{format(d, "d")}</Text>
+                  <Text className={`font-jakarta text-[15px] ${!inMonth ? "text-ink-muted/50" : selected ? "font-semibold text-ink" : isToday(d) ? "font-bold text-brand-ink" : "text-ink"}`}>{format(d, "d")}</Text>
                 </View>
                 <View className={`absolute bottom-[2px] h-[5px] w-[5px] rounded-full ${hasPosts(d) ? "bg-brand-ink" : ""}`} />
               </Pressable>
@@ -83,7 +85,7 @@ export function DateJumpSheet({
       <View className="mt-4 flex-row flex-wrap gap-2">
         {shortcuts.map((s) => (
           <Pressable key={s.label} onPress={() => pick(s.date)} className="h-11 items-center justify-center rounded-full bg-chip-bg px-4">
-            <Text className="font-jakarta text-[15px] font-medium text-ink">{s.label}</Text>
+            <Text className="font-jakarta text-[13.5px] font-medium text-ink">{s.label}</Text>
           </Pressable>
         ))}
       </View>

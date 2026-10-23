@@ -10,7 +10,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { PostPreview } from "@/components/post-preview/post-preview";
 import { DateTimeSheet } from "@/components/ui/datetime-sheet";
-import { ConfirmSheet, EmptyState, OutlineButton, PageHeader, PrimaryButton } from "@/components/ui/kit";
+import { Appear, ConfirmSheet, EmptyState, OutlineButton, PageHeader, PrimaryButton } from "@/components/ui/kit";
 import { showToast } from "@/components/ui/toast";
 import { formatNetworkLabel } from "@/lib/networks";
 import { useChannelsStore } from "@/store/channels-store";
@@ -97,45 +97,49 @@ export default function PostScreen() {
         onBack={() => router.back()}
         right={
           <View className="rounded-full px-3 py-[6px]" style={{ backgroundColor: status.bg }}>
-            <Text className="font-jakarta text-[12px] font-semibold" style={{ color: status.fg }}>{status.label}</Text>
+            <Text className="font-jakarta text-[11px] font-semibold" style={{ color: status.fg }}>{status.label}</Text>
           </View>
         }
       />
 
       <ScrollView className="flex-1 px-4" contentContainerStyle={{ gap: 16, paddingBottom: 24 }} showsVerticalScrollIndicator={false}>
+        <Appear index={0}>
         <View className="flex-row items-center gap-3 rounded-[22px] border border-line bg-card px-4 py-3">
           <Ionicons name="calendar-outline" size={22} color="#141414" />
           <View className="flex-1">
-            <Text className="font-jakarta text-[12px] text-ink-soft">
+            <Text className="font-jakarta text-[11px] text-ink-soft">
               {formatNetworkLabel(post.network)} · {post.authorName}
             </Text>
-            <Text className="font-jakarta text-[16px] font-semibold text-ink">{capFirst(format(parseISO(post.scheduledAt), "EEEE d MMMM 'à' HH:mm", { locale: fr }))}</Text>
+            <Text className="font-jakarta text-[14.5px] font-semibold text-ink">{capFirst(format(parseISO(post.scheduledAt), "EEEE d MMMM 'à' HH:mm", { locale: fr }))}</Text>
           </View>
           {editable && !failed ? (
             <Pressable hitSlop={8} onPress={() => setDateVisible(true)}>
-              <Text className="font-jakarta text-[14px] font-semibold text-brand-ink">Modifier</Text>
+              <Text className="font-jakarta text-[12.5px] font-semibold text-brand-ink">Modifier</Text>
             </Pressable>
           ) : null}
         </View>
+        </Appear>
 
         {failed && post.errorMessage ? (
           <View className="rounded-[20px] bg-[#FDE7E4] px-4 py-3">
-            <Text className="font-jakarta text-[14px] font-semibold text-text-critical">{dbState === "unknown" ? "La publication a peut-être été envoyée" : "La publication a échoué"}</Text>
-            <Text className="mt-1 font-jakarta text-[14px] text-ink">{post.errorMessage}</Text>
-            <Text className="mt-1 font-jakarta text-[12px] leading-[18px] text-ink-soft">
+            <Text className="font-jakarta text-[12.5px] font-semibold text-text-critical">{dbState === "unknown" ? "La publication a peut-être été envoyée" : "La publication a échoué"}</Text>
+            <Text className="mt-1 font-jakarta text-[12.5px] text-ink">{post.errorMessage}</Text>
+            <Text className="mt-1 font-jakarta text-[11px] leading-[16px] text-ink-soft">
               Postbiz ne réessaie jamais seul, pour éviter un doublon chez le réseau. Vérifiez sur le réseau avant de reprogrammer.
             </Text>
           </View>
         ) : null}
 
-        <PostPreview network={post.network} name={post.authorName || formatNetworkLabel(post.network)} username={channel?.username} avatar={post.authorAvatar || undefined} thread={thread} date={post.scheduledAt} />
+        <Appear index={2}>
+        <PostPreview network={post.network} name={post.authorName || formatNetworkLabel(post.network)} username={channel?.username} avatar={post.authorAvatar || undefined} thread={thread} date={post.scheduledAt} media={(post.media ?? []).map((m) => ({ kind: m.kind, uri: m.thumbUrl }))} />
+        </Appear>
 
-        <Text className="font-jakarta text-[12px] text-ink-muted">Aperçu indicatif : l’affichage réel dépend du réseau et de l’appareil.</Text>
+        <Text className="font-jakarta text-[11px] text-ink-muted">Aperçu indicatif : l’affichage réel dépend du réseau et de l’appareil.</Text>
       </ScrollView>
 
       <View className="gap-2 px-4 pb-2 pt-2">
         {dbState === "published" && post.releaseUrl ? <PrimaryButton label="Voir sur le réseau" icon="open-outline" onPress={() => void WebBrowser.openBrowserAsync(post.releaseUrl as string)} /> : null}
-        {dbState === "publishing" ? <Text className="text-center font-jakarta text-[13px] text-ink-soft">Envoi en cours : la publication ne peut plus être modifiée.</Text> : null}
+        {dbState === "publishing" ? <Text className="text-center font-jakarta text-[12px] text-ink-soft">Envoi en cours : la publication ne peut plus être modifiée.</Text> : null}
         <View className="flex-row items-center gap-2">
           {editable ? (
             <View className="flex-1">

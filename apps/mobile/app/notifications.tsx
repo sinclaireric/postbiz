@@ -8,7 +8,7 @@ import { useMemo } from "react";
 import { Pressable, SectionList, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { EmptyState, PageHeader } from "@/components/ui/kit";
+import { Appear, EmptyState, PageHeader } from "@/components/ui/kit";
 import { useNotificationsStore } from "@/store/notifications-store";
 import type { NotificationItem } from "@/types";
 
@@ -57,7 +57,7 @@ export default function NotificationsScreen() {
         right={
           hasUnread ? (
             <Pressable hitSlop={8} onPress={() => void useNotificationsStore.getState().markAllAsRead()}>
-              <Text className="font-jakarta text-[14px] font-semibold text-brand-ink">Tout lire</Text>
+              <Text className="font-jakarta text-[12.5px] font-semibold text-brand-ink">Tout lire</Text>
             </Pressable>
           ) : undefined
         }
@@ -69,19 +69,21 @@ export default function NotificationsScreen() {
         stickySectionHeadersEnabled={false}
         contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 32 }}
         ListEmptyComponent={<EmptyState icon="notifications-outline" title="Aucune notification" text="Les publications envoyées, les échecs et les nouveaux messages apparaîtront ici." />}
-        renderSectionHeader={({ section }) => <Text className="pb-2 pt-4 font-jakarta text-[18px] font-semibold text-ink">{capFirst(section.title)}</Text>}
-        renderItem={({ item }) => (
+        renderSectionHeader={({ section }) => <Text className="pb-2 pt-4 font-jakarta text-[16px] font-semibold text-ink">{capFirst(section.title)}</Text>}
+        renderItem={({ item, index }) => (
+          <Appear index={index}>
           <Pressable onPress={() => open(item)} className="mb-2 flex-row items-start gap-3 rounded-[20px] border border-line bg-card p-4">
             <View className={`h-10 w-10 items-center justify-center rounded-full ${item.unread ? "bg-brand" : "bg-chip-bg"}`}>
               <Ionicons name={iconFor(item.type)} size={20} color="#141414" />
             </View>
             <View className="min-w-0 flex-1">
-              <Text className={`font-jakarta text-[15px] text-ink ${item.unread ? "font-bold" : "font-semibold"}`}>{item.title}</Text>
-              {item.body ? <Text numberOfLines={3} className="mt-[2px] font-jakarta text-[14px] leading-[20px] text-ink-soft">{item.body}</Text> : null}
-              <Text className="mt-1 font-jakarta text-[12px] text-ink-muted">{format(parseISO(item.createdAt), "HH:mm")}</Text>
+              <Text className={`font-jakarta text-[13.5px] text-ink ${item.unread ? "font-bold" : "font-semibold"}`}>{item.title}</Text>
+              {item.body ? <Text numberOfLines={3} className="mt-[2px] font-jakarta text-[12.5px] leading-[18px] text-ink-soft">{item.body}</Text> : null}
+              <Text className="mt-1 font-jakarta text-[11px] text-ink-muted">{format(parseISO(item.createdAt), "HH:mm")}</Text>
             </View>
             {item.unread ? <View className="mt-2 h-[9px] w-[9px] rounded-full bg-brand-ink" /> : null}
           </Pressable>
+          </Appear>
         )}
       />
     </SafeAreaView>

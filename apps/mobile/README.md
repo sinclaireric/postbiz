@@ -95,12 +95,10 @@ et recharge la tranche concernée ; un retour au premier plan recharge tout.
 
 ## Limites connues
 
-- **Médias** : l'envoi d'images et de vidéos n'est pas branché (Storage + `apps/uploader` à venir) ; l'enregistrement est refusé avec un message si un média est joint.
-  La médiathèque du compositeur est encore factice.
+- **Médias** : joints aux publications (image, vidéo ; jusqu'à 20), choisis dans la médiathèque ou importés depuis le téléphone, avec les mêmes contrôles de format que le web (nombre, mélange image/vidéo, format d'image d'Instagram, médias obligatoires sur Instagram, TikTok et YouTube). Le worker ne publie des médias que sur Facebook et Instagram pour l'instant ; sur les autres réseaux, la programmation est refusée avec un message. Pas de vignette générée pour les vidéos (une icône est affichée), pas de texte alternatif modifiable sur mobile.
 - **Réglages du compositeur sans effet côté serveur** : étiquettes, répétition, délai, relayeurs, carrousel. L'interface les affiche (héritage de postiz-mobile) mais rien n'est enregistré.
 - **Connexion d'un canal** : l'OAuth se fait sur le site web. Le bouton « Ajouter un canal » l'ouvre (page « Canaux ») dans un navigateur intégré, à l'adresse `EXPO_PUBLIC_WEB_URL` ; l'utilisateur s'y connecte puis clique « Connecter ». À la fermeture, la liste des canaux est rechargée. Un flux natif (jeton Supabase, retour par lien `postbiz://`) n'existe pas encore.
 - **Analytics** : seulement les chiffres de Postbiz ; les métriques des réseaux ne sont pas collectées.
-- **Médias** : on peut les ajouter à la médiathèque, mais pas encore les joindre à une publication.
 - **Notifications push** : envoyées par l'Edge Function `send-push` (voir le README racine, « Notifications push »), **jamais exécutée contre un vrai projet Supabase ni Expo**.
   Elle pousse chaque ligne de `notifications` et chaque message entrant ; la charge `data` contient `conversation_id` (ouvre `/conversation/<id>`).
   L'enregistrement du jeton passe par le RPC `claim_push_token`, qui reprend aussi un jeton encore lié à un autre compte (appareil prêté).

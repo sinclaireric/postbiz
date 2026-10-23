@@ -8,7 +8,8 @@ import { FlatList, KeyboardAvoidingView, Platform, Pressable, Text, TextInput, V
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { ChannelAvatar } from "@/components/ui/channel-avatar";
-import { EmptyState, IconCircle, PageHeader } from "@/components/ui/kit";
+import { haptic } from "@/lib/haptics";
+import { Appear, EmptyState, IconCircle, PageHeader } from "@/components/ui/kit";
 import { showToast } from "@/components/ui/toast";
 import { MAX_REPLY_LENGTH, replyWindow, validateReply } from "@/lib/inbox/logic";
 import type { DeliveryStatus, MessageItem } from "@/lib/inbox/types";
@@ -30,15 +31,15 @@ function Bubble({ message }: { message: MessageItem }) {
   return (
     <View className={`max-w-[85%] gap-1 ${outgoing ? "items-end self-end" : "items-start self-start"}`}>
       <View className={`rounded-[20px] px-4 py-3 ${outgoing ? "rounded-br-[6px] bg-brand" : "rounded-bl-[6px] border border-line bg-card"}`}>
-        <Text className="font-jakarta text-[16px] leading-[22px] text-ink">{message.body || (message.attachments.length > 0 ? "Pièce jointe" : "")}</Text>
+        <Text className="font-jakarta text-[14.5px] leading-[19.5px] text-ink">{message.body || (message.attachments.length > 0 ? "Pièce jointe" : "")}</Text>
       </View>
-      <Text className="font-jakarta text-[11px] text-ink-muted">
+      <Text className="font-jakarta text-[10px] text-ink-muted">
         {format(parseISO(message.createdAt), "d MMM, HH:mm", { locale: fr })}
         {outgoing && message.sentByName ? ` · ${message.sentByName}` : ""}
         {outgoing ? ` · ${DELIVERY_LABEL[message.deliveryStatus]}` : ""}
       </Text>
       {message.deliveryStatus === "failed" ? (
-        <Text className="max-w-[270px] text-right font-jakarta text-[12px] leading-[17px] text-text-critical">
+        <Text className="max-w-[270px] text-right font-jakarta text-[11px] leading-[15px] text-text-critical">
           {message.error ?? "Le message n’est pas parti."} Il n’est jamais renvoyé automatiquement : écrivez un nouveau message si besoin.
         </Text>
       ) : null}
@@ -90,6 +91,7 @@ export default function ConversationScreen() {
       showToast(result.error, "error");
       return;
     }
+    haptic.success();
     setDraft("");
   }, [id, draft, canSend]);
 
@@ -117,15 +119,15 @@ export default function ConversationScreen() {
           <IconCircle icon="chevron-back" label="Retour" onPress={() => router.back()} />
           <ChannelAvatar avatar={channel?.avatar} network={conversation.networkId} name={conversation.contactName} size={42} />
           <View className="min-w-0 flex-1">
-            <Text numberOfLines={1} className="font-jakarta text-[17px] font-semibold text-ink">{conversation.contactName}</Text>
-            <Text numberOfLines={1} className="font-jakarta text-[12px] text-ink-soft">
+            <Text numberOfLines={1} className="font-jakarta text-[15px] font-semibold text-ink">{conversation.contactName}</Text>
+            <Text numberOfLines={1} className="font-jakarta text-[11px] text-ink-soft">
               {conversation.accountName}
               {conversation.contactUsername ? ` · @${conversation.contactUsername}` : ""}
             </Text>
           </View>
           {canWrite ? (
             <Pressable hitSlop={8} onPress={toggleClosed} className="h-[40px] items-center justify-center rounded-full bg-card px-4">
-              <Text className="font-jakarta text-[14px] font-semibold text-brand-ink">{closed ? "Rouvrir" : "Résoudre"}</Text>
+              <Text className="font-jakarta text-[12.5px] font-semibold text-brand-ink">{closed ? "Rouvrir" : "Résoudre"}</Text>
             </Pressable>
           ) : null}
         </View>
@@ -133,7 +135,7 @@ export default function ConversationScreen() {
         {window.state !== "none" ? (
           <View className={`mx-4 mb-2 flex-row items-center gap-2 rounded-[16px] px-4 py-3 ${expired ? "bg-[#FDE7E4]" : window.state === "urgent" ? "bg-[#FFF1CC]" : "bg-brand-soft"}`}>
             <Ionicons name={expired ? "alert-circle" : "time"} size={18} color={expired ? "#B42318" : window.state === "urgent" ? "#8A5A00" : "#2F4A00"} />
-            <Text className={`flex-1 font-jakarta text-[13px] font-semibold ${expired ? "text-text-critical" : window.state === "urgent" ? "text-[#8A5A00]" : "text-brand-ink"}`}>
+            <Text className={`flex-1 font-jakarta text-[12px] font-semibold ${expired ? "text-text-critical" : window.state === "urgent" ? "text-[#8A5A00]" : "text-brand-ink"}`}>
               {expired ? "Fenêtre de 24 h dépassée : Meta n’autorise plus de réponse à cette conversation." : `${window.label} (24 h après le dernier message du client)`}
             </Text>
           </View>
@@ -145,20 +147,24 @@ export default function ConversationScreen() {
           contentContainerStyle={{ gap: 12, paddingVertical: 12 }}
           data={messages ?? []}
           keyExtractor={(m) => m.id}
-          renderItem={({ item }) => <Bubble message={item} />}
-          ListEmptyComponent={messages === undefined ? undefined : <Text className="mt-10 text-center font-jakarta text-[15px] text-ink-soft">Aucun message.</Text>}
+          renderItem={({ item }) => (
+            <Appear from="up">
+              <Bubble message={item} />
+            </Appear>
+          )}
+          ListEmptyComponent={messages === undefined ? undefined : <Text className="mt-10 text-center font-jakarta text-[13.5px] text-ink-soft">Aucun message.</Text>}
         />
 
         {canWrite ? (
           <View className="gap-1 px-4 pb-2 pt-2">
             {draft.length > MAX_REPLY_LENGTH - 200 ? (
-              <Text className={`text-right font-jakarta text-[11px] ${draft.length > MAX_REPLY_LENGTH ? "text-text-critical" : "text-ink-muted"}`}>
+              <Text className={`text-right font-jakarta text-[10px] ${draft.length > MAX_REPLY_LENGTH ? "text-text-critical" : "text-ink-muted"}`}>
                 {draft.length}/{MAX_REPLY_LENGTH}
               </Text>
             ) : null}
             <View className="flex-row items-end gap-2">
               <TextInput
-                className="max-h-[130px] min-h-[52px] flex-1 rounded-[26px] border border-line bg-card px-5 py-[14px] font-jakarta text-[16px] text-ink"
+                className="max-h-[130px] min-h-[52px] flex-1 rounded-[26px] border border-line bg-card px-5 py-[14px] font-jakarta text-[14.5px] text-ink"
                 placeholder={expired ? "Réponse impossible : fenêtre dépassée" : "Votre réponse"}
                 placeholderTextColor="#9A9890"
                 value={draft}
@@ -172,7 +178,7 @@ export default function ConversationScreen() {
             </View>
           </View>
         ) : (
-          <Text className="px-4 pb-3 pt-2 text-center font-jakarta text-[13px] text-ink-soft">Votre rôle (lecteur) ne permet pas de répondre.</Text>
+          <Text className="px-4 pb-3 pt-2 text-center font-jakarta text-[12px] text-ink-soft">Votre rôle (lecteur) ne permet pas de répondre.</Text>
         )}
       </KeyboardAvoidingView>
     </SafeAreaView>

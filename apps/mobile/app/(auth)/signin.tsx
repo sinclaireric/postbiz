@@ -36,9 +36,9 @@ export default function SignInScreen() {
         <>
           <PrimaryButton label="Se connecter" onPress={submit} loading={busy} />
           <View className="flex-row justify-center gap-2">
-            <Text className="font-jakarta text-[14px] text-ink-soft">Pas encore de compte ?</Text>
+            <Text className="font-jakarta text-[12.5px] text-ink-soft">Pas encore de compte ?</Text>
             <Pressable onPress={() => router.replace("/(auth)/signup")}>
-              <Text className="font-jakarta text-[14px] font-semibold text-ink underline">Créer un compte</Text>
+              <Text className="font-jakarta text-[12.5px] font-semibold text-ink underline">Créer un compte</Text>
             </Pressable>
           </View>
         </>
@@ -73,7 +73,7 @@ export default function SignInScreen() {
         onSubmitEditing={submit}
       />
       <Pressable className="self-end py-1" onPress={() => router.push("/(auth)/forgot-password")}>
-        <Text className="font-jakarta text-[14px] font-semibold text-ink underline">Mot de passe oublié ?</Text>
+        <Text className="font-jakarta text-[12.5px] font-semibold text-ink underline">Mot de passe oublié ?</Text>
       </Pressable>
     </AuthShell>
   );

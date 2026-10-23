@@ -36,13 +36,15 @@ const mk = (id: string, ch: Channel, iso: string, text: string, state: string, s
   ...extra,
 });
 
+const pic = (seed: string, kind: "image" | "video" = "image") => ({ id: `m-${seed}`, kind, name: `${seed}.jpg`, alt: "", thumbUrl: `https://picsum.photos/seed/${seed}/600/600` });
+
 const posts: ScheduledPost[] = [
-  mk("p1", channels[0], at(0, 18, 30), "Nouveau pain aux noix dès samedi à la boulangerie ! 🥖 Offre de lancement pour les 20 premiers clients.\n\n#boulangerie #fabriquémaison", "queued", "scheduled"),
+  mk("p1", channels[0], at(0, 18, 30), "Nouveau pain aux noix dès samedi à la boulangerie ! 🥖 Offre de lancement pour les 20 premiers clients.\n\n#boulangerie #fabriquémaison", "queued", "scheduled", { media: [pic("pain"), pic("noix")] }),
   mk("p2", channels[1], at(0, 18, 30), "Le pain aux noix arrive samedi 🌰 Venez le goûter !\n\n#boulangerie #painaunoix #artisan", "queued", "scheduled"),
-  mk("p3", channels[2], at(1, 9), "Pain aux noix : samedi, 7 h. Les 20 premiers repartent avec une surprise. 🥖", "queued", "scheduled"),
+  mk("p3", channels[2], at(1, 9), "Pain aux noix : samedi, 7 h. Les 20 premiers repartent avec une surprise. 🥖", "queued", "scheduled", { media: [pic("surprise")] }),
   mk("p4", channels[0], at(3, 12), "Notre équipe recrute un(e) apprenti(e) boulanger. Envoyez-nous un message !", "draft", "draft"),
   mk("p5", channels[2], at(-1, 8), "Merci pour votre confiance : 1 000 baguettes vendues cette semaine ! 🙏", "published", "published", { releaseUrl: "https://x.com" }),
-  mk("p6", channels[0], at(-3, 10, 15), "Horaires du week-end : ouvert samedi et dimanche de 6 h 30 à 13 h.", "published", "published", { releaseUrl: "https://facebook.com" }),
+  mk("p6", channels[0], at(-3, 10, 15), "Horaires du week-end : ouvert samedi et dimanche de 6 h 30 à 13 h.", "published", "published", { releaseUrl: "https://facebook.com", media: [pic("horaires", "video")] }),
   mk("p7", channels[1], at(-2, 17), "Atelier croissants : les inscriptions sont ouvertes.", "error", "error", { errorMessage: "Instagram exige une image ou une vidéo pour publier." }),
 ];
 

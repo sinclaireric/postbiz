@@ -117,12 +117,12 @@ export default function WelcomeScreen() {
 
       <View style={{ position: "absolute", left: 0, right: 0, top: height * 0.285, paddingHorizontal: 24 }}>
         <Animated.View entering={FadeInDown.delay(350).duration(600)}>
-          <Text className="text-center font-jakarta text-[34px] font-semibold leading-[42px] text-ink">
+          <Text className="text-center font-jakarta text-[29px] font-semibold leading-[37px] text-ink">
             Votre espace de travail pour les réseaux sociaux
           </Text>
         </Animated.View>
         <Animated.View entering={FadeInDown.delay(520).duration(600)} style={{ marginTop: 18 }}>
-          <Text className="text-center font-jakarta text-[17px] leading-[24px] text-ink-soft">Publiez, répondez et créez avec votre agent IA, sans le chaos</Text>
+          <Text className="text-center font-jakarta text-[15px] leading-[21px] text-ink-soft">Publiez, répondez et créez avec votre agent IA, sans le chaos</Text>
         </Animated.View>
       </View>
 
@@ -148,7 +148,7 @@ export default function WelcomeScreen() {
       >
         <PrimaryButton label="Rejoindre Postbiz" onPress={() => router.push("/(auth)/signup")} />
         <OutlineButton label="J’ai déjà un compte" onPress={() => router.push("/(auth)/signin" as never)} />
-        <Text className="pt-1 text-center font-jakarta text-[12px] text-ink-muted">Facebook · Instagram · X · LinkedIn · TikTok · YouTube</Text>
+        <Text className="pt-1 text-center font-jakarta text-[11px] text-ink-muted">Facebook · Instagram · X · LinkedIn · TikTok · YouTube</Text>
       </Animated.View>
     </SafeAreaView>
   );

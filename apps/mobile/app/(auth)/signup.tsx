@@ -44,7 +44,7 @@ export default function SignUpScreen() {
       subtitle="Un espace pour planifier vos publications et répondre à tous vos messages."
       footer={
         <>
-          <Text className="text-center font-jakarta text-[12px] leading-[18px] text-ink-soft">
+          <Text className="text-center font-jakarta text-[11px] leading-[16px] text-ink-soft">
             En créant un compte, vous acceptez nos{" "}
             <Text className="underline" onPress={() => WebBrowser.openBrowserAsync("https://www.getpostbiz.com/cgu")}>
               conditions d’utilisation
@@ -57,9 +57,9 @@ export default function SignUpScreen() {
           </Text>
           <PrimaryButton label="Créer mon compte" onPress={submit} loading={busy} />
           <View className="flex-row justify-center gap-2">
-            <Text className="font-jakarta text-[14px] text-ink-soft">Déjà un compte ?</Text>
+            <Text className="font-jakarta text-[12.5px] text-ink-soft">Déjà un compte ?</Text>
             <Pressable onPress={() => router.replace("/(auth)/signin" as never)}>
-              <Text className="font-jakarta text-[14px] font-semibold text-ink underline">Se connecter</Text>
+              <Text className="font-jakarta text-[12.5px] font-semibold text-ink underline">Se connecter</Text>
             </Pressable>
           </View>
         </>

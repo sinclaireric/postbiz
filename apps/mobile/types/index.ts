@@ -98,6 +98,17 @@ export type ScheduledPost = {
   dbState?: string;
   /** Adresse de la publication chez le réseau, une fois publiée. */
   releaseUrl?: string;
+  /** Médias joints, dans l'ordre d'affichage (vignettes signées temporaires). */
+  media?: PostMediaItem[];
+};
+
+export type PostMediaItem = {
+  id: string;
+  kind: "image" | "video";
+  name: string;
+  alt: string;
+  /** Vignette (ou l'image elle-même) ; null si le média n'existe plus dans la médiathèque. */
+  thumbUrl: string | null;
 };
 
 export type TimeSlot = {

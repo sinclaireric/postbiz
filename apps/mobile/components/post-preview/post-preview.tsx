@@ -20,7 +20,11 @@ export type PreviewProps = {
   thread: string[];
   /** Date de publication, ISO. */
   date: string;
+  /** Médias joints (vignettes), dans l'ordre. */
+  media?: PreviewMedia[];
 };
+
+export type PreviewMedia = { kind: "image" | "video"; uri: string | null };
 
 const URL_OR_TAG = /(https?:\/\/\S+|#[A-Za-zÀ-ÿ0-9_]+|@[A-Za-zÀ-ÿ0-9_.]+)/g;
 
@@ -63,6 +67,40 @@ function Avatar({ uri, name, size, round = true, bg = "#D0D0D6" }: { uri?: strin
 
 const when = (iso: string, pattern: string) => format(parseISO(iso), pattern, { locale: fr });
 
+/** Médias d'une publication : une image pleine largeur, deux côte à côte, ou une grille ; « +n » au-delà de quatre. */
+function MediaGrid({ media, ratio = 1.5, radius = 0, gap = 2 }: { media: PreviewMedia[]; ratio?: number; radius?: number; gap?: number }) {
+  if (media.length === 0) return null;
+  const cell = (m: PreviewMedia, style: object, extra?: string) => (
+    <View key={`${m.uri}-${extra ?? ""}`} style={[{ backgroundColor: "#E9E9EE", overflow: "hidden", alignItems: "center", justifyContent: "center" }, style]}>
+      {m.uri ? <Image source={{ uri: m.uri }} style={{ width: "100%", height: "100%" }} contentFit="cover" /> : <Ionicons name={m.kind === "video" ? "videocam-outline" : "image-outline"} size={28} color="#9A9AA0" />}
+      {m.kind === "video" ? (
+        <View style={{ position: "absolute", width: 44, height: 44, borderRadius: 22, backgroundColor: "rgba(0,0,0,0.55)", alignItems: "center", justifyContent: "center" }}>
+          <Ionicons name="play" size={20} color="#FFFFFF" />
+        </View>
+      ) : null}
+      {extra ? (
+        <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(0,0,0,0.5)", alignItems: "center", justifyContent: "center" }}>
+          <Text style={{ color: "#FFFFFF", fontSize: 24, fontWeight: "600" }}>{extra}</Text>
+        </View>
+      ) : null}
+    </View>
+  );
+  const shown = media.slice(0, 4);
+  const more = media.length > 4 ? `+${media.length - 4}` : undefined;
+  if (shown.length === 1) return <View style={{ borderRadius: radius, overflow: "hidden" }}>{cell(shown[0], { width: "100%", aspectRatio: ratio })}</View>;
+  if (shown.length === 2)
+    return (
+      <View style={{ flexDirection: "row", gap, borderRadius: radius, overflow: "hidden" }}>
+        {shown.map((m) => cell(m, { flex: 1, aspectRatio: 1 }))}
+      </View>
+    );
+  return (
+    <View style={{ flexDirection: "row", flexWrap: "wrap", gap, borderRadius: radius, overflow: "hidden" }}>
+      {shown.map((m, i) => cell(m, { width: "49.5%", aspectRatio: 1 }, i === 3 ? more : undefined))}
+    </View>
+  );
+}
+
 function NoMedia({ height = 220 }: { height?: number }) {
   return (
     <View style={{ height, backgroundColor: "#E9E9EE", alignItems: "center", justifyContent: "center", gap: 6 }}>
@@ -73,7 +111,7 @@ function NoMedia({ height = 220 }: { height?: number }) {
 }
 
 /* ---------------------------------------------------------------- Facebook */
-function FacebookPreview({ name, avatar, thread, date }: PreviewProps) {
+function FacebookPreview({ name, avatar, thread, date, media = [] }: PreviewProps) {
   return (
     <View style={{ gap: 10 }}>
       {thread.map((text, i) => (
@@ -93,6 +131,7 @@ function FacebookPreview({ name, avatar, thread, date }: PreviewProps) {
           <View style={{ paddingHorizontal: 12, paddingBottom: 12 }}>
             <RichText text={text} color="#050505" linkColor="#216FDB" size={15} lineHeight={20} />
           </View>
+          {i === 0 ? <MediaGrid media={media} ratio={1.33} /> : null}
           <View style={{ borderTopWidth: 1, borderTopColor: "#E4E6EB", flexDirection: "row", justifyContent: "space-around", paddingVertical: 10 }}>
             {[
               ["thumbs-up-outline", "J’aime"],
@@ -112,7 +151,7 @@ function FacebookPreview({ name, avatar, thread, date }: PreviewProps) {
 }
 
 /* ---------------------------------------------------------------- Instagram */
-function InstagramPreview({ name, username, avatar, thread, date }: PreviewProps) {
+function InstagramPreview({ name, username, avatar, thread, date, media = [] }: PreviewProps) {
   const handle = username || name.toLowerCase().replace(/\s+/g, "");
   return (
     <View style={{ gap: 10 }}>
@@ -124,7 +163,18 @@ function InstagramPreview({ name, username, avatar, thread, date }: PreviewProps
           <Text style={{ flex: 1, color: "#262626", fontSize: 14, fontWeight: "600" }} numberOfLines={1}>{handle}</Text>
           <Ionicons name="ellipsis-horizontal" size={20} color="#262626" />
         </View>
-        <NoMedia height={280} />
+        {media.length > 0 ? (
+          <View>
+            <MediaGrid media={media.slice(0, 1)} ratio={1} />
+            {media.length > 1 ? (
+              <View style={{ position: "absolute", top: 10, right: 10, backgroundColor: "rgba(0,0,0,0.6)", borderRadius: 12, paddingHorizontal: 8, paddingVertical: 3 }}>
+                <Text style={{ color: "#FFFFFF", fontSize: 12, fontWeight: "600" }}>1/{media.length}</Text>
+              </View>
+            ) : null}
+          </View>
+        ) : (
+          <NoMedia height={280} />
+        )}
         <View style={{ flexDirection: "row", padding: 10, gap: 14, alignItems: "center" }}>
           <Ionicons name="heart-outline" size={26} color="#262626" />
           <Ionicons name="chatbubble-outline" size={24} color="#262626" />
@@ -152,7 +202,7 @@ function InstagramPreview({ name, username, avatar, thread, date }: PreviewProps
 }
 
 /* ---------------------------------------------------------------- X */
-function XPreview({ name, username, avatar, thread, date }: PreviewProps) {
+function XPreview({ name, username, avatar, thread, date, media = [] }: PreviewProps) {
   const handle = username || name.toLowerCase().replace(/\s+/g, "");
   return (
     <View style={{ backgroundColor: "#FFFFFF", borderRadius: 8, borderWidth: 1, borderColor: "#EFF3F4", paddingHorizontal: 12, paddingTop: 12 }}>
@@ -171,6 +221,11 @@ function XPreview({ name, username, avatar, thread, date }: PreviewProps) {
                 <Text style={{ color: "#536471", fontSize: 15 }}>· {when(date, "d MMM")}</Text>
               </View>
               <RichText text={text} color="#0F1419" linkColor="#1D9BF0" size={15} lineHeight={20} />
+              {i === 0 && media.length > 0 ? (
+                <View style={{ marginTop: 10 }}>
+                  <MediaGrid media={media} ratio={1.78} radius={16} gap={2} />
+                </View>
+              ) : null}
               <Text style={{ color: text.length > 280 ? "#D92D20" : "#536471", fontSize: 12, marginTop: 4 }}>
                 {text.length} / 280 caractères
               </Text>
@@ -188,7 +243,7 @@ function XPreview({ name, username, avatar, thread, date }: PreviewProps) {
 }
 
 /* ---------------------------------------------------------------- LinkedIn */
-function LinkedInPreview({ name, avatar, thread, date }: PreviewProps) {
+function LinkedInPreview({ name, avatar, thread, date, media = [] }: PreviewProps) {
   return (
     <View style={{ backgroundColor: "#FFFFFF", borderRadius: 8, borderWidth: 1, borderColor: "#E0DFDC", overflow: "hidden" }}>
       <View style={{ flexDirection: "row", gap: 8, padding: 12 }}>
@@ -208,6 +263,7 @@ function LinkedInPreview({ name, avatar, thread, date }: PreviewProps) {
           <RichText key={i} text={text} color="rgba(0,0,0,0.9)" linkColor="#0A66C2" size={14} lineHeight={20} />
         ))}
       </View>
+      <MediaGrid media={media} ratio={1.5} />
       <View style={{ borderTopWidth: 1, borderTopColor: "#E0DFDC", flexDirection: "row", justifyContent: "space-around", paddingVertical: 10 }}>
         {[
           ["thumbs-up-outline", "J’aime"],
@@ -226,13 +282,19 @@ function LinkedInPreview({ name, avatar, thread, date }: PreviewProps) {
 }
 
 /* ---------------------------------------------------------------- TikTok */
-function TikTokPreview({ name, username, avatar, thread }: PreviewProps) {
+function TikTokPreview({ name, username, avatar, thread, media = [] }: PreviewProps) {
   const handle = username || name.toLowerCase().replace(/\s+/g, "");
   return (
     <View style={{ backgroundColor: "#000000", borderRadius: 12, overflow: "hidden", height: 460 }}>
       <View style={{ flex: 1, alignItems: "center", justifyContent: "center", gap: 6 }}>
-        <Ionicons name="videocam-outline" size={38} color="#FFFFFF66" />
-        <Text style={{ color: "#FFFFFF99", fontSize: 12 }}>Vidéo requise (bientôt disponible)</Text>
+        {media[0]?.uri ? (
+          <Image source={{ uri: media[0].uri }} style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }} contentFit="cover" />
+        ) : (
+          <>
+            <Ionicons name="videocam-outline" size={38} color="#FFFFFF66" />
+            <Text style={{ color: "#FFFFFF99", fontSize: 12 }}>{media.length > 0 ? "Vidéo" : "Vidéo requise"}</Text>
+          </>
+        )}
       </View>
       <View style={{ position: "absolute", right: 10, bottom: 70, alignItems: "center", gap: 18 }}>
         <Avatar uri={avatar} name={name} size={42} bg="#FE2C55" />
@@ -261,7 +323,7 @@ function TikTokPreview({ name, username, avatar, thread }: PreviewProps) {
 }
 
 /* ---------------------------------------------------------------- YouTube */
-function YouTubePreview({ name, avatar, thread, date }: PreviewProps) {
+function YouTubePreview({ name, avatar, thread, date, media = [] }: PreviewProps) {
   return (
     <View style={{ backgroundColor: "#FFFFFF", borderRadius: 12, borderWidth: 1, borderColor: "#E5E5E5", padding: 14, gap: 10 }}>
       <View style={{ flexDirection: "row", gap: 10, alignItems: "center" }}>
@@ -275,6 +337,7 @@ function YouTubePreview({ name, avatar, thread, date }: PreviewProps) {
       {thread.map((text, i) => (
         <RichText key={i} text={text} color="#0F0F0F" linkColor="#065FD4" size={14} lineHeight={20} />
       ))}
+      <MediaGrid media={media} ratio={1.78} radius={12} />
       <View style={{ flexDirection: "row", gap: 22, alignItems: "center" }}>
         <Ionicons name="thumbs-up-outline" size={20} color="#0F0F0F" />
         <Ionicons name="thumbs-down-outline" size={20} color="#0F0F0F" />
@@ -285,7 +348,7 @@ function YouTubePreview({ name, avatar, thread, date }: PreviewProps) {
 }
 
 /** Repli pour les réseaux sans mise en page dédiée. */
-function GenericPreview({ name, avatar, thread, date }: PreviewProps) {
+function GenericPreview({ name, avatar, thread, date, media = [] }: PreviewProps) {
   return (
     <View style={{ backgroundColor: "#FFFFFF", borderRadius: 10, borderWidth: 1, borderColor: "#E6E6EA", padding: 14, gap: 10 }}>
       <View style={{ flexDirection: "row", gap: 10, alignItems: "center" }}>
@@ -298,6 +361,7 @@ function GenericPreview({ name, avatar, thread, date }: PreviewProps) {
       {thread.map((text, i) => (
         <RichText key={i} text={text} color="#111111" linkColor="#3B64F6" />
       ))}
+      <MediaGrid media={media} ratio={1.5} radius={12} />
     </View>
   );
 }

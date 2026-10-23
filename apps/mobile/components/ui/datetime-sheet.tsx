@@ -5,18 +5,19 @@ import { useEffect, useMemo, useState } from "react";
 import { Pressable, Text, View } from "react-native";
 
 import { PrimaryButton, Sheet } from "@/components/ui/kit";
+import { haptic } from "@/lib/haptics";
 
 function Stepper({ label, value, onChange, max, step = 1 }: { label: string; value: number; onChange: (v: number) => void; max: number; step?: number }) {
   const wrap = (v: number) => ((v % (max + 1)) + (max + 1)) % (max + 1);
   return (
     <View className="flex-1 items-center rounded-[18px] bg-card py-2">
-      <Text className="font-jakarta text-[11px] font-semibold uppercase text-ink-muted">{label}</Text>
+      <Text className="font-jakarta text-[10px] font-semibold uppercase text-ink-muted">{label}</Text>
       <View className="flex-row items-center gap-3">
-        <Pressable className="h-10 w-10 items-center justify-center" hitSlop={6} accessibilityLabel={`${label} moins`} onPress={() => onChange(wrap(value - step))}>
+        <Pressable className="h-10 w-10 items-center justify-center" hitSlop={6} accessibilityLabel={`${label} moins`} onPress={() => { haptic.select(); onChange(wrap(value - step)); }}>
           <Ionicons name="remove" size={22} color="#141414" />
         </Pressable>
-        <Text className="w-[44px] text-center font-jakarta text-[28px] font-semibold text-ink">{String(value).padStart(2, "0")}</Text>
-        <Pressable className="h-10 w-10 items-center justify-center" hitSlop={6} accessibilityLabel={`${label} plus`} onPress={() => onChange(wrap(value + step))}>
+        <Text className="w-[44px] text-center font-jakarta text-[24px] font-semibold text-ink">{String(value).padStart(2, "0")}</Text>
+        <Pressable className="h-10 w-10 items-center justify-center" hitSlop={6} accessibilityLabel={`${label} plus`} onPress={() => { haptic.select(); onChange(wrap(value + step)); }}>
           <Ionicons name="add" size={22} color="#141414" />
         </Pressable>
       </View>
@@ -48,7 +49,7 @@ export function DateTimeSheet({ visible, onClose, value, onSave, title = "Date e
   return (
     <Sheet visible={visible} onClose={onClose} title={title}>
       <View className="mb-1 flex-row items-center justify-between">
-        <Text className="font-jakarta text-[17px] font-semibold capitalize text-ink">{format(month, "MMMM yyyy", { locale: fr })}</Text>
+        <Text className="font-jakarta text-[15px] font-semibold capitalize text-ink">{format(month, "MMMM yyyy", { locale: fr })}</Text>
         <View className="flex-row">
           <Pressable className="h-10 w-10 items-center justify-center" onPress={() => setMonth(addMonths(month, -1))} accessibilityLabel="Mois précédent">
             <Ionicons name="chevron-back" size={22} color="#141414" />
@@ -60,7 +61,7 @@ export function DateTimeSheet({ visible, onClose, value, onSave, title = "Date e
       </View>
       <View className="flex-row">
         {weeks[0].map((d) => (
-          <Text key={d.toISOString()} className="flex-1 text-center font-jakarta text-[12px] font-semibold uppercase text-ink-muted">
+          <Text key={d.toISOString()} className="flex-1 text-center font-jakarta text-[11px] font-semibold uppercase text-ink-muted">
             {format(d, "EEE", { locale: fr })}
           </Text>
         ))}
@@ -72,9 +73,9 @@ export function DateTimeSheet({ visible, onClose, value, onSave, title = "Date e
             const inMonth = isSameMonth(d, month);
             const before = d < startOfDay(new Date());
             return (
-              <Pressable key={d.toISOString()} onPress={() => setDraft(set(d, { hours: draft.getHours(), minutes: draft.getMinutes(), seconds: 0, milliseconds: 0 }))} className="h-[46px] flex-1 items-center justify-center">
+              <Pressable key={d.toISOString()} onPress={() => { haptic.select(); setDraft(set(d, { hours: draft.getHours(), minutes: draft.getMinutes(), seconds: 0, milliseconds: 0 })); }} className="h-[46px] flex-1 items-center justify-center">
                 <View className={`h-[40px] w-[40px] items-center justify-center rounded-full ${selected ? "bg-brand" : ""}`}>
-                  <Text className={`font-jakarta text-[16px] ${!inMonth || before ? "text-ink-muted/50" : selected ? "font-semibold text-ink" : isToday(d) ? "font-bold text-brand-ink" : "text-ink"}`}>{format(d, "d")}</Text>
+                  <Text className={`font-jakarta text-[14.5px] ${!inMonth || before ? "text-ink-muted/50" : selected ? "font-semibold text-ink" : isToday(d) ? "font-bold text-brand-ink" : "text-ink"}`}>{format(d, "d")}</Text>
                 </View>
               </Pressable>
             );
@@ -84,19 +85,19 @@ export function DateTimeSheet({ visible, onClose, value, onSave, title = "Date e
 
       <View className="mt-3 flex-row items-center gap-3">
         <Stepper label="Heures" value={draft.getHours()} max={23} onChange={(h) => setDraft(set(draft, { hours: h }))} />
-        <Text className="font-jakarta text-[28px] font-semibold text-ink">:</Text>
+        <Text className="font-jakarta text-[24px] font-semibold text-ink">:</Text>
         <Stepper label="Minutes" value={draft.getMinutes()} max={59} step={5} onChange={(m) => setDraft(set(draft, { minutes: m }))} />
       </View>
 
       <View className="mt-3 flex-row flex-wrap gap-2">
         {presets.map((p) => (
-          <Pressable key={p.label} onPress={() => { const d = p.date(); setDraft(d); setMonth(startOfMonth(d)); }} className="h-10 items-center justify-center rounded-full bg-chip-bg px-4">
-            <Text className="font-jakarta text-[14px] font-medium text-ink">{p.label}</Text>
+          <Pressable key={p.label} onPress={() => { haptic.tap(); const d = p.date(); setDraft(d); setMonth(startOfMonth(d)); }} className="h-10 items-center justify-center rounded-full bg-chip-bg px-4">
+            <Text className="font-jakarta text-[12.5px] font-medium text-ink">{p.label}</Text>
           </Pressable>
         ))}
       </View>
 
-      {past ? <Text className="mt-3 font-jakarta text-[13px] text-text-critical">Cette date est dans le passé.</Text> : null}
+      {past ? <Text className="mt-3 font-jakarta text-[12px] text-text-critical">Cette date est dans le passé.</Text> : null}
       <View className="mt-4">
         <PrimaryButton label={`Choisir le ${format(draft, "d MMM 'à' HH:mm", { locale: fr })}`} onPress={() => onSave(draft)} />
       </View>
