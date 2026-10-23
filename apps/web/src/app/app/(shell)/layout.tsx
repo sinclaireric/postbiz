@@ -3,6 +3,7 @@ import { Suspense } from 'react';
 import { signOut } from '@/app/(auth)/actions';
 import { AppShell } from '@/components/app/shell';
 import { Onboarding } from '@/components/onboarding/onboarding';
+import { getAdminAccess } from '@/lib/admin/data';
 import { getRepositories, getSession, provisionOrganization } from '@/lib/data';
 import { getT } from '@/i18n/server';
 import { networkAvailability } from '@/lib/oauth/availability';
@@ -24,10 +25,11 @@ export default async function ShellLayout({ children }: { children: React.ReactN
 
   const { ctx } = session;
   const repos = await getRepositories(ctx);
-  const [conversations, notifications, integrations] = await Promise.all([
+  const [conversations, notifications, integrations, admin] = await Promise.all([
     repos.inbox.listConversations(),
     repos.workspace.notifications(),
     repos.workspace.integrations(),
+    getAdminAccess(),
   ]);
 
   const tiles = onboardingTiles(networkAvailability(process.env, isDemo), { demo: ctx.mode === 'demo', role: ctx.org.role });
@@ -46,6 +48,7 @@ export default async function ShellLayout({ children }: { children: React.ReactN
         notifications={notifications}
         signOutAction={signOut}
         markNotificationsRead={markNotificationsReadAction}
+        adminLink={admin.status === 'admin' ? { href: '/admin', label: t('admin.badge') } : undefined}
         demo={ctx.mode === 'demo'}
       >
         {children}

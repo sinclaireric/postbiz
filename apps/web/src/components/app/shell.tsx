@@ -68,10 +68,12 @@ function RailItem({ item, active, unread }: { item: NavItem; active: boolean; un
 }
 
 export function AppShell({
-  children, orgName, roleLabel, userName, userEmail, unreadMessages, notifications, signOutAction, markNotificationsRead, demo,
+  children, orgName, roleLabel, userName, userEmail, unreadMessages, notifications, signOutAction, markNotificationsRead, adminLink, demo,
 }: {
   children: ReactNode; orgName: string; roleLabel: string; userName: string; userEmail: string; unreadMessages: number;
-  notifications: NotificationItem[]; signOutAction: () => Promise<void>; markNotificationsRead: () => Promise<void>; demo: boolean;
+  notifications: NotificationItem[]; signOutAction: () => Promise<void>; markNotificationsRead: () => Promise<void>;
+  /** Lien vers l'espace propriétaire, présent seulement pour le propriétaire de la plateforme. */
+  adminLink?: { href: string; label: string }; demo: boolean;
 }) {
   const t = useT();
   const pathname = usePathname();
@@ -106,7 +108,7 @@ export function AppShell({
           <div className="flex items-center gap-1.5">
             <LanguageSwitcher />
             <NotificationsMenu notifications={notifications} markRead={markNotificationsRead} />
-            <UserMenu name={userName} email={userEmail} orgName={orgName} role={roleLabel} signOutAction={signOutAction} />
+            <UserMenu name={userName} email={userEmail} orgName={orgName} role={roleLabel} signOutAction={signOutAction} adminLink={adminLink} />
           </div>
         </header>
         <div className="flex min-h-0 flex-1 flex-col bg-paper lg:overflow-y-auto">{children}</div>

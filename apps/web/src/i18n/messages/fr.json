@@ -303,6 +303,137 @@
       "talk": "Parler à l’équipe"
     }
   },
+  "admin": {
+    "badge": "Administration",
+    "backToApp": "Retour à l’application",
+    "signOut": "Se déconnecter",
+    "demoNotice": "Mode démo : données d’exemple, aucune base connectée.",
+    "nav": {
+      "label": "Navigation de l’administration",
+      "overview": "Vue d’ensemble",
+      "users": "Utilisateurs",
+      "subscriptions": "Abonnements"
+    },
+    "phase": {
+      "trialing": "Essai en cours",
+      "paying": "Abonné",
+      "trial_expired": "Essai terminé",
+      "past_due": "Paiement en retard",
+      "canceled": "Résilié",
+      "none": "Sans abonnement"
+    },
+    "interval": {
+      "monthly": "mensuel",
+      "yearly": "annuel"
+    },
+    "postState": {
+      "draft": "Brouillons",
+      "queued": "Programmées",
+      "publishing": "En cours d’envoi",
+      "published": "Publiées",
+      "error": "En erreur",
+      "unknown": "Résultat inconnu"
+    },
+    "overview": {
+      "title": "Vue d’ensemble",
+      "subtitle": "L’état de votre SaaS : utilisateurs, essais, abonnements et usage."
+    },
+    "kpi": {
+      "users": "Utilisateurs",
+      "usersHint": "Nouveaux sur 7 jours : {count}",
+      "active": "Actifs sur 7 jours",
+      "activeHint": "{percent} % des utilisateurs",
+      "trials": "Essais en cours",
+      "trialsHint": "Se terminent sous 3 jours : {count}",
+      "paying": "Abonnés payants",
+      "payingHint": "Résiliation programmée : {count}",
+      "mrr": "Revenu mensuel (MRR)",
+      "mrrHint": "{amount} par an",
+      "expired": "Essais non convertis",
+      "expiredHint": "Essai terminé, sans abonnement"
+    },
+    "signups": {
+      "title": "Inscriptions, 30 derniers jours",
+      "total": "{count} sur la période",
+      "label": "Inscriptions par jour : {total} sur les 30 derniers jours",
+      "bar": "{date} : {count}"
+    },
+    "subs": {
+      "title": "Abonnements et essais",
+      "open": "Voir la liste",
+      "byPlan": "Par offre",
+      "planRow": "{plan} · {interval}",
+      "trialPotential": "Si tous les essais en cours deviennent payants : {amount} de plus par mois.",
+      "noneNote": "Les organisations « sans abonnement » existaient avant la mise en place des essais (bêta gratuite) : aucun essai ne leur est attribué."
+    },
+    "usage": {
+      "title": "Activation et usage",
+      "withChannel": "Organisations avec un canal connecté",
+      "withPublished": "Organisations ayant déjà publié",
+      "of": "{part} sur {whole}",
+      "channels": "Canaux connectés",
+      "needsReconnect": "Canaux à reconnecter",
+      "byNetwork": "Canaux par réseau",
+      "posts": "Publications créées sur 7 jours",
+      "postsByState": "Publications par état",
+      "unconfirmed": "E-mails non confirmés"
+    },
+    "users": {
+      "title": "Utilisateurs",
+      "subtitle": "Tous les comptes, avec leur organisation et leur abonnement.",
+      "searchPlaceholder": "E-mail, nom ou organisation"
+    },
+    "orgs": {
+      "title": "Abonnements",
+      "subtitle": "Une ligne par organisation : offre, état, fin d’essai ou renouvellement.",
+      "searchPlaceholder": "Organisation ou e-mail du propriétaire"
+    },
+    "filter": {
+      "search": "Rechercher",
+      "phase": "Statut",
+      "allPhases": "Tous les statuts",
+      "submit": "Filtrer",
+      "reset": "Réinitialiser"
+    },
+    "list": {
+      "results": "Résultats : {count}",
+      "empty": "Aucun résultat pour ces critères.",
+      "showAll": "Voir toute la liste"
+    },
+    "pager": {
+      "label": "Pagination",
+      "previous": "Précédent",
+      "next": "Suivant",
+      "page": "Page {page} sur {pages}"
+    },
+    "col": {
+      "user": "Utilisateur",
+      "org": "Organisation",
+      "owner": "Propriétaire",
+      "plan": "Offre",
+      "status": "Statut",
+      "members": "Membres",
+      "channels": "Canaux",
+      "posts": "Publications",
+      "signedUp": "Inscription",
+      "created": "Création",
+      "lastSeen": "Dernière connexion"
+    },
+    "cell": {
+      "never": "Jamais",
+      "unconfirmed": "E-mail non confirmé",
+      "noOrg": "Aucune organisation",
+      "orgsCount": "{count} organisations",
+      "noPlan": "—"
+    },
+    "detail": {
+      "trialEnds": "Fin de l’essai dans {days} j ({date})",
+      "trialEnded": "Essai terminé le {date}",
+      "renews": "Renouvellement le {date}",
+      "endsOn": "Prend fin le {date}",
+      "dueOn": "Période jusqu’au {date}"
+    }
+  },
   "legal": {
     "updated": "Dernière mise à jour : {date}",
     "availableIn": "Ce document n’est disponible qu’en français et en anglais ; la version anglaise est affichée.",

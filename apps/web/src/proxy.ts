@@ -10,8 +10,9 @@ export async function proxy(request: NextRequest) {
   const { response, user } = await updateSession(request);
   const { pathname } = request.nextUrl;
 
-  // « /app » et ce qui est dessous seulement : pas « /apple-icon » ni une autre page dont le nom commence par « app ».
-  if (!user && (pathname === '/app' || pathname.startsWith('/app/'))) {
+  // « /app » et ce qui est dessous seulement : pas « /apple-icon » ni une autre page dont le nom commence par « app ». Idem pour « /admin ».
+  const isPrivate = (root: string) => pathname === root || pathname.startsWith(`${root}/`);
+  if (!user && (isPrivate('/app') || isPrivate('/admin'))) {
     const url = request.nextUrl.clone();
     url.pathname = '/login';
     url.search = '';

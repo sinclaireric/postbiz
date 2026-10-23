@@ -26,7 +26,7 @@ export const getT = cache(async (): Promise<T> => {
 });
 
 /** Namespaces jamais utilisés par un composant client : on ne les envoie pas au navigateur. */
-const SERVER_ONLY = ['meta', 'legal'];
+const SERVER_ONLY = ['meta', 'legal', 'admin'];
 
 /** Arbre envoyé au navigateur : la langue, déjà complétée, sans les textes réservés au serveur. */
 export async function getClientMessages(locale: Locale): Promise<Messages> {

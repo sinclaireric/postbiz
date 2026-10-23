@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import { useT } from '@/i18n/client';
 
-export function UserMenu({ name, email, orgName, role, signOutAction }: { name: string; email: string; orgName: string; role: string; signOutAction: () => Promise<void> }) {
+export function UserMenu({ name, email, orgName, role, signOutAction, adminLink }: { name: string; email: string; orgName: string; role: string; signOutAction: () => Promise<void>; adminLink?: { href: string; label: string } }) {
   const t = useT();
   const [open, setOpen] = useState(false);
   const box = useRef<HTMLDivElement>(null);
@@ -32,6 +32,7 @@ export function UserMenu({ name, email, orgName, role, signOutAction }: { name: 
           </div>
           <div className="p-1.5">
             <Link href="/app/reglages" onClick={() => setOpen(false)} className="block rounded-xl px-3 py-2 text-sm font-medium hover:bg-wash" role="menuitem">{t('app.userMenu.settings')}</Link>
+            {adminLink && <Link href={adminLink.href} onClick={() => setOpen(false)} className="block rounded-xl px-3 py-2 text-sm font-medium hover:bg-wash" role="menuitem">{adminLink.label}</Link>}
             <form action={signOutAction}>
               <button type="submit" className="block w-full rounded-xl px-3 py-2 text-start text-sm font-medium hover:bg-wash" role="menuitem">{t('app.userMenu.signOut')}</button>
             </form>

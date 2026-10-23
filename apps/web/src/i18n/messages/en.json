@@ -303,6 +303,137 @@
       "talk": "Talk to the team"
     }
   },
+  "admin": {
+    "badge": "Administration",
+    "backToApp": "Back to the app",
+    "signOut": "Sign out",
+    "demoNotice": "Demo mode: sample data, no database connected.",
+    "nav": {
+      "label": "Administration navigation",
+      "overview": "Overview",
+      "users": "Users",
+      "subscriptions": "Subscriptions"
+    },
+    "phase": {
+      "trialing": "Trial in progress",
+      "paying": "Subscribed",
+      "trial_expired": "Trial ended",
+      "past_due": "Payment overdue",
+      "canceled": "Canceled",
+      "none": "No subscription"
+    },
+    "interval": {
+      "monthly": "monthly",
+      "yearly": "yearly"
+    },
+    "postState": {
+      "draft": "Drafts",
+      "queued": "Scheduled",
+      "publishing": "Publishing",
+      "published": "Published",
+      "error": "Failed",
+      "unknown": "Outcome unknown"
+    },
+    "overview": {
+      "title": "Overview",
+      "subtitle": "The state of your SaaS: users, trials, subscriptions and usage."
+    },
+    "kpi": {
+      "users": "Users",
+      "usersHint": "New in the last 7 days: {count}",
+      "active": "Active in 7 days",
+      "activeHint": "{percent}% of users",
+      "trials": "Active trials",
+      "trialsHint": "Ending within 3 days: {count}",
+      "paying": "Paying subscribers",
+      "payingHint": "Cancellation scheduled: {count}",
+      "mrr": "Monthly revenue (MRR)",
+      "mrrHint": "{amount} per year",
+      "expired": "Unconverted trials",
+      "expiredHint": "Trial ended, no subscription"
+    },
+    "signups": {
+      "title": "Sign-ups, last 30 days",
+      "total": "{count} over the period",
+      "label": "Sign-ups per day: {total} over the last 30 days",
+      "bar": "{date}: {count}"
+    },
+    "subs": {
+      "title": "Subscriptions and trials",
+      "open": "View the list",
+      "byPlan": "By plan",
+      "planRow": "{plan} · {interval}",
+      "trialPotential": "If every active trial converts: {amount} more per month.",
+      "noneNote": "Organizations “without a subscription” existed before trials were introduced (free beta): no trial is assigned to them."
+    },
+    "usage": {
+      "title": "Activation and usage",
+      "withChannel": "Organizations with a connected channel",
+      "withPublished": "Organizations that have published",
+      "of": "{part} of {whole}",
+      "channels": "Connected channels",
+      "needsReconnect": "Channels to reconnect",
+      "byNetwork": "Channels by network",
+      "posts": "Posts created in 7 days",
+      "postsByState": "Posts by state",
+      "unconfirmed": "Unconfirmed emails"
+    },
+    "users": {
+      "title": "Users",
+      "subtitle": "Every account, with its organization and subscription.",
+      "searchPlaceholder": "Email, name or organization"
+    },
+    "orgs": {
+      "title": "Subscriptions",
+      "subtitle": "One row per organization: plan, status, trial end or renewal.",
+      "searchPlaceholder": "Organization or owner’s email"
+    },
+    "filter": {
+      "search": "Search",
+      "phase": "Status",
+      "allPhases": "All statuses",
+      "submit": "Filter",
+      "reset": "Reset"
+    },
+    "list": {
+      "results": "Results: {count}",
+      "empty": "No results for these criteria.",
+      "showAll": "Show the whole list"
+    },
+    "pager": {
+      "label": "Pagination",
+      "previous": "Previous",
+      "next": "Next",
+      "page": "Page {page} of {pages}"
+    },
+    "col": {
+      "user": "User",
+      "org": "Organization",
+      "owner": "Owner",
+      "plan": "Plan",
+      "status": "Status",
+      "members": "Members",
+      "channels": "Channels",
+      "posts": "Posts",
+      "signedUp": "Signed up",
+      "created": "Created",
+      "lastSeen": "Last sign-in"
+    },
+    "cell": {
+      "never": "Never",
+      "unconfirmed": "Email not confirmed",
+      "noOrg": "No organization",
+      "orgsCount": "{count} organizations",
+      "noPlan": "—"
+    },
+    "detail": {
+      "trialEnds": "Trial ends in {days} d ({date})",
+      "trialEnded": "Trial ended on {date}",
+      "renews": "Renews on {date}",
+      "endsOn": "Ends on {date}",
+      "dueOn": "Period until {date}"
+    }
+  },
   "legal": {
     "updated": "Last updated: {date}",
     "availableIn": "This document is only available in French and English; the English version is shown.",

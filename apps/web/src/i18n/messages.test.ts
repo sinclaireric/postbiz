@@ -19,7 +19,8 @@ const tags = (s: string) => splitRich(s).flatMap((p) => (typeof p === 'string' ?
 
 /** Les textes juridiques ne sont traduits qu'en français et en anglais ; les autres langues n'ont que les 2 clés d'avis. */
 const LEGAL_LOCALIZED = new Set(['legal.updated', 'legal.availableIn']);
-const isLegalBody = (k: string) => k.startsWith('legal.') && !LEGAL_LOCALIZED.has(k);
+/** L'espace propriétaire (admin.*) est lui aussi réservé au français et à l'anglais : les autres langues retombent sur l'anglais. */
+const isLegalBody = (k: string) => (k.startsWith('legal.') && !LEGAL_LOCALIZED.has(k)) || k.startsWith('admin.');
 
 let fr: Record<string, string>;
 const cache = new Map<Locale, Record<string, string>>();
