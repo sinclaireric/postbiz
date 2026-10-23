@@ -745,6 +745,8 @@
       "unknownContact": "Contato desconhecido"
     },
     "validation": {
+      "mediaAspect": "{network}: “{name}” não tem um formato aceito (entre 4:5 e 1,91:1, nem muito alta nem muito larga).",
+      "mediaTooSmall": "{network}: “{name}” é pequena demais (mínimo de {min} pixels de largura).",
       "mediaNotYet": "{network}: o envio de imagens e vídeos ainda não é compatível.",
       "mediaNoImages": "{network} não aceita imagens.",
       "mediaNoVideos": "{network} não aceita vídeos.",
@@ -813,6 +815,8 @@
       "state": { "draft": "Rascunho", "queued": "Agendada", "publishing": "Em andamento", "published": "Publicada", "error": "Erro", "unknown": "Resultado desconhecido" }
     },
     "channelsPanel": {
+      "all": "Todos os canais",
+      "filterHint": "Clique num canal para ver só as publicações dele.",
       "add": "Adicionar um canal",
       "emptyTitle": "Nenhum canal por enquanto",
       "emptyText": "Conecte suas contas sociais para agendar, publicar e responder às suas mensagens, tudo em um só lugar.",
@@ -821,6 +825,18 @@
       "disabled": "Desativado",
       "manage": "Gerenciar os canais",
       "viewerNote": "Sua função (leitor) não permite criar publicações."
+    },
+    "networkPost": {
+      "like": "Curtir",
+      "comment": "Comentar",
+      "share": "Compartilhar",
+      "repost": "Repostar",
+      "send": "Enviar",
+      "followers": "Seguidores",
+      "communityPost": "Publicação da comunidade",
+      "originalSound": "Áudio original",
+      "videoNeeded": "Vídeo obrigatório",
+      "noMedia": "Sem mídia"
     },
     "composer": {
       "addMedia": "Adicionar imagens ou vídeos",

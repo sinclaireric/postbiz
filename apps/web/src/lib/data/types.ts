@@ -27,11 +27,16 @@ export interface PostMedia {
   alt: string;
   /** Vignette (ou le fichier lui-même pour une image sans vignette) ; null si le média a été supprimé de la bibliothèque. */
   thumbUrl: string | null;
+  /** L'image elle-même (aperçu net dans la fiche du post) ; null pour une vidéo. */
+  url: string | null;
+  durationSeconds: number | null;
 }
 
 export interface PostItem {
   id: string;
   groupId: string;
+  /** Canal de la publication (filtre du calendrier) ; vide si le canal n'existe plus. */
+  integrationId: string;
   networkId: NetworkId;
   accountName: string;
   content: string;

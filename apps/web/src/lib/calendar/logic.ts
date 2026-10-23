@@ -86,6 +86,15 @@ export function groupBy<T>(items: T[], key: (item: T) => string): Map<string, T[
 }
 
 /** Les publications datées, regroupées par créneau horaire ou par jour (heure locale). */
+/**
+ * Publications d'un seul canal (filtre du panneau des canaux). Sans canal choisi, ou si le canal choisi n'existe plus parmi les canaux connus,
+ * on garde tout : un filtre périmé ne doit jamais laisser un calendrier vide.
+ */
+export function filterByChannel(posts: PostItem[], channelId: string | null, knownChannelIds: readonly string[]): PostItem[] {
+  if (!channelId || !knownChannelIds.includes(channelId)) return posts;
+  return posts.filter((p) => p.integrationId === channelId);
+}
+
 export function groupPosts(posts: PostItem[], by: 'slot' | 'day'): Map<string, PostItem[]> {
   const dated = posts.filter((p) => p.publishAt).sort((a, b) => a.publishAt!.localeCompare(b.publishAt!));
   return groupBy(dated, (p) => (by === 'slot' ? slotKey(new Date(p.publishAt!)) : dayKey(new Date(p.publishAt!))));

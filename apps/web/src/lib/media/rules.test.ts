@@ -50,3 +50,29 @@ describe('règles de médias par réseau', () => {
     expect(kindOfMime(null)).toBe('image');
   });
 });
+
+describe('format des images Instagram', () => {
+  const photo = (width: number, height: number) => [{ kind: 'image' as const, width, height, name: 'photo.png' }];
+  const keys = (r: ReturnType<typeof validateMedia>) => r.map((e) => e.key.replace('app.validation.', ''));
+
+  it('accepte les rapports de 4:5 à 1,91:1', () => {
+    for (const [w, h] of [[1080, 1350], [1080, 1080], [1080, 566], [800, 1000], [1910, 1000]] as const) expect(validateMedia('instagram', photo(w, h))).toEqual([]);
+  });
+
+  it('refuse une image trop haute ou trop large, en nommant le fichier', () => {
+    expect(keys(validateMedia('instagram', photo(1000, 1500)))).toEqual(['mediaAspect']);
+    expect(keys(validateMedia('instagram_standalone', photo(2000, 600)))).toEqual(['mediaAspect']);
+    expect(validateMedia('instagram', photo(212, 92))[0]).toMatchObject({ key: 'app.validation.mediaAspect', params: { network: 'Instagram', name: 'photo.png' } });
+  });
+
+  it('refuse une image de moins de 320 pixels de large', () => {
+    expect(keys(validateMedia('instagram', photo(300, 300)))).toEqual(['mediaTooSmall']);
+    expect(validateMedia('instagram', photo(320, 320))).toEqual([]);
+  });
+
+  it('ne dit rien quand les dimensions sont inconnues, pour les vidéos, et pour les autres réseaux', () => {
+    expect(validateMedia('instagram', [{ kind: 'image' }])).toEqual([]);
+    expect(validateMedia('instagram', [{ kind: 'video', width: 100, height: 900 }])).toEqual([]);
+    expect(keys(validateMedia('facebook', photo(212, 92)))).toEqual([]);
+  });
+});

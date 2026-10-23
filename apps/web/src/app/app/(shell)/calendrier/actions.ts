@@ -56,7 +56,9 @@ export async function createPostAction(_: PostFormState, formData: FormData): Pr
   const requested = parseMedia(formData.get('media'));
   const library = await repos.media.byIds(requested.map((m) => m.id));
   if (library.length !== requested.length) return { errors: [t('app.validation.mediaMissing')] };
+  // Le type et les dimensions viennent de la bibliothèque, jamais du navigateur.
   const attached = requested.map((m, i) => ({ id: m.id, kind: library[i]!.kind, alt: m.alt }));
+  const checked = requested.map((_, i) => ({ kind: library[i]!.kind, width: library[i]!.width, height: library[i]!.height, name: library[i]!.name }));
 
   const integrations = await repos.workspace.integrations();
   const chosen = integrations.filter((i) => ids.includes(i.id));
@@ -65,7 +67,7 @@ export async function createPostAction(_: PostFormState, formData: FormData): Pr
     return { errors: [t('app.composer.errReconnect', { names: inactive.map((i) => i.name).join(', ') })] };
   }
 
-  const errors = validatePost({ content, networkIds: chosen.map((i) => i.networkId), publishAt, mode, firstComment, media: attached });
+  const errors = validatePost({ content, networkIds: chosen.map((i) => i.networkId), publishAt, mode, firstComment, media: checked });
   if (errors.length > 0) return { errors: errors.map((e) => errorText(t, e)) };
 
   const res = await repos.posts.create({

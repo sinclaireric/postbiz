@@ -36,7 +36,17 @@ export const MEDIA_RULES: Record<NetworkId, MediaRule> = {
 /** Au plus ce nombre de médias, tous réseaux confondus (la base en refuse davantage). */
 export const MAX_MEDIA_PER_POST = 20;
 
-export interface KindLike { kind: MediaKind }
+export interface KindLike {
+  kind: MediaKind;
+  /** Dimensions en pixels et nom, quand on les connaît (contrôle du format d'image d'Instagram). */
+  width?: number | null;
+  height?: number | null;
+  name?: string;
+}
+
+/** Instagram : une image publiée a un rapport largeur / hauteur entre 4:5 (0,8) et 1,91:1, et au moins 320 pixels de large (spécifications de l'API de publication). */
+export const INSTAGRAM_IMAGE = { minRatio: 0.8, maxRatio: 1.91, minWidth: 320 } as const;
+const INSTAGRAM_NETWORKS: readonly NetworkId[] = ['instagram', 'instagram_standalone'];
 
 /** Médias d'une publication sur un réseau : erreurs sous forme de clés de message (aucune : la publication convient). */
 export function validateMedia(networkId: NetworkId, items: readonly KindLike[]): FormError[] {
@@ -54,6 +64,15 @@ export function validateMedia(networkId: NetworkId, items: readonly KindLike[]):
   else if (videos > rule.maxVideos) errors.push({ key: 'app.validation.mediaTooManyVideos', params: { network, max: rule.maxVideos } });
   else if (!rule.mixing && videos > 0 && images > 0) errors.push({ key: 'app.validation.mediaMixed', params: { network } });
   else if (rule.maxVideos === 1 && videos === 1 && items.length > 1) errors.push({ key: 'app.validation.mediaMixed', params: { network } });
+  if (INSTAGRAM_NETWORKS.includes(networkId)) {
+    for (const m of items) {
+      if (m.kind !== 'image' || !m.width || !m.height) continue; // dimensions inconnues : Instagram tranchera
+      const ratio = m.width / m.height;
+      const name = m.name ?? '';
+      if (ratio < INSTAGRAM_IMAGE.minRatio - 1e-6 || ratio > INSTAGRAM_IMAGE.maxRatio + 1e-6) errors.push({ key: 'app.validation.mediaAspect', params: { network, name } });
+      else if (m.width < INSTAGRAM_IMAGE.minWidth) errors.push({ key: 'app.validation.mediaTooSmall', params: { network, name, min: INSTAGRAM_IMAGE.minWidth } });
+    }
+  }
   return errors;
 }
 

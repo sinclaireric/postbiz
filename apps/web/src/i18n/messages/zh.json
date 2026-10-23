@@ -698,6 +698,8 @@
       "unknownContact": "未知联系人"
     },
     "validation": {
+      "mediaAspect": "{network}:“{name}”的画面比例不被接受(须在 4:5 到 1.91:1 之间,不能过高或过宽)。",
+      "mediaTooSmall": "{network}:“{name}”太小(宽度至少 {min} 像素)。",
       "mediaNotYet": "{network}:暂不支持发送图片和视频。",
       "mediaNoImages": "{network} 不支持图片。",
       "mediaNoVideos": "{network} 不支持视频。",
@@ -765,6 +767,8 @@
       "state": { "draft": "草稿", "queued": "已排期", "publishing": "发布中", "published": "已发布", "error": "出错", "unknown": "结果未知" }
     },
     "channelsPanel": {
+      "all": "所有渠道",
+      "filterHint": "点击某个渠道,仅显示该渠道的帖子。",
       "add": "添加渠道",
       "emptyTitle": "暂无渠道",
       "emptyText": "连接你的社交账号,即可在一个地方排期、发布和回复消息。",
@@ -773,6 +777,18 @@
       "disabled": "已停用",
       "manage": "管理渠道",
       "viewerNote": "你的角色(查看者)无法创建帖子。"
+    },
+    "networkPost": {
+      "like": "点赞",
+      "comment": "评论",
+      "share": "分享",
+      "repost": "转发",
+      "send": "发送",
+      "followers": "关注者",
+      "communityPost": "社区帖子",
+      "originalSound": "原声",
+      "videoNeeded": "需要视频",
+      "noMedia": "无媒体"
     },
     "composer": {
       "addMedia": "添加图片或视频",

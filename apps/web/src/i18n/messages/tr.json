@@ -748,6 +748,8 @@
       "unknownContact": "Bilinmeyen kişi"
     },
     "validation": {
+      "mediaAspect": "{network}: “{name}” kabul edilen bir oranda değil (4:5 ile 1,91:1 arasında; ne çok uzun ne çok geniş).",
+      "mediaTooSmall": "{network}: “{name}” çok küçük (en az {min} piksel genişlik).",
       "mediaNotYet": "{network}: görsel ve video gönderimi henüz desteklenmiyor.",
       "mediaNoImages": "{network} görselleri kabul etmiyor.",
       "mediaNoVideos": "{network} videoları kabul etmiyor.",
@@ -816,6 +818,8 @@
       "state": { "draft": "Taslak", "queued": "Planlandı", "publishing": "Devam ediyor", "published": "Yayınlandı", "error": "Hata", "unknown": "Sonuç bilinmiyor" }
     },
     "channelsPanel": {
+      "all": "Tüm kanallar",
+      "filterHint": "Yalnızca gönderilerini görmek için bir kanala tıklayın.",
       "add": "Kanal ekle",
       "emptyTitle": "Henüz kanal yok",
       "emptyText": "Yayın planlamak, yayınlamak ve mesajlara yanıt vermek için sosyal ağ hesaplarınızı bağlayın; hepsi tek yerde.",
@@ -824,6 +828,18 @@
       "disabled": "Devre dışı",
       "manage": "Kanalları yönet",
       "viewerNote": "Rolünüz (izleyici) yayın oluşturmaya izin vermiyor."
+    },
+    "networkPost": {
+      "like": "Beğen",
+      "comment": "Yorum yap",
+      "share": "Paylaş",
+      "repost": "Yeniden paylaş",
+      "send": "Gönder",
+      "followers": "Takipçi",
+      "communityPost": "Topluluk gönderisi",
+      "originalSound": "Orijinal ses",
+      "videoNeeded": "Video gerekli",
+      "noMedia": "Medya yok"
     },
     "composer": {
       "addMedia": "Görsel veya video ekle",

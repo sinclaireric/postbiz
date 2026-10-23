@@ -754,6 +754,8 @@
       "unknownContact": "Contatto sconosciuto"
     },
     "validation": {
+      "mediaAspect": "{network}: «{name}» non ha un formato accettato (tra 4:5 e 1,91:1, né troppo alta né troppo larga).",
+      "mediaTooSmall": "{network}: «{name}» è troppo piccola (almeno {min} pixel di larghezza).",
       "mediaNotYet": "{network}: l’invio di immagini e video non è ancora supportato.",
       "mediaNoImages": "{network} non accetta immagini.",
       "mediaNoVideos": "{network} non accetta video.",
@@ -822,6 +824,8 @@
       "state": { "draft": "Bozza", "queued": "Programmata", "publishing": "In corso", "published": "Pubblicata", "error": "Errore", "unknown": "Esito sconosciuto" }
     },
     "channelsPanel": {
+      "all": "Tutti i canali",
+      "filterHint": "Fai clic su un canale per vedere solo i suoi post.",
       "add": "Aggiungi un canale",
       "emptyTitle": "Ancora nessun canale",
       "emptyText": "Collega i tuoi account social per programmare, pubblicare e rispondere ai messaggi, tutto in un unico posto.",
@@ -830,6 +834,18 @@
       "disabled": "Disattivato",
       "manage": "Gestisci i canali",
       "viewerNote": "Il tuo ruolo (lettore) non consente di creare pubblicazioni."
+    },
+    "networkPost": {
+      "like": "Mi piace",
+      "comment": "Commenta",
+      "share": "Condividi",
+      "repost": "Diffondi",
+      "send": "Invia",
+      "followers": "Follower",
+      "communityPost": "Post della community",
+      "originalSound": "Audio originale",
+      "videoNeeded": "Video obbligatorio",
+      "noMedia": "Nessun media"
     },
     "composer": {
       "addMedia": "Aggiungi immagini o video",

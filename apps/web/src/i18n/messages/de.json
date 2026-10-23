@@ -760,6 +760,8 @@
       "unknownContact": "Unbekannter Kontakt"
     },
     "validation": {
+      "mediaAspect": "{network}: „{name}“ hat kein zulässiges Format (zwischen 4:5 und 1,91:1, weder zu hoch noch zu breit).",
+      "mediaTooSmall": "{network}: „{name}“ ist zu klein (mindestens {min} Pixel breit).",
       "mediaNotYet": "{network}: Das Senden von Bildern und Videos wird noch nicht unterstützt.",
       "mediaNoImages": "{network} akzeptiert keine Bilder.",
       "mediaNoVideos": "{network} akzeptiert keine Videos.",
@@ -828,6 +830,8 @@
       "state": { "draft": "Entwurf", "queued": "Geplant", "publishing": "In Arbeit", "published": "Veröffentlicht", "error": "Fehler", "unknown": "Ergebnis unbekannt" }
     },
     "channelsPanel": {
+      "all": "Alle Kanäle",
+      "filterHint": "Klicken Sie auf einen Kanal, um nur seine Beiträge anzuzeigen.",
       "add": "Kanal hinzufügen",
       "emptyTitle": "Noch keine Kanäle",
       "emptyText": "Verbinden Sie Ihre Social-Media-Konten, um zu planen, zu veröffentlichen und Ihre Nachrichten zu beantworten – alles an einem Ort.",
@@ -836,6 +840,18 @@
       "disabled": "Deaktiviert",
       "manage": "Kanäle verwalten",
       "viewerNote": "Ihre Rolle (Leser) erlaubt keine Beiträge."
+    },
+    "networkPost": {
+      "like": "Gefällt mir",
+      "comment": "Kommentieren",
+      "share": "Teilen",
+      "repost": "Reposten",
+      "send": "Senden",
+      "followers": "Follower",
+      "communityPost": "Community-Beitrag",
+      "originalSound": "Originalton",
+      "videoNeeded": "Video erforderlich",
+      "noMedia": "Kein Medium"
     },
     "composer": {
       "addMedia": "Bilder oder Videos hinzufügen",

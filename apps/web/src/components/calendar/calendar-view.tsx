@@ -11,12 +11,12 @@ import { formatDateTime, formatLongDay, formatShortDate, formatTime, formatWeekd
 import type { MessageKey } from '@/i18n/types';
 import {
   HOURS, addDays, dayKey, defaultTimeForDay, groupPosts, isPastSlot, monthGrid, rangeLabel, sameDay, shiftAnchor, slotKey, slotStart,
-  toLocalInputValue, weekDays, type CalendarView as View,
-} from '@/lib/calendar/logic';
+  toLocalInputValue, weekDays, type CalendarView as View, filterByChannel } from '@/lib/calendar/logic';
 import type { FirstCommentState, IntegrationItem, KnowledgeItem, PostItem, PostState } from '@/lib/data/types';
 import { ChannelsPanel } from './channels-panel';
 import { MediaThumb } from '@/components/media/media-thumb';
 import { Composer } from './composer';
+import { NetworkPost } from './network-post';
 
 const STATE_TONE: Record<PostState, 'neutral' | 'ok' | 'warn' | 'lime'> = {
   draft: 'neutral', queued: 'lime', publishing: 'warn', published: 'ok', error: 'warn', unknown: 'warn',
@@ -91,6 +91,8 @@ export function CalendarView({ posts, integrations, knowledge, aiEnabled, canWri
   const [panel, setPanel] = useState(true);
   const [composer, setComposer] = useState<string | null>(null);
   const [detail, setDetail] = useState<PostItem | null>(null);
+  // Canal choisi dans le panneau : le calendrier n'affiche que ses publications (null : tous les canaux).
+  const [channelId, setChannelId] = useState<string | null>(null);
   const scroller = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -108,8 +110,11 @@ export function CalendarView({ posts, integrations, knowledge, aiEnabled, canWri
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [view, list, anchor === null]);
 
-  const bySlot = useMemo(() => groupPosts(posts, 'slot'), [posts]);
-  const byDay = useMemo(() => groupPosts(posts, 'day'), [posts]);
+  // Un canal qui n'existe plus (déconnecté) ne doit pas laisser un calendrier vide.
+  const activeChannel = channelId && integrations.some((i) => i.id === channelId) ? channelId : null;
+  const visible = useMemo(() => filterByChannel(posts, activeChannel, integrations.map((i) => i.id)), [posts, activeChannel, integrations]);
+  const bySlot = useMemo(() => groupPosts(visible, 'slot'), [visible]);
+  const byDay = useMemo(() => groupPosts(visible, 'day'), [visible]);
 
   if (!now || !anchor) {
     return <div className="flex-1 p-6" aria-busy="true"><div className="h-12 w-72 animate-pulse rounded-xl bg-wash" /></div>;
@@ -128,7 +133,7 @@ export function CalendarView({ posts, integrations, knowledge, aiEnabled, canWri
             <h2 className="text-xl font-semibold tracking-tight">{t('app.calendar.channels')}</h2>
             <button type="button" onClick={() => setPanel(false)} aria-label={t('app.calendar.hidePanel')} className="flex h-8 w-8 items-center justify-center rounded-lg bg-wash text-muted hover:text-ink"><Chevron dir="left" /></button>
           </div>
-          <ChannelsPanel integrations={integrations} canWrite={canWrite} />
+          <ChannelsPanel integrations={integrations} canWrite={canWrite} selectedId={activeChannel} onSelect={setChannelId} />
         </aside>
       )}
 
@@ -171,7 +176,7 @@ export function CalendarView({ posts, integrations, knowledge, aiEnabled, canWri
         </div>
 
         {list ? (
-          <PostList posts={posts} onOpen={setDetail} now={now} />
+          <PostList posts={visible} onOpen={setDetail} now={now} />
         ) : view === 'month' ? (
           <MonthGrid anchor={anchor} now={now} byDay={byDay} canWrite={canWrite} onCreate={openComposer} onOpen={setDetail} />
         ) : (
@@ -197,10 +202,10 @@ export function CalendarView({ posts, integrations, knowledge, aiEnabled, canWri
 
       {composer !== null && (
         <Modal title={t('app.composer.title')} onClose={() => setComposer(null)} width="max-w-6xl" header={false}>
-          <Composer integrations={integrations} knowledge={knowledge} aiEnabled={aiEnabled} canWrite={canWrite} orgId={orgId} userId={userId} demo={demo} initialLocal={composer} onSaved={() => setComposer(null)} onClose={() => setComposer(null)} />
+          <Composer integrations={integrations} knowledge={knowledge} aiEnabled={aiEnabled} canWrite={canWrite} orgId={orgId} userId={userId} demo={demo} initialLocal={composer} initialChannel={activeChannel} onSaved={() => setComposer(null)} onClose={() => setComposer(null)} />
         </Modal>
       )}
-      {detail && <PostDialog post={detail} canWrite={canWrite} onClose={() => setDetail(null)} />}
+      {detail && <PostDialog post={detail} channel={integrations.find((i) => i.id === detail.integrationId) ?? null} canWrite={canWrite} onClose={() => setDetail(null)} />}
     </div>
   );
 }
@@ -326,28 +331,22 @@ function PostList({ posts, onOpen, now }: { posts: PostItem[]; onOpen: (p: PostI
   );
 }
 
-function PostDialog({ post, canWrite, onClose }: { post: PostItem; canWrite: boolean; onClose: () => void }) {
+function PostDialog({ post, channel, canWrite, onClose }: { post: PostItem; channel: IntegrationItem | null; canWrite: boolean; onClose: () => void }) {
   const t = useT();
+  // Le canal peut avoir été déconnecté depuis : on retombe sur le nom enregistré avec la publication.
+  const shown = channel ?? { networkId: post.networkId, name: post.accountName, pictureUrl: null, username: null };
   return (
-    <Modal title={t('app.calendar.detailTitle')} onClose={onClose} width="max-w-lg">
+    <Modal title={t('app.calendar.detailTitle')} onClose={onClose} width="max-w-xl">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <p className="flex items-center gap-2 text-sm font-semibold"><NetworkLabel id={post.networkId} /><span className="font-normal text-muted">· {post.accountName}</span></p>
         <Badge tone={STATE_TONE[post.state]}>{t(STATE_KEY[post.state])}</Badge>
       </div>
       {post.publishAt && <p className="mt-2 text-sm text-muted">{formatDateTime(t.locale, post.publishAt)}</p>}
-      <p className="mt-4 max-h-64 overflow-y-auto whitespace-pre-wrap rounded-2xl bg-paper p-4 text-[15px] leading-relaxed">{post.content || <span className="text-subtle">{t('app.calendar.noText')}</span>}</p>
-      {post.media.length > 0 && (
-        <div className="mt-3">
-          <h3 className="text-xs font-bold tracking-wide text-muted uppercase">{t('app.calendar.media')}</h3>
-          <ul className="mt-2 flex flex-wrap gap-2">
-            {post.media.map((m) => (
-              <li key={m.id} className="h-16 w-16 overflow-hidden rounded-xl border border-line" title={m.alt || m.name}>
-                <MediaThumb item={{ kind: m.kind, url: null, thumbUrl: m.thumbUrl, name: m.name }} showDuration={false} />
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
+      <div className="mt-4 rounded-2xl bg-wash p-3">
+        {/* Comme sur le réseau : même présentation que la publication, avec les vrais médias. */}
+        <NetworkPost channel={shown} text={post.content} media={post.media} date={post.publishAt} />
+        {!post.content.trim() && post.media.length === 0 && <p className="mt-2 text-sm text-subtle">{t('app.calendar.noText')}</p>}
+      </div>
       {post.error && <p role="alert" className="mt-3 rounded-xl bg-warn-soft px-4 py-3 text-sm text-warn">{post.error}</p>}
       {post.firstComment && post.firstCommentState && (
         <div className="mt-4">

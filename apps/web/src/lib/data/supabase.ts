@@ -178,7 +178,7 @@ export function createSupabaseRepositories(supabase: SupabaseClient, ctx: AppCon
     async list() {
       const { data, error } = await supabase
         .from('posts')
-        .select('id, group_id, content, publish_at, state, error, release_url, first_comment, first_comment_state, first_comment_error, media, integrations(provider, name)')
+        .select('id, group_id, integration_id, content, publish_at, state, error, release_url, first_comment, first_comment_state, first_comment_error, media, integrations(provider, name)')
         .eq('org_id', ctx.org.id)
         .is('deleted_at', null)
         .is('parent_post_id', null)
@@ -193,10 +193,10 @@ export function createSupabaseRepositories(supabase: SupabaseClient, ctx: AppCon
         const attached: PostMedia[] = (Array.isArray(p.media) ? p.media : []).flatMap((m: Row): PostMedia[] => {
           const item = library.get(String(m.media_id));
           if (!item) return [];
-          return [{ id: item.id, kind: item.kind, name: item.name, alt: typeof m.alt === 'string' ? m.alt : item.alt, thumbUrl: item.thumbUrl ?? (item.kind === 'image' ? item.url : null) }];
+          return [{ id: item.id, kind: item.kind, name: item.name, alt: typeof m.alt === 'string' ? m.alt : item.alt, thumbUrl: item.thumbUrl ?? (item.kind === 'image' ? item.url : null), url: item.kind === 'image' ? item.url : null, durationSeconds: item.durationSeconds }];
         });
         return {
-          id: p.id, groupId: p.group_id, networkId: (integ?.provider ?? 'facebook') as NetworkId, accountName: integ?.name ?? '',
+          id: p.id, groupId: p.group_id, integrationId: p.integration_id ?? '', networkId: (integ?.provider ?? 'facebook') as NetworkId, accountName: integ?.name ?? '',
           content: p.content, publishAt: p.publish_at, state: p.state, error: p.error ?? null, releaseUrl: p.release_url ?? null,
           firstComment: p.first_comment ?? null, firstCommentState: p.first_comment_state ?? null, firstCommentError: p.first_comment_error ?? null,
           media: attached,

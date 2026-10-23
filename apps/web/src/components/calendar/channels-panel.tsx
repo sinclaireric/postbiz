@@ -18,7 +18,25 @@ function EmptyIllustration() {
   );
 }
 
-export function ChannelsPanel({ integrations, canWrite }: { integrations: IntegrationItem[]; canWrite: boolean }) {
+/** Pastille de « Tous les canaux » : les canaux empilés. */
+function AllChannelsIcon({ integrations }: { integrations: IntegrationItem[] }) {
+  const shown = integrations.slice(0, 3);
+  return (
+    <span className="flex h-9 w-9 shrink-0 items-center justify-center" aria-hidden="true">
+      <span className="flex -space-x-3">
+        {shown.map((i) => <ChannelAvatar key={i.id} channel={i} size={22} badge={false} />)}
+      </span>
+    </span>
+  );
+}
+
+const row = (on: boolean) => `flex w-full items-center gap-3 rounded-xl px-2.5 py-2 text-start transition focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ink ${on ? 'bg-wash ring-1 ring-ink/15' : 'hover:bg-wash'}`;
+
+/**
+ * Canaux connectés. Un clic sur un canal n'affiche que ses publications dans le calendrier ; « Tous les canaux » (ou un second clic sur le canal choisi)
+ * remet tout.
+ */
+export function ChannelsPanel({ integrations, canWrite, selectedId, onSelect }: { integrations: IntegrationItem[]; canWrite: boolean; selectedId: string | null; onSelect: (id: string | null) => void }) {
   const t = useT();
   return (
     <div className="flex h-full flex-col">
@@ -34,18 +52,34 @@ export function ChannelsPanel({ integrations, canWrite }: { integrations: Integr
           <p className="mt-2 text-sm leading-relaxed text-muted">{t('app.channelsPanel.emptyText')}</p>
         </div>
       ) : (
-        <ul className="mt-4 grid gap-1.5" aria-label={t('app.channelsPanel.connected')}>
-          {integrations.map((i) => (
-            <li key={i.id} className="flex items-center gap-3 rounded-xl px-2.5 py-2 hover:bg-wash">
-              <ChannelAvatar channel={i} size={36} />
-              <span className="min-w-0 flex-1">
-                <span className="block truncate text-sm font-semibold">{i.name}</span>
-                <span className="block truncate text-xs text-muted">{networkName(i.networkId)}</span>
-              </span>
-              {i.status !== 'active' && <Badge tone="warn">{i.status === 'refresh_needed' ? t('app.channelsPanel.reconnect') : t('app.channelsPanel.disabled')}</Badge>}
-            </li>
-          ))}
-        </ul>
+        <>
+          <ul className="mt-4 grid gap-1.5" aria-label={t('app.channelsPanel.connected')}>
+            {integrations.length > 1 && (
+              <li>
+                <button type="button" onClick={() => onSelect(null)} aria-pressed={selectedId === null} className={row(selectedId === null)}>
+                  <AllChannelsIcon integrations={integrations} />
+                  <span className="min-w-0 flex-1 truncate text-sm font-semibold">{t('app.channelsPanel.all')}</span>
+                </button>
+              </li>
+            )}
+            {integrations.map((i) => {
+              const on = selectedId === i.id;
+              return (
+                <li key={i.id}>
+                  <button type="button" onClick={() => onSelect(on ? null : i.id)} aria-pressed={on} className={row(on)}>
+                    <ChannelAvatar channel={i} size={36} />
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate text-sm font-semibold">{i.name}</span>
+                      <span className="block truncate text-xs text-muted">{networkName(i.networkId)}</span>
+                    </span>
+                    {i.status !== 'active' && <Badge tone="warn">{i.status === 'refresh_needed' ? t('app.channelsPanel.reconnect') : t('app.channelsPanel.disabled')}</Badge>}
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+          {integrations.length > 1 && <p className="mt-3 px-2.5 text-xs text-subtle">{t('app.channelsPanel.filterHint')}</p>}
+        </>
       )}
       {!canWrite && <p className="mt-4 text-xs text-subtle">{t('app.channelsPanel.viewerNote')}</p>}
       <p className="mt-auto pt-4 text-xs text-subtle"><Link href="/app/canaux" className="underline underline-offset-4">{t('app.channelsPanel.manage')}</Link></p>

@@ -1074,6 +1074,8 @@
       "unknownContact": "Contact inconnu"
     },
     "validation": {
+      "mediaAspect": "{network} : « {name} » n’a pas un format accepté (entre 4:5 et 1,91:1, ni trop haute ni trop large).",
+      "mediaTooSmall": "{network} : « {name} » est trop petite ({min} pixels de large au minimum).",
       "mediaNotYet": "{network} : l’envoi d’images et de vidéos n’est pas encore pris en charge.",
       "mediaNoImages": "{network} n’accepte pas les images.",
       "mediaNoVideos": "{network} n’accepte pas les vidéos.",
@@ -1154,6 +1156,8 @@
       }
     },
     "channelsPanel": {
+      "all": "Tous les canaux",
+      "filterHint": "Cliquez sur un canal pour n’afficher que ses publications.",
       "add": "Ajouter un canal",
       "emptyTitle": "Aucun canal pour le moment",
       "emptyText": "Connectez vos comptes sociaux pour planifier, publier et répondre à vos messages, tout en un seul endroit.",
@@ -1162,6 +1166,18 @@
       "disabled": "Désactivé",
       "manage": "Gérer les canaux",
       "viewerNote": "Votre rôle (lecteur) ne permet pas de créer des publications."
+    },
+    "networkPost": {
+      "like": "J’aime",
+      "comment": "Commenter",
+      "share": "Partager",
+      "repost": "Republier",
+      "send": "Envoyer",
+      "followers": "Abonnés",
+      "communityPost": "Publication de la communauté",
+      "originalSound": "Son original",
+      "videoNeeded": "Vidéo requise",
+      "noMedia": "Aucun média"
     },
     "composer": {
       "addMedia": "Ajouter des images ou des vidéos",

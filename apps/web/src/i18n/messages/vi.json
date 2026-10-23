@@ -746,6 +746,8 @@
       "unknownContact": "Người liên hệ không xác định"
     },
     "validation": {
+      "mediaAspect": "{network}: “{name}” không có tỉ lệ được chấp nhận (từ 4:5 đến 1,91:1, không quá cao hay quá rộng).",
+      "mediaTooSmall": "{network}: “{name}” quá nhỏ (rộng tối thiểu {min} pixel).",
       "mediaNotYet": "{network}: chưa hỗ trợ gửi hình ảnh và video.",
       "mediaNoImages": "{network} không nhận hình ảnh.",
       "mediaNoVideos": "{network} không nhận video.",
@@ -813,6 +815,8 @@
       "state": { "draft": "Bản nháp", "queued": "Đã lên lịch", "publishing": "Đang đăng", "published": "Đã đăng", "error": "Lỗi", "unknown": "Kết quả không rõ" }
     },
     "channelsPanel": {
+      "all": "Tất cả kênh",
+      "filterHint": "Nhấp vào một kênh để chỉ hiển thị bài đăng của kênh đó.",
       "add": "Thêm kênh",
       "emptyTitle": "Chưa có kênh nào",
       "emptyText": "Kết nối tài khoản mạng xã hội để lên lịch bài đăng, đăng bài và trả lời tin nhắn, tất cả ở một nơi.",
@@ -821,6 +825,18 @@
       "disabled": "Đã tắt",
       "manage": "Quản lý kênh",
       "viewerNote": "Vai trò của bạn (người xem) không cho phép tạo bài đăng."
+    },
+    "networkPost": {
+      "like": "Thích",
+      "comment": "Bình luận",
+      "share": "Chia sẻ",
+      "repost": "Đăng lại",
+      "send": "Gửi",
+      "followers": "Người theo dõi",
+      "communityPost": "Bài đăng cộng đồng",
+      "originalSound": "Âm thanh gốc",
+      "videoNeeded": "Cần video",
+      "noMedia": "Không có phương tiện"
     },
     "composer": {
       "addMedia": "Thêm hình ảnh hoặc video",

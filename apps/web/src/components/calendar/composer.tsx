@@ -98,14 +98,14 @@ function CounterChips({ networks, text, limit }: { networks: NetworkId[]; text: 
 type Side = 'preview' | 'ai';
 
 export function Composer({
-  integrations, knowledge, aiEnabled, canWrite, orgId, userId, demo, initialLocal = '', onSaved, onClose,
+  integrations, knowledge, aiEnabled, canWrite, orgId, userId, demo, initialLocal = '', initialChannel = null, onSaved, onClose,
 }: {
   integrations: IntegrationItem[]; knowledge: KnowledgeItem[]; aiEnabled: boolean; canWrite: boolean; orgId: string; userId: string; demo: boolean;
-  initialLocal?: string; onSaved?: () => void; onClose: () => void;
+  initialLocal?: string; /** Canal affiché dans le calendrier : il est coché d'office. */ initialChannel?: string | null; onSaved?: () => void; onClose: () => void;
 }) {
   const t = useT();
   const [state, action] = useActionState<PostFormState, FormData>(createPostAction, {});
-  const [selected, setSelected] = useState<string[]>([]);
+  const [selected, setSelected] = useState<string[]>(() => (initialChannel && integrations.some((i) => i.id === initialChannel && i.status === 'active') ? [initialChannel] : []));
   const [content, setContent] = useState('');
   const [local, setLocal] = useState(initialLocal);
   const [min, setMin] = useState('');

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { PostItem } from '@/lib/data/types';
 import {
+  filterByChannel,
   addDays, dayKey, defaultTimeForDay, groupPosts, isPastSlot, monthGrid, rangeLabel, sameDay, shiftAnchor, slotKey, slotStart,
   startOfWeek, toLocalInputValue, weekDays,
 } from './logic';
@@ -83,7 +84,7 @@ describe('créneaux', () => {
 
 describe('groupPosts', () => {
   const post = (id: string, at: string | null): PostItem => ({
-    id, groupId: id, networkId: 'facebook', accountName: 'x', content: id, publishAt: at, state: 'queued', error: null, releaseUrl: null,
+    id, groupId: id, integrationId: 'i1', networkId: 'facebook', accountName: 'x', content: id, publishAt: at, state: 'queued', error: null, releaseUrl: null,
     firstComment: null, firstCommentState: null, firstCommentError: null, media: [],
   });
   const a = d(2026, 10, 16, 9, 10).toISOString();
@@ -100,5 +101,30 @@ describe('groupPosts', () => {
   });
   it('ignore les publications sans date', () => {
     expect(groupPosts([post('x', null)], 'day').size).toBe(0);
+  });
+});
+
+describe('filterByChannel', () => {
+  const mk = (id: string, integrationId: string): PostItem => ({
+    id, groupId: id, integrationId, networkId: 'facebook', accountName: 'x', content: id, publishAt: '2026-10-21T10:00:00Z', state: 'queued', error: null, releaseUrl: null,
+    firstComment: null, firstCommentState: null, firstCommentError: null, media: [],
+  });
+  const posts = [mk('a', 'i1'), mk('b', 'i2'), mk('c', 'i1')];
+
+  it('sans canal choisi : toutes les publications', () => {
+    expect(filterByChannel(posts, null, ['i1', 'i2'])).toBe(posts);
+  });
+
+  it('un canal choisi : ses publications seulement, dans l’ordre', () => {
+    expect(filterByChannel(posts, 'i1', ['i1', 'i2']).map((p) => p.id)).toEqual(['a', 'c']);
+    expect(filterByChannel(posts, 'i2', ['i1', 'i2']).map((p) => p.id)).toEqual(['b']);
+  });
+
+  it('un canal qui n’existe plus (déconnecté) ne vide pas le calendrier', () => {
+    expect(filterByChannel(posts, 'i9', ['i1', 'i2'])).toBe(posts);
+  });
+
+  it('un canal connecté sans publication donne une liste vide, c’est normal', () => {
+    expect(filterByChannel(posts, 'i3', ['i1', 'i2', 'i3'])).toEqual([]);
   });
 });

@@ -720,6 +720,8 @@
       "unknownContact": "איש קשר לא מוכר"
     },
     "validation": {
+      "mediaAspect": "{network}: ל-“{name}” אין יחס תצוגה מתקבל (בין 4:5 ל-1.91:1, לא גבוהה מדי ולא רחבה מדי).",
+      "mediaTooSmall": "{network}: “{name}” קטנה מדי (לפחות {min} פיקסלים ברוחב).",
       "mediaNotYet": "{network}: שליחת תמונות וסרטונים עדיין לא נתמכת.",
       "mediaNoImages": "{network} לא מקבל תמונות.",
       "mediaNoVideos": "{network} לא מקבל סרטונים.",
@@ -789,6 +791,8 @@
       "state": { "draft": "טיוטה", "queued": "מתוזמן", "publishing": "בתהליך", "published": "פורסם", "error": "שגיאה", "unknown": "התוצאה לא ידועה" }
     },
     "channelsPanel": {
+      "all": "כל הערוצים",
+      "filterHint": "לחצו על ערוץ כדי להציג רק את הפוסטים שלו.",
       "add": "הוספת ערוץ",
       "emptyTitle": "אין ערוצים עדיין",
       "emptyText": "חברו את חשבונות הרשתות החברתיות שלכם כדי לתזמן, לפרסם ולהשיב להודעות, הכול במקום אחד.",
@@ -797,6 +801,18 @@
       "disabled": "מושבת",
       "manage": "ניהול ערוצים",
       "viewerNote": "התפקיד שלכם (צופה) אינו מאפשר ליצור פרסומים."
+    },
+    "networkPost": {
+      "like": "אהבתי",
+      "comment": "תגובה",
+      "share": "שיתוף",
+      "repost": "פרסום מחדש",
+      "send": "שליחה",
+      "followers": "עוקבים",
+      "communityPost": "פוסט קהילה",
+      "originalSound": "סאונד מקורי",
+      "videoNeeded": "נדרש סרטון",
+      "noMedia": "ללא מדיה"
     },
     "composer": {
       "addMedia": "הוספת תמונות או סרטונים",

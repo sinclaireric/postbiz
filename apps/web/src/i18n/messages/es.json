@@ -751,6 +751,8 @@
       "unknownContact": "Contacto desconocido"
     },
     "validation": {
+      "mediaAspect": "{network}: «{name}» no tiene un formato aceptado (entre 4:5 y 1,91:1, ni demasiado alta ni demasiado ancha).",
+      "mediaTooSmall": "{network}: «{name}» es demasiado pequeña (mínimo {min} píxeles de ancho).",
       "mediaNotYet": "{network}: el envío de imágenes y vídeos aún no es compatible.",
       "mediaNoImages": "{network} no acepta imágenes.",
       "mediaNoVideos": "{network} no acepta vídeos.",
@@ -819,6 +821,8 @@
       "state": { "draft": "Borrador", "queued": "Programada", "publishing": "En curso", "published": "Publicada", "error": "Error", "unknown": "Resultado desconocido" }
     },
     "channelsPanel": {
+      "all": "Todos los canales",
+      "filterHint": "Haz clic en un canal para ver solo sus publicaciones.",
       "add": "Añadir un canal",
       "emptyTitle": "Aún no hay canales",
       "emptyText": "Conecta tus cuentas sociales para programar, publicar y responder a tus mensajes, todo en un solo lugar.",
@@ -827,6 +831,18 @@
       "disabled": "Desactivado",
       "manage": "Gestionar los canales",
       "viewerNote": "Tu rol (lector) no permite crear publicaciones."
+    },
+    "networkPost": {
+      "like": "Me gusta",
+      "comment": "Comentar",
+      "share": "Compartir",
+      "repost": "Compartir de nuevo",
+      "send": "Enviar",
+      "followers": "Seguidores",
+      "communityPost": "Publicación de la comunidad",
+      "originalSound": "Sonido original",
+      "videoNeeded": "Vídeo obligatorio",
+      "noMedia": "Sin medios"
     },
     "composer": {
       "addMedia": "Añadir imágenes o vídeos",

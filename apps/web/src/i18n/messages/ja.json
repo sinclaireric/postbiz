@@ -701,6 +701,8 @@
       "unknownContact": "不明な連絡先"
     },
     "validation": {
+      "mediaAspect": "{network}:「{name}」は対応していない縦横比です(4:5〜1.91:1の範囲で、縦長・横長すぎないもの)。",
+      "mediaTooSmall": "{network}:「{name}」は小さすぎます(幅{min}ピクセル以上が必要です)。",
       "mediaNotYet": "{network}:画像と動画の送信にはまだ対応していません。",
       "mediaNoImages": "{network}は画像に対応していません。",
       "mediaNoVideos": "{network}は動画に対応していません。",
@@ -768,6 +770,8 @@
       "state": { "draft": "下書き", "queued": "予約済み", "publishing": "投稿中", "published": "投稿済み", "error": "エラー", "unknown": "結果不明" }
     },
     "channelsPanel": {
+      "all": "すべてのチャンネル",
+      "filterHint": "チャンネルをクリックすると、そのチャンネルの投稿だけが表示されます。",
       "add": "チャネルを追加",
       "emptyTitle": "チャネルはまだありません",
       "emptyText": "SNSアカウントを接続すると、投稿の予約・公開・メッセージへの返信をひとつの場所で行えます。",
@@ -776,6 +780,18 @@
       "disabled": "無効",
       "manage": "チャネルを管理",
       "viewerNote": "あなたのロール(閲覧者)では投稿を作成できません。"
+    },
+    "networkPost": {
+      "like": "いいね",
+      "comment": "コメント",
+      "share": "シェア",
+      "repost": "再投稿",
+      "send": "送信",
+      "followers": "フォロワー",
+      "communityPost": "コミュニティ投稿",
+      "originalSound": "オリジナル音源",
+      "videoNeeded": "動画が必要です",
+      "noMedia": "メディアなし"
     },
     "composer": {
       "addMedia": "画像または動画を追加",

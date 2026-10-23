@@ -1056,6 +1056,8 @@
       "unknownContact": "Unknown contact"
     },
     "validation": {
+      "mediaAspect": "{network}: “{name}” isn’t an accepted shape (between 4:5 and 1.91:1, neither too tall nor too wide).",
+      "mediaTooSmall": "{network}: “{name}” is too small ({min} pixels wide at least).",
       "mediaNotYet": "{network}: sending images and videos isn’t supported yet.",
       "mediaNoImages": "{network} doesn’t accept images.",
       "mediaNoVideos": "{network} doesn’t accept videos.",
@@ -1136,6 +1138,8 @@
       }
     },
     "channelsPanel": {
+      "all": "All channels",
+      "filterHint": "Click a channel to show only its posts.",
       "add": "Add a channel",
       "emptyTitle": "No channels yet",
       "emptyText": "Connect your social accounts to schedule, publish and reply to your messages, all in one place.",
@@ -1144,6 +1148,18 @@
       "disabled": "Disabled",
       "manage": "Manage channels",
       "viewerNote": "Your role (viewer) does not allow creating posts."
+    },
+    "networkPost": {
+      "like": "Like",
+      "comment": "Comment",
+      "share": "Share",
+      "repost": "Repost",
+      "send": "Send",
+      "followers": "Followers",
+      "communityPost": "Community post",
+      "originalSound": "Original sound",
+      "videoNeeded": "Video required",
+      "noMedia": "No media"
     },
     "composer": {
       "addMedia": "Add images or videos",

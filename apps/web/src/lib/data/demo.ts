@@ -140,12 +140,12 @@ function seed(): Store {
     sample(8, 'sur-mesure.jpg', 'image', '#a8e063', '#56ab2f', 'tri', 96),
   ];
   const attach = (...ids: string[]): PostItem['media'] =>
-    ids.map((i) => library.find((m) => m.id === i)!).map((m) => ({ id: m.id, kind: m.kind, name: m.name, alt: m.alt, thumbUrl: m.thumbUrl }));
+    ids.map((i) => library.find((m) => m.id === i)!).map((m) => ({ id: m.id, kind: m.kind, name: m.name, alt: m.alt, thumbUrl: m.thumbUrl, url: m.kind === 'image' ? m.url : null, durationSeconds: m.durationSeconds }));
 
   /** Médias joints aux publications d'exemple : numéro de publication → médias de la bibliothèque. */
   const ATTACHED: Record<number, string[]> = { 1: ['m2'], 2: ['m1', 'm3'], 3: ['m5'], 6: ['m4'] };
   const post = (n: number, networkId: NetworkId, accountName: string, content: string, hours: number, state: PostItem['state'], error: string | null = null, comment: Pick<PostItem, 'firstComment' | 'firstCommentState' | 'firstCommentError'> | null = null): PostItem => ({
-    id: `p${n}`, groupId: `g${n}`, networkId, accountName, content,
+    id: `p${n}`, groupId: `g${n}`, integrationId: integrations.find((i) => i.networkId === networkId && i.name === accountName)?.id ?? '', networkId, accountName, content,
     publishAt: new Date(T0 + hours * H).toISOString(), state, error, releaseUrl: state === 'published' ? 'https://example.com/post' : null,
     firstComment: comment?.firstComment ?? null, firstCommentState: comment?.firstCommentState ?? null, firstCommentError: comment?.firstCommentError ?? null,
     media: attach(...(ATTACHED[n] ?? [])),
@@ -234,12 +234,12 @@ const posts: PostsRepository = {
       const integ = s.integrations.find((i) => i.id === target.integrationId);
       if (!integ) return { ok: false, error: { key: 'app.errors.channelNotFound' } };
       s.posts.push({
-        id: id('p'), groupId, networkId: integ.networkId, accountName: integ.name, content: input.content.trim(),
+        id: id('p'), groupId, integrationId: integ.id, networkId: integ.networkId, accountName: integ.name, content: input.content.trim(),
         publishAt: input.publishAt, state: input.mode === 'schedule' ? 'queued' : 'draft', error: null, releaseUrl: null,
         firstComment: target.firstComment, firstCommentState: target.firstComment ? 'pending' : null, firstCommentError: null,
         media: input.media.flatMap((a) => {
           const m = s.media.find((x) => x.id === a.id);
-          return m ? [{ id: m.id, kind: m.kind, name: m.name, alt: a.alt || m.alt, thumbUrl: m.thumbUrl }] : [];
+          return m ? [{ id: m.id, kind: m.kind, name: m.name, alt: a.alt || m.alt, thumbUrl: m.thumbUrl, url: m.kind === 'image' ? m.url : null, durationSeconds: m.durationSeconds }] : [];
         }),
       });
     }

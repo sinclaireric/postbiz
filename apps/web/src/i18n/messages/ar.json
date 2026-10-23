@@ -729,6 +729,8 @@
       "unknownContact": "جهة اتصال غير معروفة"
     },
     "validation": {
+      "mediaAspect": "{network}: «{name}» ليست بنسبة أبعاد مقبولة (بين 4:5 و1.91:1، لا مفرطة الطول ولا العرض).",
+      "mediaTooSmall": "{network}: «{name}» صغيرة جدًا (عرضها {min} بكسل على الأقل).",
       "mediaNotYet": "{network}: إرسال الصور والفيديوهات غير مدعوم بعد.",
       "mediaNoImages": "{network} لا يقبل الصور.",
       "mediaNoVideos": "{network} لا يقبل الفيديوهات.",
@@ -801,6 +803,8 @@
       "state": { "draft": "مسودة", "queued": "مجدول", "publishing": "قيد النشر", "published": "منشور", "error": "خطأ", "unknown": "النتيجة غير معروفة" }
     },
     "channelsPanel": {
+      "all": "كل القنوات",
+      "filterHint": "انقر على قناة لعرض منشوراتها فقط.",
       "add": "إضافة قناة",
       "emptyTitle": "لا توجد قنوات بعد",
       "emptyText": "اربط حساباتك الاجتماعية لجدولة المنشورات ونشرها والرد على الرسائل، كل ذلك في مكان واحد.",
@@ -809,6 +813,18 @@
       "disabled": "معطّلة",
       "manage": "إدارة القنوات",
       "viewerNote": "دورك (مشاهد) لا يسمح بإنشاء منشورات."
+    },
+    "networkPost": {
+      "like": "إعجاب",
+      "comment": "تعليق",
+      "share": "مشاركة",
+      "repost": "إعادة النشر",
+      "send": "إرسال",
+      "followers": "المتابعون",
+      "communityPost": "منشور المجتمع",
+      "originalSound": "الصوت الأصلي",
+      "videoNeeded": "الفيديو مطلوب",
+      "noMedia": "بلا وسائط"
     },
     "composer": {
       "addMedia": "إضافة صور أو فيديوهات",
