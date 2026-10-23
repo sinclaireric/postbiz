@@ -26,7 +26,7 @@ export function PhaseCell({ sub, t, now = new Date() }: { sub: SubscriptionInfo;
   else if (sub.phase === 'paying' && sub.currentPeriodEnd) detail = t(sub.cancelAtPeriodEnd ? 'admin.detail.endsOn' : 'admin.detail.renews', { date: date(sub.currentPeriodEnd) });
   else if (sub.phase === 'past_due' && sub.currentPeriodEnd) detail = t('admin.detail.dueOn', { date: date(sub.currentPeriodEnd) });
   return (
-    <div className="min-w-44">
+    <div>
       <PhaseBadge phase={sub.phase} t={t} />
       {detail && <p className="mt-1 text-xs text-muted">{detail}</p>}
     </div>

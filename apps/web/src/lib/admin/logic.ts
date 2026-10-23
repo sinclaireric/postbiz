@@ -1,5 +1,5 @@
 import { PLANS, pricePerMonth } from '@/lib/pricing';
-import { PHASES, type AdminOrgRow, type AdminOverview, type AdminUserRow, type ListQuery, type Phase, type PlanCount } from './types';
+import { PHASES, type AdminChannel, type AdminOrgRow, type AdminOverview, type AdminSubscription, type AdminUserDetail, type AdminUserOrg, type AdminUserRow, type ChannelStatus, type ListQuery, type Phase, type PlanCount } from './types';
 
 export const PAGE_SIZE = 25;
 const DAY = 86_400_000;
@@ -79,6 +79,73 @@ export function parseOrgRow(raw: unknown): AdminOrgRow {
     postsCount: num(r.posts_count),
   };
 }
+
+const ROLES = ['admin', 'member', 'viewer'] as const;
+const CHANNEL_STATUSES: readonly string[] = ['active', 'refresh_needed', 'disabled'];
+
+function parseChannel(raw: unknown): AdminChannel {
+  const r = obj(raw);
+  const status = str(r.status) ?? '';
+  return {
+    id: str(r.id) ?? '',
+    provider: str(r.provider) ?? '',
+    name: str(r.name) ?? '',
+    username: str(r.username),
+    status: (CHANNEL_STATUSES.includes(status) ? status : 'active') as ChannelStatus,
+    createdAt: str(r.created_at) ?? '',
+    tokenExpiresAt: str(r.token_expires_at),
+  };
+}
+
+function parseSubscription(raw: unknown): AdminSubscription | null {
+  const r = obj(raw);
+  if (Object.keys(r).length === 0) return null;
+  return {
+    ...sub(r),
+    status: str(r.status) ?? '',
+    canceledAt: str(r.canceled_at),
+    stripeCustomerId: str(r.stripe_customer_id),
+    stripeSubscriptionId: str(r.stripe_subscription_id),
+    createdAt: str(r.created_at) ?? '',
+  };
+}
+
+function parseUserOrg(raw: unknown): AdminUserOrg {
+  const r = obj(raw);
+  const posts = obj(r.posts);
+  const role = str(r.role);
+  return {
+    orgId: str(r.org_id) ?? '',
+    name: str(r.name) ?? '',
+    createdAt: str(r.created_at) ?? '',
+    role: (ROLES as readonly string[]).includes(role ?? '') ? (role as (typeof ROLES)[number]) : 'member',
+    membersCount: num(r.members_count),
+    subscription: parseSubscription(r.subscription),
+    channels: (Array.isArray(r.channels) ? r.channels : []).map(parseChannel),
+    posts: { byState: counts(posts.by_state), lastPublishedAt: str(posts.last_published_at), lastCreatedAt: str(posts.last_created_at) },
+  };
+}
+
+/** Réponse de `admin_user_detail()` ; `null` quand l'utilisateur n'existe pas. */
+export function parseUserDetail(raw: unknown): AdminUserDetail | null {
+  const r = obj(raw);
+  const u = obj(r.user);
+  if (!str(u.id)) return null;
+  return {
+    id: str(u.id)!,
+    email: str(u.email) ?? '',
+    name: str(u.display_name),
+    createdAt: str(u.created_at) ?? '',
+    lastSignInAt: str(u.last_sign_in_at),
+    emailConfirmedAt: str(u.email_confirmed_at),
+    provider: str(u.provider) ?? 'email',
+    orgs: (Array.isArray(r.orgs) ? r.orgs : []).map(parseUserOrg),
+  };
+}
+
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+/** Un identifiant d'utilisateur lu dans l'adresse : refusé avant d'interroger la base s'il n'a pas la forme d'un UUID. */
+export const isUserId = (v: string): boolean => UUID.test(v);
 
 /** Total des résultats avant pagination, porté par chaque ligne (`count(*) over ()`). */
 export const totalOf = (rows: unknown[]): number => (rows.length ? num(obj(rows[0]).total_count) : 0);

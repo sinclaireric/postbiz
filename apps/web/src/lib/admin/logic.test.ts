@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { demoOrganizations, demoOverview, demoUsers } from './demo';
-import { PAGE_SIZE, daysUntil, listHref, pageCount, parseListQuery, parseOrgRow, parseOverview, parsePage, parsePhase, parseUserRow, percent, revenue, totalOf } from './logic';
+import { demoOrganizations, demoOverview, demoUserDetail, demoUsers } from './demo';
+import { PAGE_SIZE, daysUntil, isUserId, listHref, pageCount, parseListQuery, parseOrgRow, parseOverview, parsePage, parsePhase, parseUserDetail, parseUserRow, percent, revenue, totalOf } from './logic';
 import { PHASES, type PlanCount } from './types';
 
 describe('parseOverview', () => {
@@ -145,5 +145,56 @@ describe('données de démonstration', () => {
   it('un essai en cours a une date de fin dans le futur, un essai terminé dans le passé', () => {
     for (const u of demoUsers({ ...all, phase: 'trialing' }, now).rows) expect(new Date(u.trialEndsAt!).getTime()).toBeGreaterThan(now.getTime());
     for (const u of demoUsers({ ...all, phase: 'trial_expired' }, now).rows) expect(new Date(u.trialEndsAt!).getTime()).toBeLessThan(now.getTime());
+  });
+});
+
+describe('fiche d’un utilisateur', () => {
+  const raw = {
+    user: { id: '11111111-1111-4111-8111-111111111111', email: 'a@b.fr', display_name: 'Ana', created_at: '2026-10-01T10:00:00Z', last_sign_in_at: null, email_confirmed_at: '2026-10-01T10:05:00Z', provider: 'google' },
+    orgs: [{
+      org_id: 'o1', name: 'Atelier', created_at: '2026-10-01T10:00:00Z', role: 'admin', members_count: 3,
+      subscription: { plan: 'pro', status: 'active', billing_interval: 'yearly', phase: 'paying', current_period_end: '2027-01-01T00:00:00Z', cancel_at_period_end: true, stripe_customer_id: 'cus_1', created_at: '2026-10-02T00:00:00Z' },
+      channels: [{ id: 'c1', provider: 'youtube', name: 'Chaîne', username: '@x', status: 'refresh_needed', created_at: '2026-10-03T00:00:00Z', token_expires_at: null }],
+      posts: { by_state: { published: '4', draft: 1 }, last_published_at: '2026-10-20T00:00:00Z', last_created_at: null },
+    }],
+  };
+
+  it('lit le compte, l’organisation, l’abonnement, les canaux et les chiffres de publication', () => {
+    const d = parseUserDetail(raw)!;
+    expect(d).toMatchObject({ id: raw.user.id, name: 'Ana', provider: 'google', lastSignInAt: null });
+    expect(d.orgs[0]).toMatchObject({ name: 'Atelier', role: 'admin', membersCount: 3 });
+    expect(d.orgs[0]!.subscription).toMatchObject({ plan: 'pro', interval: 'yearly', phase: 'paying', cancelAtPeriodEnd: true, stripeCustomerId: 'cus_1', stripeSubscriptionId: null });
+    expect(d.orgs[0]!.channels[0]).toMatchObject({ provider: 'youtube', status: 'refresh_needed', tokenExpiresAt: null });
+    expect(d.orgs[0]!.posts.byState).toEqual({ published: 4, draft: 1 });
+  });
+
+  it('renvoie null pour un utilisateur inconnu (la base répond null) ou une réponse invalide', () => {
+    for (const bad of [null, undefined, {}, 'x', { user: {} }]) expect(parseUserDetail(bad)).toBeNull();
+  });
+
+  it('une organisation sans abonnement a subscription à null ; un état de canal inconnu devient « actif »', () => {
+    const d = parseUserDetail({ ...raw, orgs: [{ ...raw.orgs[0], subscription: null, channels: [{ id: 'c', provider: 'x', name: 'n', status: 'bizarre' }] }] })!;
+    expect(d.orgs[0]!.subscription).toBeNull();
+    expect(d.orgs[0]!.channels[0]!.status).toBe('active');
+  });
+
+  it('un utilisateur sans organisation a une liste vide', () => {
+    expect(parseUserDetail({ user: raw.user, orgs: [] })!.orgs).toEqual([]);
+  });
+
+  it('isUserId refuse tout ce qui n’a pas la forme d’un UUID', () => {
+    expect(isUserId('11111111-1111-4111-8111-111111111111')).toBe(true);
+    for (const v of ['', 'abc', '1; drop table', '11111111-1111-4111-8111-11111111111', '../../etc']) expect(isUserId(v)).toBe(false);
+  });
+
+  it('la démo donne une fiche cohérente avec la ligne de la liste', () => {
+    const now = new Date('2026-10-23T12:00:00Z');
+    const row = demoUsers({ search: '', phase: 'paying', page: 1 }, now).rows[0]!;
+    const d = demoUserDetail(row.userId, now)!;
+    expect(d.email).toBe(row.email);
+    expect(d.orgs[0]!.channels).toHaveLength(row.channelsCount);
+    expect(Object.values(d.orgs[0]!.posts.byState).reduce((a, b) => a + b, 0)).toBe(row.postsCount);
+    expect(d.orgs[0]!.subscription).toMatchObject({ plan: row.plan, phase: 'paying' });
+    expect(demoUserDetail('00000000-0000-4000-9000-ffffffffffff', now)).toBeNull();
   });
 });

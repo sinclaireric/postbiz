@@ -190,3 +190,69 @@ describe('admin_organizations', () => {
     expect(found.map((r: any) => r.org_name)).toEqual(['Org A']);
   });
 });
+
+describe('admin_user_detail', () => {
+  const detail = (id: string) => admin(async () => (await q<{ d: any }>(db, 'select public.admin_user_detail($1) as d', [id]))[0]!.d);
+  let ytId: string;
+
+  beforeAll(async () => {
+    ytId = (await q<{ id: string }>(db,
+      `insert into public.integrations (org_id, provider, internal_id, name, username) values ($1,'youtube','yt-1','Chaîne Payante','@payante') returning id`, [payerOrg]))[0]!.id;
+    await q(db, `insert into public.integration_secrets (integration_id, access_token_enc) values ($1, 'ENC-JETON-SECRET')`, [ytId]);
+    await q(db,
+      `insert into public.posts (org_id, integration_id, content, state, publish_at, deleted_at) values
+         ($1,$2,'TEXTE-PRIVE-1','published', now() - interval '3 days', null),
+         ($1,$2,'TEXTE-PRIVE-2','published', now() - interval '1 day', null),
+         ($1,$2,'TEXTE-PRIVE-3','draft', null, null),
+         ($1,$2,'TEXTE-PRIVE-4','error', null, now())`, [payerOrg, ytId]);
+    await q(db, `update auth.users set raw_app_meta_data = '{"provider":"google"}' where id = $1`, [payer]);
+  });
+
+  it('renvoie le compte, l’organisation, l’abonnement, les canaux et les chiffres de publication', async () => {
+    const d = await detail(payer);
+    expect(d.user).toMatchObject({ id: payer, email: 'payer@d.test', provider: 'google' });
+    expect(d.orgs).toHaveLength(1);
+    const [o] = d.orgs;
+    expect(o).toMatchObject({ name: 'Cliente payante', role: 'admin', members_count: 1 });
+    expect(o.subscription).toMatchObject({ plan: 'team', status: 'active', billing_interval: 'yearly', phase: 'paying', cancel_at_period_end: false });
+    expect(o.channels).toEqual([expect.objectContaining({ id: ytId, provider: 'youtube', name: 'Chaîne Payante', username: '@payante', status: 'active' })]);
+    expect(o.posts.by_state).toEqual({ published: 2, draft: 1 }); // la publication supprimée n'est pas comptée
+    expect(o.posts.last_published_at).not.toBeNull();
+  });
+
+  it('la connexion par e-mail est la valeur par défaut', async () => {
+    expect((await detail(late)).user.provider).toBe('email');
+  });
+
+  it('un utilisateur sans organisation a une liste vide, un essai terminé garde sa phase', async () => {
+    expect((await detail(owner)).orgs).toEqual([]);
+    expect((await detail(late)).orgs[0].subscription).toMatchObject({ phase: 'trial_expired', status: 'trialing' });
+  });
+
+  it('un utilisateur qui appartient à plusieurs organisations les liste toutes, la plus ancienne d’abord', async () => {
+    await q(db, `insert into public.memberships (org_id, user_id, role) values ($1, $2, 'viewer')`, [w.orgB, late]);
+    const d = await detail(late);
+    expect(d.orgs.map((o: any) => [o.name, o.role])).toEqual([['Essai fini', 'admin'], ['Org B', 'viewer']]);
+    await q(db, `delete from public.memberships where org_id = $1 and user_id = $2`, [w.orgB, late]);
+  });
+
+  it('une organisation sans abonnement a « subscription » à null', async () => {
+    await q(db, `delete from public.subscriptions where org_id = $1`, [w.orgB]);
+    expect((await detail(w.bob)).orgs[0].subscription).toBeNull();
+  });
+
+  it('renvoie null pour un utilisateur inconnu', async () => {
+    expect(await detail('00000000-0000-0000-0000-00000000dead')).toBeNull();
+  });
+
+  it('ne contient ni le texte des publications ni les jetons des canaux', async () => {
+    const json = JSON.stringify(await detail(payer));
+    expect(json).not.toContain('TEXTE-PRIVE');
+    expect(json).not.toContain('ENC-JETON-SECRET');
+  });
+
+  it('est refusée à un utilisateur ordinaire et à un visiteur anonyme', async () => {
+    await expect(asUser(db, w.alice, () => q(db, 'select public.admin_user_detail($1)', [payer]))).rejects.toThrow(/forbidden/);
+    await expect(asAnon(db, () => q(db, 'select public.admin_user_detail($1)', [payer]))).rejects.toThrow(/permission denied/);
+  });
+});

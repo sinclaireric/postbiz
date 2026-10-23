@@ -58,7 +58,7 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
               {rows.map((u) => (
                 <tr key={u.userId} className="border-b border-line last:border-0">
                   <td className={td}>
-                    <p className="font-medium">{u.name ?? u.email}</p>
+                    <Link href={`${base}/${u.userId}`} className="font-medium underline-offset-4 hover:underline">{u.name ?? u.email}</Link>
                     {u.name && u.name !== u.email && <p className="text-xs text-muted" dir="ltr">{u.email}</p>}
                     {!u.emailConfirmed && <p className="mt-1 text-xs font-medium text-warn">{t('admin.cell.unconfirmed')}</p>}
                   </td>
@@ -71,7 +71,7 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
                     ) : <span className="text-subtle">{t('admin.cell.noOrg')}</span>}
                   </td>
                   <td className={td}><PlanCell sub={u} t={t} /></td>
-                  <td className={td}><PhaseCell sub={u} t={t} now={now} /></td>
+                  <td className={`${td} min-w-44`}><PhaseCell sub={u} t={t} now={now} /></td>
                   <td className={`${td} text-end tabular-nums`}>{formatNumber(t.locale, u.channelsCount)}</td>
                   <td className={`${td} text-end tabular-nums`}>{formatNumber(t.locale, u.postsCount)}</td>
                   <td className={`${td} whitespace-nowrap`}>{formatFullDate(t.locale, new Date(u.createdAt))}</td>

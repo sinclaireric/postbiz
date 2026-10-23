@@ -6,13 +6,14 @@ Tableau de bord réservé au propriétaire du SaaS : `https://getpostbiz.com/adm
 |---|---|
 | `/admin` | Utilisateurs (total, nouveaux, actifs sur 7 jours, e-mails non confirmés), essais en cours et ceux qui se terminent sous 3 jours, abonnés payants, MRR/ARR, essais non convertis, inscriptions des 30 derniers jours, répartition des abonnements, activation (organisations avec un canal / ayant publié), canaux par réseau, publications par état |
 | `/admin/utilisateurs` | Liste de tous les comptes : organisation, offre, statut de l'abonnement (avec la date de fin d'essai ou de renouvellement), canaux, publications, inscription, dernière connexion. Recherche et filtre par statut |
+| `/admin/utilisateurs/[id]` | Fiche d'un utilisateur (clic sur son nom dans la liste) : compte (inscription, dernière connexion, e-mail confirmé, mode de connexion), chacune de ses organisations avec son rôle, son abonnement (offre, statut, dates, identifiants Stripe), son activité (membres, publications par état, dernière publiée) et ses canaux (réseau, état, jeton valable jusqu'au). **Aucun texte de publication ni de message, aucun jeton** : seulement des métadonnées et des chiffres |
 | `/admin/abonnements` | Une ligne par organisation : propriétaire, offre, statut, membres, canaux, publications. Puces de statut avec leur effectif |
 
 L'espace est en lecture seule : il ne modifie ni abonnement ni compte.
 
 ## Mise en route
 
-1. **Appliquer la migration** `supabase/migrations/20261025000001_platform_admin.sql` (éditeur SQL de Supabase, ou `supabase db push`).
+1. **Appliquer les migrations** `supabase/migrations/20261025000001_platform_admin.sql` puis `20261026000001_admin_user_detail.sql` (éditeur SQL de Supabase, ou `supabase db push`).
    Sans elle, `/admin` répond « page introuvable » pour tout le monde.
 2. **Se déclarer propriétaire**, dans l'éditeur SQL (le service_role seul peut écrire dans `platform_admins`) :
 
@@ -27,7 +28,7 @@ L'espace est en lecture seule : il ne modifie ni abonnement ni compte.
 ## Comment c'est protégé
 
 - La liste des administrateurs est dans la base (`platform_admins`), sans aucun droit pour les clients.
-- Chaque fonction (`admin_overview`, `admin_users`, `admin_organizations`) vérifie `is_platform_admin()` elle-même et refuse sinon (erreur `forbidden`) : un utilisateur ordinaire qui appellerait l'API directement n'obtient rien.
+- Chaque fonction (`admin_overview`, `admin_users`, `admin_organizations`, `admin_user_detail`) vérifie `is_platform_admin()` elle-même et refuse sinon (erreur `forbidden`) : un utilisateur ordinaire qui appellerait l'API directement n'obtient rien.
 - Pour un utilisateur connecté qui n'est pas propriétaire, `/admin` répond « page introuvable » (l'existence de l'espace n'est pas confirmée). Sans session, on est renvoyé vers la connexion. `/admin` est exclu des moteurs de recherche (`robots.txt` et `noindex`).
 - Aucune clé `service_role` n'est utilisée côté site pour cet espace.
 

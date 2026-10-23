@@ -74,7 +74,7 @@ export default async function AdminSubscriptionsPage({ searchParams }: { searchP
                   <td className={`${td} font-medium`}>{o.name}</td>
                   <td className={td} dir="ltr">{o.ownerEmail ?? <span className="text-subtle">—</span>}</td>
                   <td className={td}><PlanCell sub={o} t={t} /></td>
-                  <td className={td}><PhaseCell sub={o} t={t} now={now} /></td>
+                  <td className={`${td} min-w-44`}><PhaseCell sub={o} t={t} now={now} /></td>
                   <td className={`${td} text-end tabular-nums`}>{formatNumber(t.locale, o.membersCount)}</td>
                   <td className={`${td} text-end tabular-nums`}>{formatNumber(t.locale, o.channelsCount)}</td>
                   <td className={`${td} text-end tabular-nums`}>{formatNumber(t.locale, o.postsCount)}</td>

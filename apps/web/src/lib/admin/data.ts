@@ -1,9 +1,9 @@
 import { cache } from 'react';
 import { isDemo } from '@/lib/supabase/env';
 import { createClient } from '@/lib/supabase/server';
-import { demoOrganizations, demoOverview, demoUsers } from './demo';
-import { PAGE_SIZE, parseOrgRow, parseOverview, parseUserRow, totalOf } from './logic';
-import type { AdminOrgRow, AdminOverview, AdminPage, AdminUserRow, ListQuery } from './types';
+import { demoOrganizations, demoOverview, demoUserDetail, demoUsers } from './demo';
+import { PAGE_SIZE, isUserId, parseOrgRow, parseOverview, parseUserDetail, parseUserRow, totalOf } from './logic';
+import type { AdminOrgRow, AdminOverview, AdminPage, AdminUserDetail, AdminUserRow, ListQuery } from './types';
 
 export type AdminAccess = { status: 'anonymous' } | { status: 'forbidden' } | { status: 'admin'; email: string };
 
@@ -50,4 +50,14 @@ export async function loadOrganizations(q: ListQuery): Promise<AdminPage<AdminOr
   if (error) failure('admin_organizations', error);
   const rows = (data ?? []) as unknown[];
   return { rows: rows.map(parseOrgRow), total: totalOf(rows) };
+}
+
+/** Fiche d'un utilisateur ; `null` si l'identifiant est mal formé ou ne correspond à personne. */
+export async function loadUserDetail(id: string): Promise<AdminUserDetail | null> {
+  if (!isUserId(id)) return null;
+  if (isDemo) return demoUserDetail(id);
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc('admin_user_detail', { p_user: id });
+  if (error) failure('admin_user_detail', error);
+  return parseUserDetail(data);
 }

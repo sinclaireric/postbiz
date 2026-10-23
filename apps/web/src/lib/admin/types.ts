@@ -68,3 +68,47 @@ export interface ListQuery {
   phase: Phase | null;
   page: number;
 }
+
+export type ChannelStatus = 'active' | 'refresh_needed' | 'disabled';
+
+export interface AdminChannel {
+  id: string;
+  provider: string;
+  name: string;
+  username: string | null;
+  status: ChannelStatus;
+  createdAt: string;
+  tokenExpiresAt: string | null;
+}
+
+export interface AdminSubscription extends SubscriptionInfo {
+  status: string;
+  canceledAt: string | null;
+  stripeCustomerId: string | null;
+  stripeSubscriptionId: string | null;
+  createdAt: string;
+}
+
+/** Une organisation d'un utilisateur, avec ce qu'elle contient. Jamais de texte de publication ni de jeton : seulement des chiffres. */
+export interface AdminUserOrg {
+  orgId: string;
+  name: string;
+  createdAt: string;
+  role: 'admin' | 'member' | 'viewer';
+  membersCount: number;
+  /** Absent pour une organisation créée avant la mise en place des essais. */
+  subscription: AdminSubscription | null;
+  channels: AdminChannel[];
+  posts: { byState: Record<string, number>; lastPublishedAt: string | null; lastCreatedAt: string | null };
+}
+
+export interface AdminUserDetail {
+  id: string;
+  email: string;
+  name: string | null;
+  createdAt: string;
+  lastSignInAt: string | null;
+  emailConfirmedAt: string | null;
+  provider: string;
+  orgs: AdminUserOrg[];
+}

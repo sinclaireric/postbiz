@@ -1,4 +1,4 @@
-import { PHASES, type AdminOrgRow, type AdminOverview, type AdminPage, type AdminUserRow, type ListQuery, type Phase, type PlanCount } from './types';
+import { PHASES, type AdminChannel, type AdminOrgRow, type AdminOverview, type AdminPage, type AdminUserDetail, type AdminUserRow, type ListQuery, type Phase, type PlanCount } from './types';
 import { PAGE_SIZE } from './logic';
 
 // Données d'exemple de l'espace propriétaire (mode démo, sans Supabase). Déterministes, sauf les dates qui suivent l'horloge.
@@ -142,5 +142,52 @@ export function demoOverview(now = new Date()): AdminOverview {
     },
     posts: { created7d: 214, byState: { published: 1180, queued: 96, draft: 143, error: 17, unknown: 2 } },
     signups,
+  };
+}
+
+const PROVIDERS = ['instagram', 'facebook', 'linkedin', 'x', 'youtube', 'tiktok'];
+
+/** Fiche détaillée d'un compte d'exemple : ses canaux et ses chiffres de publication sont déduits de la ligne de la liste. */
+export function demoUserDetail(id: string, now = new Date()): AdminUserDetail | null {
+  const account = build(now).find((a) => a.user.userId === id);
+  if (!account) return null;
+  const { user: u, org: o } = account;
+  const created = new Date(u.createdAt).getTime();
+  const iso = (ms: number) => new Date(ms).toISOString();
+
+  const channels: AdminChannel[] = Array.from({ length: u.channelsCount }, (_, i) => ({
+    id: `${id.slice(0, -2)}c${i}`,
+    provider: PROVIDERS[(Number(id.slice(-2)) + i) % PROVIDERS.length]!,
+    name: i === 0 ? o.name : `${o.name} · ${i + 1}`,
+    username: i === 0 ? null : `@${o.name.toLowerCase().replace(/[^a-z0-9]+/g, '')}${i + 1}`,
+    status: i === 2 && u.channelsCount > 2 ? 'refresh_needed' : 'active',
+    createdAt: iso(created + (i + 1) * 3_600_000),
+    tokenExpiresAt: iso(now.getTime() + (20 + i * 9) * DAY),
+  }));
+  const published = Math.round(u.postsCount * 0.7);
+  const queued = Math.round(u.postsCount * 0.15);
+  const byState: Record<string, number> = { published, queued, draft: u.postsCount - published - queued };
+
+  return {
+    id, email: u.email, name: u.name, createdAt: u.createdAt, lastSignInAt: u.lastSignInAt,
+    emailConfirmedAt: u.emailConfirmed ? iso(created + 600_000) : null,
+    provider: Number(id.slice(-2)) % 3 === 0 ? 'google' : 'email',
+    orgs: [{
+      orgId: o.orgId, name: o.name, createdAt: o.createdAt, role: 'admin', membersCount: o.membersCount,
+      subscription: o.plan && o.interval ? {
+        plan: o.plan, interval: o.interval, phase: o.phase, status: o.phase === 'paying' ? 'active' : o.phase === 'trial_expired' ? 'trialing' : o.phase,
+        trialEndsAt: o.trialEndsAt, currentPeriodEnd: o.currentPeriodEnd, cancelAtPeriodEnd: o.cancelAtPeriodEnd,
+        canceledAt: o.phase === 'canceled' ? iso(now.getTime() - 4 * DAY) : null,
+        stripeCustomerId: o.phase === 'paying' || o.phase === 'past_due' || o.phase === 'canceled' ? `cus_demo${id.slice(-4)}` : null,
+        stripeSubscriptionId: o.phase === 'paying' || o.phase === 'past_due' || o.phase === 'canceled' ? `sub_demo${id.slice(-4)}` : null,
+        createdAt: o.createdAt,
+      } : null,
+      channels,
+      posts: {
+        byState,
+        lastPublishedAt: published > 0 ? iso(now.getTime() - 2 * DAY) : null,
+        lastCreatedAt: u.postsCount > 0 ? iso(now.getTime() - DAY) : null,
+      },
+    }],
   };
 }
