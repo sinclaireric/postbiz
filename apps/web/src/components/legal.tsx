@@ -1,9 +1,17 @@
+import Link from 'next/link';
 import type { ReactNode } from 'react';
-import { RichText, boldTags } from '@/components/rich-text';
+import { boldTags } from '@/components/rich-text';
 import { getT } from '@/i18n/server';
+import { formatArticleDate } from '@/i18n/format';
 import { Container } from './ui';
 
-export const CONTACT_EMAIL = process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? 'contact@postbiz.com';
+export const CONTACT_EMAIL = process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? 'contact@getpostbiz.com';
+
+/** Qui exploite le service (raison sociale, forme, adresse, immatriculation) : à renseigner dans NEXT_PUBLIC_LEGAL_ENTITY. */
+export const LEGAL_ENTITY = process.env.NEXT_PUBLIC_LEGAL_ENTITY?.trim() || 'Postbiz (getpostbiz.com)';
+
+/** Jour de la dernière révision des textes juridiques : à changer à chaque modification de fond. */
+export const LEGAL_UPDATED = '2026-10-23';
 
 /** Les textes juridiques n'existent qu'en français et en anglais : les autres langues affichent l'anglais, avec un avis traduit. */
 export async function LegalPage({ title, children }: { title: string; children: ReactNode }) {
@@ -12,10 +20,7 @@ export async function LegalPage({ title, children }: { title: string; children: 
   return (
     <Container className="max-w-3xl py-16 sm:py-24">
       <h1 className="text-[clamp(2rem,4vw,3rem)] leading-[1.08] font-semibold tracking-[-0.03em]">{title}</h1>
-      <p className="mt-3 text-sm text-subtle">{t('legal.updated', { date: t('legal.datePlaceholder') })}</p>
-      <div className="mt-6 rounded-2xl border border-warn/30 bg-warn-soft px-5 py-4 text-sm leading-relaxed text-warn">
-        <RichText t={t} k="legal.draftNotice" tags={boldTags} />
-      </div>
+      <p className="mt-3 text-sm text-subtle">{t('legal.updated', { date: formatArticleDate(t.locale, LEGAL_UPDATED) })}</p>
       {!translated && <p className="mt-3 text-sm text-muted">{t('legal.availableIn')}</p>}
       <div
         lang={translated ? undefined : 'en'}
@@ -29,3 +34,21 @@ export async function LegalPage({ title, children }: { title: string; children: 
 }
 
 export const mailTags = { mail: (text: string) => <a href={`mailto:${CONTACT_EMAIL}`}>{text}</a> };
+
+const external = (href: string) => (text: string) => <a href={href} target="_blank" rel="noopener noreferrer">{text}</a>;
+
+/** Balises des textes juridiques : e-mail de contact, gras et liens vers les conditions des réseaux cités. */
+export const legalTags = {
+  ...mailTags,
+  ...boldTags,
+  yt: external('https://www.youtube.com/t/terms'),
+  tt: external('https://www.tiktok.com/legal/page/row/terms-of-service/en'),
+  tp: external('https://www.tiktok.com/legal/page/row/privacy-policy/en'),
+  gu: external('https://developers.google.com/terms/api-services-user-data-policy'),
+  gs: external('https://myaccount.google.com/permissions'),
+  gp: external('https://policies.google.com/privacy'),
+  del: (text: string) => <Link href="/suppression-des-donnees">{text}</Link>,
+};
+
+/** Paramètres {email} et {entity} des textes juridiques. */
+export const legalVars = { email: CONTACT_EMAIL, entity: LEGAL_ENTITY };

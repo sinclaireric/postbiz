@@ -574,9 +574,7 @@
     "titleTemplate": "{page} · Postbiz"
   },
   "legal": {
-    "draftNotice": "<b>Bản nháp.</b> Tài liệu này là mẫu khởi đầu: các phần trong dấu ngoặc vuông [ ] cần được hoàn thiện và toàn bộ văn bản phải được luật sư rà soát trước khi đưa vào sử dụng chính thức.",
     "updated": "Cập nhật lần cuối: {date}",
-    "datePlaceholder": "[ngày]",
     "availableIn": "Tài liệu này chỉ có bằng tiếng Pháp và tiếng Anh; phiên bản tiếng Anh được hiển thị."
   },
   "auth": {

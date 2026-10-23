@@ -304,48 +304,69 @@
     }
   },
   "legal": {
-    "draftNotice": "<b>Draft text.</b> This document is a starting template: passages in square brackets [ ] must be completed, and the whole text must be reviewed by a lawyer before going live.",
     "updated": "Last updated: {date}",
-    "datePlaceholder": "[date]",
     "availableIn": "This document is only available in French and English; the English version is shown.",
     "terms": {
       "title": "Terms of Service",
       "s1": {
         "h": "1. Publisher and purpose",
-        "p": "Postbiz is published by [COMPANY NAME], [legal form], [address], registered under number [REGISTRATION NUMBER]. These terms govern the use of the Postbiz service, which lets you schedule posts and manage the messages and comments of social media accounts that the user has connected."
+        "p1": "Postbiz is an online service available at getpostbiz.com. It lets you schedule and publish content, manage messages and comments, and get help from an AI assistant, on the social media accounts that the user connects.",
+        "p2": "The service is operated by: {entity}. These terms apply to any use of the website and the app. By creating an account or connecting a social network, the user accepts them."
       },
       "s2": {
         "h": "2. Account",
-        "p": "The user creates an account with a valid e-mail address and keeps their credentials safe. They are responsible for actions taken from their account and by the members they invite to their organization."
+        "p1": "The user creates an account with a valid email address. They must be of legal age to enter into a contract, or be authorized to do so by a legal guardian, and must keep their credentials safe. They are responsible for actions taken from their account and by the members they invite to their organization."
       },
       "s3": {
         "h": "3. Third-party social networks",
-        "p1": "Postbiz acts on the accounts the user authorizes, through the official interfaces of Facebook, Instagram, X, LinkedIn, TikTok and YouTube. The user remains bound by each network’s terms (for example, the 24-hour window for replying to messages on Messenger and Instagram) and guarantees that they hold the necessary rights over the content they publish.",
-        "p2": "Available features depend on the permissions granted by each network, which may change or be withdrawn. Postbiz does not guarantee that a given feature will be available on a given network."
+        "p1": "Postbiz acts only on the accounts the user authorizes, through the official interfaces (APIs) of Facebook, Instagram, X, LinkedIn, TikTok and YouTube. The user remains subject to the terms of each of these networks (for example, the 24-hour window to reply to messages on Messenger and Instagram) and warrants that they hold the necessary rights over the content they publish. Postbiz is neither affiliated with nor endorsed by these networks.",
+        "p2": "The available features depend on the permissions granted by each network, which may change or be withdrawn. Postbiz does not guarantee that a feature is available on a given network. The user can withdraw Postbiz’s access at any time, from Postbiz (Channels, then Disconnect) or from the settings of the network concerned.",
+        "p3": "By using the YouTube features of Postbiz, the user agrees to be bound by the <yt>YouTube Terms of Service</yt>. Content sent to TikTok is subject to the <tt>TikTok Terms of Service</tt>."
       },
       "s4": {
-        "h": "4. Content and conduct",
-        "p": "The user must not use the service unlawfully, in particular to send unsolicited bulk messages, to distribute illegal content or content that breaks the networks’ rules, or to attempt to bypass technical or security limits."
+        "h": "4. User content",
+        "p1": "The user keeps all rights over the texts, images and videos they upload or publish with Postbiz. They grant Postbiz a limited, non-exclusive licence to store, process and transmit them to the networks they have chosen, for the sole purpose of providing the service.",
+        "p2": "The user is solely responsible for this content and for its compliance with the law and with the rules of the networks."
       },
       "s5": {
-        "h": "5. Pricing and payment",
-        "p": "During the beta period, the service is provided free of charge. The prices published on the Pricing page will apply at the end of the beta, after the user has been notified at least [30] days in advance. [Billing, cancellation and refund terms to be completed when payments are enabled.]"
+        "h": "5. Acceptable use",
+        "p1": "The user must not:",
+        "li1": "use the service unlawfully;",
+        "li2": "send unsolicited bulk messages or seek fake engagement;",
+        "li3": "distribute content that is illegal, hateful, misleading or infringes a third party’s rights;",
+        "li4": "access someone else’s account without their permission;",
+        "li5": "attempt to bypass the technical, security or quota limits of the service or of the networks.",
+        "p2": "Postbiz may suspend without notice an account that threatens the security of the service or of a user’s social media account."
       },
       "s6": {
-        "h": "6. Availability and liability",
-        "p": "Postbiz uses reasonable means to keep the service running, without guaranteeing that it will never be interrupted. [Limitation of liability to be completed.]"
+        "h": "6. AI assistant and automatic replies",
+        "p1": "The AI assistant proposes drafts based on the user’s instructions. Its suggestions may contain mistakes: the user reviews them before publishing and remains responsible for them. The text entered in the assistant is sent to our AI provider to produce the answer (see the privacy policy).",
+        "p2": "Automatic replies are configured by the user, who is responsible for them."
       },
       "s7": {
-        "h": "7. Termination",
-        "p": "The user may delete their account at any time. Postbiz may suspend an account that breaches these terms or the rules of a third-party network."
+        "h": "7. Pricing and payment",
+        "p1": "During the beta, the service is provided free of charge. The prices published on the Pricing page will apply once the beta ends, after at least 30 days’ prior notice to the user. No payment is required without the user’s explicit agreement."
       },
       "s8": {
-        "h": "8. Open-source software",
-        "p": "The source code of Postbiz is published under the GNU AGPL-3.0 license. That license governs the code; these terms govern the service hosted by the publisher."
+        "h": "8. Availability and liability",
+        "p1": "Postbiz uses reasonable efforts to keep the service running, without guaranteeing that it will never be interrupted. A post may fail or be delayed because of a third-party network (outage, quota, content refused); Postbiz then informs the user in the app.",
+        "p2": "To the extent permitted by law, Postbiz is not liable for indirect damages (such as loss of audience or revenue) or for decisions taken by a social network regarding the user’s accounts. These terms do not exclude any liability that cannot be excluded by law, in particular towards consumers."
       },
       "s9": {
-        "h": "9. Governing law",
-        "p1": "French law. [Competent court to be completed.]",
+        "h": "9. Termination",
+        "p1": "The user may delete their account at any time. Postbiz may suspend or close an account in case of breach of these terms or of a third-party network’s rules. Data is then deleted as described in the privacy policy."
+      },
+      "s10": {
+        "h": "10. Free software",
+        "p1": "The Postbiz source code is published under the GNU AGPL-3.0 licence. That licence governs the code; these terms govern the service hosted by the publisher."
+      },
+      "s11": {
+        "h": "11. Changes to these terms",
+        "p1": "We may change these terms, for example to reflect changes to the service or the law. For any significant change, the user is informed in the app or by email before it takes effect. Continuing to use the service means accepting the changes."
+      },
+      "s12": {
+        "h": "12. Governing law and contact",
+        "p1": "These terms are governed by French law. In the event of a dispute, the French courts have jurisdiction, subject to the protective rules applicable to consumers.",
         "p2": "Contact: <mail>{email}</mail>"
       }
     },
@@ -353,52 +374,84 @@
       "title": "Privacy Policy",
       "s1": {
         "h": "1. Data controller",
-        "p": "[COMPANY NAME], [address]. Contact: <mail>{email}</mail>."
+        "p1": "{entity}. For any question about your personal data: <mail>{email}</mail>."
       },
       "s2": {
         "h": "2. Data we process",
-        "li1": "<b>Account:</b> e-mail address, display name, password (stored in encrypted form by our authentication provider).",
+        "li1": "<b>Account:</b> email address, display name, password (stored in hashed form by our authentication provider).",
         "li2": "<b>Connected channels:</b> account identifier, name and picture, and the access tokens provided by the network (encrypted before storage).",
-        "li3": "<b>Messages and comments:</b> content received and sent on the accounts you connect, as well as the public identifier, name and username of the people who write to you.",
-        "li4": "<b>Posts:</b> the texts, media and dates you schedule.",
-        "li5": "<b>Usage:</b> technical logs needed for security and for the service to work properly."
+        "li3": "<b>Messages and comments:</b> content received and sent on the accounts you connect, along with the public identifier, name and handle of the people who write to you.",
+        "li4": "<b>Posts and media:</b> texts, images and videos that you schedule or upload to the library, and their dates.",
+        "li5": "<b>AI assistant:</b> the instructions you enter in the assistant.",
+        "li6": "<b>Usage:</b> technical logs needed for the security and proper operation of the service."
       },
       "s3": {
-        "h": "3. Purposes and legal bases",
-        "li1": "Providing the service (performance of the contract).",
-        "li2": "Ensuring security and preventing abuse (legitimate interest).",
-        "li3": "Answering your support requests (legitimate interest).",
-        "p": "We do not use your messages or posts to train artificial intelligence models, and we do not sell them."
+        "h": "3. What we receive from social networks",
+        "p1": "Only after you authorize it, and only what is needed for the features you use:",
+        "li1": "<b>Facebook and Instagram:</b> the Pages and professional accounts you connect (identifier, name, picture), their messages and comments, and the publishing of your content.",
+        "li2": "<b>LinkedIn:</b> your profile (identifier, name, picture) or the Pages you manage, in order to publish to them.",
+        "li3": "<b>X:</b> your profile (identifier, name, picture), in order to publish to it.",
+        "li4": "<b>YouTube (Google):</b> your channel (identifier, name, picture), in order to upload videos and manage their comments.",
+        "li5": "<b>TikTok:</b> your account’s identifier, display name and picture, in order to send the videos you choose.",
+        "p2": "Access tokens are encrypted before storage and deleted when you disconnect the channel."
       },
       "s4": {
-        "h": "4. Processors",
-        "li1": "Supabase Inc. — database, authentication and storage [hosting region: to be completed].",
-        "li2": "[Application and worker host: to be completed].",
-        "li3": "[E-mail delivery provider: to be completed].",
-        "p": "The social networks you connect are separate data controllers, governed by their own policies."
+        "h": "4. Google and YouTube data",
+        "p1": "Postbiz’s use and transfer of information received from Google APIs adheres to the <gu>Google API Services User Data Policy</gu>, including the Limited Use requirements.",
+        "p2": "YouTube data is used only to display the connected channel and to publish or manage the content you request. It is not sold, not used for advertising, and not shared with third parties except where necessary to provide the service, to comply with the law, or with your consent, and it is not used to train artificial intelligence models.",
+        "p3": "You can withdraw Postbiz’s access to your Google account at any time from your <gs>Google security permissions</gs>, or disconnect the channel in Postbiz. Google Privacy Policy: <gp>policies.google.com/privacy</gp>."
       },
       "s5": {
-        "h": "5. Retention periods",
-        "p": "Account data is kept as long as the account exists. Messages and comments are deleted when you disconnect the channel concerned or delete your account, within [30] days. [To be adjusted.]"
+        "h": "5. TikTok data",
+        "p1": "With TikTok Login Kit and the Content Posting API, Postbiz receives your account’s identifier, display name and picture, and sends to your account the videos you choose to publish, only at your request. This data is neither sold nor used for advertising.",
+        "p2": "You can withdraw access from Postbiz (Disconnect revokes the token with TikTok) or in your TikTok account settings. See also the <tp>TikTok Privacy Policy</tp>."
       },
       "s6": {
-        "h": "6. Your rights",
-        "p": "You may request access, rectification, erasure, restriction and portability of your data, and object to its processing, by writing to <mail>{email}</mail>. You may also lodge a complaint with your data protection authority."
+        "h": "6. Purposes and legal bases",
+        "li1": "Provide the service (performance of the contract).",
+        "li2": "Ensure security and prevent abuse (legitimate interest).",
+        "li3": "Answer your support requests (legitimate interest).",
+        "p1": "We do not sell your data, we do not run advertising, and we do not use your messages or posts to train artificial intelligence models."
       },
       "s7": {
-        "h": "7. Security",
-        "p": "Data is isolated per organization at the database level, access tokens are encrypted, and traffic is encrypted. As no system is infallible, we will inform you of any incident affecting your data."
+        "h": "7. Processors and transfers",
+        "li1": "Supabase Inc. — database, authentication and file storage.",
+        "li2": "Vercel Inc. — hosting of the website and the app.",
+        "li3": "Email delivery provider — sign-in messages and notifications.",
+        "li4": "Anthropic — AI assistant, only when you use it: the text entered in the assistant is sent to it to produce the answer.",
+        "p1": "The social networks you connect are separate data controllers, governed by their own policies. Some processors are located outside the European Union, notably in the United States: transfers then rely on the mechanisms provided for by the GDPR (adequacy decision or standard contractual clauses)."
+      },
+      "s8": {
+        "h": "8. Retention",
+        "p1": "Account data is kept as long as the account exists. A channel’s access tokens are deleted when you disconnect it; the related messages and comments are deleted within 30 days. When you delete your account, the associated data is erased within the same period."
+      },
+      "s9": {
+        "h": "9. Cookies",
+        "p1": "Postbiz only uses strictly necessary cookies and storage: the sign-in session, your language and your display preferences. There are no advertising cookies and no third-party analytics tools."
+      },
+      "s10": {
+        "h": "10. Your rights",
+        "p1": "You can request access, rectification, erasure, restriction and portability of your data, and object to its processing, by writing to <mail>{email}</mail>. To have your data erased, see also the <del>Data deletion</del> page. You may also lodge a complaint with the CNIL, the French data protection authority."
+      },
+      "s11": {
+        "h": "11. Security",
+        "p1": "Data is isolated per organization at the database level, access tokens are encrypted, and traffic is encrypted. As no system is infallible, we will inform you of any incident affecting your data."
+      },
+      "s12": {
+        "h": "12. Minors and changes",
+        "p1": "Postbiz is intended for professionals and is not meant for people under 16.",
+        "p2": "We may update this policy. For any significant change, you will be informed in the app or by email."
       }
     },
     "dataDeletion": {
       "title": "Deleting your data",
       "s1": {
         "h": "Delete a channel’s data",
-        "p": "In Postbiz, open <b>Channels</b>, choose the channel, then <b>Disconnect</b>. Access tokens are deleted immediately, and the related conversations and messages within [30] days."
+        "p": "In Postbiz, open <b>Channels</b>, choose the channel, then <b>Disconnect</b>. Access tokens are deleted immediately, and the related conversations and messages within 30 days."
       },
       "s2": {
         "h": "Delete your account",
-        "p": "In <b>Settings</b>, choose <b>Delete my account</b>. Your profile, the organizations of which you are the only administrator and all associated data are deleted within [30] days."
+        "p": "In <b>Settings</b>, choose <b>Delete my account</b>. Your profile, the organizations of which you are the only administrator and all associated data are deleted within 30 days."
       },
       "s3": {
         "h": "You removed Postbiz from Facebook or Instagram",

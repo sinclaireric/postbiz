@@ -574,9 +574,7 @@
     "titleTemplate": "{page} · Postbiz"
   },
   "legal": {
-    "draftNotice": "<b>Taslak.</b> Bu belge bir başlangıç şablonudur: köşeli parantez [ ] içindeki bölümler tamamlanmalı ve metnin tamamı yayına alınmadan önce bir hukukçu tarafından gözden geçirilmelidir.",
     "updated": "Son güncelleme: {date}",
-    "datePlaceholder": "[tarih]",
     "availableIn": "Bu belge yalnızca Fransızca ve İngilizce olarak mevcuttur; İngilizce sürüm gösteriliyor."
   },
   "auth": {

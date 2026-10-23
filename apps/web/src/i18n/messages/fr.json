@@ -304,48 +304,69 @@
     }
   },
   "legal": {
-    "draftNotice": "<b>Projet de texte.</b> Ce document est un modèle de départ : les passages entre crochets [ ] sont à compléter et l’ensemble doit être relu par un juriste avant la mise en production.",
     "updated": "Dernière mise à jour : {date}",
-    "datePlaceholder": "[date]",
     "availableIn": "Ce document n’est disponible qu’en français et en anglais ; la version anglaise est affichée.",
     "terms": {
       "title": "Conditions générales d’utilisation",
       "s1": {
         "h": "1. Éditeur et objet",
-        "p": "Postbiz est édité par [RAISON SOCIALE], [forme juridique], [adresse], immatriculée sous le numéro [SIREN/RCS]. Les présentes conditions encadrent l’utilisation du service Postbiz, qui permet de planifier des publications et de gérer les messages et commentaires de comptes de réseaux sociaux connectés par l’utilisateur."
+        "p1": "Postbiz est un service en ligne accessible à l’adresse getpostbiz.com. Il permet de planifier et de publier des contenus, de gérer les messages et les commentaires, et de se faire aider par un assistant IA, sur les comptes de réseaux sociaux que l’utilisateur connecte lui-même.",
+        "p2": "Le service est exploité par : {entity}. Les présentes conditions s’appliquent à tout usage du site et de l’application. En créant un compte ou en connectant un réseau social, l’utilisateur les accepte."
       },
       "s2": {
         "h": "2. Compte",
-        "p": "L’utilisateur crée un compte avec une adresse e-mail valide et en protège les identifiants. Il est responsable des actions effectuées depuis son compte et de celles des membres qu’il invite dans son organisation."
+        "p1": "L’utilisateur crée un compte avec une adresse e-mail valide. Il doit avoir l’âge légal pour conclure un contrat, ou y être autorisé par son représentant légal, et protéger ses identifiants. Il est responsable des actions effectuées depuis son compte et de celles des membres qu’il invite dans son organisation."
       },
       "s3": {
         "h": "3. Réseaux sociaux tiers",
-        "p1": "Postbiz agit sur les comptes que l’utilisateur autorise, via les interfaces officielles de Facebook, Instagram, X, LinkedIn, TikTok et YouTube. L’utilisateur reste soumis aux conditions de chacun de ces réseaux (par exemple, la fenêtre de 24 heures pour répondre aux messages sur Messenger et Instagram) et garantit disposer des droits nécessaires sur les contenus qu’il publie.",
-        "p2": "Les fonctionnalités disponibles dépendent des autorisations accordées par chaque réseau, qui peuvent changer ou être retirées. Postbiz ne garantit pas la disponibilité d’une fonctionnalité sur un réseau donné."
+        "p1": "Postbiz agit uniquement sur les comptes que l’utilisateur autorise, via les interfaces officielles (API) de Facebook, Instagram, X, LinkedIn, TikTok et YouTube. L’utilisateur reste soumis aux conditions de chacun de ces réseaux (par exemple, la fenêtre de 24 heures pour répondre aux messages sur Messenger et Instagram) et garantit disposer des droits nécessaires sur les contenus qu’il publie. Postbiz n’est ni affilié à ces réseaux ni approuvé par eux.",
+        "p2": "Les fonctionnalités disponibles dépendent des autorisations accordées par chaque réseau, qui peuvent changer ou être retirées. Postbiz ne garantit pas la disponibilité d’une fonctionnalité sur un réseau donné. L’utilisateur peut retirer l’accès de Postbiz à tout moment, depuis Postbiz (Canaux, puis Déconnecter) ou depuis les réglages du réseau concerné.",
+        "p3": "En utilisant les fonctions YouTube de Postbiz, l’utilisateur accepte d’être lié par les <yt>Conditions d’utilisation de YouTube</yt>. Les contenus envoyés vers TikTok sont soumis aux <tt>Conditions d’utilisation de TikTok</tt>."
       },
       "s4": {
-        "h": "4. Contenus et conduite",
-        "p": "L’utilisateur s’interdit tout usage illicite du service, notamment l’envoi de messages non sollicités en masse, la diffusion de contenus illégaux ou contraires aux règles des réseaux, et toute tentative de contourner les limites techniques ou de sécurité."
+        "h": "4. Contenus de l’utilisateur",
+        "p1": "L’utilisateur conserve tous ses droits sur les textes, images et vidéos qu’il importe ou publie avec Postbiz. Il accorde à Postbiz une licence limitée et non exclusive pour les stocker, les traiter et les transmettre aux réseaux qu’il a choisis, dans le seul but de fournir le service.",
+        "p2": "L’utilisateur est seul responsable de ces contenus et de leur conformité à la loi et aux règles des réseaux."
       },
       "s5": {
-        "h": "5. Tarifs et paiement",
-        "p": "Pendant la période de bêta, le service est fourni gratuitement. Les tarifs publiés sur la page Tarifs s’appliqueront à l’issue de la bêta, après information préalable de l’utilisateur d’au moins [30] jours. [Conditions de facturation, de résiliation et de remboursement à compléter lors de l’activation des paiements.]"
+        "h": "5. Usage acceptable",
+        "p1": "L’utilisateur s’interdit :",
+        "li1": "tout usage illicite du service ;",
+        "li2": "l’envoi de messages non sollicités en masse ou la recherche d’un faux engagement ;",
+        "li3": "la diffusion de contenus illégaux, haineux, trompeurs ou portant atteinte aux droits d’un tiers ;",
+        "li4": "l’accès au compte d’un tiers sans son autorisation ;",
+        "li5": "toute tentative de contourner les limites techniques, de sécurité ou de quota du service ou des réseaux.",
+        "p2": "Postbiz peut suspendre sans délai un compte qui menace la sécurité du service ou le compte de réseau social d’un utilisateur."
       },
       "s6": {
-        "h": "6. Disponibilité et responsabilité",
-        "p": "Postbiz met en œuvre des moyens raisonnables pour assurer la continuité du service, sans garantie d’absence d’interruption. [Limitation de responsabilité à compléter.]"
+        "h": "6. Assistant IA et réponses automatiques",
+        "p1": "L’assistant IA propose des brouillons à partir des instructions de l’utilisateur. Ses suggestions peuvent contenir des erreurs : l’utilisateur les relit avant de publier et en reste responsable. Le texte saisi dans l’assistant est transmis à notre prestataire d’IA pour produire la réponse (voir la politique de confidentialité).",
+        "p2": "Les réponses automatiques sont configurées par l’utilisateur, qui en est responsable."
       },
       "s7": {
-        "h": "7. Résiliation",
-        "p": "L’utilisateur peut supprimer son compte à tout moment. Postbiz peut suspendre un compte en cas de manquement aux présentes conditions ou aux règles d’un réseau tiers."
+        "h": "7. Tarifs et paiement",
+        "p1": "Pendant la période de bêta, le service est fourni gratuitement. Les tarifs publiés sur la page Tarifs s’appliqueront à l’issue de la bêta, après information préalable de l’utilisateur d’au moins 30 jours. Aucun paiement n’est exigé sans l’accord explicite de l’utilisateur."
       },
       "s8": {
-        "h": "8. Logiciel libre",
-        "p": "Le code source de Postbiz est publié sous licence GNU AGPL-3.0. Cette licence régit le code ; les présentes conditions régissent le service hébergé par l’éditeur."
+        "h": "8. Disponibilité et responsabilité",
+        "p1": "Postbiz met en œuvre des moyens raisonnables pour assurer la continuité du service, sans garantie d’absence d’interruption. Une publication peut échouer ou être retardée du fait d’un réseau tiers (indisponibilité, quota, refus d’un contenu) ; Postbiz en informe alors l’utilisateur dans l’application.",
+        "p2": "Dans la limite permise par la loi, Postbiz n’est pas responsable des dommages indirects (perte d’audience ou de chiffre d’affaires, par exemple) ni des décisions prises par un réseau social sur les comptes de l’utilisateur. Ces conditions n’excluent aucune responsabilité qui ne peut l’être légalement, notamment à l’égard des consommateurs."
       },
       "s9": {
-        "h": "9. Droit applicable",
-        "p1": "Droit français. [Juridiction compétente à compléter.]",
+        "h": "9. Résiliation",
+        "p1": "L’utilisateur peut supprimer son compte à tout moment. Postbiz peut suspendre ou fermer un compte en cas de manquement aux présentes conditions ou aux règles d’un réseau tiers. Les données sont ensuite supprimées comme l’indique la politique de confidentialité."
+      },
+      "s10": {
+        "h": "10. Logiciel libre",
+        "p1": "Le code source de Postbiz est publié sous licence GNU AGPL-3.0. Cette licence régit le code ; les présentes conditions régissent le service hébergé par l’éditeur."
+      },
+      "s11": {
+        "h": "11. Modification des conditions",
+        "p1": "Nous pouvons modifier ces conditions, par exemple pour suivre l’évolution du service ou de la loi. En cas de changement important, l’utilisateur en est informé dans l’application ou par e-mail avant son entrée en vigueur. Continuer à utiliser le service vaut acceptation."
+      },
+      "s12": {
+        "h": "12. Droit applicable et contact",
+        "p1": "Les présentes conditions sont soumises au droit français. En cas de litige, les tribunaux français sont compétents, sous réserve des règles protectrices applicables aux consommateurs.",
         "p2": "Contact : <mail>{email}</mail>"
       }
     },
@@ -353,52 +374,84 @@
       "title": "Politique de confidentialité",
       "s1": {
         "h": "1. Responsable du traitement",
-        "p": "[RAISON SOCIALE], [adresse]. Contact : <mail>{email}</mail>."
+        "p1": "{entity}. Pour toute question sur vos données personnelles : <mail>{email}</mail>."
       },
       "s2": {
         "h": "2. Données que nous traitons",
         "li1": "<b>Compte :</b> adresse e-mail, nom affiché, mot de passe (stocké sous forme chiffrée par notre prestataire d’authentification).",
         "li2": "<b>Canaux connectés :</b> identifiant, nom et photo du compte, et jetons d’accès fournis par le réseau (chiffrés avant enregistrement).",
         "li3": "<b>Messages et commentaires :</b> contenus reçus et envoyés sur les comptes que vous connectez, ainsi que l’identifiant public, le nom et le pseudonyme des personnes qui vous écrivent.",
-        "li4": "<b>Publications :</b> textes, médias et dates que vous programmez.",
-        "li5": "<b>Usage :</b> journaux techniques nécessaires à la sécurité et au bon fonctionnement du service."
+        "li4": "<b>Publications et médias :</b> textes, images et vidéos que vous programmez ou importez dans la bibliothèque, et leurs dates.",
+        "li5": "<b>Assistant IA :</b> les instructions que vous saisissez dans l’assistant.",
+        "li6": "<b>Usage :</b> journaux techniques nécessaires à la sécurité et au bon fonctionnement du service."
       },
       "s3": {
-        "h": "3. Finalités et bases légales",
+        "h": "3. Ce que nous recevons des réseaux sociaux",
+        "p1": "Seulement après votre autorisation, et seulement ce qui sert aux fonctions que vous utilisez :",
+        "li1": "<b>Facebook et Instagram :</b> les Pages et comptes professionnels que vous connectez (identifiant, nom, photo), leurs messages et commentaires, et la publication de vos contenus.",
+        "li2": "<b>LinkedIn :</b> votre profil (identifiant, nom, photo) ou les Pages que vous administrez, pour y publier.",
+        "li3": "<b>X :</b> votre profil (identifiant, nom, photo), pour y publier.",
+        "li4": "<b>YouTube (Google) :</b> votre chaîne (identifiant, nom, photo), pour y envoyer des vidéos et gérer leurs commentaires.",
+        "li5": "<b>TikTok :</b> l’identifiant, le nom affiché et la photo de votre compte, pour y envoyer les vidéos que vous choisissez.",
+        "p2": "Les jetons d’accès sont chiffrés avant enregistrement et supprimés quand vous déconnectez le canal."
+      },
+      "s4": {
+        "h": "4. Données Google et YouTube",
+        "p1": "L’utilisation et le transfert par Postbiz des informations reçues des API Google respectent la <gu>Politique relative aux données utilisateur des services d’API Google</gu>, y compris les exigences d’utilisation limitée.",
+        "p2": "Les données YouTube servent uniquement à afficher la chaîne connectée et à publier ou gérer les contenus que vous demandez. Elles ne sont ni vendues, ni utilisées pour de la publicité, ni transmises à des tiers sauf si c’est nécessaire pour fournir le service, pour respecter la loi ou avec votre accord, et elles ne servent pas à entraîner des modèles d’intelligence artificielle.",
+        "p3": "Vous pouvez retirer à tout moment l’accès de Postbiz à votre compte Google depuis vos <gs>autorisations de sécurité Google</gs>, ou déconnecter la chaîne dans Postbiz. Politique de confidentialité de Google : <gp>policies.google.com/privacy</gp>."
+      },
+      "s5": {
+        "h": "5. Données TikTok",
+        "p1": "Avec la connexion TikTok (Login Kit) et l’API de publication de contenu, Postbiz reçoit l’identifiant, le nom affiché et la photo de votre compte, et envoie vers votre compte les vidéos que vous choisissez de publier, uniquement à votre demande. Ces données ne sont ni vendues ni utilisées pour de la publicité.",
+        "p2": "Vous pouvez retirer l’accès depuis Postbiz (Déconnecter révoque le jeton auprès de TikTok) ou dans les paramètres de votre compte TikTok. Voir aussi la <tp>politique de confidentialité de TikTok</tp>."
+      },
+      "s6": {
+        "h": "6. Finalités et bases légales",
         "li1": "Fournir le service (exécution du contrat).",
         "li2": "Assurer la sécurité et prévenir les abus (intérêt légitime).",
         "li3": "Répondre à vos demandes de support (intérêt légitime).",
-        "p": "Nous n’utilisons pas vos messages ni vos publications pour entraîner des modèles d’intelligence artificielle et nous ne les vendons pas."
-      },
-      "s4": {
-        "h": "4. Sous-traitants",
-        "li1": "Supabase Inc. — base de données, authentification et stockage [région d’hébergement : à compléter].",
-        "li2": "[Hébergeur de l’application et du worker : à compléter].",
-        "li3": "[Prestataire d’envoi d’e-mails : à compléter].",
-        "p": "Les réseaux sociaux que vous connectez sont des responsables de traitement distincts, régis par leurs propres politiques."
-      },
-      "s5": {
-        "h": "5. Durées de conservation",
-        "p": "Les données du compte sont conservées tant que le compte existe. Les messages et commentaires sont supprimés lorsque vous déconnectez le canal concerné ou supprimez votre compte, dans un délai de [30] jours. [À ajuster.]"
-      },
-      "s6": {
-        "h": "6. Vos droits",
-        "p": "Vous pouvez demander l’accès, la rectification, l’effacement, la limitation, la portabilité de vos données et vous opposer à leur traitement en écrivant à <mail>{email}</mail>. Vous pouvez aussi saisir la CNIL."
+        "p1": "Nous ne vendons pas vos données, nous ne faisons pas de publicité et nous n’utilisons pas vos messages ni vos publications pour entraîner des modèles d’intelligence artificielle."
       },
       "s7": {
-        "h": "7. Sécurité",
-        "p": "Isolation des données par organisation au niveau de la base de données, chiffrement des jetons d’accès, chiffrement des échanges. Aucun système n’étant infaillible, nous vous informons en cas d’incident affectant vos données."
+        "h": "7. Sous-traitants et transferts",
+        "li1": "Supabase Inc. — base de données, authentification et stockage des fichiers.",
+        "li2": "Vercel Inc. — hébergement du site et de l’application.",
+        "li3": "Prestataire d’envoi d’e-mails — messages de connexion et notifications.",
+        "li4": "Anthropic — assistant IA, uniquement quand vous l’utilisez : le texte saisi dans l’assistant lui est transmis pour produire la réponse.",
+        "p1": "Les réseaux sociaux que vous connectez sont des responsables de traitement distincts, régis par leurs propres politiques. Certains sous-traitants sont situés hors de l’Union européenne, notamment aux États-Unis : les transferts reposent alors sur les mécanismes prévus par le RGPD (décision d’adéquation ou clauses contractuelles types)."
+      },
+      "s8": {
+        "h": "8. Durées de conservation",
+        "p1": "Les données du compte sont conservées tant que le compte existe. Les jetons d’accès d’un canal sont supprimés quand vous le déconnectez ; les messages et commentaires associés le sont dans un délai de 30 jours. À la suppression du compte, les données associées sont effacées dans le même délai."
+      },
+      "s9": {
+        "h": "9. Cookies",
+        "p1": "Postbiz n’utilise que des cookies et des stockages strictement nécessaires : la session de connexion, votre langue et vos préférences d’affichage. Il n’y a ni cookie publicitaire ni outil de mesure d’audience tiers."
+      },
+      "s10": {
+        "h": "10. Vos droits",
+        "p1": "Vous pouvez demander l’accès, la rectification, l’effacement, la limitation, la portabilité de vos données et vous opposer à leur traitement en écrivant à <mail>{email}</mail>. Pour effacer vos données, voir aussi la page <del>Suppression de vos données</del>. Vous pouvez enfin saisir la CNIL."
+      },
+      "s11": {
+        "h": "11. Sécurité",
+        "p1": "Isolation des données par organisation au niveau de la base de données, chiffrement des jetons d’accès, chiffrement des échanges. Aucun système n’étant infaillible, nous vous informons en cas d’incident affectant vos données."
+      },
+      "s12": {
+        "h": "12. Mineurs et modifications",
+        "p1": "Postbiz s’adresse à des professionnels et n’est pas destiné aux personnes de moins de 16 ans.",
+        "p2": "Nous pouvons mettre à jour cette politique. En cas de changement important, vous en êtes informé dans l’application ou par e-mail."
       }
     },
     "dataDeletion": {
       "title": "Suppression de vos données",
       "s1": {
         "h": "Supprimer les données d’un canal",
-        "p": "Dans Postbiz, ouvrez <b>Canaux</b>, choisissez le canal puis <b>Déconnecter</b>. Les jetons d’accès sont supprimés immédiatement, ainsi que les conversations et messages associés dans un délai de [30] jours."
+        "p": "Dans Postbiz, ouvrez <b>Canaux</b>, choisissez le canal puis <b>Déconnecter</b>. Les jetons d’accès sont supprimés immédiatement, ainsi que les conversations et messages associés dans un délai de 30 jours."
       },
       "s2": {
         "h": "Supprimer votre compte",
-        "p": "Dans <b>Réglages</b>, choisissez <b>Supprimer mon compte</b>. Votre profil, vos organisations dont vous êtes le seul administrateur et toutes les données associées sont supprimés dans un délai de [30] jours."
+        "p": "Dans <b>Réglages</b>, choisissez <b>Supprimer mon compte</b>. Votre profil, vos organisations dont vous êtes le seul administrateur et toutes les données associées sont supprimés dans un délai de 30 jours."
       },
       "s3": {
         "h": "Vous avez retiré Postbiz depuis Facebook ou Instagram",

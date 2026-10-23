@@ -577,9 +577,7 @@
     "titleTemplate": "{page} · Postbiz"
   },
   "legal": {
-    "draftNotice": "<b>Borrador.</b> Este documento es una plantilla de partida: los pasajes entre corchetes [ ] deben completarse y todo el texto debe ser revisado por un jurista antes de su puesta en producción.",
     "updated": "Última actualización: {date}",
-    "datePlaceholder": "[fecha]",
     "availableIn": "Este documento solo está disponible en francés e inglés; se muestra la versión en inglés."
   },
   "auth": {

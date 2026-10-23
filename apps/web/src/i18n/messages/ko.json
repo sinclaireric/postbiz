@@ -529,9 +529,7 @@
     "titleTemplate": "{page} · Postbiz"
   },
   "legal": {
-    "draftNotice": "<b>초안.</b> 이 문서는 출발점이 되는 템플릿입니다. 대괄호 [ ] 안의 부분은 보완해야 하며, 서비스 공개 전에 법률 전문가가 전체 내용을 검토해야 합니다.",
     "updated": "최종 업데이트: {date}",
-    "datePlaceholder": "[날짜]",
     "availableIn": "이 문서는 프랑스어와 영어로만 제공됩니다. 영어 버전이 표시됩니다."
   },
   "auth": {

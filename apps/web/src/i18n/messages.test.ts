@@ -17,8 +17,8 @@ function flatten(tree: Messages, prefix = ''): Record<string, string> {
 const placeholders = (s: string) => [...s.matchAll(/\{(\w+)\}/g)].map((m) => m[1]!).sort();
 const tags = (s: string) => splitRich(s).flatMap((p) => (typeof p === 'string' ? [] : [p.tag])).sort();
 
-/** Les textes juridiques ne sont traduits qu'en français et en anglais ; les autres langues n'ont que les 4 clés d'avis. */
-const LEGAL_LOCALIZED = new Set(['legal.draftNotice', 'legal.updated', 'legal.datePlaceholder', 'legal.availableIn']);
+/** Les textes juridiques ne sont traduits qu'en français et en anglais ; les autres langues n'ont que les 2 clés d'avis. */
+const LEGAL_LOCALIZED = new Set(['legal.updated', 'legal.availableIn']);
 const isLegalBody = (k: string) => k.startsWith('legal.') && !LEGAL_LOCALIZED.has(k);
 
 let fr: Record<string, string>;

@@ -529,9 +529,7 @@
     "titleTemplate": "{page} · Postbiz"
   },
   "legal": {
-    "draftNotice": "<b>ドラフト。</b>この文書は出発点となるひな形です。角括弧 [ ] 内の箇所は補完が必要で、本番公開の前に全文を法律の専門家が確認する必要があります。",
     "updated": "最終更新日:{date}",
-    "datePlaceholder": "[日付]",
     "availableIn": "この文書はフランス語と英語のみで提供しています。英語版を表示しています。"
   },
   "auth": {

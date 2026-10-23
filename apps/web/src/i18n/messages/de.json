@@ -586,9 +586,7 @@
     "titleTemplate": "{page} · Postbiz"
   },
   "legal": {
-    "draftNotice": "<b>Entwurf.</b> Dieses Dokument ist eine Ausgangsvorlage: Die Stellen in eckigen Klammern [ ] sind zu ergänzen, und der gesamte Text muss vor dem Produktivbetrieb von einem Juristen geprüft werden.",
     "updated": "Zuletzt aktualisiert: {date}",
-    "datePlaceholder": "[Datum]",
     "availableIn": "Dieses Dokument ist nur auf Französisch und Englisch verfügbar; die englische Fassung wird angezeigt."
   },
   "auth": {

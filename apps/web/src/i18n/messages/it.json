@@ -580,9 +580,7 @@
     "titleTemplate": "{page} · Postbiz"
   },
   "legal": {
-    "draftNotice": "<b>Bozza.</b> Questo documento è un modello di partenza: i passaggi tra parentesi quadre [ ] vanno completati e l’intero testo deve essere rivisto da un giurista prima della messa in produzione.",
     "updated": "Ultimo aggiornamento: {date}",
-    "datePlaceholder": "[data]",
     "availableIn": "Questo documento è disponibile solo in francese e in inglese; viene mostrata la versione inglese."
   },
   "auth": {

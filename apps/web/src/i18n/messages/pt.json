@@ -571,9 +571,7 @@
     "titleTemplate": "{page} · Postbiz"
   },
   "legal": {
-    "draftNotice": "<b>Texto em rascunho.</b> Este documento é um modelo inicial: os trechos entre colchetes [ ] devem ser preenchidos e todo o texto deve ser revisado por um jurista antes da entrada em produção.",
     "updated": "Última atualização: {date}",
-    "datePlaceholder": "[data]",
     "availableIn": "Este documento só está disponível em francês e inglês; a versão em inglês é exibida."
   },
   "auth": {

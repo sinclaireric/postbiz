@@ -70,7 +70,9 @@ Pour tous les réseaux : prévoyez d'abord un domaine, les pages `/cgu`, `/confi
 ## YouTube (Google)
 
 1. Projet Google Cloud, activer « YouTube Data API v3 ».
-2. Écran de consentement OAuth « externe » ; scopes sensibles (envoi de vidéos, gestion des commentaires) → **vérification Google** requise.
+2. Écran de consentement OAuth « externe » ; scopes sensibles (envoi de vidéos, gestion des commentaires) → **vérification Google** requise. L'écran demande une page d'accueil, une
+   **politique de confidentialité** et des **conditions d'utilisation** : `<SITE>/confidentialite` et `<SITE>/cgu` (elles contiennent la déclaration « utilisation limitée » des données Google et le lien vers les
+   conditions de YouTube). Le domaine du site doit être déclaré dans « Domaines autorisés ».
 3. Quota par défaut : 10 000 unités par jour. Les applications non auditées peuvent voir leurs vidéos envoyées par API restreintes en privé : demander l'**audit** de l'API.
 4. Pas de messages privés : commentaires uniquement.
 5. **Connexion dans Postbiz** : OAuth 2.0 avec PKCE, scopes `youtube.upload` et `youtube.force-ssl`, `access_type=offline` + `prompt=consent`. Le jeton d'accès dure 1 h et
@@ -81,7 +83,8 @@ Pour tous les réseaux : prévoyez d'abord un domaine, les pages `/cgu`, `/confi
 ## TikTok
 
 1. developers.tiktok.com : application avec Login Kit et Content Posting API.
-2. Un **audit** est nécessaire : tant qu'il n'est pas passé, les publications sont privées.
+2. Un **audit** est nécessaire : tant qu'il n'est pas passé, les publications sont privées. Les champs « Terms of Service URL » et « Privacy Policy URL » de l'application sont
+   `<SITE>/cgu` et `<SITE>/confidentialite` (elles décrivent les données TikTok reçues et l'usage de l'API de publication).
 3. **Connexion dans Postbiz** : Login Kit v2, scopes `user.info.basic`, `video.publish`, `video.upload`. Pas de PKCE (non documenté pour le flux web ; **à vérifier**, TikTok l'exige pour les
    applications bureau/mobiles). Jeton d'accès 24 h, refresh token ~365 jours et **renouvelé à chaque rafraîchissement** : Postbiz enregistre toujours le nouveau. TikTok peut répondre
    `200` avec un champ `error` : géré comme un refus. La publication TikTok n'est pas écrite (vidéo requise).
