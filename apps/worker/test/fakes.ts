@@ -22,6 +22,7 @@ export function fakeDb(o: Partial<{ [K in keyof WorkerDb]: WorkerDb[K] }> = {}) 
     markIntegrationRefreshNeeded: vi.fn(async () => {}),
     notify: vi.fn(async () => {}),
     getChildren: vi.fn(async () => []),
+    resolveMedia: vi.fn(async () => []),
     markPublished: vi.fn(async () => {}),
     markPostFailed: vi.fn(async () => {}),
     completeFirstComment: vi.fn(async () => {}),

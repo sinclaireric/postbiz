@@ -41,7 +41,7 @@
       "note": "Comptes professionnels. Messages : réponse possible 24 h après le dernier message du client."
     },
     "instagram_standalone": {
-      "note": "Se connecte directement avec un compte Instagram professionnel, sans Page Facebook (connexion Instagram). Messages et commentaires comme Instagram ; publication bientôt."
+      "note": "Se connecte directement avec un compte Instagram professionnel, sans Page Facebook (connexion Instagram). Messages, commentaires et publication comme Instagram."
     },
     "x": {
       "note": "Les messages dépendent de l’offre payante de l’API X."
@@ -1074,6 +1074,13 @@
       "unknownContact": "Contact inconnu"
     },
     "validation": {
+      "mediaNotYet": "{network} : l’envoi d’images et de vidéos n’est pas encore pris en charge.",
+      "mediaNoImages": "{network} n’accepte pas les images.",
+      "mediaNoVideos": "{network} n’accepte pas les vidéos.",
+      "mediaTooMany": "{network} : {max} médias au plus.",
+      "mediaTooManyVideos": "{network} : nombre de vidéos limité à {max}.",
+      "mediaMixed": "{network} : images et vidéos ne se mélangent pas dans une même publication.",
+      "mediaMissing": "Un média joint n’existe plus dans la bibliothèque : retirez-le puis réessayez.",
       "replyEmpty": "Écrivez un message avant d’envoyer.",
       "replyTooLong": "Le message dépasse {max} caractères.",
       "windowExpired": "La fenêtre de 24 h est dépassée : Meta n’autorise plus de réponse à cette conversation.",
@@ -1097,6 +1104,7 @@
       "gb": "Go"
     },
     "calendar": {
+      "media": "Médias",
       "channels": "Canaux",
       "hidePanel": "Masquer le panneau des canaux",
       "showPanel": "Afficher le panneau des canaux",
@@ -1156,6 +1164,16 @@
       "viewerNote": "Votre rôle (lecteur) ne permet pas de créer des publications."
     },
     "composer": {
+      "addMedia": "Ajouter des images ou des vidéos",
+      "addMediaShort": "Ajouter",
+      "removeMedia": "Retirer {name}",
+      "moveBefore": "Avancer {name}",
+      "moveAfter": "Reculer {name}",
+      "altEdit": "Texte alternatif de {name}",
+      "altLabel": "Texte alternatif de {name}",
+      "altPlaceholder": "Décrivez ce que montre le média",
+      "altHint": "Lu par les lecteurs d’écran et affiché si l’image ne se charge pas. Facultatif.",
+      "altDone": "OK",
       "title": "Nouvelle publication",
       "channels": "Canaux",
       "toReconnect": "· à reconnecter",
@@ -1298,6 +1316,27 @@
       "flags": "Drapeaux"
     },
     "media": {
+      "searchPlaceholder": "Rechercher un média",
+      "noResults": "Aucun média ne correspond à « {query} ».",
+      "pageOf": "Page {page} sur {pages}",
+      "prev": "Précédent",
+      "next": "Suivant",
+      "pagination": "Pagination des médias",
+      "select": "Sélectionner {name}",
+      "selected": "Sélection : {count}",
+      "clearSelection": "Tout désélectionner",
+      "deleteSelected": "Supprimer la sélection",
+      "confirmDeleteMany": "Supprimer la sélection ({count}) ? Les fichiers seront effacés définitivement.",
+      "blocked": "Gardés car utilisés par des publications en attente : {count}.",
+      "expand": "Agrandir {name}",
+      "closePreview": "Fermer l’aperçu",
+      "errList": "La bibliothèque n’a pas pu être chargée. Réessayez dans un instant.",
+      "demoUploadOff": "Mode démo : l’envoi de fichiers est désactivé. Essayez avec les médias d’exemple.",
+      "pickTitle": "Choisir des médias",
+      "pickHint": "Cliquez pour sélectionner. L’ordre de sélection est l’ordre dans la publication ; vous pouvez aussi envoyer de nouveaux fichiers ici.",
+      "limitReached": "Limite atteinte : retirez un média pour en ajouter un autre.",
+      "insert": "Insérer ({count})",
+      "cancel": "Annuler",
       "demoNote": "Mode démo : les fichiers sont seulement prévisualisés dans votre navigateur, rien n’est enregistré.",
       "emptyTitle": "Vous n’avez pas encore de média",
       "emptyText": "Sélectionnez ou téléversez des images et des vidéos (1 Go maximum par fichier). Vous pouvez aussi les glisser-déposer ici.",

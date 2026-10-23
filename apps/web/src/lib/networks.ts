@@ -13,9 +13,8 @@ export interface Network {
 
 /**
  * État réel de chaque réseau. « none » = le réseau ne permet pas (ou plus) l'accès par API tierce.
- * Publication : le worker publie sur Facebook, X et LinkedIn (texte). Instagram, TikTok et YouTube exigent un média et
- * `apps/uploader` n'est pas branché : leurs fournisseurs refusent la publication (apps/worker/src/providers). À repasser en
- * « beta » le jour où l'envoi de médias fonctionne.
+ * Publication : le worker publie sur Facebook (texte, photos, vidéo), Instagram (image, vidéo, carrousel), X et LinkedIn (texte seul : leurs médias
+ * ne sont pas encore envoyés). TikTok et YouTube exigent une vidéo et leurs fournisseurs refusent la publication (apps/worker/src/providers).
  * Ce tableau alimente la page Canaux : il ne doit rien promettre qui ne soit pas dans la feuille de route.
  * Les noms de marque ne se traduisent pas (`NETWORK_NAME`) ; les explications sont dans les messages (`networks.<id>.note`).
  */
@@ -24,7 +23,7 @@ export type SiteNetwork = Network & { id: Exclude<Network['id'], 'linkedin_page'
 
 export const NETWORKS: SiteNetwork[] = [
   { id: 'facebook', color: '#1877f2', publish: 'beta', dm: 'beta', comments: 'beta' },
-  { id: 'instagram', color: '#e1306c', publish: 'soon', dm: 'beta', comments: 'beta' },
+  { id: 'instagram', color: '#e1306c', publish: 'beta', dm: 'beta', comments: 'beta' },
   { id: 'x', color: '#111110', publish: 'beta', dm: 'soon', comments: 'soon' },
   { id: 'linkedin', color: '#0a66c2', publish: 'beta', dm: 'none', comments: 'soon' },
   { id: 'tiktok', color: '#fe2c55', publish: 'soon', dm: 'soon', comments: 'soon' },
@@ -41,7 +40,7 @@ export const LINKEDIN_PAGE: Network = { id: 'linkedin_page', color: '#0a66c2', p
  * Instagram connecté directement par « Instagram Login », sans Page Facebook. Point d'entrée de connexion seulement : le compte est ensuite
  * enregistré comme un canal `instagram` ordinaire (même inbox, mêmes règles de publication).
  */
-export const INSTAGRAM_STANDALONE: Network = { id: 'instagram_standalone', color: '#e1306c', publish: 'soon', dm: 'beta', comments: 'beta' };
+export const INSTAGRAM_STANDALONE: Network = { id: 'instagram_standalone', color: '#e1306c', publish: 'beta', dm: 'beta', comments: 'beta' };
 
 /** Tous les canaux connectables dans l'application : les réseaux du site, plus la Page LinkedIn et Instagram Standalone placés après leur réseau. */
 export const APP_NETWORKS: Network[] = NETWORKS.flatMap((n): Network[] => (n.id === 'linkedin' ? [n, LINKEDIN_PAGE] : n.id === 'instagram' ? [n, INSTAGRAM_STANDALONE] : [n]));

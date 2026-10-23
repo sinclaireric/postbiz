@@ -15,6 +15,7 @@ import {
 } from '@/lib/calendar/logic';
 import type { FirstCommentState, IntegrationItem, KnowledgeItem, PostItem, PostState } from '@/lib/data/types';
 import { ChannelsPanel } from './channels-panel';
+import { MediaThumb } from '@/components/media/media-thumb';
 import { Composer } from './composer';
 
 const STATE_TONE: Record<PostState, 'neutral' | 'ok' | 'warn' | 'lime'> = {
@@ -51,6 +52,7 @@ function Chip({ post, onOpen }: { post: PostItem; onOpen: (p: PostItem) => void 
     >
       <NetworkDot id={post.networkId} size={8} />
       <span className="shrink-0 tabular-nums">{post.publishAt ? formatTime(t.locale, post.publishAt) : ''}</span>
+      {post.media[0] && <span className="h-4 w-4 shrink-0 overflow-hidden rounded-[4px]" aria-hidden="true"><MediaThumb item={{ kind: post.media[0].kind, url: null, thumbUrl: post.media[0].thumbUrl, name: post.media[0].name }} showDuration={false} /></span>}
       <span className="truncate">{post.content || t('app.calendar.noText')}</span>
     </button>
   );
@@ -79,7 +81,7 @@ const Chevron = ({ dir }: { dir: 'left' | 'right' }) => (
   <svg className="rtl:rotate-180" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d={dir === 'left' ? 'm10 3-5 5 5 5' : 'm6 3 5 5-5 5'} stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" /></svg>
 );
 
-export function CalendarView({ posts, integrations, knowledge, aiEnabled, canWrite }: { posts: PostItem[]; integrations: IntegrationItem[]; knowledge: KnowledgeItem[]; aiEnabled: boolean; canWrite: boolean }) {
+export function CalendarView({ posts, integrations, knowledge, aiEnabled, canWrite, orgId, userId, demo }: { posts: PostItem[]; integrations: IntegrationItem[]; knowledge: KnowledgeItem[]; aiEnabled: boolean; canWrite: boolean; orgId: string; userId: string; demo: boolean }) {
   const t = useT();
   // Les dates dépendent du fuseau du navigateur : on les calcule après le montage pour éviter tout décalage serveur/client.
   const [now, setNow] = useState<Date | null>(null);
@@ -195,7 +197,7 @@ export function CalendarView({ posts, integrations, knowledge, aiEnabled, canWri
 
       {composer !== null && (
         <Modal title={t('app.composer.title')} onClose={() => setComposer(null)} width="max-w-6xl" header={false}>
-          <Composer integrations={integrations} knowledge={knowledge} aiEnabled={aiEnabled} canWrite={canWrite} initialLocal={composer} onSaved={() => setComposer(null)} onClose={() => setComposer(null)} />
+          <Composer integrations={integrations} knowledge={knowledge} aiEnabled={aiEnabled} canWrite={canWrite} orgId={orgId} userId={userId} demo={demo} initialLocal={composer} onSaved={() => setComposer(null)} onClose={() => setComposer(null)} />
         </Modal>
       )}
       {detail && <PostDialog post={detail} canWrite={canWrite} onClose={() => setDetail(null)} />}
@@ -334,6 +336,18 @@ function PostDialog({ post, canWrite, onClose }: { post: PostItem; canWrite: boo
       </div>
       {post.publishAt && <p className="mt-2 text-sm text-muted">{formatDateTime(t.locale, post.publishAt)}</p>}
       <p className="mt-4 max-h-64 overflow-y-auto whitespace-pre-wrap rounded-2xl bg-paper p-4 text-[15px] leading-relaxed">{post.content || <span className="text-subtle">{t('app.calendar.noText')}</span>}</p>
+      {post.media.length > 0 && (
+        <div className="mt-3">
+          <h3 className="text-xs font-bold tracking-wide text-muted uppercase">{t('app.calendar.media')}</h3>
+          <ul className="mt-2 flex flex-wrap gap-2">
+            {post.media.map((m) => (
+              <li key={m.id} className="h-16 w-16 overflow-hidden rounded-xl border border-line" title={m.alt || m.name}>
+                <MediaThumb item={{ kind: m.kind, url: null, thumbUrl: m.thumbUrl, name: m.name }} showDuration={false} />
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
       {post.error && <p role="alert" className="mt-3 rounded-xl bg-warn-soft px-4 py-3 text-sm text-warn">{post.error}</p>}
       {post.firstComment && post.firstCommentState && (
         <div className="mt-4">

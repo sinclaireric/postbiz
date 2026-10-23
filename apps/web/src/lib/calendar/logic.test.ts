@@ -84,7 +84,7 @@ describe('créneaux', () => {
 describe('groupPosts', () => {
   const post = (id: string, at: string | null): PostItem => ({
     id, groupId: id, networkId: 'facebook', accountName: 'x', content: id, publishAt: at, state: 'queued', error: null, releaseUrl: null,
-    firstComment: null, firstCommentState: null, firstCommentError: null,
+    firstComment: null, firstCommentState: null, firstCommentError: null, media: [],
   });
   const a = d(2026, 10, 16, 9, 10).toISOString();
   const b = d(2026, 10, 16, 9, 50).toISOString();

@@ -18,5 +18,5 @@ export default async function CalendarPage() {
   const repos = await getRepositories(ctx);
   const [posts, integrations, knowledge] = await Promise.all([repos.posts.list(), repos.workspace.integrations(), repos.knowledge.list()]);
 
-  return <CalendarView posts={posts} integrations={integrations} knowledge={knowledge} aiEnabled={aiConfigured()} canWrite={ctx.org.role !== 'viewer'} />;
+  return <CalendarView posts={posts} integrations={integrations} knowledge={knowledge} aiEnabled={aiConfigured()} canWrite={ctx.org.role !== 'viewer'} orgId={ctx.org.id} userId={ctx.user.id} demo={ctx.mode === 'demo'} />;
 }

@@ -3,7 +3,7 @@ import type {
   ConversationDetail, ConversationStatus, ConversationSummary, InboxRepository, MessageItem, NetworkId, NoteItem,
 } from '@/lib/inbox/types';
 import type {
-  AppContext, CreatePostInput, IntegrationItem, KnowledgeInput, KnowledgeItem, KnowledgeRepository, MemberItem, NotificationItem, PostItem, PostsRepository, Repositories, Result, WorkspaceRepository,
+  AppContext, CreatePostInput, IntegrationItem, KnowledgeInput, KnowledgeItem, KnowledgeRepository, MediaItem, MediaRepository, MemberItem, NotificationItem, PostItem, PostsRepository, Repositories, Result, WorkspaceRepository,
 } from './types';
 
 // Mode démo : données d'exemple en mémoire, partagées par tous les visiteurs du serveur de développement.
@@ -28,8 +28,23 @@ interface Store {
   members: MemberItem[];
   posts: PostItem[];
   knowledge: KnowledgeItem[];
+  media: MediaItem[];
   orgName: string;
   seq: number;
+}
+
+/** Illustration d'exemple (SVG en data URI) pour la bibliothèque de la démo : aucun fichier à servir, rien à envoyer. */
+function art(a: string, b: string, shape: 'moon' | 'wave' | 'arch' | 'sun' | 'dots' | 'tri'): string {
+  const shapes: Record<typeof shape, string> = {
+    moon: '<circle cx="540" cy="620" r="250" fill="#fafaf7"/><circle cx="640" cy="560" r="230" fill="url(#g)"/>',
+    wave: '<path d="M0 760 C180 640 360 880 540 760 S900 640 1080 760 V1350 H0Z" fill="#fafaf7" opacity=".85"/><path d="M0 900 C180 780 360 1020 540 900 S900 780 1080 900 V1350 H0Z" fill="#111110" opacity=".35"/>',
+    arch: '<path d="M270 1000 V620 a270 270 0 0 1 540 0 V1000Z" fill="#fafaf7"/><rect x="270" y="1000" width="540" height="40" fill="#111110" opacity=".5"/>',
+    sun: '<circle cx="540" cy="560" r="210" fill="#fafaf7"/><g stroke="#fafaf7" stroke-width="26" stroke-linecap="round"><path d="M540 250v-70M540 870v70M230 560h-70M850 560h70M320 340l-50-50M760 780l50 50M760 340l50-50M320 780l-50 50"/></g>',
+    dots: '<g fill="#fafaf7"><circle cx="300" cy="420" r="90"/><circle cx="560" cy="620" r="130"/><circle cx="800" cy="440" r="70"/><circle cx="420" cy="900" r="70"/><circle cx="760" cy="920" r="100"/></g>',
+    tri: '<path d="M540 330 L860 900 H220Z" fill="#fafaf7"/><path d="M540 520 L700 800 H380Z" fill="#111110" opacity=".45"/>',
+  };
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1350" viewBox="0 0 1080 1350"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient></defs><rect width="1080" height="1350" fill="url(#g)"/>${shapes[shape]}</svg>`;
+  return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
 }
 
 let seq = 100;
@@ -107,14 +122,37 @@ function seed(): Store {
     { id: 'i3', networkId: 'youtube', name: 'Maison Lune TV', username: null, pictureUrl: null, status: 'refresh_needed' },
   ];
 
+  const sample = (n: number, name: string, kind: 'image' | 'video', a: string, b: string, shape: Parameters<typeof art>[2], hoursAgo: number, extra: Partial<MediaItem> = {}): MediaItem => {
+    const src = art(a, b, shape);
+    return {
+      id: `m${n}`, path: `demo/${name}`, name, mimeType: kind === 'video' ? 'video/mp4' : 'image/jpeg', kind, sizeBytes: kind === 'video' ? 18_400_000 : 640_000,
+      width: 1080, height: 1350, durationSeconds: kind === 'video' ? 24 : null, alt: '', createdAt: ago(hoursAgo * H), url: kind === 'video' ? null : src, thumbUrl: src, ...extra,
+    };
+  };
+  const library: MediaItem[] = [
+    sample(1, 'atelier-hiver.jpg', 'image', '#c6f432', '#6fae1f', 'moon', 3),
+    sample(2, 'collection-automne.jpg', 'image', '#ffb86b', '#e1306c', 'sun', 9),
+    sample(3, 'chene-massif.jpg', 'image', '#8fb8ff', '#3b5bdb', 'arch', 26),
+    sample(4, 'finition-huile.jpg', 'image', '#f9d976', '#f39f86', 'wave', 30),
+    sample(5, 'coulisses.mp4', 'video', '#2b2b2a', '#6b6b66', 'tri', 40, { alt: 'Visite de l’atelier' }),
+    sample(6, 'tabouret-noyer.jpg', 'image', '#d4a5ff', '#7048e8', 'dots', 52),
+    sample(7, 'livraison.mp4', 'video', '#ff9a9e', '#fad0c4', 'wave', 70, { sizeBytes: 31_000_000, durationSeconds: 41 }),
+    sample(8, 'sur-mesure.jpg', 'image', '#a8e063', '#56ab2f', 'tri', 96),
+  ];
+  const attach = (...ids: string[]): PostItem['media'] =>
+    ids.map((i) => library.find((m) => m.id === i)!).map((m) => ({ id: m.id, kind: m.kind, name: m.name, alt: m.alt, thumbUrl: m.thumbUrl }));
+
+  /** Médias joints aux publications d'exemple : numéro de publication → médias de la bibliothèque. */
+  const ATTACHED: Record<number, string[]> = { 1: ['m2'], 2: ['m1', 'm3'], 3: ['m5'], 6: ['m4'] };
   const post = (n: number, networkId: NetworkId, accountName: string, content: string, hours: number, state: PostItem['state'], error: string | null = null, comment: Pick<PostItem, 'firstComment' | 'firstCommentState' | 'firstCommentError'> | null = null): PostItem => ({
     id: `p${n}`, groupId: `g${n}`, networkId, accountName, content,
     publishAt: new Date(T0 + hours * H).toISOString(), state, error, releaseUrl: state === 'published' ? 'https://example.com/post' : null,
     firstComment: comment?.firstComment ?? null, firstCommentState: comment?.firstCommentState ?? null, firstCommentError: comment?.firstCommentError ?? null,
+    media: attach(...(ATTACHED[n] ?? [])),
   });
 
   return {
-    conversations, integrations, orgName: DEMO_CONTEXT.org.name, seq,
+    conversations, integrations, media: library, orgName: DEMO_CONTEXT.org.name, seq,
     notifications: [
       { id: 'nt1', type: 'post_error', title: 'Canal à reconnecter', body: 'Le jeton d’accès a expiré : reconnectez le canal.', createdAt: ago(3 * H), read: false, href: '/app/calendrier' },
       { id: 'nt2', type: 'message_failed', title: 'Réponse non envoyée', body: 'La fenêtre de 24 h est dépassée : Meta n’autorise plus de réponse à cette conversation.', createdAt: ago(26 * H), read: true, href: '/app/inbox?c=c5' },
@@ -199,6 +237,10 @@ const posts: PostsRepository = {
         id: id('p'), groupId, networkId: integ.networkId, accountName: integ.name, content: input.content.trim(),
         publishAt: input.publishAt, state: input.mode === 'schedule' ? 'queued' : 'draft', error: null, releaseUrl: null,
         firstComment: target.firstComment, firstCommentState: target.firstComment ? 'pending' : null, firstCommentError: null,
+        media: input.media.flatMap((a) => {
+          const m = s.media.find((x) => x.id === a.id);
+          return m ? [{ id: m.id, kind: m.kind, name: m.name, alt: a.alt || m.alt, thumbUrl: m.thumbUrl }] : [];
+        }),
       });
     }
     return { ok: true };
@@ -233,7 +275,28 @@ export function demoConnectChannel(networkId: NetworkId, name: string): Result {
   return { ok: true };
 }
 
-const media = { async list() { return []; } };
+const media: MediaRepository = {
+  async list({ page = 1, pageSize = 40, search } = {}) {
+    const term = search?.trim().toLowerCase();
+    const all = [...store().media]
+      .filter((m) => !term || m.name.toLowerCase().includes(term))
+      .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+    const from = (Math.max(1, page) - 1) * pageSize;
+    return { items: all.slice(from, from + pageSize).map((m) => ({ ...m })), total: all.length };
+  },
+  async byIds(ids) {
+    const byId = new Map(store().media.map((m) => [m.id, m]));
+    return ids.map((i) => byId.get(i)).filter((m): m is MediaItem => !!m).map((m) => ({ ...m }));
+  },
+  async remove(ids) {
+    const s = store();
+    const used = (mid: string) => s.posts.filter((p) => (p.state === 'draft' || p.state === 'queued') && p.media.some((m) => m.id === mid)).length;
+    const blocked = ids.filter((i) => used(i) > 0).map((i) => ({ id: i, posts: used(i) }));
+    const removed = ids.filter((i) => used(i) === 0 && s.media.some((m) => m.id === i));
+    s.media = s.media.filter((m) => !removed.includes(m.id));
+    return { removed, blocked };
+  },
+};
 
 const knowledge: KnowledgeRepository = {
   async list() {

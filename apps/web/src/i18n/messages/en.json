@@ -41,7 +41,7 @@
       "note": "Professional accounts. Messages: you can reply within 24 hours of the customer’s last message."
     },
     "instagram_standalone": {
-      "note": "Connects directly with a professional Instagram account, no Facebook Page needed (Instagram Login). Messages and comments like Instagram; publishing coming soon."
+      "note": "Connects directly with a professional Instagram account, no Facebook Page needed (Instagram Login). Messages, comments and publishing like Instagram."
     },
     "x": {
       "note": "Messages depend on the paid tier of the X API."
@@ -1056,6 +1056,13 @@
       "unknownContact": "Unknown contact"
     },
     "validation": {
+      "mediaNotYet": "{network}: sending images and videos isn’t supported yet.",
+      "mediaNoImages": "{network} doesn’t accept images.",
+      "mediaNoVideos": "{network} doesn’t accept videos.",
+      "mediaTooMany": "{network}: {max} media at most.",
+      "mediaTooManyVideos": "{network}: videos are limited to {max}.",
+      "mediaMixed": "{network}: images and videos can’t be mixed in one post.",
+      "mediaMissing": "An attached media no longer exists in the library: remove it and try again.",
       "replyEmpty": "Write a message before sending.",
       "replyTooLong": "The message exceeds {max} characters.",
       "windowExpired": "The 24-hour window has passed: Meta no longer allows replies to this conversation.",
@@ -1079,6 +1086,7 @@
       "gb": "GB"
     },
     "calendar": {
+      "media": "Media",
       "channels": "Channels",
       "hidePanel": "Hide the channels panel",
       "showPanel": "Show the channels panel",
@@ -1138,6 +1146,16 @@
       "viewerNote": "Your role (viewer) does not allow creating posts."
     },
     "composer": {
+      "addMedia": "Add images or videos",
+      "addMediaShort": "Add",
+      "removeMedia": "Remove {name}",
+      "moveBefore": "Move {name} earlier",
+      "moveAfter": "Move {name} later",
+      "altEdit": "Alt text for {name}",
+      "altLabel": "Alt text for {name}",
+      "altPlaceholder": "Describe what the media shows",
+      "altHint": "Read by screen readers and shown if the image fails to load. Optional.",
+      "altDone": "OK",
       "title": "New post",
       "channels": "Channels",
       "toReconnect": "· reconnect needed",
@@ -1280,6 +1298,27 @@
       "flags": "Flags"
     },
     "media": {
+      "searchPlaceholder": "Search media",
+      "noResults": "No media matches “{query}”.",
+      "pageOf": "Page {page} of {pages}",
+      "prev": "Previous",
+      "next": "Next",
+      "pagination": "Media pagination",
+      "select": "Select {name}",
+      "selected": "Selected: {count}",
+      "clearSelection": "Clear selection",
+      "deleteSelected": "Delete selection",
+      "confirmDeleteMany": "Delete the selection ({count})? The files will be permanently erased.",
+      "blocked": "Kept because pending posts use them: {count}.",
+      "expand": "Enlarge {name}",
+      "closePreview": "Close preview",
+      "errList": "The library couldn’t be loaded. Try again in a moment.",
+      "demoUploadOff": "Demo mode: file uploads are turned off. Try the sample media.",
+      "pickTitle": "Choose media",
+      "pickHint": "Click to select. The order you select in is the order in the post; you can also upload new files here.",
+      "limitReached": "Limit reached: remove a media to add another.",
+      "insert": "Insert ({count})",
+      "cancel": "Cancel",
       "demoNote": "Demo mode: files are only previewed in your browser, nothing is saved.",
       "emptyTitle": "You don’t have any media yet",
       "emptyText": "Select or upload images and videos (1 GB maximum per file). You can also drag and drop them here.",

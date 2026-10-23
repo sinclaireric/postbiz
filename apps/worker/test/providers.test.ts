@@ -212,9 +212,9 @@ describe('registre', () => {
     expect(reg('linkedin_page')).not.toBeNull();
     expect(reg('instagram_standalone')).toBeNull(); // simple point d'entrée de connexion : le canal enregistré est « instagram »
   });
-  it('YouTube, TikTok et Instagram : jetons rafraîchissables, publication refusée avec un message clair', async () => {
+  it('YouTube et TikTok : jetons rafraîchissables, publication refusée avec un message clair', async () => {
     const reg = createRegistry({ dryRun: false });
-    for (const n of ['tiktok', 'youtube', 'instagram']) {
+    for (const n of ['tiktok', 'youtube']) {
       expect(reg(n)!.refreshToken).toBeTypeOf('function');
       await expect(reg(n)!.publish(input())).rejects.toMatchObject({ name: 'PublishRejectedError', message: expect.stringContaining('pas encore disponible') });
     }

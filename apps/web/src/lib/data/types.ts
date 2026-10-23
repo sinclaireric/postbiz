@@ -1,4 +1,5 @@
 import type { FormError } from '@/lib/form-error';
+import type { MediaKind } from '@/lib/media/rules';
 import type { NetworkId } from '@/lib/inbox/types';
 import type { InboxRepository } from '@/lib/inbox/types';
 
@@ -18,6 +19,16 @@ export type PostState = 'draft' | 'queued' | 'publishing' | 'published' | 'error
  */
 export type FirstCommentState = 'pending' | 'posting' | 'posted' | 'failed' | 'unknown';
 
+/** Média joint à une publication, tel que l'affichent le calendrier et la fiche du post. */
+export interface PostMedia {
+  id: string;
+  kind: MediaKind;
+  name: string;
+  alt: string;
+  /** Vignette (ou le fichier lui-même pour une image sans vignette) ; null si le média a été supprimé de la bibliothèque. */
+  thumbUrl: string | null;
+}
+
 export interface PostItem {
   id: string;
   groupId: string;
@@ -32,6 +43,7 @@ export interface PostItem {
   firstComment: string | null;
   firstCommentState: FirstCommentState | null;
   firstCommentError: string | null;
+  media: PostMedia[];
 }
 
 export interface IntegrationItem {
@@ -53,6 +65,8 @@ export interface CreatePostInput {
   /** Un canal par entrée ; le premier commentaire n'est donné qu'aux canaux qui savent le publier. */
   targets: { integrationId: string; firstComment: string | null }[];
   content: string;
+  /** Médias joints, dans l'ordre d'affichage ; les mêmes pour tous les canaux. */
+  media: { id: string; kind: MediaKind; alt: string }[];
   publishAt: string | null; // ISO UTC
   mode: 'draft' | 'schedule';
 }
@@ -92,15 +106,40 @@ export interface WorkspaceRepository {
 export interface MediaItem {
   id: string;
   path: string;
+  /** Nom d'origine du fichier (affichage et recherche). */
+  name: string;
   mimeType: string | null;
+  kind: MediaKind;
   sizeBytes: number | null;
+  width: number | null;
+  height: number | null;
+  durationSeconds: number | null;
+  /** Texte alternatif par défaut, repris quand le média est joint à une publication. */
+  alt: string;
   createdAt: string;
-  /** URL signée temporaire d'affichage (null en mode démo). */
+  /** URL signée temporaire du fichier (null si indisponible). */
   url: string | null;
+  /** URL signée temporaire d'une vignette légère (grille de la bibliothèque), null si le média n'en a pas. */
+  thumbUrl: string | null;
+}
+
+export interface MediaPage {
+  items: MediaItem[];
+  total: number;
+}
+
+export interface MediaRemoval {
+  removed: string[];
+  /** Médias gardés parce que des publications en attente les utilisent. */
+  blocked: { id: string; posts: number }[];
 }
 
 export interface MediaRepository {
-  list(): Promise<MediaItem[]>;
+  list(o?: { page?: number; pageSize?: number; search?: string }): Promise<MediaPage>;
+  /** Médias demandés, dans l'ordre des identifiants ; ceux qui n'existent pas (ou plus) sont ignorés. */
+  byIds(ids: string[]): Promise<MediaItem[]>;
+  /** Supprime les médias qu'aucune publication en attente n'utilise ; les autres sont renvoyés dans `blocked`. */
+  remove(ids: string[]): Promise<MediaRemoval>;
 }
 
 /** Limites d'une fiche : les mêmes que dans la base (migration knowledge). */

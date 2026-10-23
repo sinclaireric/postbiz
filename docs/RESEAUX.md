@@ -130,3 +130,25 @@ pnpm --filter @postbiz/worker add-channel -- \
 ```
 
 Le jeton est chiffré avec `TOKEN_ENCRYPTION_KEY` avant d'être enregistré.
+
+
+## Médias (images et vidéos)
+
+**Bibliothèque.** Les fichiers sont envoyés depuis le navigateur dans le bucket privé `media` (dossier `<org>/…`, 1 Gio au plus par fichier ; au-delà de 6 Mio, envoi par morceaux reprenable, protocole TUS).
+À l'envoi, le navigateur calcule les dimensions et la durée, crée une **vignette** (480 px) — pour une vidéo, une image prise un peu après le début — et, pour toute image qui n'est pas un JPEG,
+une **version JPEG** (Instagram n'accepte que le JPEG). Des limites du projet Supabase s'ajoutent à celle du bucket (réglage « Storage » : taille maximale d'un fichier ; 50 Mo sur l'offre gratuite).
+La table `media` garde le nom d'origine, le texte alternatif, le type (image / vidéo) et les chemins (`path`, `thumbnail_path`, `normalized_path`). Supprimer un média utilisé par une publication en attente est refusé.
+
+**Publications.** `posts.media` ne garde que des références `[{ media_id, type, alt }]` : le worker relit la bibliothèque au moment de publier et signe des URL temporaires (2 h) que le réseau télécharge.
+La base refuse un média d'une autre organisation, et un fichier hors du dossier de l'organisation. Règles par réseau : `apps/web/src/lib/media/rules.ts`.
+
+| Réseau | Publication de médias | Limites appliquées |
+|---|---|---|
+| Instagram (Page ou Instagram Login) | oui, ⚠️ non validée en réel | 1 image (JPEG), 1 vidéo (Reel) ou un carrousel de 10 images et vidéos ; légende 2200 caractères |
+| Facebook (Page) | oui, ⚠️ non validée en réel | 10 photos, ou une vidéo (pas les deux) |
+| X, LinkedIn, Page LinkedIn | pas encore | la programmation est refusée avec un message clair |
+| TikTok, YouTube | pas encore | idem (vidéo exigée) |
+
+**Instagram, étape par étape.** Un conteneur par média (`/{ig}/media` avec `image_url` ou `video_url`), attente de `FINISHED` (jusqu'à 60 s pour une image, 5 min pour une vidéo), conteneur de carrousel si besoin,
+puis `media_publish`. Tant que `media_publish` n'a pas eu lieu rien n'est visible : une panne avant est un refus sûr (on peut reprogrammer) ; une panne pendant `media_publish` est une issue incertaine, jamais rejouée.
+**Facebook :** une photo → `/photos` ; plusieurs → chaque photo non publiée, puis un post `attached_media` ; une vidéo → `graph-video.facebook.com/{page}/videos` avec `file_url`.

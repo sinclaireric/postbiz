@@ -19,11 +19,13 @@ const NO_STYLE: TextStyle = { bold: false, underline: false };
  * Toutes les modifications passent par `insertText` du navigateur : Ctrl+Z annule aussi un gras ou un émoji.
  */
 export function PostEditor({
-  id, name, value, onValueChange, placeholder, rows = 9, disabled = false, label, tools, footer, className = '',
+  id, name, value, onValueChange, placeholder, rows = 9, disabled = false, label, tools, footer, className = '', onMedia,
 }: {
   id: string; name: string; value: string; onValueChange: (value: string) => void; placeholder?: string; rows?: number; disabled?: boolean;
   /** Nom du champ pour les lecteurs d'écran. */
   label: string;
+  /** Ouvre la bibliothèque de médias ; absent : pas de bouton média (le premier commentaire n'a pas de média). */
+  onMedia?: () => void;
   /** Boutons ajoutés après ceux de l'éditeur. */
   tools?: ReactNode;
   /** Zone à droite de la barre d'outils (compteurs de caractères). */
@@ -134,8 +136,12 @@ export function PostEditor({
         className="block min-h-24 w-full resize-y rounded-t-2xl bg-transparent px-4 pt-3.5 pb-2 text-[15px] leading-relaxed outline-none"
       />
       <div className="flex flex-wrap items-center gap-0.5 border-t border-line px-2.5 py-2">
-        <button type="button" disabled aria-label={`${t('app.composer.media')} · ${t('app.composer.mediaSoon')}`} title={`${t('app.composer.media')} · ${t('app.composer.mediaSoon')}`} className={tool}><ImageIcon width={18} height={18} /></button>
-        <span className="mx-1 h-5 w-px bg-line" aria-hidden="true" />
+        {onMedia && (
+          <>
+            <button type="button" disabled={disabled} onClick={onMedia} onMouseDown={keepFocus} aria-label={t('app.composer.addMedia')} title={t('app.composer.addMedia')} className={tool}><ImageIcon width={18} height={18} /></button>
+            <span className="mx-1 h-5 w-px bg-line" aria-hidden="true" />
+          </>
+        )}
         <button type="button" disabled={disabled} aria-pressed={pressed('underline')} aria-label={t('app.composer.underline')} title={t('app.composer.underline')} onMouseDown={keepFocus} onClick={() => format('underline')} className={`${tool} ${pressed('underline') ? '!bg-ink !text-white' : ''}`}><UnderlineIcon /></button>
         <button type="button" disabled={disabled} aria-pressed={pressed('bold')} aria-label={t('app.composer.bold')} title={t('app.composer.bold')} onMouseDown={keepFocus} onClick={() => format('bold')} className={`${tool} ${pressed('bold') ? '!bg-ink !text-white' : ''}`}><BoldIcon /></button>
         <div ref={emojiRef} className="relative">

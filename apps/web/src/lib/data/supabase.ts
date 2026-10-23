@@ -1,12 +1,13 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { GENERIC_ERROR, type FormError } from '@/lib/form-error';
 import { replyWindow, validateReply } from '@/lib/inbox/logic';
+import { displayName } from '@/lib/media/logic';
 import type {
   ConversationDetail, ConversationStatus, ConversationSummary, InboxRepository, MessageItem, NetworkId, NoteItem,
 } from '@/lib/inbox/types';
 import { KNOWLEDGE_LIMITS } from './types';
 import type {
-  AppContext, CreatePostInput, IntegrationItem, KnowledgeInput, KnowledgeItem, KnowledgeRepository, MediaItem, MemberItem, NotificationItem, OrgRole, PostItem, PostsRepository, Repositories, Result, WorkspaceRepository,
+  AppContext, CreatePostInput, IntegrationItem, KnowledgeInput, KnowledgeItem, KnowledgeRepository, MediaItem, MediaRepository, MemberItem, NotificationItem, OrgRole, PostItem, PostMedia, PostsRepository, Repositories, Result, WorkspaceRepository,
 } from './types';
 
 // Implémentation Supabase. Toutes les requêtes passent par la clé « anon » + la session de l'utilisateur :
@@ -113,23 +114,92 @@ export function createSupabaseRepositories(supabase: SupabaseClient, ctx: AppCon
     },
   };
 
+  // ---------------------------------------------------------------- médias
+  const MEDIA_COLUMNS = 'id, path, name, mime_type, kind, size_bytes, width, height, duration_seconds, alt, thumbnail_path, created_at';
+  const MEDIA_URL_TTL = 3600;
+
+  /** URL signées temporaires (le bucket est privé). Les chemins sans URL (fichier absent) manquent simplement du résultat. */
+  async function signPaths(paths: string[]): Promise<Map<string, string>> {
+    const unique = [...new Set(paths.filter(Boolean))];
+    if (unique.length === 0) return new Map();
+    const { data } = await supabase.storage.from('media').createSignedUrls(unique, MEDIA_URL_TTL);
+    return new Map((data ?? []).filter((x: Row) => x.signedUrl).map((x: Row) => [x.path as string, x.signedUrl as string]));
+  }
+
+  async function toMediaItems(rows: Row[]): Promise<MediaItem[]> {
+    const urls = await signPaths(rows.flatMap((r) => [r.path as string, r.thumbnail_path as string]));
+    return rows.map((r): MediaItem => ({
+      id: r.id, path: r.path, name: r.name ?? displayName(r.path), mimeType: r.mime_type ?? null, kind: r.kind === 'video' ? 'video' : 'image',
+      sizeBytes: r.size_bytes ?? null, width: r.width ?? null, height: r.height ?? null,
+      durationSeconds: r.duration_seconds == null ? null : Number(r.duration_seconds), alt: r.alt ?? '', createdAt: r.created_at,
+      url: urls.get(r.path) ?? null, thumbUrl: r.thumbnail_path ? urls.get(r.thumbnail_path) ?? null : null,
+    }));
+  }
+
+  const media: MediaRepository = {
+    async list({ page = 1, pageSize = 40, search } = {}) {
+      const from = (Math.max(1, page) - 1) * pageSize;
+      let query = supabase.from('media').select(MEDIA_COLUMNS, { count: 'exact' }).eq('org_id', ctx.org.id);
+      const term = search?.trim();
+      // Les jokers de LIKE (% et _) saisis par l'utilisateur ne doivent pas être interprétés.
+      if (term) query = query.ilike('name', `%${term.replace(/[\\%_]/g, (c) => `\\${c}`)}%`);
+      const { data, count } = await query.order('created_at', { ascending: false }).range(from, from + pageSize - 1);
+      return { items: await toMediaItems((data ?? []) as Row[]), total: count ?? 0 };
+    },
+
+    async byIds(ids) {
+      const unique = [...new Set(ids)];
+      if (unique.length === 0) return [];
+      const { data } = await supabase.from('media').select(MEDIA_COLUMNS).eq('org_id', ctx.org.id).in('id', unique);
+      const items = await toMediaItems((data ?? []) as Row[]);
+      const byId = new Map(items.map((m) => [m.id, m]));
+      return ids.map((id) => byId.get(id)).filter((m): m is MediaItem => !!m);
+    },
+
+    async remove(ids) {
+      const unique = [...new Set(ids)];
+      if (unique.length === 0) return { removed: [], blocked: [] };
+      const { data: usage } = await supabase.rpc('media_usage', { p_ids: unique });
+      const used = new Map<string, number>(((usage ?? []) as Row[]).map((u) => [u.media_id as string, Number(u.post_count)]));
+      const blocked = unique.filter((id) => (used.get(id) ?? 0) > 0).map((id) => ({ id, posts: used.get(id)! }));
+      const free = unique.filter((id) => !(used.get(id) ?? 0));
+      if (free.length === 0) return { removed: [], blocked };
+      const { data: rows } = await supabase.from('media').select('id, path, thumbnail_path, normalized_path').eq('org_id', ctx.org.id).in('id', free);
+      const found = (rows ?? []) as Row[];
+      if (found.length === 0) return { removed: [], blocked };
+      const del = await supabase.from('media').delete().eq('org_id', ctx.org.id).in('id', found.map((r) => r.id));
+      if (del.error) return { removed: [], blocked };
+      await supabase.storage.from('media').remove(found.flatMap((r) => [r.path, r.thumbnail_path, r.normalized_path].filter(Boolean) as string[]));
+      return { removed: found.map((r) => r.id as string), blocked };
+    },
+  };
+
   const posts: PostsRepository = {
     async list() {
       const { data, error } = await supabase
         .from('posts')
-        .select('id, group_id, content, publish_at, state, error, release_url, first_comment, first_comment_state, first_comment_error, integrations(provider, name)')
+        .select('id, group_id, content, publish_at, state, error, release_url, first_comment, first_comment_state, first_comment_error, media, integrations(provider, name)')
         .eq('org_id', ctx.org.id)
         .is('deleted_at', null)
         .is('parent_post_id', null)
         .order('publish_at', { ascending: true, nullsFirst: false })
         .limit(300);
       if (error || !data) return [];
+      // Médias joints : un seul aller-retour pour tout le calendrier. Un média supprimé de la bibliothèque disparaît de l'affichage, pas du post.
+      const wanted = [...new Set(data.flatMap((p: Row) => (Array.isArray(p.media) ? p.media : []).map((m: Row) => String(m.media_id))))] as string[];
+      const library = new Map((await media.byIds(wanted)).map((m) => [m.id, m]));
       return data.map((p: Row): PostItem => {
         const integ = one<Row>(p.integrations);
+        const attached: PostMedia[] = (Array.isArray(p.media) ? p.media : []).flatMap((m: Row): PostMedia[] => {
+          const item = library.get(String(m.media_id));
+          if (!item) return [];
+          return [{ id: item.id, kind: item.kind, name: item.name, alt: typeof m.alt === 'string' ? m.alt : item.alt, thumbUrl: item.thumbUrl ?? (item.kind === 'image' ? item.url : null) }];
+        });
         return {
           id: p.id, groupId: p.group_id, networkId: (integ?.provider ?? 'facebook') as NetworkId, accountName: integ?.name ?? '',
           content: p.content, publishAt: p.publish_at, state: p.state, error: p.error ?? null, releaseUrl: p.release_url ?? null,
           firstComment: p.first_comment ?? null, firstCommentState: p.first_comment_state ?? null, firstCommentError: p.first_comment_error ?? null,
+          media: attached,
         };
       });
     },
@@ -140,6 +210,7 @@ export function createSupabaseRepositories(supabase: SupabaseClient, ctx: AppCon
         org_id: ctx.org.id, integration_id: target.integrationId, group_id: groupId, content: input.content.trim(),
         publish_at: input.publishAt, state: input.mode === 'schedule' ? 'queued' : 'draft', created_by: ctx.user.id,
         first_comment: target.firstComment,
+        media: input.media.map((m) => ({ media_id: m.id, type: m.kind, ...(m.alt.trim() ? { alt: m.alt.trim().slice(0, 1500) } : {}) })),
       }));
       const { error } = await supabase.from('posts').insert(rows);
       return error ? fail(GENERIC_ERROR) : { ok: true };
@@ -200,21 +271,6 @@ export function createSupabaseRepositories(supabase: SupabaseClient, ctx: AppCon
     async renameOrganization(name) {
       const { error } = await supabase.from('organizations').update({ name: name.trim() }).eq('id', ctx.org.id);
       return error ? fail({ key: 'app.settings.errRename' }) : { ok: true };
-    },
-  };
-
-  const media = {
-    async list(): Promise<MediaItem[]> {
-      const { data } = await supabase
-        .from('media')
-        .select('id, path, mime_type, size_bytes, created_at')
-        .eq('org_id', ctx.org.id)
-        .order('created_at', { ascending: false })
-        .limit(200);
-      const rows = (data ?? []) as Row[];
-      const signed = rows.length ? await supabase.storage.from('media').createSignedUrls(rows.map((r) => r.path as string), 3600) : { data: [] as Row[] };
-      const urlByPath = new Map<string, string>((signed.data ?? []).filter((x: Row) => x.signedUrl).map((x: Row) => [x.path as string, x.signedUrl as string]));
-      return rows.map((r) => ({ id: r.id, path: r.path, mimeType: r.mime_type ?? null, sizeBytes: r.size_bytes ?? null, createdAt: r.created_at, url: urlByPath.get(r.path) ?? null }));
     },
   };
 

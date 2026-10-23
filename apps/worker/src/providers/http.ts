@@ -46,7 +46,7 @@ export async function mutate(fetchImpl: Fetch, url: string, init: RequestInit, o
   }
   if (res.ok) return { status: res.status, headers: res.headers, text, json };
 
-  if (res.status === 401) throw new ReconnectRequiredError();
+  if (res.status === 401 || json?.error?.code === 190) throw new ReconnectRequiredError();
   if (res.status >= 500) throw new OutcomeUnknownError(`${opts.provider} a répondu ${res.status}. Vérifiez sur le réseau avant de ${words.retry}.`);
   if (res.status === 429) throw new PublishRejectedError(`${opts.provider} : limite de requêtes atteinte, réessayez plus tard.`, 429);
   const detail = json?.error?.message ?? json?.detail ?? json?.message ?? json?.title;

@@ -4,12 +4,14 @@ import Link from 'next/link';
 import { useActionState, useEffect, useState } from 'react';
 import { useFormStatus } from 'react-dom';
 import { createPostAction, type PostFormState } from '@/app/app/(shell)/calendrier/actions';
+import { MediaPicker } from '@/components/media/media-picker';
 import { SocialIcon } from '@/components/social-icon';
 import { Button } from '@/components/ui';
 import { LOCALE_META } from '@/i18n/config';
 import { useLocale, useT } from '@/i18n/client';
 import { toLocalInputValue } from '@/lib/calendar/logic';
-import type { IntegrationItem, KnowledgeItem } from '@/lib/data/types';
+import type { IntegrationItem, KnowledgeItem, MediaItem } from '@/lib/data/types';
+import { MEDIA_RULES, validateMedia } from '@/lib/media/rules';
 import { appendText } from '@/lib/posts/edit';
 import { FIRST_COMMENT_RULES, NETWORK_RULES, supportsFirstComment } from '@/lib/posts/logic';
 import { inOneHour, nextSlot, tomorrowMorning } from '@/lib/posts/slots';
@@ -20,6 +22,7 @@ import type { NetworkId } from '@/lib/inbox/types';
 import { AiPanel, type AiTab, type ApplyMode } from './ai-panel';
 import { ChannelAvatar } from './channel-avatar';
 import { ChevronDownIcon, ClockIcon, ImageIcon, PlusIcon, SparklesIcon, TrashIcon } from './composer-icons';
+import { MediaStrip } from './media-strip';
 import { PostEditor } from './post-editor';
 import { PostPreview } from './post-preview';
 import { useDismiss } from './use-dismiss';
@@ -95,9 +98,10 @@ function CounterChips({ networks, text, limit }: { networks: NetworkId[]; text: 
 type Side = 'preview' | 'ai';
 
 export function Composer({
-  integrations, knowledge, aiEnabled, canWrite, initialLocal = '', onSaved, onClose,
+  integrations, knowledge, aiEnabled, canWrite, orgId, userId, demo, initialLocal = '', onSaved, onClose,
 }: {
-  integrations: IntegrationItem[]; knowledge: KnowledgeItem[]; aiEnabled: boolean; canWrite: boolean; initialLocal?: string; onSaved?: () => void; onClose: () => void;
+  integrations: IntegrationItem[]; knowledge: KnowledgeItem[]; aiEnabled: boolean; canWrite: boolean; orgId: string; userId: string; demo: boolean;
+  initialLocal?: string; onSaved?: () => void; onClose: () => void;
 }) {
   const t = useT();
   const [state, action] = useActionState<PostFormState, FormData>(createPostAction, {});
@@ -111,6 +115,8 @@ export function Composer({
   const [undo, setUndo] = useState<string | null>(null);
   const [firstComment, setFirstComment] = useState('');
   const [commentOpen, setCommentOpen] = useState(false);
+  const [media, setMedia] = useState<MediaItem[]>([]);
+  const [pickerOpen, setPickerOpen] = useState(false);
 
   useEffect(() => {
     const now = new Date();
@@ -123,6 +129,7 @@ export function Composer({
     setContent('');
     setFirstComment('');
     setCommentOpen(false);
+    setMedia([]);
     setUndo(null);
     if (createAnother) setLocal(toLocalInputValue(nextSlot(new Date())));
     else onSaved?.();
@@ -135,6 +142,9 @@ export function Composer({
   const skippedForComment = networks.filter((n) => !supportsFirstComment(n));
   // Fuseau du navigateur converti en UTC avant l'envoi : le serveur ne connaît pas le fuseau de l'utilisateur.
   const publishAtIso = local ? new Date(local).toISOString() : '';
+  // Médias : chaque réseau a ses limites ; on joint au plus ce que le plus strict des canaux choisis accepte.
+  const maxMedia = networks.length > 0 ? Math.min(...networks.map((n) => MEDIA_RULES[n].maxItems)) : MEDIA_RULES.instagram.maxItems;
+  const mediaMessages = [...new Set(networks.flatMap((n) => validateMedia(n, media)).map((e) => t(e.key, e.params)))];
 
   const apply = (text: string, mode: ApplyMode) => {
     setUndo(content);
@@ -202,7 +212,7 @@ export function Composer({
 
           <PostEditor
             id="post-content" name="content" label={t('app.composer.text')} value={content} disabled={!canWrite} placeholder={t('app.composer.placeholder')}
-            className="mt-5" rows={9}
+            className="mt-5" rows={9} onMedia={() => setPickerOpen(true)}
             onValueChange={(value) => { setContent(value); setUndo(null); }}
             tools={
               <button type="button" disabled={!canWrite} onClick={() => { setAiTab('improve'); setSide('ai'); }} className="ms-1 flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[13px] font-semibold whitespace-nowrap text-forest transition hover:bg-lime-soft disabled:opacity-50">
@@ -218,6 +228,19 @@ export function Composer({
               <button type="button" onClick={() => { setContent(undo); setUndo(null); }} className="font-semibold text-ink underline underline-offset-4">{t('app.composer.undo')}</button>
             </p>
           )}
+
+          {media.length === 0 ? (
+            <button
+              type="button" disabled={!canWrite} onClick={() => setPickerOpen(true)}
+              className="mt-3 flex w-full items-center justify-center gap-2 rounded-2xl border border-dashed border-line px-4 py-3 text-sm font-semibold text-muted transition hover:border-ink hover:text-ink disabled:pointer-events-none disabled:opacity-50"
+            ><ImageIcon width={18} height={18} className="shrink-0" />{t('app.composer.addMedia')}</button>
+          ) : (
+            <MediaStrip items={media} onChange={setMedia} onAdd={() => setPickerOpen(true)} disabled={!canWrite} max={maxMedia} />
+          )}
+          {mediaMessages.length > 0 && (
+            <ul role="status" className="mt-2 grid gap-1 text-xs font-medium text-warn">{mediaMessages.map((m) => <li key={m}>{m}</li>)}</ul>
+          )}
+          <input type="hidden" name="media" value={JSON.stringify(media.map((m) => ({ id: m.id, alt: m.alt })))} />
 
           {commentOpen ? (
             <div className="mt-3">
@@ -247,10 +270,6 @@ export function Composer({
             ><PlusIcon width={16} height={16} />{t('app.composer.addFirstComment')}</button>
           )}
 
-          <div className="mt-3 flex items-center gap-3 rounded-2xl border border-dashed border-line px-4 py-3 text-sm text-subtle" aria-disabled="true">
-            <ImageIcon width={20} height={20} className="shrink-0" />
-            <span><span className="font-semibold text-muted">{t('app.composer.media')}</span> · {t('app.composer.mediaSoon')}</span>
-          </div>
 
           <input type="hidden" name="publishAt" value={publishAtIso} />
 
@@ -290,12 +309,19 @@ export function Composer({
             ))}
           </div>
           {side === 'preview' ? (
-            <PostPreview channels={chosen} text={content} firstComment={commentOpen ? firstComment : ''} />
+            <PostPreview channels={chosen} text={content} firstComment={commentOpen ? firstComment : ''} media={media} />
           ) : (
             <AiPanel enabled={aiEnabled} canWrite={canWrite} content={plainText(content)} networkIds={networks} knowledge={knowledge} tab={aiTab} onTabChange={setAiTab} onApply={apply} />
           )}
         </aside>
       </div>
+      {pickerOpen && (
+        <MediaPicker
+          onClose={() => setPickerOpen(false)} orgId={orgId} userId={userId} canWrite={canWrite} demo={demo}
+          slots={maxMedia - media.length} excludeIds={media.map((m) => m.id)}
+          onConfirm={(items) => setMedia((cur) => [...cur, ...items.filter((m) => !cur.some((c) => c.id === m.id))].slice(0, maxMedia))}
+        />
+      )}
     </div>
   );
 }

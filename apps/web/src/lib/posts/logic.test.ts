@@ -109,3 +109,30 @@ describe('premier commentaire', () => {
     expect(validatePost({ ...base, networkIds: ['instagram'], hasMedia: true, firstComment: '   ' })).toEqual([]);
   });
 });
+
+describe('médias d’une publication', () => {
+  const now = new Date('2026-10-21T10:00:00Z');
+  const future = '2026-10-22T10:00:00Z';
+  const base = { content: '', publishAt: future, mode: 'schedule' as const, now };
+  const img = (n: number) => Array.from({ length: n }, () => ({ kind: 'image' as const }));
+  const keys = (r: ReturnType<typeof validatePost>) => r.map((e) => e.key.replace('app.validation.', ''));
+
+  it('un média suffit à une publication sans texte, et satisfait un réseau qui en exige', () => {
+    expect(keys(validatePost({ ...base, networkIds: ['instagram'] }))).toEqual(['needTextOrMedia', 'needsMedia']);
+    expect(validatePost({ ...base, networkIds: ['instagram'], media: img(1) })).toEqual([]);
+    expect(validatePost({ ...base, networkIds: ['instagram_standalone'], media: img(3) })).toEqual([]);
+  });
+
+  it('applique les limites de chaque réseau choisi', () => {
+    expect(keys(validatePost({ ...base, networkIds: ['instagram', 'facebook'], media: img(11) }))).toEqual(['mediaTooMany', 'mediaTooMany']);
+    expect(keys(validatePost({ ...base, networkIds: ['facebook'], media: [{ kind: 'image' }, { kind: 'video' }] }))).toEqual(['mediaMixed']);
+  });
+
+  it('refuse la programmation d’un média sur un réseau où le worker ne publie pas encore de médias', () => {
+    expect(keys(validatePost({ ...base, content: 'Salut', networkIds: ['linkedin'], media: img(1) }))).toEqual(['mediaNotYet']);
+  });
+
+  it('un brouillon reste libre : les règles de médias ne s’appliquent qu’à la programmation', () => {
+    expect(validatePost({ content: 'Brouillon', publishAt: null, mode: 'draft', networkIds: ['linkedin'], media: img(12), now })).toEqual([]);
+  });
+});

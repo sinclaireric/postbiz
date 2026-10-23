@@ -1,5 +1,11 @@
 import type { FormError } from '@/lib/form-error';
 
+/** Longueur maximale du texte alternatif d'un média (la même que dans la base). */
+export const ALT_MAX = 1500;
+
+/** Médias par page de la bibliothèque (page Médias et sélecteur du composeur). */
+export const MEDIA_PAGE_SIZE = 30;
+
 /** 1 Gio : limite du bucket « media » (voir la migration 20261016000003_engine.sql). */
 export const MAX_MEDIA_BYTES = 1024 * 1024 * 1024;
 

@@ -1,8 +1,30 @@
+/**
+ * Média d'une publication, prêt à être envoyé : les adresses sont des URL signées temporaires du stockage privé (que le réseau peut télécharger),
+ * valables quelques heures. Le fournisseur choisit ce dont il a besoin (le fichier, sa version JPEG, sa vignette).
+ */
+export interface ResolvedMedia {
+  id: string;
+  kind: 'image' | 'video';
+  name: string;
+  mimeType: string | null;
+  /** Texte alternatif de ce média dans cette publication ('' si aucun). */
+  alt: string;
+  /** Le fichier d'origine. */
+  url: string;
+  /** Version JPEG d'une image qui n'en était pas une (Instagram n'accepte que le JPEG) ; null si le fichier est déjà un JPEG ou une vidéo. */
+  jpegUrl: string | null;
+  thumbnailUrl: string | null;
+  sizeBytes: number | null;
+  width: number | null;
+  height: number | null;
+  durationSeconds: number | null;
+}
+
 export interface PublishInput {
   accessToken: string;
   integration: { id: string; internalId: string; settings: Record<string, unknown> };
   /** Publication racine en premier, puis les éventuelles suites (fil). */
-  posts: { id: string; content: string; media: unknown[]; settings: Record<string, unknown> }[];
+  posts: { id: string; content: string; media: ResolvedMedia[]; settings: Record<string, unknown> }[];
 }
 
 export interface PublishResult {

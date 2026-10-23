@@ -16,7 +16,10 @@ export async function generateMetadata(): Promise<Metadata> {
     metadataBase: new URL(siteUrl),
     title: { default: t('meta.siteTitle'), template: t('meta.titleTemplate', { page: '%s' }) },
     description: t('meta.siteDescription'),
+    // Le titre et la description de chaque page viennent de la page elle-même ; ici seulement ce qui est commun.
     openGraph: { type: 'website', siteName: 'Postbiz', locale: t.locale },
+    twitter: { card: 'summary_large_image' },
+    applicationName: 'Postbiz',
     robots: { index: true, follow: true },
   };
 }

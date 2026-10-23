@@ -1,6 +1,8 @@
 import { OutcomeUnknownError, PublishRejectedError, ReconnectRequiredError } from '../providers/errors.ts';
 import type { ProviderRegistry } from '../providers/registry.ts';
+import type { ResolvedMedia } from '../providers/types.ts';
 import type { WorkerDb, WorkerPost } from './db.ts';
+import { MediaUnavailableError } from './media.ts';
 
 export interface PostOutcome {
   postId: string;
@@ -46,12 +48,22 @@ export async function processPost(deps: { db: WorkerDb; providers: ProviderRegis
       return await fail('error', `Aucun accès valide pour « ${integration.name} » : reconnectez le canal.`, 'Canal à reconnecter');
     }
 
+    // Médias : relus dans la bibliothèque avec des URL signées neuves. Rien n'a encore été envoyé au réseau : un échec ici est un simple « error ».
+    const all = [post, ...children];
+    let media: ResolvedMedia[][];
+    try {
+      media = await Promise.all(all.map((p) => db.resolveMedia(post.orgId, p.media)));
+    } catch (e) {
+      const message = e instanceof MediaUnavailableError ? e.message : `Les médias n’ont pas pu être préparés (${(e as Error).message}). Rien n’a été publié : reprogrammez la publication.`;
+      return await fail('error', message, 'Publication impossible');
+    }
+
     let results;
     try {
       results = await provider.publish({
         accessToken,
         integration: { id: integration.id, internalId: integration.internalId, settings: integration.settings },
-        posts: [post, ...children].map((p) => ({ id: p.id, content: p.content, media: p.media, settings: p.settings })),
+        posts: all.map((p, i) => ({ id: p.id, content: p.content, media: media[i]!, settings: p.settings })),
       });
     } catch (e) {
       if (e instanceof ReconnectRequiredError) {

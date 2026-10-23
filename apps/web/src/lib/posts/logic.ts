@@ -1,6 +1,7 @@
 import type { FormError } from '@/lib/form-error';
 import type { NetworkId } from '@/lib/inbox/types';
 import { networkName } from '@/lib/networks';
+import { validateMedia, type KindLike } from '@/lib/media/rules';
 import { countLength } from '@/lib/text/length';
 
 export interface NetworkRule {
@@ -42,6 +43,9 @@ export interface PostInput {
   /** Valeur d'un champ datetime-local ou ISO. Fuseau local du navigateur converti côté client. */
   publishAt: string | null;
   mode: PostMode;
+  /** Médias joints (leur type suffit à les valider). */
+  media?: readonly KindLike[];
+  /** Sans liste de médias : la publication en a-t-elle ? */
   hasMedia?: boolean;
   /** Premier commentaire, publié sous la publication sur les réseaux qui le permettent. */
   firstComment?: string;
@@ -57,11 +61,13 @@ export function validatePost(input: PostInput): FormError[] {
   const now = input.now ?? new Date();
   const text = input.content.trim();
   const networks = [...new Set(input.networkIds)];
+  const media = input.media ?? [];
+  const hasMedia = input.hasMedia ?? media.length > 0;
 
   if (networks.length === 0) errors.push({ key: 'app.validation.noChannel' });
 
   if (input.mode === 'schedule') {
-    if (!text && !input.hasMedia) errors.push({ key: 'app.validation.needTextOrMedia' });
+    if (!text && !hasMedia) errors.push({ key: 'app.validation.needTextOrMedia' });
     if (!input.publishAt) {
       errors.push({ key: 'app.validation.needDate' });
     } else {
@@ -70,9 +76,10 @@ export function validatePost(input: PostInput): FormError[] {
       else if (t < now.getTime() + MIN_LEAD_MS) errors.push({ key: 'app.validation.pastDate' });
     }
     for (const id of networks) {
-      if (NETWORK_RULES[id].requiresMedia && !input.hasMedia) {
+      if (NETWORK_RULES[id].requiresMedia && !hasMedia) {
         errors.push({ key: 'app.validation.needsMedia', params: { network: networkName(id) } });
       }
+      errors.push(...validateMedia(id, media));
     }
   }
 

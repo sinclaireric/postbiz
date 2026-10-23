@@ -1,5 +1,7 @@
 // Accès aux données du worker. Interfaces pour les tests, implémentation Supabase (service_role) en production.
 import type { SupabaseClient } from '@supabase/supabase-js';
+import type { ResolvedMedia } from '../providers/types.ts';
+import { MEDIA_URL_TTL_SECONDS, MediaUnavailableError, buildResolvedMedia, parseMediaRefs, type MediaRow } from './media.ts';
 
 export interface WorkerIntegration {
   id: string;
@@ -50,6 +52,8 @@ export interface WorkerDb {
 
   // publications
   getChildren(postId: string): Promise<WorkerPost[]>;
+  /** Médias joints à une publication (`posts.media`), avec des URL signées neuves. Lève MediaUnavailableError si l'un d'eux n'existe plus. */
+  resolveMedia(orgId: string, raw: unknown[]): Promise<ResolvedMedia[]>;
   markPublished(postId: string, r: { releaseId: string; releaseUrl: string | null }): Promise<void>;
   markPostFailed(postId: string, state: 'error' | 'unknown', message: string): Promise<void>;
   completeFirstComment(postId: string, commentId: string): Promise<void>;
@@ -98,6 +102,24 @@ export function createSupabaseWorkerDb(supabase: SupabaseClient, decrypt: (enc: 
       const { data, error } = await supabase.from('posts').select('id, org_id, integration_id, content, media, settings, created_by').eq('parent_post_id', postId).is('deleted_at', null).order('position', { ascending: true });
       check(error, 'lecture du fil');
       return (data ?? []).map((p: Row) => ({ id: p.id, orgId: p.org_id, integrationId: p.integration_id, content: p.content, media: p.media ?? [], settings: p.settings ?? {}, createdBy: p.created_by, releaseId: null, firstComment: null }));
+    },
+
+    async resolveMedia(orgId, raw) {
+      const refs = parseMediaRefs(raw);
+      if (refs.length === 0) return [];
+      const { data, error } = await supabase
+        .from('media')
+        .select('id, org_id, bucket, path, name, mime_type, kind, size_bytes, width, height, duration_seconds, alt, thumbnail_path, normalized_path')
+        .in('id', refs.map((r) => r.id))
+        .eq('org_id', orgId);
+      check(error, 'lecture des médias');
+      const rows = (data ?? []) as MediaRow[];
+      // Si une ligne manque, buildResolvedMedia le dit (MediaUnavailableError) avant tout appel au stockage.
+      const wanted = buildResolvedMedia(refs, rows, new Map(), orgId, { dryRun: true });
+      const { data: signed, error: signError } = await supabase.storage.from('media').createSignedUrls(wanted, MEDIA_URL_TTL_SECONDS);
+      check(signError, 'signature des médias');
+      const urls = new Map<string, string>((signed ?? []).filter((s: Row) => s.signedUrl).map((s: Row) => [s.path as string, s.signedUrl as string]));
+      return buildResolvedMedia(refs, rows, urls, orgId);
     },
 
     async markPublished(postId, r) {
