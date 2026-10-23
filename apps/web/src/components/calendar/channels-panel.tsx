@@ -1,11 +1,11 @@
 'use client';
 
 import Link from 'next/link';
-import { NetworkDot } from '@/components/app/network-dot';
 import { Badge, ButtonLink } from '@/components/ui';
 import { useT } from '@/i18n/client';
 import { networkName } from '@/lib/networks';
 import type { IntegrationItem } from '@/lib/data/types';
+import { ChannelAvatar } from './channel-avatar';
 
 function EmptyIllustration() {
   return (
@@ -37,10 +37,7 @@ export function ChannelsPanel({ integrations, canWrite }: { integrations: Integr
         <ul className="mt-4 grid gap-1.5" aria-label={t('app.channelsPanel.connected')}>
           {integrations.map((i) => (
             <li key={i.id} className="flex items-center gap-3 rounded-xl px-2.5 py-2 hover:bg-wash">
-              <span className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-wash text-sm font-bold">
-                {i.name.slice(0, 1).toUpperCase()}
-                <span className="absolute -end-0.5 -bottom-0.5 rounded-full border-2 border-surface"><NetworkDot id={i.networkId} size={12} /></span>
-              </span>
+              <ChannelAvatar channel={i} size={36} />
               <span className="min-w-0 flex-1">
                 <span className="block truncate text-sm font-semibold">{i.name}</span>
                 <span className="block truncate text-xs text-muted">{networkName(i.networkId)}</span>
