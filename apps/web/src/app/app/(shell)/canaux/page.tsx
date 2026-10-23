@@ -1,12 +1,13 @@
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
-import { NetworkDot } from '@/components/app/network-dot';
+import { ChannelAvatar } from '@/components/calendar/channel-avatar';
+import { SocialIcon } from '@/components/social-icon';
 import { RichText } from '@/components/rich-text';
 import { Badge } from '@/components/ui';
 import { getT } from '@/i18n/server';
 import type { MessageKey, T } from '@/i18n/types';
 import { getRepositories, getSession } from '@/lib/data';
-import { NETWORKS, capabilityKey, networkName, networkNoteKey } from '@/lib/networks';
+import { APP_NETWORKS, capabilityKey, networkName, networkNoteKey } from '@/lib/networks';
 import { networkAvailability } from '@/lib/oauth/availability';
 import { ERROR_MESSAGES, type ErrorCode } from '@/lib/oauth/flow';
 import { DisconnectButton } from './disconnect-button';
@@ -76,7 +77,7 @@ export default async function ChannelsPage({ searchParams }: { searchParams: Pro
           <ul className="mt-3 grid gap-3 sm:grid-cols-2">
             {integrations.map((i) => (
               <li key={i.id} className="flex items-center gap-4 rounded-2xl border border-line bg-surface p-4">
-                <span className="flex h-11 w-11 items-center justify-center rounded-full bg-wash"><NetworkDot id={i.networkId} size={14} /></span>
+                <ChannelAvatar channel={i} size={44} />
                 <span className="min-w-0 flex-1">
                   <span className="block truncate font-semibold">{i.name}</span>
                   <span className="block truncate text-sm text-muted">{networkName(i.networkId)}{i.username ? ` · ${i.username}` : ''}</span>
@@ -112,7 +113,7 @@ export default async function ChannelsPage({ searchParams }: { searchParams: Pro
           <p className="mt-3 rounded-2xl border border-line bg-surface px-4 py-3 text-sm text-muted">{t('app.channelsPage.adminOnly')}</p>
         )}
         <ul className="mt-4 grid gap-3 sm:grid-cols-2">
-          {NETWORKS.map((n) => {
+          {APP_NETWORKS.map((n) => {
             const a = availability[n.id] ?? { available: false, missing: [] };
             const enabled = a.available && isAdmin;
             const why = demo
@@ -125,7 +126,7 @@ export default async function ChannelsPage({ searchParams }: { searchParams: Pro
             return (
               <li key={n.id} className="rounded-2xl border border-line bg-surface p-4">
                 <div className="flex items-center justify-between gap-3">
-                  <p className="flex items-center gap-2.5 font-semibold"><NetworkDot id={n.id} size={12} />{networkName(n.id)}</p>
+                  <p className="flex items-center gap-2.5 font-semibold"><SocialIcon id={n.id} size={28} />{networkName(n.id)}</p>
                   <form method="post" action={`/api/oauth/start/${n.id}`}>
                     <button
                       type="submit"
@@ -143,6 +144,9 @@ export default async function ChannelsPage({ searchParams }: { searchParams: Pro
                   <span>{t('app.channelsPage.comments', { status: t(capabilityKey(n.comments)) })}</span>
                 </p>
                 <p className="mt-2 text-xs leading-relaxed text-subtle">{t(networkNoteKey(n.id))}</p>
+                {(n.id === 'instagram' || n.id === 'instagram_standalone') && (
+                  <p className="mt-2 rounded-xl bg-warn-soft px-3 py-2 text-xs leading-relaxed text-warn">{t('app.channelsPage.proAccountRequired')}</p>
+                )}
               </li>
             );
           })}

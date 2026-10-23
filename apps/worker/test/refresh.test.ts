@@ -26,7 +26,7 @@ function fakeRefreshDb(jobs: RefreshJob[] = [], o: Partial<RefreshDb> = {}) {
 }
 
 const provider = (refreshToken: SocialProvider['refreshToken']): SocialProvider => ({ id: 'x', supportsThreads: false, supportsMedia: false, publish: async () => [], refreshToken });
-const registry = (p: SocialProvider): ProviderRegistry => (id) => (['x', 'linkedin', 'youtube', 'tiktok'].includes(id) ? p : null);
+const registry = (p: SocialProvider): ProviderRegistry => (id) => (['x', 'linkedin', 'linkedin_page', 'instagram', 'youtube', 'tiktok'].includes(id) ? p : null);
 const NEW = { accessToken: 'AT2', refreshToken: 'RT2', expiresAt: new Date('2026-10-16T12:00:00Z') };
 
 describe('refreshTokens', () => {
@@ -43,7 +43,7 @@ describe('refreshTokens', () => {
   it('ne réclame que les réseaux capables de rafraîchir', async () => {
     const db = fakeRefreshDb([]);
     await refreshTokens({ db, providers: createRegistry({ dryRun: false, env: ENV }) });
-    expect((db.claim as any).mock.calls[0][0].sort()).toEqual(['linkedin', 'tiktok', 'x', 'youtube']);
+    expect((db.claim as any).mock.calls[0][0].sort()).toEqual(['instagram', 'linkedin', 'linkedin_page', 'tiktok', 'x', 'youtube']);
     const none = fakeRefreshDb([]);
     await refreshTokens({ db: none, providers: createRegistry({ dryRun: true }) });
     expect(none.claim).not.toHaveBeenCalled(); // mode essai : aucun réseau contacté

@@ -40,11 +40,17 @@
     "instagram": {
       "note": "Comptes professionnels. Messages : réponse possible 24 h après le dernier message du client."
     },
+    "instagram_standalone": {
+      "note": "Se connecte directement avec un compte Instagram professionnel, sans Page Facebook (connexion Instagram). Messages et commentaires comme Instagram ; publication bientôt."
+    },
     "x": {
       "note": "Les messages dépendent de l’offre payante de l’API X."
     },
     "linkedin": {
       "note": "LinkedIn n’ouvre pas sa messagerie aux applications tierces. Commentaires de Pages prévus."
+    },
+    "linkedin_page": {
+      "note": "Publie sur les Pages LinkedIn que vous administrez. LinkedIn réserve cet accès aux applications approuvées (Community Management API). Pas de messagerie."
     },
     "tiktok": {
       "note": "Messagerie soumise à l’approbation de TikTok et indisponible dans certaines régions."
@@ -1324,6 +1330,7 @@
     },
     "channelsPage": {
       "intro": "Les comptes de réseaux sociaux connectés à votre organisation.",
+      "proAccountRequired": "Compte Instagram professionnel requis (Business ou Créateur) : gratuit, à activer dans les paramètres d’Instagram. Un compte personnel ne peut pas être connecté.",
       "connectedTitle": "Connectés ({count})",
       "noneConnected": "Aucun canal connecté pour l’instant.",
       "status": {

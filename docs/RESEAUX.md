@@ -42,7 +42,8 @@ Pour tous les réseaux : prévoyez d'abord un domaine, les pages `/cgu`, `/confi
    - Page : champs `messages` et `feed` ; Instagram : `messages` et `comments`.
 6. Secrets de la fonction : `supabase secrets set META_APP_SECRET=… META_WEBHOOK_VERIFY_TOKEN=…`
    (`META_APP_SECRET` est le même que celui de la connexion OAuth.)
-7. **Connexion dans Postbiz** (Facebook Login) : permissions demandées — Facebook : `pages_show_list`, `pages_manage_metadata` (nécessaire à l'abonnement
+7. **Connexion dans Postbiz** (Facebook Login). Si l'application utilise « Facebook Login for Business » (cas d'utilisation « Tout gérer sur votre Page », non combinable avec la connexion classique),
+   renseigner `META_LOGIN_CONFIG_ID` : Postbiz envoie alors `config_id` à la place de `scope`, et les permissions sont celles de la configuration créée chez Meta (même liste ci-dessous). : permissions demandées — Facebook : `pages_show_list`, `pages_manage_metadata` (nécessaire à l'abonnement
    aux webhooks), `pages_manage_posts`, `pages_read_engagement`, `pages_manage_engagement`, `pages_messaging` ; Instagram : celles-ci plus
    `instagram_basic`, `instagram_content_publish`, `instagram_manage_messages`, `instagram_manage_comments`. Postbiz échange le code contre un jeton
    longue durée (~60 jours), liste les Pages (`/me/accounts`) et les comptes Instagram professionnels liés, vous laisse cocher ceux à connecter, puis enregistre
@@ -52,6 +53,19 @@ Pour tous les réseaux : prévoyez d'abord un domaine, les pages `/cgu`, `/confi
    URL de rappel de désautorisation et de suppression de données (la page `/suppression-des-donnees` existe, le rappel automatique n'est pas écrit).
 8. La revue exige des **vidéos** : un testeur écrit à la Page / au compte, Postbiz affiche le message et la réponse repart.
    Meta demande aussi un chemin d'escalade vers un humain : c'est exactement ce que fait l'inbox.
+
+### Instagram Standalone (sans Page Facebook)
+
+1. Application Meta avec le cas d'utilisation **« Gérer les messages et les contenus sur Instagram »**, puis la rubrique **« Configuration de l'API avec la connexion Instagram »**.
+2. Y relever l'**ID de l'application Instagram** et sa **clé secrète** (distincts de ceux de l'application Meta) : `INSTAGRAM_APP_ID` et `INSTAGRAM_APP_SECRET`.
+3. Y déclarer l'adresse de retour `<site>/api/oauth/callback/instagram_login` et, pour le mode Développement, ajouter les comptes Instagram à tester (rôle « Testeur Instagram »).
+4. **Connexion dans Postbiz** : autorisation sur `instagram.com/oauth/authorize` (scopes `instagram_business_basic`, `instagram_business_manage_messages`, `instagram_business_manage_comments` ;
+   `instagram_business_content_publish` sera ajouté avec la publication), puis jeton court (1 h) → jeton de **60 jours** (`ig_exchange_token`). Ce jeton se prolonge de lui-même (`ig_refresh_token`, au moins 24 h après sa création,
+   avant son expiration) : Postbiz le garde aussi comme « refresh token » pour que le worker le prolonge. Le compte est enregistré comme un canal `instagram` ordinaire
+   (`settings.login = 'instagram'`, `settings.graph_host = 'graph.instagram.com'`) : même boîte de réception, mêmes règles. Le compte doit être **professionnel** (Business ou Créateur).
+5. **Webhooks** : l'abonnement du compte (`messages`, `comments`, `messaging_postbacks`) est fait à la connexion ; l'URL de rappel de l'objet « Instagram » de l'application doit aussi être déclarée chez Meta
+   (même fonction `webhook-meta`). À vérifier en réel : la réception des événements et l'envoi d'une réponse par `graph.instagram.com`.
+6. La publication n'existe pas encore (média exigé), comme pour Instagram par Page.
 
 ## YouTube (Google)
 
@@ -76,10 +90,13 @@ Pour tous les réseaux : prévoyez d'abord un domaine, les pages `/cgu`, `/confi
 ## LinkedIn
 
 1. developer.linkedin.com : application avec « Share on LinkedIn » et « Sign In with LinkedIn using OpenID Connect » (accès immédiat).
-2. Commentaires de Pages : demander la **Community Management API** (approbation, rôle administrateur de la Page).
+2. **Pages LinkedIn** (organisation) et commentaires de Pages : demander la **Community Management API** (approbation par LinkedIn, rôle administrateur de la Page). Tant qu'elle n'est pas accordée,
+   le bouton « LinkedIn Page » reste désactivé ; le profil personnel n'est pas touché. **Cette API doit être le seul produit de son application** (LinkedIn refuse sinon la demande) :
+   créer une **seconde application LinkedIn** réservée aux Pages, avec `LINKEDIN_PAGE_CLIENT_ID` et `LINKEDIN_PAGE_CLIENT_SECRET`, et y déclarer l'adresse de retour `<site>/api/oauth/callback/linkedin_page`.
 3. La messagerie (personnelle et des Pages) n'est **pas ouverte** aux applications tierces, sauf partenaires nommés par LinkedIn.
-4. **Connexion dans Postbiz** : profil personnel uniquement (scopes `openid profile w_member_social`) ; l'identifiant du profil devient `settings.author_urn`. Les **Pages** LinkedIn
-   (organisation) ne sont pas gérées : elles exigent la Community Management API. Le jeton dure ~60 jours et **LinkedIn ne délivre de refresh token qu'à certains partenaires** :
+4. **Connexion dans Postbiz** : profil personnel uniquement (scopes `openid profile w_member_social`) ; l'identifiant du profil devient `settings.author_urn`. **LinkedIn Page** (canal `linkedin_page`, famille OAuth à part, seconde application LinkedIn) : scopes
+   `rw_organization_admin w_organization_social` ; Postbiz liste les Pages dont vous êtes administrateur (`organizationAcls`, rôle `ADMINISTRATOR`), vous laisse cocher celles à connecter, et
+   `settings.author_urn` vaut `urn:li:organization:<id>` (le worker publie alors au nom de la Page). Le jeton dure ~60 jours et **LinkedIn ne délivre de refresh token qu'à certains partenaires** :
    pour une application standard, le canal passe à « À reconnecter » à l'expiration (le worker notifie les administrateurs) — il faut reconnecter tous les ~2 mois. Pas de PKCE (non documenté pour ce flux).
 5. L'en-tête `LinkedIn-Version` (AAAAMM) doit rester récent : variable `LINKEDIN_API_VERSION`.
 

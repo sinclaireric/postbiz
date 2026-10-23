@@ -17,8 +17,10 @@
   "networks": {
     "facebook": { "note": "페이지 지원. 메시지: 고객의 마지막 메시지로부터 24시간 이내에 답장할 수 있습니다." },
     "instagram": { "note": "프로페셔널 계정 지원. 메시지: 고객의 마지막 메시지로부터 24시간 이내에 답장할 수 있습니다." },
+    "instagram_standalone": { "note": "Facebook 페이지 없이 Instagram 프로페셔널 계정에 바로 연결합니다(Instagram 로그인). 메시지와 댓글은 Instagram과 같으며, 게시는 곧 지원됩니다." },
     "x": { "note": "메시지는 X API 유료 요금제에 따라 달라집니다." },
     "linkedin": { "note": "LinkedIn은 메시지 기능을 서드파티 앱에 공개하지 않습니다. 페이지 댓글은 계획 중입니다." },
+    "linkedin_page": { "note": "관리 중인 LinkedIn 페이지에 게시합니다. LinkedIn은 승인된 앱(Community Management API)에만 이 접근 권한을 제공합니다. 메시지 기능은 없습니다." },
     "tiktok": { "note": "메시지 기능은 TikTok의 승인이 필요하며 일부 지역에서는 사용할 수 없습니다." },
     "youtube": { "note": "YouTube에는 개인 메시지가 없습니다. 댓글만 있습니다." }
   },
@@ -941,6 +943,7 @@
     },
     "channelsPage": {
       "intro": "조직에 연결된 소셜 계정입니다.",
+      "proAccountRequired": "Instagram 프로페셔널 계정(비즈니스 또는 크리에이터)이 필요합니다. 무료이며 Instagram 설정에서 전환할 수 있습니다. 개인 계정은 연결할 수 없습니다.",
       "connectedTitle": "연결됨 ({count})",
       "noneConnected": "아직 연결된 채널이 없습니다.",
       "status": { "active": "연결됨", "refresh_needed": "다시 연결 필요", "disabled": "비활성화됨" },

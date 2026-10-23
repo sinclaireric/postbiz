@@ -10,7 +10,8 @@ export const dynamicParams = false;
 export const generateStaticParams = () => NETWORKS.map((n) => ({ network: n.id }));
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const network = networkById((await params).network);
+  const { network: id } = await params;
+  const network = NETWORKS.find((n) => n.id === id);
   if (!network) return {};
   const t = await getT();
   const name = networkName(network.id);
@@ -22,7 +23,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function ChannelRoute({ params }: Props) {
-  const network = networkById((await params).network);
+  const { network: id } = await params;
+  const network = NETWORKS.find((n) => n.id === id);
   if (!network) notFound();
   return <ChannelPage network={network} />;
 }

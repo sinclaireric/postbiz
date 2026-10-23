@@ -40,9 +40,15 @@ export const metaFamily: OAuthFamily = {
 
   authorizeUrl(ctx, a) {
     const scopes = a.network === 'instagram' ? [...PAGE_SCOPES, ...INSTAGRAM_SCOPES] : PAGE_SCOPES;
-    const p = new URLSearchParams({
-      client_id: requireEnv(ctx.env, KEYS).META_APP_ID!, redirect_uri: a.redirectUri, state: a.state, response_type: 'code', scope: scopes.join(','),
-    });
+    const clientId = requireEnv(ctx.env, KEYS).META_APP_ID!;
+    // « Facebook Login for Business » (applications créées avec le cas d'utilisation « Tout gérer sur votre Page ») n'accepte pas `scope` :
+    // les permissions sont celles d'une configuration créée chez Meta, désignée par son `config_id`. Sans cette variable : connexion classique.
+    const configId = (ctx.env.META_LOGIN_CONFIG_ID ?? '').trim();
+    const p = new URLSearchParams(
+      configId
+        ? { client_id: clientId, redirect_uri: a.redirectUri, state: a.state, response_type: 'code', config_id: configId, override_default_response_type: 'true' }
+        : { client_id: clientId, redirect_uri: a.redirectUri, state: a.state, response_type: 'code', scope: scopes.join(',') }
+    );
     return `${AUTHORIZE}?${p}`;
   },
 

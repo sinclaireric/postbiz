@@ -17,8 +17,10 @@
   "networks": {
     "facebook": { "note": "Sayfalar. Mesajlar: müşterinin son mesajından sonraki 24 saat içinde yanıt verebilirsiniz." },
     "instagram": { "note": "Profesyonel hesaplar. Mesajlar: müşterinin son mesajından sonraki 24 saat içinde yanıt verebilirsiniz." },
+    "instagram_standalone": { "note": "Facebook sayfası olmadan doğrudan profesyonel bir Instagram hesabına bağlanır (Instagram girişi). Mesajlar ve yorumlar Instagram ile aynı; yayın yakında." },
     "x": { "note": "Mesajlar, X API'sinin ücretli planına bağlıdır." },
     "linkedin": { "note": "LinkedIn, mesajlaşmasını üçüncü taraf uygulamalara açmıyor. Sayfa yorumları planlanıyor." },
+    "linkedin_page": { "note": "Yönettiğiniz LinkedIn sayfalarında yayın yapar. LinkedIn bu erişimi yalnızca onaylı uygulamalara verir (Community Management API). Mesajlaşma yok." },
     "tiktok": { "note": "Mesajlaşma için TikTok onayı gerekir ve bazı bölgelerde kullanılamaz." },
     "youtube": { "note": "YouTube'da özel mesaj yoktur: yalnızca yorumlar vardır." }
   },
@@ -990,6 +992,7 @@
     },
     "channelsPage": {
       "intro": "Kuruluşunuza bağlı sosyal ağ hesapları.",
+      "proAccountRequired": "Profesyonel bir Instagram hesabı (İşletme veya İçerik Üreticisi) gerekir: ücretsizdir ve Instagram ayarlarından açılır. Kişisel hesap bağlanamaz.",
       "connectedTitle": "Bağlı ({count})",
       "noneConnected": "Henüz bağlı kanal yok.",
       "status": { "active": "Bağlı", "refresh_needed": "Yeniden bağlanmalı", "disabled": "Devre dışı" },

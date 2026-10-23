@@ -192,6 +192,14 @@ describe('completeConnection — réseau à compte unique (X)', () => {
     expect(store.states.size).toBe(0);
   });
 
+  it('un refus de configuration chez le réseau (permission non valide) n’est pas présenté comme une annulation', async () => {
+    const { deps, logs, state } = await started();
+    const r = await completeConnection(deps, { family: 'x', params: cb(state, { error: 'invalid_scope_error', error_description: 'The requested permission scope is not valid' }), userId: ALICE });
+    expect(r).toEqual({ kind: 'error', code: 'echange', network: 'x' });
+    expect(logs.join('\n')).toContain('invalid_scope_error');
+    expect(logs.join('\n')).not.toContain('requested permission');
+  });
+
   it('un administrateur rétrogradé entre-temps ne peut pas finir la connexion', async () => {
     const s = await started();
     s.deps.isAdmin = async () => false;
@@ -310,6 +318,116 @@ describe('completeConnection — Meta (choix des comptes)', () => {
     const { done, store } = await metaStart('facebook', s);
     expect(done).toEqual({ kind: 'error', code: 'aucun_compte', network: 'facebook' });
     expect(store.pending.size).toBe(0);
+  });
+});
+
+describe('completeConnection — LinkedIn : profil et Pages', () => {
+  const LI_ENV: Env = { ...ENV, LINKEDIN_CLIENT_ID: 'li-id', LINKEDIN_CLIENT_SECRET: 'li-secret', LINKEDIN_PAGE_CLIENT_ID: 'lp-id', LINKEDIN_PAGE_CLIENT_SECRET: 'lp-secret' };
+  const LI_OK = {
+    '/accessToken': { body: { access_token: 'LI-ACCESS', expires_in: 5184000 } },
+    '/v2/userinfo': { body: { sub: 'abc123', name: 'Eric S' } },
+    '/organizationAcls': { body: { elements: [{ organization: 'urn:li:organization:111' }, { organization: 'urn:li:organization:222' }] } },
+    '/organizations/111': { body: { localizedName: 'Maison Lune', vanityName: 'maison-lune' } },
+    '/organizations/222': { body: { localizedName: 'Atelier Lune' } },
+  };
+  async function liStart(network: 'linkedin' | 'linkedin_page') {
+    const s = setup(LI_OK, { env: LI_ENV });
+    const r = await startConnection(s.deps, { network, userId: ALICE, orgId: ORG });
+    if (!r.ok) throw new Error('attendu ok');
+    const done = await completeConnection(s.deps, { family: network, params: cb(stateFrom(r.url)), userId: ALICE });
+    return { ...s, url: r.url, done };
+  }
+
+  it('le profil se connecte d’un coup, avec les permissions de publication personnelle', async () => {
+    const { store, done, url } = await liStart('linkedin');
+    expect(new URL(url).searchParams.get('scope')).toBe('openid profile w_member_social');
+    expect(done).toEqual({ kind: 'connected', network: 'linkedin', count: 1, webhookWarnings: 0 });
+    expect([...store.channels.values()][0]).toMatchObject({ provider: 'linkedin', internalId: 'abc123', settings: { author_urn: 'urn:li:person:abc123' } });
+  });
+
+  it('les Pages demandent les permissions d’organisation et laissent choisir celles à connecter', async () => {
+    const { store, done, url, deps } = await liStart('linkedin_page');
+    expect(new URL(url).searchParams.get('scope')).toBe('rw_organization_admin w_organization_social');
+    expect(done.kind).toBe('select');
+    expect(store.channels.size).toBe(0);
+    if (done.kind !== 'select') throw new Error();
+    const view = await getPendingSelection(deps, { userId: ALICE, pendingId: done.pendingId });
+    expect(view!.candidates.map((c) => [c.key, c.name])).toEqual([['linkedin_page:111', 'Maison Lune'], ['linkedin_page:222', 'Atelier Lune']]);
+    expect(JSON.stringify(view)).not.toMatch(/LI-ACCESS|li-secret/);
+
+    const r = await confirmSelection(deps, { userId: ALICE, pendingId: done.pendingId, keys: ['linkedin_page:222'] });
+    expect(r).toEqual({ kind: 'connected', network: 'linkedin_page', count: 1, webhookWarnings: 0 });
+    const ch = [...store.channels.values()];
+    expect(ch).toHaveLength(1);
+    expect(ch[0]).toMatchObject({ provider: 'linkedin_page', internalId: '222', name: 'Atelier Lune', settings: { author_urn: 'urn:li:organization:222', kind: 'page' } });
+    expect(await decryptSecret(ch[0]!.accessTokenEnc, KEY)).toBe('LI-ACCESS');
+  });
+
+  it('les Pages utilisent leur propre application : l’adresse de retour, la clé et le secret sont ceux des Pages', async () => {
+    const { url, calls } = await liStart('linkedin_page');
+    expect(new URL(url).searchParams.get('client_id')).toBe('lp-id');
+    expect(new URL(url).searchParams.get('redirect_uri')).toBe('https://app.test/api/oauth/callback/linkedin_page');
+    expect(Object.fromEntries(new URLSearchParams(calls.find((c) => c.url.includes('/accessToken'))!.body))).toMatchObject({ client_id: 'lp-id', client_secret: 'lp-secret' });
+  });
+
+  it('le bouton « LinkedIn Page » n’est actif qu’avec les clés de l’application des Pages ; celles du profil ne suffisent pas', () => {
+    expect(networkAvailability(LI_ENV, false).linkedin_page).toEqual({ available: true, missing: [] });
+    const profileOnly = { ...ENV, LINKEDIN_CLIENT_ID: 'li-id', LINKEDIN_CLIENT_SECRET: 'li-secret' };
+    expect(networkAvailability(profileOnly, false).linkedin!.available).toBe(true);
+    expect(networkAvailability(profileOnly, false).linkedin_page).toEqual({ available: false, missing: ['LINKEDIN_PAGE_CLIENT_ID', 'LINKEDIN_PAGE_CLIENT_SECRET'] });
+  });
+});
+
+describe('Instagram Login (standalone)', () => {
+  const IG_ENV: Env = { ...ENV, INSTAGRAM_APP_ID: 'ig-id', INSTAGRAM_APP_SECRET: 'ig-secret' };
+  const IG_OK = {
+    'api.instagram.com/oauth/access_token': { body: { access_token: 'SHORT', user_id: 1784 } },
+    'graph.instagram.com/access_token': { body: { access_token: 'IG-LONG', expires_in: 5184000 } },
+    '/me': { body: { user_id: '1784', username: 'maison_lune', name: 'Maison Lune' } },
+    '/subscribed_apps': { body: { success: true } },
+  };
+  async function igConnect() {
+    const s = setup(IG_OK, { env: IG_ENV });
+    const r = await startConnection(s.deps, { network: 'instagram_standalone', userId: ALICE, orgId: ORG });
+    if (!r.ok) throw new Error('attendu ok');
+    const done = await completeConnection(s.deps, { family: 'instagram_login', params: cb(stateFrom(r.url)), userId: ALICE });
+    return { ...s, url: r.url, done };
+  }
+
+  it('connecte le compte d’un coup, enregistré comme canal « instagram », avec jeton et prolongation chiffrés', async () => {
+    const { store, done, url, calls } = await igConnect();
+    expect(new URL(url).searchParams.get('redirect_uri')).toBe('https://app.test/api/oauth/callback/instagram_login');
+    expect(done).toEqual({ kind: 'connected', network: 'instagram_standalone', count: 1, webhookWarnings: 0 });
+    const [ch] = [...store.channels.values()];
+    expect(ch).toMatchObject({ provider: 'instagram', internalId: '1784', name: 'Maison Lune', username: '@maison_lune', settings: { login: 'instagram', graph_host: 'graph.instagram.com' } });
+    expect(await decryptSecret(ch!.accessTokenEnc, KEY)).toBe('IG-LONG');
+    expect(await decryptSecret(ch!.refreshTokenEnc!, KEY)).toBe('IG-LONG'); // le jeton sert à se prolonger lui-même
+    expect(ch!.tokenExpiresAt).not.toBeNull();
+    // l'abonnement aux webhooks est celui d'Instagram, pas celui d'une Page Meta
+    const sub = calls.filter((c) => c.url.includes('/subscribed_apps'));
+    expect(sub).toHaveLength(1);
+    expect(sub[0]!.url).toContain('graph.instagram.com');
+    expect(sub[0]!.url).toContain('/1784/subscribed_apps');
+  });
+
+  it('le bouton n’est actif qu’avec les clés de l’application Instagram', () => {
+    expect(networkAvailability(IG_ENV, false).instagram_standalone).toEqual({ available: true, missing: [] });
+    expect(networkAvailability(ENV, false).instagram_standalone!.missing).toEqual(['INSTAGRAM_APP_ID', 'INSTAGRAM_APP_SECRET']);
+  });
+
+  it('la déconnexion se désabonne chez Instagram (graph.instagram.com), pas comme une Page Meta', async () => {
+    const s = setup({ '/subscribed_apps': { body: { success: true } } }, { env: IG_ENV });
+    s.store.otherOnPage = true; // sans effet : il n'y a pas de Page
+    await s.store.connectChannel({
+      orgId: ORG, provider: 'instagram', internalId: '1784', name: 'Maison Lune', username: '@maison_lune', pictureUrl: null,
+      settings: { login: 'instagram', graph_host: 'graph.instagram.com' }, tokenExpiresAt: new Date('2027-01-01'),
+      accessTokenEnc: await (await import('@postbiz/core')).encryptSecret('IG-LONG', KEY), refreshTokenEnc: null,
+    });
+    const id = [...s.store.channels.values()][0]!.id;
+    const r = await disconnectChannel(s.deps, { userId: ALICE, orgId: ORG, integrationId: id });
+    expect(r).toEqual({ ok: true, cleanupFailed: false });
+    expect(s.calls[0]!.method).toBe('DELETE');
+    expect(s.calls[0]!.url).toContain('graph.instagram.com');
   });
 });
 

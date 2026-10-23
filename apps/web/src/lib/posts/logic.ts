@@ -13,8 +13,10 @@ export interface NetworkRule {
 export const NETWORK_RULES: Record<NetworkId, NetworkRule> = {
   facebook: { maxLength: 63_206, requiresMedia: false },
   instagram: { maxLength: 2_200, requiresMedia: true },
+  instagram_standalone: { maxLength: 2_200, requiresMedia: true },
   x: { maxLength: 280, requiresMedia: false },
   linkedin: { maxLength: 3_000, requiresMedia: false },
+  linkedin_page: { maxLength: 3_000, requiresMedia: false },
   tiktok: { maxLength: 2_200, requiresMedia: true },
   youtube: { maxLength: 5_000, requiresMedia: true },
 };
@@ -27,6 +29,7 @@ export const NETWORK_RULES: Record<NetworkId, NetworkRule> = {
 export const FIRST_COMMENT_RULES: Partial<Record<NetworkId, { maxLength: number }>> = {
   facebook: { maxLength: 8_000 },
   linkedin: { maxLength: 1_250 },
+  linkedin_page: { maxLength: 1_250 },
   x: { maxLength: 280 },
 };
 export const supportsFirstComment = (id: NetworkId) => id in FIRST_COMMENT_RULES;

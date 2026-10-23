@@ -17,8 +17,10 @@
   "networks": {
     "facebook": { "note": "Pagine. Messaggi: puoi rispondere entro 24 ore dall’ultimo messaggio del cliente." },
     "instagram": { "note": "Account professionali. Messaggi: puoi rispondere entro 24 ore dall’ultimo messaggio del cliente." },
+    "instagram_standalone": { "note": "Si collega direttamente a un account Instagram professionale, senza Pagina Facebook (accesso Instagram). Messaggi e commenti come Instagram; pubblicazione in arrivo." },
     "x": { "note": "I messaggi dipendono dal piano a pagamento dell’API di X." },
     "linkedin": { "note": "LinkedIn non apre la sua messaggistica alle app di terze parti. I commenti delle Pagine sono previsti." },
+    "linkedin_page": { "note": "Pubblica sulle Pagine LinkedIn che amministri. LinkedIn riserva questo accesso alle app approvate (Community Management API). Nessuna messaggistica." },
     "tiktok": { "note": "La messaggistica richiede l’approvazione di TikTok e non è disponibile in alcune regioni." },
     "youtube": { "note": "YouTube non ha messaggi privati: solo commenti." }
   },
@@ -996,6 +998,7 @@
     },
     "channelsPage": {
       "intro": "Gli account social collegati alla tua organizzazione.",
+      "proAccountRequired": "Serve un account Instagram professionale (Business o Creator): è gratuito e si attiva nelle impostazioni di Instagram. Un account personale non può essere collegato.",
       "connectedTitle": "Collegati ({count})",
       "noneConnected": "Ancora nessun canale collegato.",
       "status": { "active": "Collegato", "refresh_needed": "Da ricollegare", "disabled": "Disattivato" },

@@ -5,12 +5,12 @@ import { RichText, accentLimeTags } from '@/components/rich-text';
 import { ButtonLink, Container } from '@/components/ui';
 import { getT } from '@/i18n/server';
 import { AI_AGENTS } from '@/lib/agents';
-import { NETWORKS, capabilityKey, networkName, networkNoteKey, type Capability, type Network } from '@/lib/networks';
+import { NETWORKS, capabilityKey, networkName, networkNoteKey, type Capability, type SiteNetwork } from '@/lib/networks';
 
 const tone = (c: Capability) => (c === 'beta' ? 'beta' : 'soon');
 
 /** Page d'un canal (réseau social) : ce que Postbiz fait aujourd'hui sur ce réseau, sans rien promettre de plus. */
-export async function ChannelPage({ network }: { network: Network }) {
+export async function ChannelPage({ network }: { network: SiteNetwork }) {
   const t = await getT();
   const name = networkName(network.id);
   const icon = `/socials/${network.id}.svg`;

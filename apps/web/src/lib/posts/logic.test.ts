@@ -73,10 +73,15 @@ describe('tightestLimit', () => {
 describe('premier commentaire', () => {
   const base = { content: 'Bonjour', publishAt: future, mode: 'schedule' as const, now };
 
-  it('est pris en charge sur Facebook, LinkedIn et X, pas sur Instagram, TikTok ni YouTube', () => {
-    expect(Object.keys(FIRST_COMMENT_RULES).sort()).toEqual(['facebook', 'linkedin', 'x']);
-    expect(['facebook', 'linkedin', 'x'].every((id) => supportsFirstComment(id as 'x'))).toBe(true);
+  it('est pris en charge sur Facebook, LinkedIn (profil et Page) et X, pas sur Instagram, TikTok ni YouTube', () => {
+    expect(Object.keys(FIRST_COMMENT_RULES).sort()).toEqual(['facebook', 'linkedin', 'linkedin_page', 'x']);
+    expect(['facebook', 'linkedin', 'linkedin_page', 'x'].every((id) => supportsFirstComment(id as 'x'))).toBe(true);
     expect(['instagram', 'tiktok', 'youtube'].some((id) => supportsFirstComment(id as 'x'))).toBe(false);
+  });
+
+  it('une Page LinkedIn se publie comme LinkedIn : même limite de texte, texte seul accepté', () => {
+    expect(validatePost({ ...base, networkIds: ['linkedin_page'], firstComment: 'Le lien est en commentaire.' })).toEqual([]);
+    expect(validatePost({ ...base, content: 'a'.repeat(3_001), networkIds: ['linkedin_page'] })).not.toEqual([]);
   });
 
   it('accepte un commentaire sur un canal qui le permet', () => {

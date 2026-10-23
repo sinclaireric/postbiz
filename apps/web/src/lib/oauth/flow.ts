@@ -3,8 +3,8 @@
 // Règle : aucun jeton ne sort de ce module vers le navigateur. Les erreurs montrées à l'utilisateur sont des codes
 // fixes (jamais un texte venu du réseau ou de l'URL).
 import {
-  checkState, codeChallenge, createState, decryptSecret, encryptSecret, familyForNetwork, isFamilyId, missingEnv, newCodeVerifier,
-  OAuthError, OAUTH_FAMILIES, type ChannelCandidate, type Env, type NetworkId, type OAuthContext,
+  checkState, codeChallenge, createState, decryptSecret, encryptSecret, familyForChannel, familyForNetwork, isFamilyId, missingEnv, newCodeVerifier,
+  OAuthError, OAUTH_FAMILIES, type ChannelCandidate, type OAuthFamily, type Env, type NetworkId, type OAuthContext,
 } from '@postbiz/core';
 
 export interface StoredState { userId: string; orgId: string; network: NetworkId; codeVerifierEnc: string | null; expiresAt: Date }
@@ -123,7 +123,15 @@ export async function completeConnection(deps: FlowDeps, a: { family: string; pa
   const network = row.network;
   const fail = (code: ErrorCode): CompleteResult => ({ kind: 'error', code, network });
 
-  if (a.params.get('error')) return fail('refuse');
+  const networkError = a.params.get('error');
+  if (networkError) {
+    // Annulation par l'utilisateur : message neutre. Tout autre refus (permission non valide, application mal configurée...) est un problème
+    // de configuration : le nom de l'erreur, assaini, va dans les journaux (jamais le texte libre ni l'URL), l'utilisateur voit un code fixe.
+    const code = networkError.replace(/[^a-z0-9_]/gi, '').slice(0, 60);
+    if (/^(access_denied|user_cancelled)/i.test(code)) return fail('refuse');
+    deps.log?.(`OAuth ${family.id} : le réseau a refusé l’autorisation (${code || 'erreur inconnue'})`);
+    return fail('echange');
+  }
   const code = a.params.get('code');
   if (!code) return fail('etat_invalide');
   if (!(await deps.isAdmin(row.userId, row.orgId))) return fail('non_autorise');
@@ -144,7 +152,7 @@ export async function completeConnection(deps: FlowDeps, a: { family: string; pa
       });
       return { kind: 'select', pendingId };
     }
-    const done = await saveCandidates(deps, row.orgId, candidates.slice(0, 1));
+    const done = await saveCandidates(deps, family, row.orgId, candidates.slice(0, 1));
     return { kind: 'connected', network, count: done.count, webhookWarnings: done.webhookWarnings };
   } catch (e) {
     // Détail technique dans les journaux serveur (déjà expurgé de tout jeton), code fixe pour l'utilisateur.
@@ -153,7 +161,8 @@ export async function completeConnection(deps: FlowDeps, a: { family: string; pa
   }
 }
 
-async function saveCandidates(deps: FlowDeps, orgId: string, candidates: ChannelCandidate[]) {
+/** `family` est celle de la connexion en cours, pas celle déduite du réseau du canal : un compte Instagram peut venir de Meta (Page) ou d'Instagram Login. */
+async function saveCandidates(deps: FlowDeps, family: OAuthFamily, orgId: string, candidates: ChannelCandidate[]) {
   const ctx = ctxOf(deps);
   let count = 0;
   let webhookWarnings = 0;
@@ -165,7 +174,7 @@ async function saveCandidates(deps: FlowDeps, orgId: string, candidates: Channel
       refreshTokenEnc: c.tokens.refreshToken ? await encryptSecret(c.tokens.refreshToken, deps.encryptionKey) : null,
     });
     count++;
-    const after = await familyForNetwork(c.network)!.afterConnect?.(ctx, c);
+    const after = await family.afterConnect?.(ctx, c);
     if (after && !after.ok) {
       webhookWarnings++;
       deps.log?.(`OAuth ${c.network} : ${after.error}`);
@@ -206,7 +215,7 @@ export async function confirmSelection(deps: FlowDeps, a: { userId: string; pend
   const chosen = p.candidates.filter((c) => wanted.has(keyOf(c)));
   if (chosen.length === 0) return { kind: 'error', code: 'selection_vide', network };
   try {
-    const done = await saveCandidates(deps, p.row.orgId, chosen);
+    const done = await saveCandidates(deps, familyForNetwork(network)!, p.row.orgId, chosen);
     await deps.store.deletePending(p.row.id);
     return { kind: 'connected', network, count: done.count, webhookWarnings: done.webhookWarnings };
   } catch (e) {
@@ -228,7 +237,7 @@ export async function disconnectChannel(deps: FlowDeps, a: { userId: string; org
   if (!ch) return { ok: false, error: 'erreur' };
 
   let cleanupFailed = false;
-  const family = familyForNetwork(ch.network);
+  const family = familyForChannel(ch.network, ch.settings);
   if (family?.onDisconnect && missingEnv(family, deps.env).length === 0) {
     try {
       const pageId = typeof ch.settings.page_id === 'string' ? ch.settings.page_id : null;

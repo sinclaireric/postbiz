@@ -1,5 +1,6 @@
 import type { Env } from '@postbiz/core';
 import { createFacebookProvider } from './facebook.ts';
+import { createInstagramProvider } from './instagram.ts';
 import { createLinkedInProvider } from './linkedin.ts';
 import { createTikTokProvider } from './tiktok.ts';
 import type { PublishResult, SocialProvider } from './types.ts';
@@ -27,10 +28,13 @@ export function createRegistry(opts: { dryRun: boolean; fetch?: typeof fetch; en
     facebook: createFacebookProvider(opts.fetch),
     x: createXProvider(opts.fetch, opts.env),
     linkedin: createLinkedInProvider(opts.fetch, opts.env),
+    // Page LinkedIn : même API de publication (l'auteur est l'organisation, settings.author_urn), mais une autre application LinkedIn.
+    linkedin_page: createLinkedInProvider(opts.fetch, opts.env, 'linkedin_page'),
     // Connexion et rafraîchissement des jetons : oui. Publication : refusée avec un message clair (vidéo exigée).
     youtube: createYouTubeProvider(opts.fetch, opts.env),
     tiktok: createTikTokProvider(opts.fetch, opts.env),
-    // instagram : exige un média (téléversement non encore implémenté) ; ses jetons de Page n'expirent pas.
+    // Instagram : connexion et prolongation du jeton (Instagram Login) oui ; publication refusée avec un message clair (média exigé).
+    instagram: createInstagramProvider(opts.fetch, opts.env),
   };
   return (id) => real[id] ?? null;
 }

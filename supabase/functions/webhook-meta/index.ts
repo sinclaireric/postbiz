@@ -53,5 +53,13 @@ const db: WebhookDb = {
 };
 
 Deno.serve((req) =>
-  handleMetaWebhook(req, { appSecret: Deno.env.get('META_APP_SECRET') ?? '', verifyToken: Deno.env.get('META_WEBHOOK_VERIFY_TOKEN') ?? '' }, db)
+  handleMetaWebhook(
+    req,
+    {
+      appSecret: Deno.env.get('META_APP_SECRET') ?? '',
+      instagramAppSecret: Deno.env.get('INSTAGRAM_APP_SECRET') ?? '',
+      verifyToken: Deno.env.get('META_WEBHOOK_VERIFY_TOKEN') ?? '',
+    },
+    db
+  )
 );

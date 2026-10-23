@@ -17,8 +17,10 @@
   "networks": {
     "facebook": { "note": "ページ対応。メッセージ:お客様の最後のメッセージから24時間以内に返信できます。" },
     "instagram": { "note": "プロアカウント対応。メッセージ:お客様の最後のメッセージから24時間以内に返信できます。" },
+    "instagram_standalone": { "note": "Facebookページなしで、Instagramプロアカウントに直接接続します(Instagramログイン)。メッセージとコメントはInstagramと同じ。投稿は近日対応予定です。" },
     "x": { "note": "メッセージはXのAPI有料プランに依存します。" },
     "linkedin": { "note": "LinkedInはメッセージ機能をサードパーティアプリに公開していません。ページのコメントは対応予定です。" },
+    "linkedin_page": { "note": "管理しているLinkedInページに投稿します。このアクセスはLinkedInが承認したアプリ(Community Management API)に限られます。メッセージ機能はありません。" },
     "tiktok": { "note": "メッセージ機能にはTikTokの承認が必要で、一部の地域では利用できません。" },
     "youtube": { "note": "YouTubeには個人メッセージがありません。コメントのみです。" }
   },
@@ -941,6 +943,7 @@
     },
     "channelsPage": {
       "intro": "組織に接続されているSNSアカウント。",
+      "proAccountRequired": "Instagramプロアカウント(ビジネスまたはクリエイター)が必要です。無料で、Instagramの設定から切り替えられます。個人アカウントは接続できません。",
       "connectedTitle": "接続済み({count})",
       "noneConnected": "接続済みのチャネルはまだありません。",
       "status": { "active": "接続済み", "refresh_needed": "再接続が必要", "disabled": "無効" },

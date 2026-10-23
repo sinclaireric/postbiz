@@ -17,8 +17,10 @@
   "networks": {
     "facebook": { "note": "Seiten. Nachrichten: Antworten sind bis 24 Stunden nach der letzten Nachricht des Kunden möglich." },
     "instagram": { "note": "Professionelle Konten. Nachrichten: Antworten sind bis 24 Stunden nach der letzten Nachricht des Kunden möglich." },
+    "instagram_standalone": { "note": "Verbindet direkt mit einem professionellen Instagram-Konto, ohne Facebook-Seite (Instagram-Login). Nachrichten und Kommentare wie bei Instagram; Veröffentlichung folgt." },
     "x": { "note": "Nachrichten hängen vom kostenpflichtigen Tarif der X-API ab." },
     "linkedin": { "note": "LinkedIn öffnet sein Nachrichtensystem nicht für Drittanbieter-Apps. Kommentare von Seiten sind geplant." },
+    "linkedin_page": { "note": "Veröffentlicht auf den LinkedIn-Seiten, die Sie verwalten. LinkedIn gibt diesen Zugriff nur freigegebenen Apps (Community Management API). Keine Nachrichten." },
     "tiktok": { "note": "Nachrichten erfordern die Freigabe von TikTok und sind in einigen Regionen nicht verfügbar." },
     "youtube": { "note": "YouTube hat keine privaten Nachrichten: nur Kommentare." }
   },
@@ -1002,6 +1004,7 @@
     },
     "channelsPage": {
       "intro": "Die mit Ihrer Organisation verbundenen Social-Media-Konten.",
+      "proAccountRequired": "Ein professionelles Instagram-Konto (Business oder Creator) ist erforderlich: kostenlos, in den Instagram-Einstellungen aktivierbar. Ein privates Konto lässt sich nicht verbinden.",
       "connectedTitle": "Verbunden ({count})",
       "noneConnected": "Noch kein Kanal verbunden.",
       "status": { "active": "Verbunden", "refresh_needed": "Neu verbinden", "disabled": "Deaktiviert" },

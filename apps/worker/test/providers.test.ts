@@ -141,6 +141,16 @@ describe('LinkedIn', () => {
     expect((g as any).mock.calls[0][1].headers['LinkedIn-Version']).toBe('202604');
   });
 
+  it('une Page LinkedIn rafraîchit son jeton avec les clés de sa propre application, pas celles du profil', async () => {
+    const env = { LINKEDIN_CLIENT_ID: 'profil-id', LINKEDIN_CLIENT_SECRET: 'profil-secret', LINKEDIN_PAGE_CLIENT_ID: 'page-id', LINKEDIN_PAGE_CLIENT_SECRET: 'page-secret' };
+    const f = respond(200, { access_token: 'AT2', expires_in: 5184000 });
+    await createLinkedInProvider(f, env, 'linkedin_page').refreshToken!({ refreshToken: 'RT' } as any);
+    expect(Object.fromEntries(new URLSearchParams((f as any).mock.calls[0][1].body))).toMatchObject({ client_id: 'page-id', client_secret: 'page-secret' });
+    const g = respond(200, { access_token: 'AT2', expires_in: 5184000 });
+    await createLinkedInProvider(g, env).refreshToken!({ refreshToken: 'RT' } as any);
+    expect(Object.fromEntries(new URLSearchParams((g as any).mock.calls[0][1].body))).toMatchObject({ client_id: 'profil-id' });
+  });
+
   it('utilise l’auteur configuré (Page)', async () => {
     const f = respond(201, '', { 'x-restli-id': 'urn:li:share:1' });
     await createLinkedInProvider(f).publish(input({ settings: { author_urn: 'urn:li:organization:99' } }));
@@ -191,7 +201,7 @@ describe('registre', () => {
   });
   it('en mode réel, Facebook, X et LinkedIn savent commenter ; YouTube et TikTok pas encore', () => {
     const reg = createRegistry({ dryRun: false });
-    for (const n of ['facebook', 'x', 'linkedin']) expect(reg(n)!.comment).toBeTypeOf('function');
+    for (const n of ['facebook', 'x', 'linkedin', 'linkedin_page']) expect(reg(n)!.comment).toBeTypeOf('function');
     for (const n of ['youtube', 'tiktok']) expect(reg(n)!.comment).toBeUndefined();
   });
   it('en mode réel, seuls les réseaux implémentés sont disponibles', () => {
@@ -199,13 +209,25 @@ describe('registre', () => {
     expect(reg('facebook')).not.toBeNull();
     expect(reg('x')).not.toBeNull();
     expect(reg('linkedin')).not.toBeNull();
-    expect(reg('instagram')).toBeNull();
+    expect(reg('linkedin_page')).not.toBeNull();
+    expect(reg('instagram_standalone')).toBeNull(); // simple point d'entrée de connexion : le canal enregistré est « instagram »
   });
-  it('YouTube et TikTok : jetons rafraîchissables, publication refusée avec un message clair', async () => {
+  it('YouTube, TikTok et Instagram : jetons rafraîchissables, publication refusée avec un message clair', async () => {
     const reg = createRegistry({ dryRun: false });
-    for (const n of ['tiktok', 'youtube']) {
+    for (const n of ['tiktok', 'youtube', 'instagram']) {
       expect(reg(n)!.refreshToken).toBeTypeOf('function');
       await expect(reg(n)!.publish(input())).rejects.toMatchObject({ name: 'PublishRejectedError', message: expect.stringContaining('pas encore disponible') });
     }
+  });
+
+  it('Instagram (Instagram Login) : le jeton est prolongé avec les clés de l’application Instagram, le jeton lui-même servant de « refresh token »', async () => {
+    const env = { INSTAGRAM_APP_ID: 'ig-id', INSTAGRAM_APP_SECRET: 'ig-secret' };
+    const f = respond(200, { access_token: 'IG-NEW', token_type: 'bearer', expires_in: 5184000 });
+    const r = await createRegistry({ dryRun: false, fetch: f, env })('instagram')!.refreshToken!({ refreshToken: 'IG-OLD' } as any);
+    expect(r).toMatchObject({ accessToken: 'IG-NEW', refreshToken: 'IG-NEW' });
+    const url = new URL((f as any).mock.calls[0][0]);
+    expect(url.origin + url.pathname).toBe('https://graph.instagram.com/refresh_access_token');
+    expect(url.searchParams.get('grant_type')).toBe('ig_refresh_token');
+    expect(url.searchParams.get('access_token')).toBe('IG-OLD');
   });
 });

@@ -17,8 +17,10 @@
   "networks": {
     "facebook": { "note": "主页。消息:可在客户最后一条消息后的 24 小时内回复。" },
     "instagram": { "note": "专业账号。消息:可在客户最后一条消息后的 24 小时内回复。" },
+    "instagram_standalone": { "note": "无需 Facebook 主页,直接连接 Instagram 专业账号(Instagram 登录)。私信和评论与 Instagram 相同;发布功能即将推出。" },
     "x": { "note": "消息功能取决于 X API 的付费套餐。" },
     "linkedin": { "note": "LinkedIn 不向第三方应用开放私信。主页评论已在计划中。" },
+    "linkedin_page": { "note": "发布到您管理的 LinkedIn 主页。LinkedIn 仅向通过审核的应用开放此权限(Community Management API)。不支持私信。" },
     "tiktok": { "note": "私信功能需要 TikTok 审批,且在部分地区不可用。" },
     "youtube": { "note": "YouTube 没有私信,只有评论。" }
   },
@@ -938,6 +940,7 @@
     },
     "channelsPage": {
       "intro": "已连接到你的组织的社交账号。",
+      "proAccountRequired": "需要 Instagram 专业账号(商家或创作者):免费,可在 Instagram 设置中切换。个人账号无法连接。",
       "connectedTitle": "已连接({count})",
       "noneConnected": "尚未连接任何渠道。",
       "status": { "active": "已连接", "refresh_needed": "需要重新连接", "disabled": "已停用" },

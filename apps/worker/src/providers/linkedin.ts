@@ -1,20 +1,11 @@
-import type { Env } from '@postbiz/core';
+import { DEFAULT_LINKEDIN_API_VERSION, linkedInApiVersion, type Env } from '@postbiz/core';
 import { OutcomeUnknownError } from './errors.ts';
 import { mutate, type Fetch } from './http.ts';
 import { oauthRefresher } from './oauth.ts';
 import type { SocialProvider } from './types.ts';
 
-/** Version de l'API LinkedIn (AAAAMM). LinkedIn retire les versions anciennes : à mettre à jour régulièrement. */
-export const DEFAULT_LINKEDIN_API_VERSION = '202601';
-
-/**
- * Une variable présente mais vide (ligne `LINKEDIN_API_VERSION=` laissée telle quelle dans le fichier d'environnement) vaut « non définie » :
- * sinon l'en-tête partirait vide et LinkedIn refuserait la publication. Une valeur qui n'est pas AAAAMM est ignorée de même.
- */
-export function linkedInApiVersion(env: Env = process.env): string {
-  const value = (env.LINKEDIN_API_VERSION ?? '').trim();
-  return /^\d{6}$/.test(value) ? value : DEFAULT_LINKEDIN_API_VERSION;
-}
+// La version de l'API (en-tête LinkedIn-Version) est partagée avec la connexion des canaux : voir @postbiz/core.
+export { DEFAULT_LINKEDIN_API_VERSION, linkedInApiVersion };
 
 /**
  * LinkedIn interprète certains caractères du texte (format « little text ») : sans échappement,
@@ -24,12 +15,14 @@ export function escapeLinkedInText(text: string): string {
   return text.replace(/[\\|{}@[\]()<>#*_~]/g, (c) => `\\${c}`);
 }
 
+// Sert le profil (« linkedin ») et les Pages (« linkedin_page ») : seul `settings.author_urn` change.
 // ⚠️ Non validé contre l'API réelle. `settings.author_urn` : `urn:li:person:<id>` (profil) ou `urn:li:organization:<id>` (Page).
-export const createLinkedInProvider = (fetchImpl: Fetch = fetch, env: Env = process.env): SocialProvider => ({
+export const createLinkedInProvider = (fetchImpl: Fetch = fetch, env: Env = process.env, family: 'linkedin' | 'linkedin_page' = 'linkedin'): SocialProvider => ({
   id: 'linkedin',
   supportsThreads: false,
   supportsMedia: false,
-  refreshToken: oauthRefresher('linkedin', fetchImpl, env),
+  // Les Pages ont leur propre application LinkedIn : on rafraîchit avec ses clés.
+  refreshToken: oauthRefresher(family, fetchImpl, env),
   async publish({ accessToken, integration, posts }) {
     const post = posts[0]!;
     const author = (integration.settings.author_urn as string | undefined) ?? `urn:li:person:${integration.internalId}`;

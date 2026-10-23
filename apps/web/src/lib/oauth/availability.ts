@@ -1,5 +1,5 @@
 import { familyForNetwork, missingEnv, type Env } from '@postbiz/core';
-import { NETWORKS } from '@/lib/networks';
+import { APP_NETWORKS } from '@/lib/networks';
 
 export interface Availability {
   available: boolean;
@@ -25,7 +25,7 @@ export function networkAvailability(env: Env, demo: boolean): Record<string, Ava
   if (!env.SUPABASE_SERVICE_ROLE_KEY) base.push('SUPABASE_SERVICE_ROLE_KEY');
   if (!validKey(env.TOKEN_ENCRYPTION_KEY)) base.push('TOKEN_ENCRYPTION_KEY');
   return Object.fromEntries(
-    NETWORKS.map((n) => {
+    APP_NETWORKS.map((n) => {
       const family = familyForNetwork(n.id);
       const missing = demo ? [] : [...base, ...(family ? missingEnv(family, env) : [])];
       return [n.id, { available: !demo && !!family && missing.length === 0, missing }];

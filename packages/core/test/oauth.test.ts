@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import {
-  checkState, codeChallenge, createState, familyForNetwork, missingEnv, OAUTH_FAMILIES, OAuthError, TokenRejectedError, TokenTransientError,
+  checkState, codeChallenge, createState, familyForChannel, familyForNetwork, missingEnv, OAUTH_FAMILIES, OAuthError, TokenRejectedError, TokenTransientError,
   type Env, type OAuthContext,
 } from '../src/index.ts';
 
@@ -147,6 +147,120 @@ describe('LinkedIn', () => {
     const { ctx } = fakeNet({ '/accessToken': { body: { access_token: 'AT2', refresh_token: 'RT2', expires_in: 5184000 } } });
     expect((await li.refresh!(ctx, 'RT')).accessToken).toBe('AT2');
   });
+
+  describe('Pages (linkedin_page)', () => {
+    const tokens = { accessToken: 'AT', refreshToken: null, expiresAt: NOW };
+    const lp = OAUTH_FAMILIES.linkedin_page;
+    const PAGE_ENV: Env = { ...ENV, LINKEDIN_PAGE_CLIENT_ID: 'lp-id', LINKEDIN_PAGE_CLIENT_SECRET: 'lp-secret' };
+    it('est une famille à part, avec sa propre application LinkedIn, le choix des Pages et les permissions d’organisation', () => {
+      expect(familyForNetwork('linkedin_page')?.id).toBe('linkedin_page');
+      expect(familyForNetwork('linkedin')?.id).toBe('linkedin');
+      expect(lp.choose).toBe(true);
+      expect(li.choose).toBe(false);
+      expect(missingEnv(lp, ENV)).toEqual(['LINKEDIN_PAGE_CLIENT_ID', 'LINKEDIN_PAGE_CLIENT_SECRET']); // les clés du profil ne suffisent pas
+      expect(missingEnv(lp, PAGE_ENV)).toEqual([]);
+      const ctx = { ...fakeNet({}).ctx, env: PAGE_ENV };
+      const u = new URL(lp.authorizeUrl(ctx, { network: 'linkedin_page', redirectUri: 'https://app.test/cb', state: 'S', codeChallenge: null }));
+      expect(u.searchParams.get('scope')).toBe('rw_organization_admin w_organization_social');
+      expect(u.searchParams.get('client_id')).toBe('lp-id');
+    });
+    it('échange le code et rafraîchit avec les clés de l’application des Pages, pas celles du profil', async () => {
+      const { ctx, calls } = fakeNet({ '/accessToken': { body: { access_token: 'AT', refresh_token: 'RT', expires_in: 100 } } });
+      const pageCtx = { ...ctx, env: PAGE_ENV };
+      await lp.exchangeCode(pageCtx, { redirectUri: 'r', code: 'c', codeVerifier: null });
+      await lp.refresh!(pageCtx, 'RT');
+      for (const c of calls) expect(form(c.body)).toMatchObject({ client_id: 'lp-id', client_secret: 'lp-secret' });
+    });
+    it('liste les Pages administrées avec leur nom, et pose author_urn d’organisation', async () => {
+      const { ctx, calls } = fakeNet({
+        '/organizationAcls': { body: { elements: [{ organization: 'urn:li:organization:111', role: 'ADMINISTRATOR' }, { organization: 'urn:li:organization:222' }, { organization: 'urn:li:organization:111' }] } },
+        '/organizations/111': { body: { localizedName: 'Maison Lune', vanityName: 'maison-lune' } },
+        '/organizations/222': { status: 404 },
+      });
+      const out = await lp.listChannels(ctx, { network: 'linkedin_page', tokens });
+      expect(out).toHaveLength(2); // doublon ignoré
+      expect(out[0]).toMatchObject({ network: 'linkedin_page', internalId: '111', name: 'Maison Lune', username: 'maison-lune', settings: { author_urn: 'urn:li:organization:111', kind: 'page' } });
+      expect(out[1]).toMatchObject({ internalId: '222', name: 'Page 222' }); // détail illisible : la Page n'est pas perdue
+      const acls = new URL(calls[0]!.url);
+      expect(acls.searchParams.get('role')).toBe('ADMINISTRATOR');
+      expect(calls[0]!.headers['LinkedIn-Version']).toMatch(/^\d{6}$/);
+      expect(calls[0]!.headers['X-Restli-Protocol-Version']).toBe('2.0.0');
+    });
+    it('signale l’absence de Page', async () => {
+      const { ctx } = fakeNet({ '/organizationAcls': { body: { elements: [] } } });
+      await expect(lp.listChannels(ctx, { network: 'linkedin_page', tokens })).rejects.toMatchObject({ code: 'no_account' });
+    });
+    it('traduit un refus de LinkedIn (accès à l’API non accordé) en erreur de profil', async () => {
+      const { ctx } = fakeNet({ '/organizationAcls': { status: 403, body: { message: 'Not enough permissions' } } });
+      await expect(lp.listChannels(ctx, { network: 'linkedin_page', tokens })).rejects.toBeInstanceOf(OAuthError);
+    });
+  });
+});
+
+describe('Instagram Login (standalone)', () => {
+  const ig = OAUTH_FAMILIES.instagram_login;
+  const IG_ENV: Env = { ...ENV, INSTAGRAM_APP_ID: 'ig-id', INSTAGRAM_APP_SECRET: 'ig-secret' };
+  it('est une famille à part, avec sa propre application Instagram', () => {
+    expect(familyForNetwork('instagram_standalone')?.id).toBe('instagram_login');
+    expect(familyForNetwork('instagram')?.id).toBe('meta'); // le canal enregistré reste un « instagram » de Meta
+    expect(missingEnv(ig, ENV)).toEqual(['INSTAGRAM_APP_ID', 'INSTAGRAM_APP_SECRET']);
+    expect(missingEnv(ig, IG_ENV)).toEqual([]);
+    expect(ig.choose).toBe(false);
+  });
+  it('autorise sur instagram.com avec les permissions Instagram, sans PKCE', () => {
+    const u = new URL(ig.authorizeUrl({ ...fakeNet({}).ctx, env: IG_ENV }, { network: 'instagram_standalone', redirectUri: 'https://app.test/cb', state: 'S', codeChallenge: null }));
+    expect(u.origin + u.pathname).toBe('https://www.instagram.com/oauth/authorize');
+    expect(u.searchParams.get('client_id')).toBe('ig-id');
+    expect(u.searchParams.get('scope')).toBe('instagram_business_basic,instagram_business_manage_messages,instagram_business_manage_comments');
+    expect(u.searchParams.has('code_challenge')).toBe(false);
+  });
+  it('échange le code (réponse à plat ou dans data[0]), puis le jeton court contre un jeton de 60 jours qui sert aussi de refresh token', async () => {
+    for (const shortBody of [{ access_token: 'SHORT', user_id: 1 }, { data: [{ access_token: 'SHORT', user_id: 1 }] }]) {
+      const { ctx, calls } = fakeNet({
+        'api.instagram.com/oauth/access_token': { body: shortBody },
+        'graph.instagram.com/access_token': { body: { access_token: 'LONG', token_type: 'bearer', expires_in: 5184000 } },
+      });
+      const t = await ig.exchangeCode({ ...ctx, env: IG_ENV }, { redirectUri: 'https://app.test/cb', code: 'C', codeVerifier: null });
+      expect(t).toEqual({ accessToken: 'LONG', refreshToken: 'LONG', expiresAt: new Date(NOW.getTime() + 5184000_000) });
+      expect(form(calls[0]!.body)).toMatchObject({ client_id: 'ig-id', client_secret: 'ig-secret', grant_type: 'authorization_code', code: 'C', redirect_uri: 'https://app.test/cb' });
+      const second = new URL(calls[1]!.url);
+      expect(second.searchParams.get('grant_type')).toBe('ig_exchange_token');
+      expect(second.searchParams.get('access_token')).toBe('SHORT');
+    }
+  });
+  it('un refus d’Instagram devient une erreur de connexion sans corps brut', async () => {
+    const { ctx } = fakeNet({ 'api.instagram.com/oauth/access_token': { status: 400, body: { error_type: 'OAuthException', error_message: 'Invalid authorization code' } } });
+    await expect(ig.exchangeCode({ ...ctx, env: IG_ENV }, { redirectUri: 'r', code: 'C', codeVerifier: null })).rejects.toBeInstanceOf(OAuthError);
+  });
+  it('prolonge le jeton : le nouveau jeton remplace aussi le « refresh token »', async () => {
+    const { ctx, calls } = fakeNet({ 'refresh_access_token': { body: { access_token: 'NEW', expires_in: 5184000 } } });
+    expect(await ig.refresh!({ ...ctx, env: IG_ENV }, 'OLD')).toEqual({ accessToken: 'NEW', refreshToken: 'NEW', expiresAt: new Date(NOW.getTime() + 5184000_000) });
+    expect(new URL(calls[0]!.url).searchParams.get('grant_type')).toBe('ig_refresh_token');
+  });
+  it('lit le compte et l’enregistre comme un canal instagram, relié à graph.instagram.com', async () => {
+    const { ctx, calls } = fakeNet({ '/me': { body: { user_id: '1784', username: 'maison_lune', name: 'Maison Lune', account_type: 'BUSINESS', profile_picture_url: 'https://ig/p.jpg' } } });
+    const tokens = { accessToken: 'LONG', refreshToken: 'LONG', expiresAt: NOW };
+    const [c] = await ig.listChannels({ ...ctx, env: IG_ENV }, { network: 'instagram_standalone', tokens });
+    expect(c).toMatchObject({
+      network: 'instagram', internalId: '1784', name: 'Maison Lune', username: '@maison_lune', pictureUrl: 'https://ig/p.jpg',
+      settings: { login: 'instagram', graph_host: 'graph.instagram.com', ig_user_id: '1784' },
+    });
+    expect(calls[0]!.headers.Authorization).toBe('Bearer LONG');
+  });
+  it('s’abonne aux webhooks du compte, et signale l’échec sans le lever', async () => {
+    const tokens = { accessToken: 'LONG', refreshToken: 'LONG', expiresAt: NOW };
+    const cand = { network: 'instagram' as const, internalId: '1784', name: 'x', username: null, pictureUrl: null, settings: {}, tokens };
+    const ok = fakeNet({ '/1784/subscribed_apps': { body: { success: true } } });
+    expect(await ig.afterConnect!({ ...ok.ctx, env: IG_ENV }, cand)).toEqual({ ok: true });
+    expect(form(ok.calls[0]!.body).subscribed_fields).toBe('messages,comments,messaging_postbacks');
+    const ko = fakeNet({ '/1784/subscribed_apps': { status: 400, body: { error: { message: 'Not allowed' } } } });
+    expect(await ig.afterConnect!({ ...ko.ctx, env: IG_ENV }, cand)).toMatchObject({ ok: false });
+  });
+  it('familyForChannel : un canal instagram connecté par Instagram Login relève de cette famille, pas de Meta', () => {
+    expect(familyForChannel('instagram', { login: 'instagram' })?.id).toBe('instagram_login');
+    expect(familyForChannel('instagram', { page_id: 'P1' })?.id).toBe('meta');
+    expect(familyForChannel('facebook', {})?.id).toBe('meta');
+  });
 });
 
 describe('Google / YouTube', () => {
@@ -207,6 +321,18 @@ describe('Meta', () => {
       { id: 'P3', name: 'Sans droit' },
     ],
   };
+
+  it('avec META_LOGIN_CONFIG_ID : connexion « for Business » par configuration, sans liste de permissions', () => {
+    const { ctx } = fakeNet({});
+    const u = new URL(m.authorizeUrl({ ...ctx, env: { ...ENV, META_LOGIN_CONFIG_ID: ' 123456 ' } }, { network: 'facebook', redirectUri: 'https://app.test/cb', state: 'S', codeChallenge: null }));
+    expect(u.searchParams.get('config_id')).toBe('123456');
+    expect(u.searchParams.get('override_default_response_type')).toBe('true');
+    expect(u.searchParams.get('response_type')).toBe('code');
+    expect(u.searchParams.has('scope')).toBe(false);
+    const empty = new URL(m.authorizeUrl({ ...ctx, env: { ...ENV, META_LOGIN_CONFIG_ID: '' } }, { network: 'facebook', redirectUri: 'https://app.test/cb', state: 'S', codeChallenge: null }));
+    expect(empty.searchParams.has('config_id')).toBe(false); // variable vide = absente
+    expect(empty.searchParams.has('scope')).toBe(true);
+  });
 
   it('demande plus de permissions pour Instagram que pour Facebook', () => {
     const { ctx } = fakeNet({});

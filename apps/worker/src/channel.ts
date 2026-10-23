@@ -8,7 +8,7 @@ export interface AddChannelArgs {
   settings?: Record<string, unknown>;
 }
 
-const PROVIDERS = ['facebook', 'instagram', 'x', 'linkedin', 'tiktok', 'youtube'];
+const PROVIDERS = ['facebook', 'instagram', 'instagram_standalone', 'x', 'linkedin', 'linkedin_page', 'tiktok', 'youtube'];
 
 /** Lit `--clé valeur` depuis la ligne de commande et valide les champs obligatoires. */
 export function parseAddChannelArgs(argv: string[]): AddChannelArgs {

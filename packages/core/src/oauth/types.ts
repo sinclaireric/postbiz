@@ -2,9 +2,9 @@
 // ⚠️ Rien de tout cela n'a été exécuté contre les vraies API : les URL, scopes et formats suivent la documentation
 // publique de chaque réseau et sont validés uniquement avec un réseau simulé (voir docs/RESEAUX.md).
 
-export type NetworkId = 'facebook' | 'instagram' | 'x' | 'linkedin' | 'tiktok' | 'youtube';
+export type NetworkId = 'facebook' | 'instagram' | 'instagram_standalone' | 'x' | 'linkedin' | 'linkedin_page' | 'tiktok' | 'youtube';
 /** Une « famille » = une application développeur chez le réseau (Meta couvre Facebook et Instagram, Google couvre YouTube). */
-export type FamilyId = 'meta' | 'x' | 'linkedin' | 'google' | 'tiktok';
+export type FamilyId = 'meta' | 'instagram_login' | 'x' | 'linkedin' | 'linkedin_page' | 'google' | 'tiktok';
 
 export type Env = Record<string, string | undefined>;
 
@@ -50,7 +50,7 @@ export interface OAuthFamily {
   envKeys: readonly string[];
   /** PKCE (S256) pour les réseaux qui le documentent pour leur flux web. */
   usesPkce: boolean;
-  /** `true` : plusieurs comptes possibles (Pages Meta), l'utilisateur choisit avant la création des canaux. */
+  /** `true` : plusieurs comptes possibles (Pages Meta, Pages LinkedIn), l'utilisateur choisit avant la création des canaux. */
   choose: boolean;
   authorizeUrl(ctx: OAuthContext, a: { network: NetworkId; redirectUri: string; state: string; codeChallenge: string | null }): string;
   exchangeCode(ctx: OAuthContext, a: { redirectUri: string; code: string; codeVerifier: string | null }): Promise<TokenSet>;

@@ -48,6 +48,19 @@ describe('webhook Meta — réception', () => {
     expect(db.insertRawEvent).not.toHaveBeenCalled();
   });
 
+  it('accepte aussi les événements signés avec la clé secrète Instagram (Instagram Login), mais pas une autre clé', async () => {
+    const igCfg = { ...cfg, instagramAppSecret: 'ig-secret' };
+    const raw = JSON.stringify(dm('m9'));
+    const req = (secret: string) => computeMetaSignature(raw, secret).then((sig) => new Request('https://x.test/webhook-meta', { method: 'POST', body: raw, headers: { 'x-hub-signature-256': sig } }));
+    const ok = fakeDb();
+    expect((await handleMetaWebhook(await req('ig-secret'), igCfg, ok.db)).status).toBe(200);
+    expect(ok.db.insertRawEvent).toHaveBeenCalledTimes(1);
+    expect((await handleMetaWebhook(await req('secret'), igCfg, fakeDb().db)).status).toBe(200); // clé de l'application Meta : toujours acceptée
+    expect((await handleMetaWebhook(await req('autre'), igCfg, fakeDb().db)).status).toBe(401);
+    // sans clé Instagram configurée : l'événement Instagram est refusé
+    expect((await handleMetaWebhook(await req('ig-secret'), cfg, fakeDb().db)).status).toBe(401);
+  });
+
   it('refuse un JSON invalide (signé)', async () => {
     const { db } = fakeDb();
     expect((await handleMetaWebhook(await post('pas du json'), cfg, db)).status).toBe(400);

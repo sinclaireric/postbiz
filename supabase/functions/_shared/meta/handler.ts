@@ -12,6 +12,11 @@ export interface WebhookDb {
 
 export interface WebhookConfig {
   appSecret: string;
+  /**
+   * Clé secrète de l'application Instagram (connexion « Instagram Login », sans Page) : Meta signe ces événements avec elle, pas avec la clé
+   * de l'application Meta. Facultative : sans elle, seuls les événements signés avec `appSecret` sont acceptés.
+   */
+  instagramAppSecret?: string;
   verifyToken: string;
 }
 
@@ -25,9 +30,9 @@ export async function handleMetaWebhook(req: Request, cfg: WebhookConfig, db: We
   if (req.method !== 'POST') return text('method not allowed', 405);
 
   const raw = await req.text();
-  if (!(await verifyMetaSignature(raw, req.headers.get('x-hub-signature-256'), cfg.appSecret))) {
-    return text('invalid signature', 401);
-  }
+  const signature = req.headers.get('x-hub-signature-256');
+  const signed = (await verifyMetaSignature(raw, signature, cfg.appSecret)) || (!!cfg.instagramAppSecret && (await verifyMetaSignature(raw, signature, cfg.instagramAppSecret)));
+  if (!signed) return text('invalid signature', 401);
 
   let body: any;
   try {

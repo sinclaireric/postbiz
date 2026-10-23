@@ -17,8 +17,10 @@
   "networks": {
     "facebook": { "note": "Trang (Page). Tin nhắn: bạn có thể trả lời trong vòng 24 giờ kể từ tin nhắn cuối của khách hàng." },
     "instagram": { "note": "Tài khoản chuyên nghiệp. Tin nhắn: bạn có thể trả lời trong vòng 24 giờ kể từ tin nhắn cuối của khách hàng." },
+    "instagram_standalone": { "note": "Kết nối trực tiếp với tài khoản Instagram chuyên nghiệp, không cần Trang Facebook (đăng nhập Instagram). Tin nhắn và bình luận như Instagram; đăng bài sắp có." },
     "x": { "note": "Tin nhắn phụ thuộc vào gói API trả phí của X." },
     "linkedin": { "note": "LinkedIn không mở tính năng nhắn tin cho ứng dụng bên thứ ba. Bình luận trên Trang đang được lên kế hoạch." },
+    "linkedin_page": { "note": "Đăng lên các Trang LinkedIn bạn quản trị. LinkedIn chỉ cấp quyền này cho ứng dụng đã được duyệt (Community Management API). Không có nhắn tin." },
     "tiktok": { "note": "Nhắn tin cần được TikTok phê duyệt và không khả dụng ở một số khu vực." },
     "youtube": { "note": "YouTube không có tin nhắn riêng tư: chỉ có bình luận." }
   },
@@ -986,6 +988,7 @@
     },
     "channelsPage": {
       "intro": "Các tài khoản mạng xã hội được kết nối với tổ chức của bạn.",
+      "proAccountRequired": "Cần tài khoản Instagram chuyên nghiệp (Doanh nghiệp hoặc Người sáng tạo): miễn phí, bật trong cài đặt Instagram. Không thể kết nối tài khoản cá nhân.",
       "connectedTitle": "Đã kết nối ({count})",
       "noneConnected": "Chưa có kênh nào được kết nối.",
       "status": { "active": "Đã kết nối", "refresh_needed": "Cần kết nối lại", "disabled": "Đã tắt" },

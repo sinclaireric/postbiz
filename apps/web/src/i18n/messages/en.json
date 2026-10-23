@@ -40,11 +40,17 @@
     "instagram": {
       "note": "Professional accounts. Messages: you can reply within 24 hours of the customer’s last message."
     },
+    "instagram_standalone": {
+      "note": "Connects directly with a professional Instagram account, no Facebook Page needed (Instagram Login). Messages and comments like Instagram; publishing coming soon."
+    },
     "x": {
       "note": "Messages depend on the paid tier of the X API."
     },
     "linkedin": {
       "note": "LinkedIn does not open its messaging to third-party apps. Page comments are planned."
+    },
+    "linkedin_page": {
+      "note": "Posts to the LinkedIn Pages you administer. LinkedIn reserves this access for approved apps (Community Management API). No messaging."
     },
     "tiktok": {
       "note": "Messaging requires TikTok’s approval and is not available in some regions."
@@ -1306,6 +1312,7 @@
     },
     "channelsPage": {
       "intro": "The social media accounts connected to your organization.",
+      "proAccountRequired": "A professional Instagram account (Business or Creator) is required: it's free and set in Instagram's settings. A personal account can't be connected.",
       "connectedTitle": "Connected ({count})",
       "noneConnected": "No channel connected yet.",
       "status": {

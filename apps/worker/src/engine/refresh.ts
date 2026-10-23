@@ -35,7 +35,7 @@ export interface RefreshStats { refreshed: number; reconnectNeeded: number; tran
 /** Jetons rafraîchis quand il leur reste moins de ce délai (les jetons X durent 2 h, Google 1 h). */
 export const REFRESH_WITHIN_SECONDS = 30 * 60;
 const LOCK_SECONDS = 5 * 60;
-export const REFRESHABLE_PROVIDERS = ['x', 'linkedin', 'youtube', 'tiktok'] as const;
+export const REFRESHABLE_PROVIDERS = ['x', 'linkedin', 'linkedin_page', 'instagram', 'youtube', 'tiktok'] as const;
 
 export async function refreshTokens(
   deps: { db: RefreshDb; providers: ProviderRegistry },
