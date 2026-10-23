@@ -1,0 +1,1 @@
+{{ $l := "fr" }}{{ with .Data }}{{ with .locale }}{{ $l = . }}{{ end }}{{ end }}{{ if eq $l "fr" }}Réinitialisez votre mot de passe Postbiz{{ else }}Reset your Postbiz password{{ end }}
