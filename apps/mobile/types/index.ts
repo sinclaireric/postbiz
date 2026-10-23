@@ -96,6 +96,8 @@ export type ScheduledPost = {
   errorMessage?: string;
   /** `publishing` : le worker est en train d'envoyer ; `unknown` : issue incertaine, jamais rejouée automatiquement. */
   dbState?: string;
+  /** Adresse de la publication chez le réseau, une fois publiée. */
+  releaseUrl?: string;
 };
 
 export type TimeSlot = {

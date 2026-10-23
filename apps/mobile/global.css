@@ -1,3 +1,4 @@
+/* Mode clair par défaut ; darkMode: class (voir tailwind.config.js). */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

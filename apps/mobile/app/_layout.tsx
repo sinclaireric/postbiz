@@ -1,8 +1,7 @@
 import "@/global.css";
 import "@/utils/suppress-warnings";
 
-import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
-import { DarkTheme, type Theme, ThemeProvider } from "@react-navigation/native";
+import { DefaultTheme, type Theme, ThemeProvider } from "@react-navigation/native";
 import { useFonts } from "expo-font";
 import { Image } from "expo-image";
 import { Stack } from "expo-router";
@@ -25,17 +24,18 @@ import { CreateOrganizationScreen } from "@/components/ui/create-organization-sc
 import { ToastProvider } from "@/components/ui/toast";
 import { resetAllStores } from "@/lib/reset-stores";
 import { useAuthLinks } from "@/lib/use-auth-links";
+import { DEMO } from "@/lib/demo";
 import { isSupabaseConfigured } from "@/lib/supabase";
 import { useAuthStore } from "@/store/auth-store";
 import { useOrgStore } from "@/store/org-store";
 
-const PostbizDarkTheme: Theme = {
-  ...DarkTheme,
+const PostbizTheme: Theme = {
+  ...DefaultTheme,
   colors: {
-    ...DarkTheme.colors,
-    background: "#1A1919",
-    card: "#1A1919",
-    border: "#1A1919",
+    ...DefaultTheme.colors,
+    background: "#F8F7F4",
+    card: "#F8F7F4",
+    border: "#E7E5DF",
   },
 };
 
@@ -48,11 +48,11 @@ cssInterop(Ionicons, {
 });
 
 void SplashScreen.preventAutoHideAsync();
-void SystemUI.setBackgroundColorAsync("#0E0E0E");
+void SystemUI.setBackgroundColorAsync("#F8F7F4");
 
 function FullScreenSpinner() {
   return (
-    <View className="absolute inset-0 items-center justify-center bg-[#1A1919]">
+    <View className="absolute inset-0 items-center justify-center bg-canvas">
       <ActivityIndicator color="#FC69FF" />
     </View>
   );
@@ -72,7 +72,7 @@ function AppNavigator() {
     else resetAllStores();
   }, [signedIn]);
 
-  const overlay = !isSupabaseConfigured ? (
+  const overlay = !isSupabaseConfigured && !DEMO ? (
     <ConfigMissingScreen />
   ) : authStatus === "loading" ? (
     <FullScreenSpinner />
@@ -88,7 +88,7 @@ function AppNavigator() {
     <>
       <Stack
         screenOptions={{
-          contentStyle: { backgroundColor: "#0E0E0E" },
+          contentStyle: { backgroundColor: "#F8F7F4" },
           freezeOnBlur: false,
         }}
       >
@@ -98,40 +98,20 @@ function AppNavigator() {
         <Stack.Protected guard={signedIn}>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen
-            name="conversation/[id]"
+            name="post/[id]"
             options={{ headerShown: false, animation: "slide_from_right" }}
           />
           <Stack.Screen
-            name="notifications"
-            options={{
-              headerShown: false,
-              presentation: "transparentModal",
-              animation: "slide_from_right",
-              contentStyle: { backgroundColor: "transparent" },
-            }}
+            name="conversation/[id]"
+            options={{ headerShown: false, animation: "slide_from_right" }}
           />
-          <Stack.Screen
-            name="add-channel"
-            options={{
-              headerShown: false,
-              presentation: "transparentModal",
-              animation: "slide_from_right",
-              contentStyle: { backgroundColor: "transparent" },
-            }}
-          />
-          <Stack.Screen
-            name="create-post"
-            options={{
-              headerShown: false,
-              presentation: "transparentModal",
-              animation: "slide_from_bottom",
-              contentStyle: { backgroundColor: "transparent" },
-            }}
-          />
-          <Stack.Screen
-            name="modal"
-            options={{ presentation: "modal", title: "Modal" }}
-          />
+          <Stack.Screen name="notifications" options={{ headerShown: false, animation: "slide_from_right" }} />
+          <Stack.Screen name="channels" options={{ headerShown: false, animation: "slide_from_right" }} />
+          <Stack.Screen name="add-channel" options={{ headerShown: false, animation: "slide_from_right" }} />
+          <Stack.Screen name="account" options={{ headerShown: false, animation: "slide_from_right" }} />
+          <Stack.Screen name="media" options={{ headerShown: false, animation: "slide_from_right" }} />
+          <Stack.Screen name="create-post" options={{ headerShown: false, presentation: "fullScreenModal", animation: "slide_from_bottom" }} />
+          <Stack.Screen name="enable-notifications" options={{ headerShown: false, presentation: "fullScreenModal", animation: "fade" }} />
         </Stack.Protected>
         <Stack.Screen name="auth-callback" options={{ headerShown: false }} />
       </Stack>
@@ -160,16 +140,14 @@ export default function RootLayout() {
   }
 
   return (
-    <GestureHandlerRootView className="flex-1 bg-[#1A1919]">
+    <GestureHandlerRootView className="flex-1 bg-canvas">
       <SafeAreaProvider>
-        <ThemeProvider value={PostbizDarkTheme}>
+        <ThemeProvider value={PostbizTheme}>
           <ErrorBoundary>
-            <BottomSheetModalProvider>
               <ToastProvider>
                 <AppNavigator />
-                <StatusBar style="auto" />
+                <StatusBar style="dark" />
               </ToastProvider>
-            </BottomSheetModalProvider>
           </ErrorBoundary>
         </ThemeProvider>
       </SafeAreaProvider>

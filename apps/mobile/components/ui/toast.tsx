@@ -92,7 +92,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
       {children}
       {toast.visible && (
         <Animated.View
-          className="absolute bottom-[100px] self-center z-[9999] bg-[#242323] rounded-lg px-4 py-3 flex-row items-center gap-2"
+          className="absolute bottom-[100px] self-center z-[9999] bg-[#1F1F23] rounded-lg px-4 py-3 flex-row items-center gap-2"
           style={[{ elevation: 10 }, animatedStyle]}
         >
           <Ionicons name={icon.name} size={20} color={icon.color} />

@@ -1,117 +1,72 @@
 import { Ionicons } from "@expo/vector-icons";
-import * as Linking from "expo-linking";
-import { StatusBar } from "expo-status-bar";
 import { useRouter } from "expo-router";
-import { useCallback, useEffect } from "react";
-import {
-  BackHandler,
-  Pressable,
-  ScrollView,
-  Text,
-  useWindowDimensions,
-  View,
-} from "react-native";
+import { StatusBar } from "expo-status-bar";
+import * as WebBrowser from "expo-web-browser";
+import { ScrollView, Pressable, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Animated, {
-  Easing,
-  runOnJS,
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-} from "react-native-reanimated";
 
-import { AppButton } from "@/components/ui/app-button";
-import { NETWORK_CONFIG } from "@/constants/networks";
+import { NETWORK_COLOR, NetworkGlyph } from "@/components/ui/brand-icon";
+import { PageHeader } from "@/components/ui/kit";
+import { showToast } from "@/components/ui/toast";
+import { formatNetworkLabel } from "@/lib/networks";
+import { useChannelsStore } from "@/store/channels-store";
+import { useOrgStore } from "@/store/org-store";
+import type { ChannelNetwork } from "@/types";
 
-/** Adresse de l'application web (optionnelle) : EXPO_PUBLIC_WEB_URL. */
-const WEB_URL = process.env.EXPO_PUBLIC_WEB_URL ?? "";
+/** Adresse publique de l'application web : EXPO_PUBLIC_WEB_URL (ex. https://www.getpostbiz.com, sans « / » final). */
+const WEB_URL = (process.env.EXPO_PUBLIC_WEB_URL ?? "").replace(/\/+$/, "");
+
+const NETWORKS: { id: ChannelNetwork; hint: string }[] = [
+  { id: "facebook", hint: "Page" },
+  { id: "instagram", hint: "Compte professionnel" },
+  { id: "x", hint: "Profil" },
+  { id: "linkedin", hint: "Page ou profil" },
+  { id: "tiktok", hint: "Compte professionnel ou personnel" },
+  { id: "youtube", hint: "Chaîne" },
+];
 
 export default function AddChannelScreen() {
   const router = useRouter();
-  const { width: screenWidth } = useWindowDimensions();
-  const translateX = useSharedValue(0);
 
-  const doBack = useCallback(() => {
-    if (router.canGoBack()) {
-      router.back();
-    } else {
-      router.replace("/(tabs)");
+  // L'OAuth des réseaux se fait sur le site : on l'ouvre dans le navigateur intégré,
+  // puis on recharge les canaux à la fermeture pour voir ceux qui viennent d'être ajoutés.
+  const connect = async () => {
+    if (!WEB_URL) {
+      showToast("L’adresse du site n’est pas configurée.", "error");
+      return;
     }
-  }, [router]);
-
-  // Animate out to the right, then actually pop the screen
-  const animatedClose = useCallback(() => {
-    translateX.value = withTiming(
-      screenWidth,
-      { duration: 280, easing: Easing.out(Easing.cubic) },
-      () => {
-        runOnJS(doBack)();
-      },
-    );
-  }, [translateX, screenWidth, doBack]);
-
-  // Intercept Android hardware back button to use our animated close
-  useEffect(() => {
-    const sub = BackHandler.addEventListener("hardwareBackPress", () => {
-      animatedClose();
-      return true;
-    });
-    return () => sub.remove();
-  }, [animatedClose]);
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: translateX.value }],
-  }));
+    try {
+      await WebBrowser.openBrowserAsync(`${WEB_URL}/app/canaux`);
+    } catch {
+      showToast("Impossible d’ouvrir le site.", "error");
+      return;
+    }
+    const orgId = useOrgStore.getState().current?.id;
+    if (orgId) await useChannelsStore.getState().load(orgId);
+  };
 
   return (
-    <Animated.View style={[{ flex: 1 }, animatedStyle]}>
-      <SafeAreaView className="flex-1 bg-background-primary" edges={["top", "bottom"]}>
-        <StatusBar style="light" />
-
-        <View className="h-[60px] flex-row items-center justify-between px-4">
-          <Pressable
-            className="h-6 w-6 items-center justify-center"
-            onPress={animatedClose}
-          >
-            <Ionicons name="chevron-back" size={20} className="text-icon-primary" />
+    <SafeAreaView className="flex-1 bg-canvas" edges={["top"]}>
+      <StatusBar style="dark" />
+      <PageHeader title="Connecter un nouveau canal" onBack={() => router.back()} />
+      <ScrollView className="flex-1 px-4" contentContainerStyle={{ gap: 12, paddingBottom: 32 }} showsVerticalScrollIndicator={false}>
+        {NETWORKS.map((n) => (
+          <Pressable key={n.id} onPress={connect} accessibilityRole="button" className="flex-row items-center gap-4 rounded-[22px] border border-line bg-card p-4">
+            <View className="h-[54px] w-[54px] items-center justify-center rounded-full" style={{ backgroundColor: NETWORK_COLOR[n.id] }}>
+              <NetworkGlyph network={n.id} size={24} />
+            </View>
+            <View className="flex-1">
+              <Text className="font-jakarta text-[17px] font-semibold text-ink">{formatNetworkLabel(n.id)}</Text>
+              <Text className="font-jakarta text-[14px] text-ink-soft">{n.hint}</Text>
+            </View>
+            <Ionicons name="add" size={26} color="#2F4A00" />
           </Pressable>
-
-          <Text className="font-jakarta text-[20px] font-semibold text-text-primary">
-            Ajouter un canal
-          </Text>
-
-          <View className="h-6 w-6" />
-        </View>
-
-        <ScrollView
-          className="flex-1 px-4"
-          contentContainerClassName="gap-4 pb-5 pt-2"
-          showsVerticalScrollIndicator={false}
-        >
-          <Text className="font-jakarta text-h4 font-semibold text-text-primary">
-            Connexion depuis l’application web
-          </Text>
-          <Text className="font-jakarta text-body-1 text-text-secondary">
-            Les comptes Facebook, Instagram, X, LinkedIn, TikTok et YouTube se connectent pour l’instant depuis
-            Postbiz sur le web, car l’autorisation passe par chaque réseau. Une fois connectés, vos canaux
-            apparaissent ici automatiquement.
-          </Text>
-
-          <View className="flex-row flex-wrap gap-2 py-2">
-            {(["facebook", "instagram", "x", "linkedin", "tiktok", "youtube"] as const).map((network) => (
-              <View
-                key={network}
-                className="h-10 w-10 items-center justify-center rounded-[6px]"
-                style={{ backgroundColor: NETWORK_CONFIG[network].bg }}
-              >
-                <Ionicons name={NETWORK_CONFIG[network].icon} size={22} color="#FFFFFF" />
-              </View>
-            ))}
-          </View>
-
-          {WEB_URL ? <AppButton label="Ouvrir Postbiz sur le web" onPress={() => void Linking.openURL(WEB_URL)} /> : null}
-        </ScrollView>
-      </SafeAreaView>
-    </Animated.View>
+        ))}
+        <Text className="px-2 pt-2 font-jakarta text-[13px] leading-[19px] text-ink-soft">
+          La connexion s’ouvre sur Postbiz web, car l’autorisation passe par chaque réseau. Connectez-vous avec le même compte, choisissez « Connecter », puis fermez la fenêtre pour revenir ici : vos canaux se mettent à jour.
+        </Text>
+        {!WEB_URL ? <Text className="px-2 font-jakarta text-[13px] text-text-critical">EXPO_PUBLIC_WEB_URL n’est pas configurée.</Text> : null}
+      </ScrollView>
+    </SafeAreaView>
   );
 }

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { ActivityIndicator, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { AppButton } from "@/components/ui/app-button";
+import { PrimaryButton } from "@/components/ui/kit";
 import { useAuthStore } from "@/store/auth-store";
 
 /** Point d'arrivée des liens d'e-mail Supabase : lib/auth-links.ts ouvre la session, cet écran aiguille ensuite. */
@@ -29,29 +29,29 @@ export default function AuthCallbackScreen() {
   const failed = linkError !== null || (timedOut && status !== "signedIn");
 
   return (
-    <SafeAreaView className="flex-1 bg-background-primary" edges={["top", "bottom"]}>
-      <StatusBar style="light" />
+    <SafeAreaView className="flex-1 bg-canvas" edges={["top", "bottom"]}>
+      <StatusBar style="dark" />
       <View className="flex-1 items-center justify-center gap-6 px-8">
         {failed ? (
           <>
-            <Text className="text-center font-jakarta text-h3 font-semibold text-text-primary">
+            <Text className="text-center font-jakarta text-h3 font-semibold text-ink">
               Lien invalide ou expiré
             </Text>
-            <Text className="text-center font-jakarta text-body-1 text-text-secondary">
+            <Text className="text-center font-jakarta text-body-1 text-ink-soft">
               {linkError ?? "Impossible d’ouvrir ce lien. Demandez-en un nouveau depuis l’écran de connexion."}
             </Text>
-            <AppButton
+            <PrimaryButton
               label="Retour à la connexion"
               onPress={() => {
                 useAuthStore.getState().setLinkError(null);
-                router.replace("/(auth)");
+                router.replace("/(auth)/signin" as never);
               }}
             />
           </>
         ) : (
           <>
-            <ActivityIndicator color="#FC69FF" />
-            <Text className="font-jakarta text-body-1 text-text-secondary">Connexion en cours…</Text>
+            <ActivityIndicator color="#2F4A00" />
+            <Text className="font-jakarta text-body-1 text-ink-soft">Connexion en cours…</Text>
           </>
         )}
       </View>

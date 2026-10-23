@@ -17,7 +17,7 @@ Notifications.setNotificationHandler({
 
 let registeredToken: string | null = null;
 
-export type PushStatus = "unsupported" | "denied" | "granted";
+export type PushStatus = "unsupported" | "undetermined" | "denied" | "granted";
 
 async function fetchExpoToken(): Promise<string | null> {
   const projectId = Constants.expoConfig?.extra?.eas?.projectId ?? Constants.easConfig?.projectId;
@@ -69,7 +69,7 @@ export async function unregisterPushToken(): Promise<void> {
 export async function getPushPermission(): Promise<PushStatus> {
   if (Platform.OS === "web" || !Device.isDevice) return "unsupported";
   const { status } = await Notifications.getPermissionsAsync();
-  return status === "granted" ? "granted" : "denied";
+  return status === "granted" ? "granted" : status === "undetermined" ? "undetermined" : "denied";
 }
 
 /** Écran à ouvrir quand l'utilisateur touche une notification. La charge utile est posée par le serveur d'envoi. */

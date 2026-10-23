@@ -68,6 +68,8 @@ type InboxState = {
   sendReply: (conversationId: string, body: string) => Promise<Result>;
   setStatus: (conversationId: string, status: ConversationStatus) => Promise<Result>;
   markRead: (conversationId: string) => Promise<void>;
+  /** Passe plusieurs conversations en « fermée » (« tout résoudre »). */
+  closeMany: (ids: string[]) => Promise<Result>;
   reset: () => void;
 };
 
@@ -164,6 +166,19 @@ export const useInboxStore = create<InboxState>((set, get) => ({
     if (!conv || conv.unreadCount === 0) return;
     set((s) => ({ conversations: s.conversations.map((c) => (c.id === conversationId ? { ...c, unreadCount: 0 } : c)) }));
     await supabase.from("conversations").update({ unread_count: 0 }).eq("id", conversationId);
+  },
+
+  closeMany: async (ids) => {
+    if (ids.length === 0) return ok();
+    if (!useOrgStore.getState().canWrite) return fail("Votre rôle ne permet pas de modifier les conversations.");
+    const prev = get().conversations;
+    set({ conversations: prev.map((c) => (ids.includes(c.id) ? { ...c, status: "closed" as const } : c)) });
+    const { data, error } = await supabase.from("conversations").update({ status: "closed" }).in("id", ids).select("id");
+    if (error || !data) {
+      set({ conversations: prev });
+      return fail(GENERIC_ERROR);
+    }
+    return ok();
   },
 
   reset: () => {

@@ -1,56 +1,18 @@
 import { Tabs } from 'expo-router';
-import React from 'react';
 
-import { HapticTab } from '@/components/haptic-tab';
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Colors } from '@/constants/theme';
-
+// La barre d'onglets native est masquée : la barre flottante du design est dessinée par chaque écran (components/ui/main-tab-navbar.tsx).
 export default function TabLayout() {
   return (
     <Tabs
-      initialRouteName="index"
       screenOptions={{
-        tabBarActiveTintColor: Colors.dark.tint,
         headerShown: false,
-        tabBarButton: HapticTab,
         tabBarStyle: { display: 'none' },
-        sceneStyle: { backgroundColor: '#0E0E0E' },
+        sceneStyle: { backgroundColor: '#F8F7F4' },
       }}>
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: 'Calendrier',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="explore"
-        options={{
-          title: 'Canaux',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="onboarding"
-        options={{
-          href: null,
-        }}
-      />
-      <Tabs.Screen
-        name="inbox"
-        options={{
-          title: 'Boîte de réception',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
-        }}
-      />
-      <Tabs.Screen name="analytics" options={{ href: null }} />
-      <Tabs.Screen
-        name="settings"
-        options={{
-          title: 'Réglages',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="gearshape.fill" color={color} />,
-        }}
-      />
+      <Tabs.Screen name="index" options={{ title: 'Publier' }} />
+      <Tabs.Screen name="agent" options={{ title: 'Agent' }} />
+      <Tabs.Screen name="inbox" options={{ title: 'Messages' }} />
+      <Tabs.Screen name="analytics" options={{ title: 'Insights' }} />
     </Tabs>
   );
 }

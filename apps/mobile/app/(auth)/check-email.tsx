@@ -1,12 +1,10 @@
 import { Ionicons } from "@expo/vector-icons";
-import { Image } from "expo-image";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { StatusBar } from "expo-status-bar";
 import { useState } from "react";
-import { Pressable, ScrollView, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { View } from "react-native";
 
-import { AppButton } from "@/components/ui/app-button";
+import { AuthShell } from "@/components/ui/auth-shell";
+import { OutlineButton, PrimaryButton } from "@/components/ui/kit";
 import { showToast } from "@/components/ui/toast";
 import { useAuthStore } from "@/store/auth-store";
 
@@ -18,7 +16,7 @@ export default function CheckEmailScreen() {
   const isSignup = params.flow === "signup";
   const [busy, setBusy] = useState(false);
 
-  const handleResend = async () => {
+  const resend = async () => {
     setBusy(true);
     const store = useAuthStore.getState();
     const result = isSignup ? await store.resendConfirmation(email) : await store.sendPasswordReset(email);
@@ -27,50 +25,23 @@ export default function CheckEmailScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-background-primary" edges={["top", "bottom"]}>
-      <StatusBar style="light" />
-      <ScrollView
-        className="flex-1 bg-background-primary px-5 pt-12 pb-[20px]"
-        contentContainerClassName="flex-grow"
-        showsVerticalScrollIndicator={false}
-      >
-        <View className="mb-6 h-[27px] w-[84px]">
-          <View className="absolute inset-0 right-[70.6%]">
-            <Image source={require("@/assets/icons/login/postbiz-mark.svg")} className="w-[25px] h-[27px]" contentFit="contain" />
-          </View>
-          <View className="absolute top-[1.61%] bottom-[10.76%] left-[37.32%] right-0">
-            <Image source={require("@/assets/icons/login/postbiz-wordmark.svg")} className="w-[53px] h-[24px]" contentFit="contain" />
-          </View>
-        </View>
-
-        <View className="mb-6 w-full">
-          <Pressable className="h-6 w-6 items-center justify-center" onPress={() => router.replace("/(auth)")}>
-            <Ionicons name="chevron-back" size={20} className="text-icon-primary" />
-          </Pressable>
-        </View>
-
-        <View className="gap-8">
-          <View className="gap-3">
-            <Text className="font-jakarta text-2xl font-semibold leading-8 text-text-primary">Vérifiez votre boîte mail</Text>
-            <Text className="font-jakarta text-sm text-text-secondary">
-              {isSignup
-                ? "Nous avons envoyé un lien de confirmation à"
-                : "Si un compte existe pour cette adresse, un lien de réinitialisation a été envoyé à"}
-              {email ? ` ${email}.` : " votre adresse."}
-              {"\n\n"}
-              Ouvrez le lien depuis ce téléphone pour continuer. Pensez à regarder dans les courriers indésirables.
-            </Text>
-          </View>
-
-          <AppButton
-            label={busy ? "Envoi…" : "Renvoyer l’e-mail"}
-            variant={busy || !email ? "disabled" : "primary"}
-            disabled={busy || !email}
-            onPress={handleResend}
-          />
-          <AppButton label="Retour à la connexion" variant="text" onPress={() => router.replace("/(auth)")} />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+    <AuthShell
+      title="Vérifiez votre boîte mail"
+      subtitle={
+        (isSignup ? "Nous avons envoyé un lien de confirmation à " : "Si un compte existe pour cette adresse, un lien de réinitialisation a été envoyé à ") +
+        (email ? `${email}.` : "votre adresse.") +
+        "\n\nOuvrez le lien depuis ce téléphone pour continuer. Pensez à regarder dans les courriers indésirables."
+      }
+      footer={
+        <>
+          <PrimaryButton label="Renvoyer l’e-mail" onPress={resend} loading={busy} disabled={!email} />
+          <OutlineButton label="Retour à la connexion" onPress={() => router.replace("/(auth)/signin" as never)} />
+        </>
+      }
+    >
+      <View className="h-[88px] w-[88px] items-center justify-center rounded-full bg-brand-soft">
+        <Ionicons name="mail-open-outline" size={40} color="#2F4A00" />
+      </View>
+    </AuthShell>
   );
 }

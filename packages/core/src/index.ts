@@ -10,3 +10,4 @@ export * from './oauth/index.ts';
 export * from '../../../supabase/functions/_shared/push/format.ts';
 export * from '../../../supabase/functions/_shared/push/sender.ts';
 export * from '../../../supabase/functions/_shared/push/handler.ts';
+export * from '../../../supabase/functions/_shared/agent/compose.ts';

@@ -24,3 +24,8 @@ export function plainToHtml(text: string): string {
     .replace(/>/g, "&gt;")
     .replace(/\r?\n/g, "<br>");
 }
+
+/** Majuscule à la première lettre seulement (les dates de date-fns en français sont en minuscules : « vendredi 23 octobre »). */
+export function capFirst(text: string): string {
+  return text.charAt(0).toUpperCase() + text.slice(1);
+}

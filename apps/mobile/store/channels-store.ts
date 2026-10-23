@@ -1,6 +1,5 @@
 import { create } from "zustand";
 
-import { NETWORK_CHARACTER_LIMITS } from "@/constants/networks";
 import { supabase } from "@/lib/supabase";
 import type { Channel, ChannelNetwork } from "@/types";
 
@@ -45,7 +44,3 @@ export const useChannelsStore = create<ChannelsState>((set) => ({
 
   reset: () => set({ channels: [], loaded: false, error: null }),
 }));
-
-export function getChannelLimit(channel: Channel): number {
-  return NETWORK_CHARACTER_LIMITS[channel.network];
-}

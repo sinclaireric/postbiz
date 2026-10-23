@@ -1,184 +1,155 @@
-import { Ionicons } from "@expo/vector-icons";
-import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { useRef, useState } from "react";
-import { Platform, Pressable, ScrollView, Text, TextInput, View } from "react-native";
+import { useEffect } from "react";
+import { Text, useWindowDimensions, View } from "react-native";
+import Animated, {
+  Easing,
+  FadeInDown,
+  FadeInUp,
+  useAnimatedStyle,
+  useSharedValue,
+  withDelay,
+  withRepeat,
+  withSequence,
+  withSpring,
+  withTiming,
+  ZoomIn,
+} from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { AppButton } from "@/components/ui/app-button";
-import { AuthInput } from "@/components/ui/auth-input";
-import { useAuthStore } from "@/store/auth-store";
+import { ClaudeMark, NETWORK_COLOR, NetworkGlyph, OpenAIMark } from "@/components/ui/brand-icon";
+import { OutlineButton, PrimaryButton } from "@/components/ui/kit";
+import type { ChannelNetwork } from "@/types";
 
-export default function SignInScreen() {
-  const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [passwordVisible, setPasswordVisible] = useState(false);
-  const [errors, setErrors] = useState<{ email?: string; password?: string }>(
-    {}
-  );
-  const [busy, setBusy] = useState(false);
-  const passwordInputRef = useRef<TextInput>(null);
+type Floater = {
+  id: string;
+  /** Position du coin haut-gauche, en pourcentage de l'écran (peut sortir de l'écran : l'effet « débordant »). */
+  x: number;
+  y: number;
+  size: number;
+  tilt: number;
+  node: { kind: "network"; network: ChannelNetwork } | { kind: "claude" } | { kind: "openai" };
+};
 
-  const handleTogglePassword = () => {
-    const wasFocused = passwordInputRef.current?.isFocused() ?? false;
-    setPasswordVisible((prev) => !prev);
-    if (wasFocused) {
-      requestAnimationFrame(() => {
-        passwordInputRef.current?.focus();
-      });
-    }
-  };
+// Réseaux pris en charge + marques d'IA (le côté « agent »). Zone haute au-dessus du titre, zone basse sous le sous-titre.
+const FLOATERS: Floater[] = [
+  { id: "claude", x: 0.36, y: 0.045, size: 68, tilt: -6, node: { kind: "claude" } },
+  { id: "tiktok", x: 0.88, y: 0.1, size: 60, tilt: 8, node: { kind: "network", network: "tiktok" } },
+  { id: "openai", x: -0.05, y: 0.17, size: 64, tilt: 10, node: { kind: "openai" } },
+  { id: "x", x: 0.66, y: 0.2, size: 54, tilt: -8, node: { kind: "network", network: "x" } },
+  { id: "linkedin", x: 0.04, y: 0.58, size: 64, tilt: -5, node: { kind: "network", network: "linkedin" } },
+  { id: "facebook", x: 0.82, y: 0.59, size: 66, tilt: 7, node: { kind: "network", network: "facebook" } },
+  { id: "instagram", x: 0.56, y: 0.655, size: 66, tilt: -4, node: { kind: "network", network: "instagram" } },
+  { id: "youtube", x: 0.1, y: 0.675, size: 62, tilt: 9, node: { kind: "network", network: "youtube" } },
+];
 
-  const handleSignIn = async () => {
-    const newErrors: { email?: string; password?: string } = {};
-    if (!email || !email.includes("@")) newErrors.email = "Adresse e-mail incorrecte";
-    if (!password) newErrors.password = "Saisissez votre mot de passe";
-    setErrors(newErrors);
-    if (Object.keys(newErrors).length > 0) return;
-    setBusy(true);
-    const result = await useAuthStore.getState().signIn(email, password);
-    setBusy(false);
-    // En cas de succès, la navigation est faite par les routes protégées (app/_layout.tsx).
-    if (!result.ok) setErrors({ password: result.error });
-  };
+function FloatingIcon({ f, index, width, height }: { f: Floater; index: number; width: number; height: number }) {
+  const drift = useSharedValue(0);
+  const scale = useSharedValue(1);
+
+  useEffect(() => {
+    // Flottement continu, avec une durée et un sens différents par icône pour que l'ensemble reste vivant.
+    const amp = 7 + (index % 3) * 2;
+    const duration = 2400 + index * 260;
+    drift.value = withDelay(
+      600 + index * 90,
+      withRepeat(withSequence(withTiming(-amp, { duration, easing: Easing.inOut(Easing.sin) }), withTiming(amp, { duration, easing: Easing.inOut(Easing.sin) })), -1, true),
+    );
+    scale.value = withDelay(900 + index * 90, withRepeat(withSequence(withTiming(1.04, { duration: duration * 1.3 }), withTiming(0.97, { duration: duration * 1.3 })), -1, true));
+  }, [drift, scale, index]);
+
+  const style = useAnimatedStyle(() => ({ transform: [{ translateY: drift.value }, { scale: scale.value }, { rotate: `${f.tilt}deg` }] }));
+
+  const inner =
+    f.node.kind === "claude" ? (
+      <ClaudeMark size={f.size * 0.58} />
+    ) : f.node.kind === "openai" ? (
+      <OpenAIMark size={f.size * 0.58} />
+    ) : (
+      <NetworkGlyph network={f.node.network} size={f.size * 0.46} color={NETWORK_COLOR[f.node.network] ?? "#111"} />
+    );
 
   return (
-    <SafeAreaView
-      className="flex-1 bg-background-primary"
-      edges={["top", "bottom"]}
+    <Animated.View
+      entering={ZoomIn.delay(150 + index * 90).springify().damping(12)}
+      style={{ position: "absolute", left: f.x * width, top: f.y * height }}
     >
-      <StatusBar style="light" />
-      <ScrollView
-        className="flex-1 bg-background-primary px-5 pt-12 pb-[20px]"
-        contentContainerClassName="flex-grow"
-        keyboardShouldPersistTaps="handled"
-        showsVerticalScrollIndicator={false}
-        automaticallyAdjustKeyboardInsets
+      <Animated.View
+        style={[
+          {
+            width: f.size,
+            height: f.size,
+            borderRadius: f.size * 0.24,
+            backgroundColor: "#FFFFFF",
+            alignItems: "center",
+            justifyContent: "center",
+            shadowColor: "#2A2A20",
+            shadowOpacity: 0.12,
+            shadowRadius: 14,
+            shadowOffset: { width: 0, height: 6 },
+            elevation: 5,
+          },
+          style,
+        ]}
       >
-        <View className="mb-6 h-[27px] w-[84px]">
-          <View className="absolute inset-0 right-[70.6%]">
-            <Image
-              source={require("@/assets/icons/login/postbiz-mark.svg")}
-              className="w-[25px] h-[27px]"
-              contentFit="contain"
-            />
-          </View>
-          <View className="absolute top-[1.61%] bottom-[10.76%] left-[37.32%] right-0">
-            <Image
-              source={require("@/assets/icons/login/postbiz-wordmark.svg")}
-              className="w-[53px] h-[24px]"
-              contentFit="contain"
-            />
-          </View>
-        </View>
+        {inner}
+      </Animated.View>
+    </Animated.View>
+  );
+}
 
-        <View className="gap-8">
-          <View className="relative self-start">
-            <View
-              pointerEvents="none"
-              className="absolute left-[-12px] top-[-2px]"
-            >
-              <Image
-                source={require("@/assets/icons/login/title-scribble.svg")}
-                className="w-[126px] h-[38px]"
-                contentFit="contain"
-              />
-            </View>
-            <Text className="font-jakarta text-2xl font-semibold leading-8 text-text-primary">
-              Connexion
-            </Text>
-          </View>
+export default function WelcomeScreen() {
+  const router = useRouter();
+  const { width, height } = useWindowDimensions();
+  const lift = useSharedValue(40);
 
-          <View className="gap-5">
-            
+  useEffect(() => {
+    lift.value = withSpring(0, { damping: 16 });
+  }, [lift]);
 
-            <AuthInput
-              label="E-mail"
-              value={email}
-              onChangeText={(text) => {
-                setEmail(text);
-                if (errors.email)
-                  setErrors((prev) => ({ ...prev, email: undefined }));
-              }}
-              placeholder="Votre adresse e-mail"
-              keyboardType="email-address"
-              autoCapitalize="none"
-              error={!!errors.email}
-              hint={errors.email}
-            />
+  return (
+    <SafeAreaView className="flex-1 bg-canvas" edges={["top", "bottom"]}>
+      <StatusBar style="dark" />
 
-            <AuthInput
-              ref={passwordInputRef}
-              label="Mot de passe"
-              value={password}
-              onChangeText={(text) => {
-                setPassword(text);
-                if (errors.password) {
-                  setErrors((prev) => ({ ...prev, password: undefined }));
-                }
-              }}
-              placeholder="Votre mot de passe"
-              secureTextEntry={!passwordVisible}
-              autoCapitalize="none"
-              autoCorrect={false}
-              keyboardType={Platform.OS === "ios" ? "ascii-capable" : "default"}
-              textContentType="none"
-              autoComplete="off"
-              spellCheck={false}
-              smartInsertDelete={false}
-              error={!!errors.password}
-              hint={errors.password}
-              rightSlot={
-                <Pressable onPress={handleTogglePassword} hitSlop={10}>
-                  {passwordVisible ? (
-                    <Ionicons
-                      name="eye-outline"
-                      size={20}
-                      className="text-icon-secondary"
-                    />
-                  ) : (
-                    <Image
-                      source={require("@/assets/icons/login/eye-slash.svg")}
-                      className="w-5 h-5"
-                      contentFit="contain"
-                    />
-                  )}
-                </Pressable>
-              }
-            />
+      {FLOATERS.map((f, i) => (
+        <FloatingIcon key={f.id} f={f} index={i} width={width} height={height} />
+      ))}
 
-            <View className="w-full items-end py-2">
-              <Pressable onPress={() => router.push("/(auth)/forgot-password")}>
-                <Text className="font-jakarta text-sm text-text-primary underline">
-                  Mot de passe oublié ?
-                </Text>
-              </Pressable>
-            </View>
-          </View>
-        </View>
+      <View style={{ position: "absolute", left: 0, right: 0, top: height * 0.285, paddingHorizontal: 24 }}>
+        <Animated.View entering={FadeInDown.delay(350).duration(600)}>
+          <Text className="text-center font-jakarta text-[34px] font-semibold leading-[42px] text-ink">
+            Votre espace de travail pour les réseaux sociaux
+          </Text>
+        </Animated.View>
+        <Animated.View entering={FadeInDown.delay(520).duration(600)} style={{ marginTop: 18 }}>
+          <Text className="text-center font-jakarta text-[17px] leading-[24px] text-ink-soft">Publiez, répondez et créez avec votre agent IA, sans le chaos</Text>
+        </Animated.View>
+      </View>
 
-        <View className="mt-auto gap-6">
-          <AppButton
-            label={busy ? "Connexion…" : "Se connecter"}
-            variant={busy ? "disabled" : "primary"}
-            disabled={busy}
-            onPress={handleSignIn}
-          />
-
-          <View className="flex-row items-baseline gap-2">
-            <Text className="font-jakarta text-sm text-text-primary">
-              Pas encore de compte ?
-            </Text>
-            <Pressable onPress={() => router.replace("/(auth)/signup")}>
-              <Text className="font-jakarta text-[15px] font-semibold text-main-accent-pink">
-                Créer un compte
-              </Text>
-            </Pressable>
-          </View>
-        </View>
-      </ScrollView>
+      <Animated.View
+        entering={FadeInUp.delay(650).springify().damping(15)}
+        style={{
+          position: "absolute",
+          bottom: 12,
+          left: 16,
+          right: 16,
+          backgroundColor: "#FFFFFF",
+          borderRadius: 32,
+          paddingHorizontal: 24,
+          paddingTop: 28,
+          paddingBottom: 28,
+          gap: 12,
+          shadowColor: "#000",
+          shadowOpacity: 0.06,
+          shadowRadius: 20,
+          shadowOffset: { width: 0, height: -4 },
+          elevation: 6,
+        }}
+      >
+        <PrimaryButton label="Rejoindre Postbiz" onPress={() => router.push("/(auth)/signup")} />
+        <OutlineButton label="J’ai déjà un compte" onPress={() => router.push("/(auth)/signin" as never)} />
+        <Text className="pt-1 text-center font-jakarta text-[12px] text-ink-muted">Facebook · Instagram · X · LinkedIn · TikTok · YouTube</Text>
+      </Animated.View>
     </SafeAreaView>
   );
 }

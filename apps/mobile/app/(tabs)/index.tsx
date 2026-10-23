@@ -1,428 +1,267 @@
 import { Ionicons } from "@expo/vector-icons";
+import * as Clipboard from "expo-clipboard";
+import { addDays, format, isSameDay, isToday, isTomorrow, parseISO, startOfDay } from "date-fns";
+import { fr } from "date-fns/locale";
 import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Platform, Pressable, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import * as WebBrowser from "expo-web-browser";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { Pressable, RefreshControl, SectionList, Text, View } from "react-native";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { AddPostSheet } from "@/components/calendar/add-post-sheet";
-import { CalendarGrid } from "@/components/calendar/calendar-grid";
-import { DatePill } from "@/components/calendar/date-pill";
-import { DaySwiper } from "@/components/calendar/day-swiper";
-import { DateTimePickerSheet } from "@/components/calendar/datetime-picker-sheet";
-import { DragOverlay } from "@/components/calendar/drag-overlay";
-import { MonthSelector } from "@/components/calendar/month-selector";
-import { PostDetailSheet } from "@/components/calendar/post-detail-sheet";
-import { TimelineView, type TimelineViewHandle } from "@/components/calendar/timeline-view";
-import { AnimatedDropdown } from "@/components/ui/animated-dropdown";
-import { ConfirmDialog } from "@/components/ui/confirm-dialog";
-import { MainTabNavbar } from "@/components/ui/main-tab-navbar";
-import { NotificationBellButton } from "@/components/ui/notification-bell-button";
+import { ChannelPicker } from "@/components/home/channel-picker";
+import { DateJumpSheet } from "@/components/home/date-jump-sheet";
+import { HeaderActions } from "@/components/home/header-actions";
+import { PostCard } from "@/components/home/post-card";
+import { WeekStrip } from "@/components/home/week-strip";
+import { ConfirmSheet, EmptyState, IconCircle, Pill, SegmentedPill, Sheet } from "@/components/ui/kit";
+import { MainTabNavbar, TAB_BAR_HEIGHT } from "@/components/ui/main-tab-navbar";
 import { showToast } from "@/components/ui/toast";
-import { TimelineDragProvider } from "@/contexts/timeline-drag-context";
+import { useChannelsStore } from "@/store/channels-store";
+import { useOrgStore } from "@/store/org-store";
 import { usePostsStore } from "@/store/posts-store";
 import type { ScheduledPost } from "@/types";
-import {
-  addMonths,
-  subMonths,
-  formatMonthName,
-  generateTimeSlots,
-  getCalendarDays,
-  getPostsForDate,
-  groupPostsByDate,
-  set,
-} from "@/utils/calendar";
+import { htmlToPlain, capFirst } from "@/utils/text";
 
+type StatusFilter = "queue" | "draft" | "sent" | "error";
 
-export default function CalendarScreen() {
+const inState = (p: ScheduledPost, f: StatusFilter) => {
+  const s = p.dbState ?? "queued";
+  if (f === "queue") return s === "queued" || s === "publishing";
+  if (f === "draft") return s === "draft";
+  if (f === "sent") return s === "published";
+  return s === "error" || s === "unknown";
+};
+
+const dayTitle = (d: Date) => {
+  const base = format(d, "EEEE d MMMM", { locale: fr });
+  if (isToday(d)) return `Aujourd’hui, ${format(d, "d MMM", { locale: fr })}`;
+  if (isTomorrow(d)) return `Demain, ${format(d, "d MMM", { locale: fr })}`;
+  return base;
+};
+
+export default function PublishScreen() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
+  const allPosts = usePostsStore((s) => s.posts);
+  const loaded = usePostsStore((s) => s.loaded);
+  const channels = useChannelsStore((s) => s.channels);
+  const canWrite = useOrgStore((s) => s.canWrite);
+  const orgId = useOrgStore((s) => s.current?.id);
+  const navigateToDate = usePostsStore((s) => s.navigateToDate);
 
-  // --- Global state ---
-  const posts = usePostsStore((state) => state.posts);
-  const storeDuplicatePost = usePostsStore((state) => state.duplicatePost);
-  const storeDeletePost = usePostsStore((state) => state.deletePost);
-  const storeReschedulePost = usePostsStore((state) => state.reschedulePost);
-
-  // Fixed reference date — each carousel page computes its date from this
-  const initialDate = useRef(new Date(new Date().setHours(0, 0, 0, 0))).current;
-
-  const [selectedDate, setSelectedDate] = useState(() => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    return today;
-  });
-  const [currentMonth, setCurrentMonth] = useState(() => {
-    const today = new Date();
-    return new Date(today.getFullYear(), today.getMonth(), 1);
-  });
-  const [monthSelectorOpen, setMonthSelectorOpen] = useState(false);
-  const [selectedPost, setSelectedPost] = useState<ScheduledPost | null>(null);
-  const [selectedHour, setSelectedHour] = useState(9);
-  const [selectedMinute, setSelectedMinute] = useState(0);
+  const [channelId, setChannelId] = useState<string | null>(null);
+  const [status, setStatus] = useState<StatusFilter>("queue");
+  const [calendarMode, setCalendarMode] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(() => startOfDay(new Date()));
+  const [jumpOpen, setJumpOpen] = useState(false);
+  const [menuPost, setMenuPost] = useState<ScheduledPost | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<ScheduledPost | null>(null);
-  const [dateTimeTarget, setDateTimeTarget] = useState<Date | null>(null);
-  const [editingPostId, setEditingPostId] = useState<string | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
 
-  // --- Refs ---
-  const timelineRef = useRef<TimelineViewHandle>(null);
-
-  // --- Navigate to date/time after create/edit ---
-  const navigateToDate = usePostsStore((state) => state.navigateToDate);
-  const setNavigateToDate = usePostsStore((state) => state.setNavigateToDate);
-
+  // Après une création, la liste se place sur la date de la publication.
   useEffect(() => {
     if (!navigateToDate) return;
-    const date = new Date(navigateToDate);
-    setNavigateToDate(null);
+    setSelectedDate(startOfDay(new Date(navigateToDate)));
+    usePostsStore.getState().setNavigateToDate(null);
+  }, [navigateToDate]);
 
-    // Update calendar to that date
-    const dayStart = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-    setSelectedDate(dayStart);
-    setCurrentMonth(new Date(date.getFullYear(), date.getMonth(), 1));
-    setMonthSelectorOpen(false);
+  const activeChannel = channelId && channels.some((c) => c.id === channelId) ? channelId : null;
+  const posts = useMemo(() => (activeChannel ? allPosts.filter((p) => p.channelId === activeChannel) : allPosts), [allPosts, activeChannel]);
 
-    // Scroll timeline to the post's hour after a short delay to let the list update
-    const hour = date.getHours();
-    setTimeout(() => {
-      timelineRef.current?.scrollToHour(hour);
-    }, 400);
-  }, [navigateToDate, setNavigateToDate]);
+  const hasPosts = useCallback((d: Date) => posts.some((p) => isSameDay(parseISO(p.scheduledAt), d)), [posts]);
 
-  // --- Sheet visibility ---
-  const [postDetailVisible, setPostDetailVisible] = useState(false);
-  const [addPostVisible, setAddPostVisible] = useState(false);
-  const [dateTimeVisible, setDateTimeVisible] = useState(false);
-
-  // --- Derived ---
-  // Stable reference — only refreshes when selectedDate changes, not every render.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const referenceNow = useMemo(() => new Date(), [selectedDate]);
-
-  const postsMap = useMemo(() => groupPostsByDate(posts), [posts]);
-  const calendarDays = useMemo(
-    () => getCalendarDays(currentMonth, selectedDate, postsMap),
-    [currentMonth, selectedDate, postsMap],
-  );
-  const timeSlots = useMemo(() => generateTimeSlots(0, 23), []);
-
-  const handleDayPress = useCallback((date: Date) => {
-    setSelectedDate(date);
-    setCurrentMonth(new Date(date.getFullYear(), date.getMonth(), 1));
-    setMonthSelectorOpen(false);
-  }, []);
-
-  const changeDate = useCallback((direction: number) => {
-    setSelectedDate((prev) => {
-      const next = new Date(prev);
-      next.setDate(next.getDate() + direction);
-      next.setHours(0, 0, 0, 0);
-      setCurrentMonth(new Date(next.getFullYear(), next.getMonth(), 1));
-      return next;
-    });
-    timelineRef.current?.scrollToTop();
-  }, []);
-
-  // Day swiping is handled by DaySwiper component
-
-  const handleNextMonth = useCallback(() => {
-    setCurrentMonth((prev) => addMonths(prev, 1));
-  }, []);
-
-  const handlePrevMonth = useCallback(() => {
-    setCurrentMonth((prev) => subMonths(prev, 1));
-  }, []);
-
-  const handlePostPress = useCallback((post: ScheduledPost) => {
-    setSelectedPost(post);
-    setPostDetailVisible(true);
-  }, []);
-
-  const handleSlotPress = useCallback((hour: number) => {
-    setSelectedHour(hour);
-    setSelectedMinute(0);
-    setAddPostVisible(true);
-  }, []);
-
-  // Stable render function — only changes when posts change.
-  // Each page computes its own date from initialDate + dayOffset (absolute, not relative).
-  const renderDayPage = useCallback(
-    (dayOffset: number) => {
-      const date = new Date(initialDate);
-      date.setDate(date.getDate() + dayOffset);
-      date.setHours(0, 0, 0, 0);
-      const pagePosts = getPostsForDate(posts, date);
-
-      // Check if this page is the currently selected date
-      const isCurrentPage =
-        date.getDate() === selectedDate.getDate() &&
-        date.getMonth() === selectedDate.getMonth() &&
-        date.getFullYear() === selectedDate.getFullYear();
-
-      return (
-        <View className="flex-1 bg-background-primary">
-          <DatePill selectedDate={date} />
-          <View className="flex-1 px-4">
-            <TimelineView
-              timeSlots={timeSlots}
-              posts={pagePosts}
-              selectedDate={date}
-              referenceNow={referenceNow}
-              selectedPostId={isCurrentPage ? selectedPost?.id ?? null : null}
-              selectedSlotHour={isCurrentPage && addPostVisible ? selectedHour : null}
-              onSlotPress={handleSlotPress}
-              onPostPress={handlePostPress}
-            />
-          </View>
-        </View>
-      );
-    },
-    [posts, initialDate, timeSlots, referenceNow, handleSlotPress, handlePostPress, selectedDate, selectedPost, addPostVisible, selectedHour],
+  const counts = useMemo(
+    () => ({
+      queue: posts.filter((p) => inState(p, "queue")).length,
+      error: posts.filter((p) => inState(p, "error")).length,
+    }),
+    [posts],
   );
 
+  const sections = useMemo(() => {
+    const list = calendarMode
+      ? posts.filter((p) => isSameDay(parseISO(p.scheduledAt), selectedDate))
+      : posts.filter((p) => inState(p, status));
+    // À venir : du plus proche au plus lointain ; envoyées et échecs : du plus récent au plus ancien.
+    const asc = calendarMode || status === "queue" || status === "draft";
+    const sorted = [...list].sort((a, b) => (asc ? 1 : -1) * (parseISO(a.scheduledAt).getTime() - parseISO(b.scheduledAt).getTime()));
+    const groups: { key: string; date: Date; data: ScheduledPost[] }[] = [];
+    for (const p of sorted) {
+      const d = startOfDay(parseISO(p.scheduledAt));
+      const key = d.toISOString();
+      const last = groups[groups.length - 1];
+      if (last && last.key === key) last.data.push(p);
+      else groups.push({ key, date: d, data: [p] });
+    }
+    // À venir : on ne montre que ce qui n'est pas passé ou ce qui est en cours d'envoi.
+    return groups.map((g) => ({ title: dayTitle(g.date), data: g.data, key: g.key }));
+  }, [posts, status, calendarMode, selectedDate]);
 
-  const handleDeleteConfirm = useCallback(async () => {
+  const refresh = useCallback(async () => {
+    if (!orgId) return;
+    setRefreshing(true);
+    await usePostsStore.getState().load(orgId);
+    setRefreshing(false);
+  }, [orgId]);
+
+  const compose = (date?: Date) =>
+    router.push({ pathname: "/create-post", params: date ? { dateTime: date.toISOString() } : {} } as never);
+
+  const confirmDelete = async () => {
     if (!deleteTarget) return;
     const target = deleteTarget;
     setDeleteTarget(null);
-    setPostDetailVisible(false);
-    const result = await storeDeletePost(target.id);
+    const result = await usePostsStore.getState().deletePost(target.id);
     showToast(result.ok ? "Publication supprimée" : result.error, result.ok ? "success" : "error");
-  }, [deleteTarget, storeDeletePost]);
+  };
 
-  const handleDateTimeSave = useCallback(
-    (newDate: Date) => {
-      const fromPostDetail = !!editingPostId;
-      if (editingPostId) {
-        void storeReschedulePost(editingPostId, newDate.toISOString()).then((result) =>
-          showToast(result.ok ? "Date et heure modifiées" : result.error, result.ok ? "success" : "error"),
-        );
-      } else {
-        // Opened from Add Post sheet — update date/hour so the sheet below reflects it
-        setSelectedDate(new Date(newDate.getFullYear(), newDate.getMonth(), newDate.getDate()));
-        setSelectedHour(newDate.getHours());
-        setSelectedMinute(newDate.getMinutes());
-      }
-      setDateTimeVisible(false);
-      setEditingPostId(null);
-      // Reopen the parent sheet after date picker closes
-      setTimeout(() => {
-        if (fromPostDetail) {
-          setPostDetailVisible(true);
-        } else {
-          setAddPostVisible(true);
-        }
-      }, 350);
-    },
-    [editingPostId, storeReschedulePost],
-  );
+  const duplicate = async (post: ScheduledPost) => {
+    const result = await usePostsStore.getState().duplicatePost(post.id);
+    if (!result.ok || !result.id) {
+      showToast(result.ok ? "Copie impossible" : result.error, "error");
+      return;
+    }
+    showToast("Brouillon créé", "success");
+    setStatus("draft");
+    setCalendarMode(false);
+  };
 
-  const handleCreatePost = useCallback(
-    (dateTime: Date) => {
-      setAddPostVisible(false);
-      // Delay navigation so the AddPostSheet modal fully dismisses before
-      // the create-post screen (containedTransparentModal) presents on iOS.
-      setTimeout(() => {
-        router.push({
-          pathname: "/create-post",
-          params: { dateTime: dateTime.toISOString() },
-        } as any);
-      }, 350);
-    },
-    [router],
-  );
+  const menuEditable = menuPost && canWrite && ["draft", "queued", "error", "unknown"].includes(menuPost.dbState ?? "queued");
 
-  const handlePostDrop = useCallback(
-    (postId: string, newHour: number) => {
-      const post = posts.find((p) => p.id === postId);
-      if (!post) return;
-      const newDate = set(new Date(post.scheduledAt), {
-        hours: newHour,
-        minutes: 0,
-        seconds: 0,
-        milliseconds: 0,
-      });
-      void storeReschedulePost(postId, newDate.toISOString()).then((result) =>
-        showToast(result.ok ? "Publication déplacée" : result.error, result.ok ? "success" : "error"),
-      );
-    },
-    [posts, storeReschedulePost],
-  );
+  const monthLabel = format(selectedDate, "MMMM", { locale: fr });
+  const bottomSpace = TAB_BAR_HEIGHT + Math.max(insets.bottom, 8) + (calendarMode ? 0 : 64);
+
+  const emptyFor = () => {
+    if (calendarMode) {
+      return {
+        icon: "calendar-clear-outline" as const,
+        title: "Rien de prévu ce jour-là",
+        text: format(selectedDate, "EEEE d MMMM", { locale: fr }),
+        primary: canWrite ? { label: "Rédiger une publication", onPress: () => compose(addDays(selectedDate, 0)) } : undefined,
+      };
+    }
+    switch (status) {
+      case "queue":
+        return { icon: "calendar-outline" as const, title: "Aucune publication planifiée", text: "Planifiez des publications, elles apparaîtront ici.", primary: canWrite ? { label: "Rédiger une publication", onPress: () => compose() } : undefined };
+      case "draft":
+        return { icon: "create-outline" as const, title: "Aucun brouillon", text: "Vos brouillons apparaîtront ici dès que vous en aurez enregistré.", primary: canWrite ? { label: "Créer un brouillon", onPress: () => compose() } : undefined };
+      case "sent":
+        return { icon: "paper-plane-outline" as const, title: "Rien d’envoyé pour l’instant", text: "Les publications envoyées sur vos réseaux seront listées ici." };
+      default:
+        return { icon: "checkmark-circle-outline" as const, title: "Aucun échec", text: "Tout part comme prévu. Les publications en erreur s’afficheront ici." };
+    }
+  };
+  const empty = emptyFor();
 
   return (
-    <SafeAreaView className="flex-1 bg-background-primary" edges={["top"]}>
-      <TimelineDragProvider onDrop={handlePostDrop}>
-      <StatusBar style="light" />
+    <SafeAreaView className="flex-1 bg-canvas" edges={["top"]}>
+      <StatusBar style="dark" />
 
-      <View className="h-[60px] flex-row items-center justify-between px-4">
-        <MonthSelector
-          currentMonth={currentMonth}
-          isOpen={monthSelectorOpen}
-          onToggle={() => setMonthSelectorOpen((o) => !o)}
-        />
-        <NotificationBellButton />
+      <View className="flex-row items-center justify-between px-4 pb-3 pt-2">
+        <Text className="font-jakarta text-[32px] font-semibold text-ink">Publier</Text>
+        <HeaderActions />
       </View>
 
-      <DaySwiper
-        onChangeDate={changeDate}
-        enabled={!monthSelectorOpen}
-        renderPage={renderDayPage}
+      <View className="flex-row items-center justify-between gap-3 px-4 pb-3">
+        <ChannelPicker channels={channels} value={activeChannel} onChange={setChannelId} compact={calendarMode} />
+        {calendarMode ? (
+          <Pill onPress={() => setJumpOpen(true)}>
+            <Text className="font-jakarta text-[16px] font-medium capitalize text-ink">{monthLabel}</Text>
+            <Ionicons name="swap-vertical" size={16} color="#141414" />
+          </Pill>
+        ) : null}
+        <IconCircle icon={calendarMode ? "calendar" : "calendar-outline"} label={calendarMode ? "Masquer la semaine" : "Afficher la semaine"} active={calendarMode} onPress={() => setCalendarMode((v) => !v)} size={46} />
+      </View>
+
+      {calendarMode ? (
+        <View className="pb-3">
+          <WeekStrip selectedDate={selectedDate} onSelect={(d) => setSelectedDate(startOfDay(d))} hasPosts={hasPosts} />
+        </View>
+      ) : null}
+
+      <SectionList
+        className="flex-1"
+        sections={sections}
+        keyExtractor={(p) => p.id}
+        stickySectionHeadersEnabled={false}
+        contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: bottomSpace }}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor="#2F4A00" />}
+        renderSectionHeader={({ section }) => (
+          <Text className="pb-3 pt-4 font-jakarta text-[20px] font-semibold text-ink">{capFirst(section.title)}</Text>
+        )}
+        renderItem={({ item }) => (
+          <View className="pb-3">
+            <PostCard post={item} onPress={() => router.push(`/post/${item.id}` as never)} onMenu={setMenuPost} />
+          </View>
+        )}
+        ListEmptyComponent={loaded ? <EmptyState {...empty} /> : undefined}
+        showsVerticalScrollIndicator={false}
       />
 
-      <MainTabNavbar activeTab="calendar" />
-
-      {/* Bottom Sheets */}
-      <PostDetailSheet
-        isVisible={postDetailVisible}
-        post={selectedPost}
-        onClose={() => {
-          setPostDetailVisible(false);
-          setSelectedPost(null);
-        }}
-        onEdit={(post) => {
-          setPostDetailVisible(false);
-          setTimeout(() => {
-            router.push({
-              pathname: "/create-post",
-              params: {
-                postId: post.id,
-                mode: "edit",
-                dateTime: post.scheduledAt,
-                content: post.content,
-                imageUri: post.imageUri ?? "",
-                network: post.network,
-                channelId: post.channelId,
-              },
-            } as any);
-          }, 350);
-        }}
-        onDuplicate={(post) => {
-          setPostDetailVisible(false);
-          // La copie est enregistrée comme brouillon, puis ouverte pour être relue avant d'être programmée.
-          void storeDuplicatePost(post.id).then((result) => {
-            if (!result.ok || !result.id) {
-              showToast(result.ok ? "Copie impossible" : result.error, "error");
-              return;
-            }
-            const newId = result.id;
-            setTimeout(() => {
-              router.push({
-                pathname: "/create-post",
-                params: {
-                  postId: newId,
-                  mode: "edit",
-                  dateTime: post.scheduledAt,
-                  content: post.content,
-                  imageUri: post.imageUri ?? "",
-                  network: post.network,
-                  channelId: post.channelId,
-                },
-              } as any);
-            }, 350);
-          });
-        }}
-        onDelete={(post) => {
-          setPostDetailVisible(false);
-          setTimeout(() => setDeleteTarget(post), 350);
-        }}
-        onChangeDateTime={(post) => {
-          setPostDetailVisible(false);
-          setEditingPostId(post.id);
-          setDateTimeTarget(new Date(post.scheduledAt));
-          setTimeout(() => setDateTimeVisible(true), 500);
-        }}
-      />
-
-      <AddPostSheet
-        isVisible={addPostVisible}
-        selectedDate={selectedDate}
-        selectedHour={selectedHour}
-        selectedMinute={selectedMinute}
-        onClose={() => setAddPostVisible(false)}
-        onCreatePost={handleCreatePost}
-        onChangeDateTime={() => {
-          setAddPostVisible(false);
-          setDateTimeTarget(
-            set(selectedDate, {
-              hours: selectedHour,
-              minutes: selectedMinute,
-              seconds: 0,
-            }),
-          );
-          setTimeout(() => setDateTimeVisible(true), 500);
-        }}
-      />
-
-      {dateTimeTarget && (
-        <DateTimePickerSheet
-          isVisible={dateTimeVisible}
-          initialDate={dateTimeTarget}
-          onSave={handleDateTimeSave}
-          onClose={() => {
-            const fromPostDetail = !!editingPostId;
-            setDateTimeVisible(false);
-            setEditingPostId(null);
-            setTimeout(() => {
-              setDateTimeTarget(null);
-              // Reopen the parent sheet
-              if (fromPostDetail) {
-                setPostDetailVisible(true);
-              } else {
-                setAddPostVisible(true);
-              }
-            }, 350);
-          }}
-        />
+      {calendarMode ? null : (
+        <View pointerEvents="box-none" className="absolute left-3 right-3" style={{ bottom: TAB_BAR_HEIGHT + Math.max(insets.bottom, 8) - 8 }}>
+          <SegmentedPill<StatusFilter>
+            value={status}
+            onChange={setStatus}
+            items={[
+              { id: "queue", label: "À venir" },
+              { id: "draft", label: "Brouillons" },
+              { id: "sent", label: "Envoyées" },
+              { id: "error", label: "Échecs", count: counts.error },
+            ]}
+          />
+        </View>
       )}
 
-      {/* Delete confirmation dialog */}
-      <ConfirmDialog
-        visible={deleteTarget !== null}
-        title="Êtes-vous sûr ?"
-        message="Voulez-vous vraiment supprimer cette publication ?"
-        confirmLabel="Oui, supprimer"
-        cancelLabel="Non, annuler"
-        confirmDestructive
-        onConfirm={handleDeleteConfirm}
-        onCancel={() => {
-          setDeleteTarget(null);
-          setTimeout(() => setPostDetailVisible(true), 350);
-        }}
-      />
+      <MainTabNavbar activeTab="publish" />
 
-      <DragOverlay />
-      </TimelineDragProvider>
+      <DateJumpSheet visible={jumpOpen} onClose={() => setJumpOpen(false)} selectedDate={selectedDate} onSelect={(d) => setSelectedDate(startOfDay(d))} hasPosts={hasPosts} />
 
-      {/* Calendar overlay — rendered last so it's on top on iOS without z-index */}
-      <AnimatedDropdown
-        visible={monthSelectorOpen}
-        onClose={() => setMonthSelectorOpen(false)}
-        anchor="top-left"
-        style={{ position: "absolute", left: 16, right: 16, top: Platform.OS === "ios" ? 115 : 70, elevation: 8, shadowColor: "#000", shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 12 }}
-      >
-        <View className="rounded-[8px] bg-main-sections-2 p-4">
-          <View className="mb-3 flex-row items-center justify-between">
-            <Text className="font-jakarta text-h4 font-semibold text-text-primary">
-              {formatMonthName(currentMonth)}, {currentMonth.getFullYear()}
-            </Text>
-            <View className="flex-row gap-2">
+      <Sheet visible={menuPost !== null} onClose={() => setMenuPost(null)} title="Publication">
+        {menuPost ? (
+          <View className="overflow-hidden rounded-[22px] bg-card">
+            {(
+              [
+                { icon: "eye-outline", label: "Voir la publication", run: () => router.push(`/post/${menuPost.id}` as never) },
+                {
+                  icon: "copy-outline",
+                  label: "Copier le texte",
+                  run: async () => {
+                    await Clipboard.setStringAsync(htmlToPlain(menuPost.content));
+                    showToast("Texte copié", "success");
+                  },
+                },
+                ...(canWrite ? [{ icon: "documents-outline", label: "Dupliquer en brouillon", run: () => duplicate(menuPost) }] : []),
+                ...(menuPost.releaseUrl ? [{ icon: "open-outline", label: "Ouvrir sur le réseau", run: () => void WebBrowser.openBrowserAsync(menuPost.releaseUrl as string) }] : []),
+                ...(menuEditable ? [{ icon: "trash-outline", label: "Supprimer", danger: true, run: () => setDeleteTarget(menuPost) }] : []),
+              ] as { icon: keyof typeof Ionicons.glyphMap; label: string; danger?: boolean; run: () => void | Promise<void> }[]
+            ).map((row, i) => (
               <Pressable
-                onPress={handlePrevMonth}
-                className="h-8 w-8 items-center justify-center"
+                key={row.label}
+                onPress={() => {
+                  setMenuPost(null);
+                  setTimeout(() => void row.run(), 250);
+                }}
+                className={`flex-row items-center gap-4 px-5 py-4 ${i > 0 ? "border-t border-line" : ""}`}
               >
-                <Ionicons name="chevron-back" size={18} className="text-icon-primary" />
+                <Ionicons name={row.icon} size={22} color={row.danger ? "#D92D20" : "#141414"} />
+                <Text className={`font-jakarta text-[17px] ${row.danger ? "text-text-critical" : "text-ink"}`}>{row.label}</Text>
               </Pressable>
-              <Pressable
-                onPress={handleNextMonth}
-                className="h-8 w-8 items-center justify-center"
-              >
-                <Ionicons name="chevron-forward" size={18} className="text-icon-primary" />
-              </Pressable>
-            </View>
+            ))}
           </View>
+        ) : null}
+      </Sheet>
 
-          <CalendarGrid days={calendarDays} onDayPress={handleDayPress} />
-        </View>
-      </AnimatedDropdown>
+      <ConfirmSheet
+        visible={deleteTarget !== null}
+        title="Supprimer la publication ?"
+        message="Elle sera retirée de la liste. Cette action ne supprime rien chez le réseau."
+        confirmLabel="Oui, supprimer"
+        danger
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteTarget(null)}
+      />
     </SafeAreaView>
   );
 }

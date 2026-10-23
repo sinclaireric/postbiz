@@ -4,6 +4,7 @@ import { create } from "zustand";
 import { AUTH_REDIRECT_URL } from "@/lib/auth-redirect";
 import { authErrorMessage, fail, ok, type Result } from "@/lib/errors";
 import { unregisterPushToken } from "@/lib/push";
+import { DEMO } from "@/lib/demo";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 
 type AuthStatus = "loading" | "signedOut" | "signedIn";
@@ -37,6 +38,10 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   linkError: null,
 
   init: () => {
+    if (DEMO) {
+      set({ status: "signedIn", user: { id: "demo", email: "demo@postbiz.test", user_metadata: {} } as User });
+      return () => {};
+    }
     if (!isSupabaseConfigured) {
       set({ status: "signedOut" });
       return () => {};

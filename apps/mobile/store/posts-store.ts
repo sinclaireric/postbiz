@@ -59,6 +59,7 @@ function buildPosts(rows: Row[]): ScheduledPost[] {
         status: toStatus(r.state),
         dbState: r.state,
         errorMessage: r.error ?? undefined,
+        releaseUrl: r.release_url ?? undefined,
         composerPosts: thread.map((t) => ({ id: t.id, content: plainToHtml(t.content ?? ""), imageUris: [] })),
       };
     });
@@ -116,7 +117,7 @@ export const usePostsStore = create<PostsState>((set, get) => {
       const since = new Date(Date.now() - HISTORY_DAYS * 86_400_000).toISOString();
       const { data, error } = await supabase
         .from("posts")
-        .select("id, group_id, integration_id, parent_post_id, position, content, publish_at, state, error, integrations(provider, name, picture_url)")
+        .select("id, group_id, integration_id, parent_post_id, position, content, publish_at, state, error, release_url, integrations(provider, name, picture_url)")
         .eq("org_id", orgId)
         .is("deleted_at", null)
         .gte("publish_at", since)

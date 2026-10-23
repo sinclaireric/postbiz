@@ -1,5 +1,6 @@
 import { create } from "zustand";
 
+import { DEMO } from "@/lib/demo";
 import { fail, GENERIC_ERROR, ok, type Result } from "@/lib/errors";
 import { supabase } from "@/lib/supabase";
 import { useAuthStore } from "@/store/auth-store";
@@ -27,6 +28,11 @@ export const useOrgStore = create<OrgState>((set, get) => ({
   canWrite: false,
 
   load: async () => {
+    if (DEMO) {
+      const org: Org = { id: "demo-org", name: "Boulangerie Martin", role: "admin" };
+      set({ status: "ready", orgs: [org], current: org, canWrite: true });
+      return;
+    }
     set({ status: "loading" });
     const { data, error } = await supabase
       .from("memberships")

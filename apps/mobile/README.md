@@ -1,6 +1,6 @@
 # Postbiz mobile
 
-Application Expo (SDK 55, React Native 0.83, expo-router, NativeWind, Zustand) branchée sur **Supabase** : connexion,
+Application Expo (SDK 58, React Native 0.88, expo-router, NativeWind, Zustand), design clair avec le vert fluo du logo (`#C6F432`) branchée sur **Supabase** : connexion,
 organisation, calendrier et création de publications, boîte de réception unifiée avec Realtime, notifications push.
 Repris de [postiz-mobile](https://github.com/gitroomhq/postiz-mobile) avec l'autorisation de ses auteurs (voir `../../NOTICE.md`).
 
@@ -35,6 +35,29 @@ Repris de [postiz-mobile](https://github.com/gitroomhq/postiz-mobile) avec l'aut
 
 Pour tester sans e-mail de confirmation (développement uniquement) : *Authentication → Providers → Email* → désactiver « Confirm email ».
 
+### Mode démo (sans compte ni Supabase)
+
+Pour voir l'interface avec des données d'exemple, dans le navigateur (aucune requête réseau, aucun compte) :
+
+```bash
+EXPO_PUBLIC_DEMO=1 npx expo start --web
+```
+
+À ne pas définir en production : sans cette variable, tout le code de démonstration est inerte.
+
+### Agent : déployer la fonction
+
+L'onglet Agent appelle la fonction `agent-compose` (`../../supabase/functions/agent-compose`). Tant qu'elle n'est pas déployée, l'écran affiche « L'agent n'est pas encore activé sur ce projet ».
+
+```bash
+supabase functions deploy agent-compose
+supabase secrets set ANTHROPIC_API_KEY=sk-ant-...      # facultatif : AGENT_MODEL (défaut : claude-sonnet-5-5)
+```
+
+La fonction exige un utilisateur connecté, membre (admin ou membre) d'une organisation. Elle n'envoie au modèle que le brief et les consignes de style : aucune donnée de l'organisation.
+**Pas de limite d'usage par utilisateur pour l'instant** : chaque génération coûte un appel au modèle, à surveiller avant d'ouvrir l'application à beaucoup de monde.
+Sa logique (validation, prompts, lecture de la réponse) est testée avec un faux modèle (`packages/core/test/agent.test.ts`) ; **jamais exécutée sous Deno ni contre l'API réelle**.
+
 ### Notifications push et appareil réel
 
 - Les jetons push ne fonctionnent que sur **appareil réel** (ni simulateur ni web) et dans un **build de développement** (`eas build --profile development`), pas dans Expo Go.
@@ -47,8 +70,11 @@ Pour tester sans e-mail de confirmation (développement uniquement) : *Authentic
 |---|---|
 | Connexion, inscription, mot de passe oublié | Supabase Auth (e-mail + mot de passe). Session stockée dans `expo-secure-store` (découpée en morceaux de 1,8 Ko, voir `lib/supabase.ts`) |
 | Organisation | `memberships` → `organizations`. À la première connexion, l'organisation est créée avec le nom d'entreprise saisi à l'inscription (RPC `create_organization`) ; sinon un écran la demande |
-| Calendrier, création / modification / suppression | `posts` : l'application n'écrit que les états `draft` et `queued` (la RLS refuse le reste). « Publier maintenant » = `queued` avec `publish_at = maintenant` : c'est le worker qui envoie |
-| Canaux | `integrations`, **lecture seule** (créés par le callback OAuth, côté serveur) |
+| **Publier** (accueil) : liste par état (à venir, brouillons, envoyées, échecs), filtre par canal, bande de la semaine, « aller à une date » ; création / modification / suppression (écran de rédaction avec aperçu par réseau) | `posts` : l'application n'écrit que les états `draft` et `queued` (la RLS refuse le reste). « Publier maintenant » = `queued` avec `publish_at = maintenant` : c'est le worker qui envoie |
+| Canaux (menu du compte → Canaux) | `integrations`, **lecture seule** (créés par le callback OAuth, côté serveur) |
+| **Agent** (onglet) | Edge Function `agent-compose` : un brief → une publication adaptée par réseau (ton au choix), relue et modifiable avant enregistrement en brouillon ou programmation. La clé du modèle reste côté serveur |
+| **Insights** (onglet, avec filtre par canal et par période) | Calculées depuis `posts` (publiées, à venir, brouillons, échecs, par réseau et par jour) et `messages` / `conversations` (reçus, réponses envoyées, ouvertes, non lues). **Pas** les métriques des réseaux (abonnés, impressions) |
+| **Médias** (menu du compte → Médias) | Table `media` + bucket privé `media` (`{org_id}/{fichier}`, URL signées 1 h). Ajout depuis la photothèque, suppression par appui long |
 | **Inbox** (onglet) | `conversations`, `messages`. Une réponse insère un message `out` / `queued` ; le worker l'envoie. Fenêtre de 24 h, ordre et filtres : `lib/inbox/logic.ts` |
 | Notifications | `notifications`, marquage lu ; Realtime |
 | Push | `push_tokens` (RLS : `user_id = auth.uid()`), jeton Expo enregistré à la connexion et supprimé à la déconnexion |
@@ -72,14 +98,15 @@ et recharge la tranche concernée ; un retour au premier plan recharge tout.
 - **Médias** : l'envoi d'images et de vidéos n'est pas branché (Storage + `apps/uploader` à venir) ; l'enregistrement est refusé avec un message si un média est joint.
   La médiathèque du compositeur est encore factice.
 - **Réglages du compositeur sans effet côté serveur** : étiquettes, répétition, délai, relayeurs, carrousel. L'interface les affiche (héritage de postiz-mobile) mais rien n'est enregistré.
-- **Connexion d'un canal** : impossible depuis l'application (OAuth côté serveur pas encore écrit) ; l'écran renvoie vers le web. Optionnel : `EXPO_PUBLIC_WEB_URL`.
-- **Statistiques** : retirées de la navigation, aucune donnée n'existe en base.
+- **Connexion d'un canal** : l'OAuth se fait sur le site web. Le bouton « Ajouter un canal » l'ouvre (page « Canaux ») dans un navigateur intégré, à l'adresse `EXPO_PUBLIC_WEB_URL` ; l'utilisateur s'y connecte puis clique « Connecter ». À la fermeture, la liste des canaux est rechargée. Un flux natif (jeton Supabase, retour par lien `postbiz://`) n'existe pas encore.
+- **Analytics** : seulement les chiffres de Postbiz ; les métriques des réseaux ne sont pas collectées.
+- **Médias** : on peut les ajouter à la médiathèque, mais pas encore les joindre à une publication.
 - **Notifications push** : envoyées par l'Edge Function `send-push` (voir le README racine, « Notifications push »), **jamais exécutée contre un vrai projet Supabase ni Expo**.
   Elle pousse chaque ligne de `notifications` et chaque message entrant ; la charge `data` contient `conversation_id` (ouvre `/conversation/<id>`).
   L'enregistrement du jeton passe par le RPC `claim_push_token`, qui reprend aussi un jeton encore lié à un autre compte (appareil prêté).
   Les jetons en `DeviceNotRegistered` sont supprimés côté serveur à l'envoi ; les reçus Expo (envoi différé) ne sont pas relus.
-- Le sélecteur d'heure du calendrier reste en 12 h (am/pm) ; le reste de l'interface est en 24 h.
 - Les connexions Google/Apple de la maquette d'origine ont été retirées (non branchées).
+- Les marques Claude et ChatGPT de l'écran d'accueil sont des **approximations dessinées en SVG** (`components/ui/brand-icon.tsx`) : à remplacer par les fichiers officiels, en respectant leurs chartes, avant toute communication publique.
 
 ## Commandes
 
@@ -93,8 +120,11 @@ npm run check:inbox-logic    # lib/inbox/logic.ts identique à celui du web ?
 ## Structure
 
 ```
-app/            Écrans expo-router : (auth)/ connexion, (tabs)/ calendrier, canaux, inbox, réglages ; conversation/[id]
-components/     Interface (reprise de postiz-mobile) ; app-data-sync.tsx charge les données et ouvre Realtime
+app/            Écrans expo-router : (auth)/ accueil animé, connexion, inscription ; (tabs)/ Publier, Agent, Messages, Insights ; create-post (rédaction) ; post/[id] (aperçu par réseau) ; conversation/[id] ; account, channels, media, notifications
+components/     ui/ (kit : pilules, feuilles, barre flottante), home/, post-preview/ ; app-data-sync.tsx charge les données et ouvre Realtime
 lib/            supabase.ts (client), push.ts, use-realtime.ts, auth-links.ts, inbox/ (logique partagée avec le web)
 store/          Stores Zustand adossés à Supabase : auth, org, channels, posts, inbox, notifications
 ```
+
+> **SDK 58** : Expo Go sur iOS n'ouvre que le SDK le plus récent, le projet a donc été migré du SDK 55 au SDK 58.
+> Les dépendances ont été installées avec `--legacy-peer-deps` (npm signalait un faux conflit de pairs sur `expo-symbols`) ; si `npm install` échoue chez vous, utilisez le même drapeau.

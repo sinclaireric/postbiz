@@ -6,8 +6,7 @@
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "postbiz",
-    "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
+    "userInterfaceStyle": "light",
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.postbiz.app",
@@ -24,11 +23,10 @@
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
-      "predictiveBackGestureEnabled": false,
-      "navigationBarColor": "#1A1919"
+      "predictiveBackGestureEnabled": false
     },
     "web": {
-      "output": "static",
+      "output": "single",
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
@@ -39,22 +37,22 @@
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#1A1919",
+          "backgroundColor": "#FFFFFF",
           "dark": {
-            "backgroundColor": "#1A1919"
+            "backgroundColor": "#FFFFFF"
           }
         }
       ],
       [
         "expo-system-ui",
         {
-          "backgroundColor": "#1A1919"
+          "backgroundColor": "#FFFFFF"
         }
       ],
       [
         "expo-navigation-bar",
         {
-          "barStyle": "light-content"
+          "barStyle": "dark-content"
         }
       ],
       "expo-secure-store",
@@ -63,10 +61,16 @@
         {
           "color": "#612BD3"
         }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Postbiz accède à vos photos pour les ajouter à votre médiathèque."
+        }
       ]
     ],
     "experiments": {
-      "typedRoutes": true,
+      "typedRoutes": false,
       "reactCompiler": true
     },
     "extra": {
@@ -75,7 +79,7 @@
         "projectId": "81a11c63-1c09-43d4-b3fd-20f98b14e307"
       },
       "expo-navigation-bar": {
-        "barStyle": "light-content"
+        "barStyle": "dark-content"
       }
     },
     "owner": "diony20822"

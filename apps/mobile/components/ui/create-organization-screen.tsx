@@ -1,10 +1,10 @@
 import { StatusBar } from "expo-status-bar";
 import { useState } from "react";
-import { Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { AppButton } from "@/components/ui/app-button";
-import { AuthInput } from "@/components/ui/auth-input";
+import { Field } from "@/components/ui/field";
+import { PrimaryButton } from "@/components/ui/kit";
 import { useAuthStore } from "@/store/auth-store";
 import { useOrgStore } from "@/store/org-store";
 
@@ -25,24 +25,20 @@ export function CreateOrganizationScreen({ retryOnly = false }: { retryOnly?: bo
   };
 
   return (
-    <SafeAreaView className="absolute inset-0 bg-background-primary" edges={["top", "bottom"]}>
-      <StatusBar style="light" />
-      <View className="flex-1 justify-center gap-6 px-5">
+    <SafeAreaView className="absolute inset-0 bg-canvas" edges={["top", "bottom"]}>
+      <StatusBar style="dark" />
+      <View className="flex-1 justify-center gap-6 px-6">
         {retryOnly ? (
           <>
-            <Text className="font-jakarta text-h1 font-semibold text-text-primary">Chargement impossible</Text>
-            <Text className="font-jakarta text-body-1 text-text-secondary">
-              Vos organisations n’ont pas pu être chargées. Vérifiez votre connexion.
-            </Text>
-            <AppButton label="Réessayer" onPress={() => void useOrgStore.getState().load()} />
+            <Text className="font-jakarta text-[32px] font-semibold leading-[40px] text-ink">Chargement impossible</Text>
+            <Text className="font-jakarta text-[16px] leading-[24px] text-ink-soft">Vos organisations n’ont pas pu être chargées. Vérifiez votre connexion.</Text>
+            <PrimaryButton label="Réessayer" onPress={() => void useOrgStore.getState().load()} />
           </>
         ) : (
           <>
-            <Text className="font-jakarta text-h1 font-semibold text-text-primary">Créez votre organisation</Text>
-            <Text className="font-jakarta text-body-1 text-text-secondary">
-              Elle regroupe vos canaux, vos publications et votre boîte de réception.
-            </Text>
-            <AuthInput
+            <Text className="font-jakarta text-[32px] font-semibold leading-[40px] text-ink">Créez votre organisation</Text>
+            <Text className="font-jakarta text-[16px] leading-[24px] text-ink-soft">Elle regroupe vos canaux, vos publications et votre boîte de réception.</Text>
+            <Field
               label="Nom de l’organisation"
               value={name}
               onChangeText={(t) => {
@@ -54,15 +50,12 @@ export function CreateOrganizationScreen({ retryOnly = false }: { retryOnly?: bo
               error={!!error}
               hint={error}
             />
-            <AppButton
-              label={busy ? "Création…" : "Créer l’organisation"}
-              variant={name.trim() && !busy ? "primary" : "disabled"}
-              disabled={!name.trim() || busy}
-              onPress={create}
-            />
+            <PrimaryButton label="Créer l’organisation" onPress={create} loading={busy} disabled={!name.trim()} />
           </>
         )}
-        <AppButton label="Se déconnecter" variant="text" onPress={() => void useAuthStore.getState().signOut()} />
+        <Pressable className="h-[48px] items-center justify-center" onPress={() => void useAuthStore.getState().signOut()}>
+          <Text className="font-jakarta text-[16px] font-semibold text-ink">Se déconnecter</Text>
+        </Pressable>
       </View>
     </SafeAreaView>
   );
