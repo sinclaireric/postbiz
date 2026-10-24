@@ -80,7 +80,7 @@ export type SavePostsInput = {
   media?: { id: string; kind: "image" | "video"; alt: string }[];
   publishAt: Date;
   /** Un élément par canal ; `thread` = textes bruts, le premier est la racine. */
-  items: { channelId: string; thread: string[] }[];
+  items: { channelId: string; thread: string[]; /** Premier commentaire, publié sous la publication juste après elle (Facebook, LinkedIn, X) : à n'envoyer qu'à ces réseaux. */ firstComment?: string | null }[];
   /** Mode édition : id de la racine à modifier (un seul canal). */
   editPostId?: string;
 };
@@ -205,6 +205,8 @@ export const usePostsStore = create<PostsState>((set, get) => {
             integration_id: item.channelId,
             group_id: groupId,
             content: (item.thread[0] ?? "").trim(),
+            // L'état du commentaire (« pending ») est posé par la base à l'insertion ; le worker le publie après la publication.
+            ...(item.firstComment?.trim() ? { first_comment: item.firstComment.trim() } : {}),
             media: mediaJson,
             publish_at: when,
             state,

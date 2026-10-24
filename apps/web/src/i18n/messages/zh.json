@@ -496,6 +496,7 @@
     "c1Soon": { "title": "发布功能即将推出", "text": "你现在就可以连接 {network} 账号。发布功能将随媒体支持一起推出。" }
   },
   "meta": {
+    "agentApp": "智能体",
     "siteTitle": "Postbiz — 安排帖子发布,回复所有消息",
     "siteDescription": "Postbiz 将帖子排期与统一收件箱合二为一,集中处理 Facebook、Instagram、X、LinkedIn、TikTok 和 YouTube 的私信与评论。",
     "pricing": { "title": "价格", "description": "Postbiz 价格:三种套餐,按年付费享 8 折。测试版免费,无需信用卡。" },
@@ -624,6 +625,90 @@
     }
   },
   "app": {
+    "agent": {
+      "channels": {
+        "title": "渠道",
+        "hint": "智能体只会使用已勾选的渠道。",
+        "none": "尚未连接任何渠道。",
+        "add": "连接渠道",
+        "reconnect": "需要重新连接",
+        "selected": "已勾选渠道:{count}"
+      },
+      "history": {
+        "title": "对话",
+        "new": "新对话",
+        "empty": "你的对话会显示在这里。",
+        "delete": "删除对话“{title}”",
+        "confirmDelete": "删除?"
+      },
+      "welcome": {
+        "title": "你好,我是你的 Postbiz 智能体。",
+        "text": "描述你想发布的内容:我会为每个已勾选的渠道准备一条帖子。你检查、修改后,可存为草稿或安排发布。没有你的点击,什么都不会发布。",
+        "try": "试试这些"
+      },
+      "suggestions": {
+        "one": "用亲切的语气宣布我们的工坊本周六开放。",
+        "two": "为我所有的渠道准备一条介绍本周新品的帖子。",
+        "three": "本周已经安排了什么?",
+        "four": "写一条明早发布的 LinkedIn 帖子,介绍我们团队的幕后故事。"
+      },
+      "composer": {
+        "placeholder": "描述要准备的帖子……",
+        "send": "发送",
+        "stop": "停止",
+        "attach": "从媒体库添加附件",
+        "attached": "已添加的媒体",
+        "hint": "智能体可能出错:安排发布前请检查每条帖子。",
+        "noChannel": "请至少勾选一个渠道,智能体才能准备帖子。",
+        "viewer": "你的角色(只读)无法使用智能体。",
+        "disabled": "智能体不可用:此服务器尚未配置 AI 服务。"
+      },
+      "demoNote": "演示模式:智能体的回复为模拟内容,不会调用任何 AI。",
+      "thinking": "智能体正在思考……",
+      "tool": {
+        "list_posts": "正在查看日历……",
+        "list_media": "正在媒体库中搜索……",
+        "propose_posts": "正在准备帖子……"
+      },
+      "proposals": {
+        "fallback": "这是我准备的内容。请检查每条帖子,必要时修改,然后存为草稿或安排发布。"
+      },
+      "card": {
+        "preview": "预览",
+        "edit": "编辑",
+        "text": "帖子文本",
+        "date": "发布日期和时间",
+        "saveDraft": "存为草稿",
+        "schedule": "安排发布",
+        "saveAllDraft": "全部存为草稿({count})",
+        "scheduleAll": "全部安排发布({count})",
+        "drafted": "草稿",
+        "scheduled": "已安排",
+        "scheduledFor": "已安排在 {date}",
+        "draftHint": "已作为草稿保存到日历。",
+        "openCalendar": "查看日历",
+        "channelGone": "此渠道已不可用:请重新连接或选择其他渠道。"
+      },
+      "errors": {
+        "disabled": "智能体不可用:此服务器尚未配置 AI 服务。",
+        "forbidden": "你的角色无法使用智能体。",
+        "invalid": "请求无效。请换种说法,或开始新对话。",
+        "rate_limited": "短时间内请求过多。请几分钟后重试。",
+        "refused": "智能体无法回答这个请求。请换种说法。",
+        "empty": "智能体没有准备出任何内容。请说得更具体,或检查已勾选的渠道。",
+        "failed": "智能体无法回答。你的消息已保留:请稍后重试。",
+        "notFound": "此对话已不存在。",
+        "alreadySaved": "这条帖子已保存。"
+      },
+      "demo": {
+        "help": "我是演示智能体。描述一条帖子(例如“宣布周六开放工坊”),我会为已勾选的渠道准备;询问已安排的内容可查看日历。",
+        "noChannel": "请至少勾选一个我可以发布的渠道,然后重新描述帖子。",
+        "intro": "这是我为你的渠道准备的内容。",
+        "skipped": "我没有为 {networks} 准备任何内容:该网络需要图片或视频(请添加),或尚不支持在那里发布。",
+        "noPosts": "已勾选的渠道在未来 30 天内没有安排。",
+        "upcoming": "未来 30 天的安排如下:"
+      }
+    },
     "demoStrip": "演示模式:示例数据,不会向社交网络发送任何内容。",
     "demoStripLong": "演示模式:示例数据,不会向社交网络发送任何内容。配置 Supabase 即可使用你的真实数据。",
     "errors": { "generic": "操作失败,请稍后重试。", "channelNotFound": "未找到该渠道。" },
@@ -641,7 +726,7 @@
       "settings": "设置",
       "soon": "即将推出"
     },
-    "titles": { "calendar": "日历", "inbox": "收件箱", "media": "媒体", "channels": "渠道", "settings": "设置" },
+    "titles": { "agent": "智能体", "calendar": "日历", "inbox": "收件箱", "media": "媒体", "channels": "渠道", "settings": "设置" },
     "notifications": {
       "title": "通知",
       "label": "通知",

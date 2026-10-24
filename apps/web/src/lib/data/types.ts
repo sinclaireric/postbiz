@@ -1,3 +1,4 @@
+import type { AgentMessage, AgentProposal, AgentProposalStatus, AgentThread } from '@/lib/agent/types';
 import type { FormError } from '@/lib/form-error';
 import type { MediaKind } from '@/lib/media/rules';
 import type { NetworkId } from '@/lib/inbox/types';
@@ -170,7 +171,44 @@ export interface KnowledgeRepository {
   remove(id: string): Promise<Result>;
 }
 
+/** Ce que l'utilisateur a fait d'une publication préparée par l'agent : son état, et le texte, les médias et la date tels qu'il les a enregistrés. */
+export interface AgentProposalUpdate {
+  id: string;
+  status: AgentProposalStatus;
+  text: string;
+  firstComment: string | null;
+  mediaIds: string[];
+  publishAt: string | null;
+}
+
+export interface AgentExchangeInput {
+  /** Conversation existante, ou null pour en ouvrir une (son titre vient de `title`). */
+  threadId: string | null;
+  title: string;
+  user: { text: string; mediaIds: string[] };
+  assistant: { text: string; proposals: AgentProposal[] };
+}
+
+export interface AgentExchange {
+  thread: AgentThread;
+  user: AgentMessage;
+  assistant: AgentMessage;
+}
+
+/** Conversations de l'agent : chacune est privée à son auteur (RLS). */
+export interface AgentRepository {
+  /** Les conversations de l'utilisateur, la plus récente d'abord. */
+  threads(): Promise<AgentThread[]>;
+  thread(id: string): Promise<{ thread: AgentThread; messages: AgentMessage[] } | null>;
+  /** Enregistre un échange (le message de l'utilisateur, puis la réponse de l'agent) ; ouvre la conversation si besoin. Null si rien n'a pu être écrit. */
+  saveExchange(input: AgentExchangeInput): Promise<AgentExchange | null>;
+  /** Met à jour l'état des publications d'un message de l'agent (après leur enregistrement dans le calendrier). */
+  updateProposals(messageId: string, updates: AgentProposalUpdate[]): Promise<Result>;
+  removeThread(id: string): Promise<Result>;
+}
+
 export interface Repositories {
+  agent: AgentRepository;
   media: MediaRepository;
   knowledge: KnowledgeRepository;
   inbox: InboxRepository;

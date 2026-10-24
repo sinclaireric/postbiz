@@ -544,6 +544,7 @@
     }
   },
   "meta": {
+    "agentApp": "Ajan",
     "siteTitle": "Postbiz — Gönderilerinizi planlayın, tüm mesajlara yanıt verin",
     "siteDescription": "Postbiz, yayın planlamasını ve Facebook, Instagram, X, LinkedIn, TikTok ve YouTube için özel mesajlar ile yorumların birleşik gelen kutusunu tek çatı altında toplar.",
     "pricing": { "title": "Fiyatlandırma", "description": "Postbiz fiyatları: üç plan, yıllık ödemede %20 indirim. Beta ücretsizdir, kredi kartı gerekmez." },
@@ -672,6 +673,90 @@
     }
   },
   "app": {
+    "agent": {
+      "channels": {
+        "title": "Kanallar",
+        "hint": "Ajan yalnızca işaretli kanalları kullanır.",
+        "none": "Bağlı kanal yok.",
+        "add": "Kanal bağla",
+        "reconnect": "Yeniden bağlanmalı",
+        "selected": "İşaretli kanal: {count}"
+      },
+      "history": {
+        "title": "Sohbetler",
+        "new": "Yeni sohbet",
+        "empty": "Sohbetleriniz burada görünecek.",
+        "delete": "“{title}” sohbetini sil",
+        "confirmDelete": "Silinsin mi?"
+      },
+      "welcome": {
+        "title": "Merhaba, ben Postbiz ajanınızım.",
+        "text": "Yayımlamak istediğinizi anlatın: işaretli her kanal için bir gönderi hazırlarım. Siz gözden geçirir, düzenler, sonra taslak olarak kaydeder ya da zamanlarsınız. Siz tıklamadan hiçbir şey yayımlanmaz.",
+        "try": "Örneğin deneyin"
+      },
+      "suggestions": {
+        "one": "Atölyemizin bu cumartesi açılacağını sıcak bir tonla duyur.",
+        "two": "Haftanın yeniliğiyle ilgili tüm kanallarım için bir gönderi hazırla.",
+        "three": "Bu hafta zaten neler zamanlandı?",
+        "four": "Yarın sabah için ekibimizin sahne arkasını anlatan bir LinkedIn gönderisi yaz."
+      },
+      "composer": {
+        "placeholder": "Hazırlanacak gönderiyi anlatın…",
+        "send": "Gönder",
+        "stop": "Durdur",
+        "attach": "Kitaplıktan medya ekle",
+        "attached": "Eklenen medya",
+        "hint": "Ajan hata yapabilir: zamanlamadan önce her gönderiyi gözden geçirin.",
+        "noChannel": "Ajanın gönderi hazırlayabilmesi için en az bir kanal işaretleyin.",
+        "viewer": "Rolünüz (okuyucu) ajanı kullanmaya izin vermiyor.",
+        "disabled": "Ajan kullanılamıyor: yapay zekâ hizmeti bu sunucuda yapılandırılmamış."
+      },
+      "demoNote": "Demo modu: ajanın yanıtları simüle edilir, hiçbir yapay zekâ çağrılmaz.",
+      "thinking": "Ajan düşünüyor…",
+      "tool": {
+        "list_posts": "Takvime bakıyor…",
+        "list_media": "Medya kitaplığında arıyor…",
+        "propose_posts": "Gönderileri hazırlıyor…"
+      },
+      "proposals": {
+        "fallback": "İşte hazırladıklarım. Her gönderiyi gözden geçirin, gerekirse düzenleyin, sonra taslak olarak kaydedin ya da zamanlayın."
+      },
+      "card": {
+        "preview": "Önizleme",
+        "edit": "Düzenle",
+        "text": "Gönderi metni",
+        "date": "Yayın tarihi ve saati",
+        "saveDraft": "Taslak olarak kaydet",
+        "schedule": "Zamanla",
+        "saveAllDraft": "Hepsini taslak olarak kaydet ({count})",
+        "scheduleAll": "Hepsini zamanla ({count})",
+        "drafted": "Taslak",
+        "scheduled": "Zamanlandı",
+        "scheduledFor": "{date} için zamanlandı",
+        "draftHint": "Takvimde taslak olarak kaydedildi.",
+        "openCalendar": "Takvimi gör",
+        "channelGone": "Bu kanal artık kullanılamıyor: yeniden bağlayın ya da başka bir kanal seçin."
+      },
+      "errors": {
+        "disabled": "Ajan kullanılamıyor: yapay zekâ hizmeti bu sunucuda yapılandırılmamış.",
+        "forbidden": "Rolünüz ajanı kullanmaya izin vermiyor.",
+        "invalid": "İstek geçerli değil. Yeniden ifade edin ya da yeni bir sohbet başlatın.",
+        "rate_limited": "Kısa sürede çok fazla istek. Birkaç dakika sonra yeniden deneyin.",
+        "refused": "Ajan bu isteğe yanıt veremedi. Yeniden ifade edin.",
+        "empty": "Ajan hiçbir şey hazırlayamadı. İsteğinizi netleştirin ya da işaretli kanalları kontrol edin.",
+        "failed": "Ajan yanıt veremedi. Mesajınız saklandı: biraz sonra yeniden deneyin.",
+        "notFound": "Bu sohbet artık yok.",
+        "alreadySaved": "Bu gönderi zaten kaydedildi."
+      },
+      "demo": {
+        "help": "Ben demo ajanıyım. Bir gönderiyi anlatın (örneğin “Cumartesi açık atölyeyi duyur”), işaretli kanallar için hazırlarım; takvime bakmak için nelerin zamanlandığını sorun.",
+        "noChannel": "Yayımlayabileceğim en az bir kanal işaretleyin, sonra gönderiyi yeniden anlatın.",
+        "intro": "İşte kanallarınız için hazırladıklarım.",
+        "skipped": "{networks} için bir şey hazırlamadım: ağ bir görsel ya da video istiyor (bir tane ekleyin) ya da orada yayın henüz kullanılamıyor.",
+        "noPosts": "İşaretli kanallarda önümüzdeki 30 gün için zamanlanmış bir şey yok.",
+        "upcoming": "Önümüzdeki 30 gün için planlananlar:"
+      }
+    },
     "demoStrip": "Demo modu: örnek veriler, sosyal ağlara hiçbir şey gönderilmez.",
     "demoStripLong": "Demo modu: örnek veriler, sosyal ağlara hiçbir şey gönderilmez. Gerçek verilerinizi kullanmak için Supabase'i yapılandırın.",
     "errors": { "generic": "İşlem başarısız oldu. Birazdan tekrar deneyin.", "channelNotFound": "Kanal bulunamadı." },
@@ -689,7 +774,7 @@
       "settings": "Ayarlar",
       "soon": "Yakında"
     },
-    "titles": { "calendar": "Takvim", "inbox": "Gelen kutusu", "media": "Medya", "channels": "Kanallar", "settings": "Ayarlar" },
+    "titles": { "agent": "Ajan", "calendar": "Takvim", "inbox": "Gelen kutusu", "media": "Medya", "channels": "Kanallar", "settings": "Ayarlar" },
     "notifications": {
       "title": "Bildirimler",
       "label": "Bildirimler",

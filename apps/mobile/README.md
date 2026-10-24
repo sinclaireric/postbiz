@@ -45,18 +45,21 @@ EXPO_PUBLIC_DEMO=1 npx expo start --web
 
 À ne pas définir en production : sans cette variable, tout le code de démonstration est inerte.
 
-### Agent : déployer la fonction
+### Agent : le même que celui du web
 
-L'onglet Agent appelle la fonction `agent-compose` (`../../supabase/functions/agent-compose`). Tant qu'elle n'est pas déployée, l'écran affiche « L'agent n'est pas encore activé sur ce projet ».
+L'onglet Agent est un chat qui appelle l'agent du site : `POST {EXPO_PUBLIC_WEB_URL}/api/agent/chat`, avec le jeton Supabase de l'utilisateur (`Authorization: Bearer …`).
+Même modèle que l'agent de Postiz (GPT-5.2, d'OpenAI), mêmes règles (limites par réseau, médias exigés, premier commentaire, date dans le futur), mêmes outils (calendrier,
+médiathèque, préparation de publications) et **mêmes conversations** : un fil commencé sur le téléphone se poursuit sur le site, et inversement (tables `agent_threads` et
+`agent_messages`, lues et écrites ici avec la session de l'utilisateur, sous RLS).
 
-```bash
-supabase functions deploy agent-compose
-supabase secrets set ANTHROPIC_API_KEY=sk-ant-...      # facultatif : AGENT_MODEL (défaut : claude-sonnet-5-5)
-```
-
-La fonction exige un utilisateur connecté, membre (admin ou membre) d'une organisation. Elle n'envoie au modèle que le brief et les consignes de style : aucune donnée de l'organisation.
-**Pas de limite d'usage par utilisateur pour l'instant** : chaque génération coûte un appel au modèle, à surveiller avant d'ouvrir l'application à beaucoup de monde.
-Sa logique (validation, prompts, lecture de la réponse) est testée avec un faux modèle (`packages/core/test/agent.test.ts`) ; **jamais exécutée sous Deno ni contre l'API réelle**.
+- `EXPO_PUBLIC_WEB_URL` (l'adresse du site, voir `.env.example`) doit être renseignée ; sans elle, l'écran le dit au lieu de planter.
+- La clé du modèle (`OPENAI_API_KEY`) est une variable du **serveur du site** : jamais dans l'application.
+- L'agent ne publie rien : il prépare des cartes (aperçu, texte, date, médias), que l'utilisateur relit, modifie puis enregistre en brouillon ou programme.
+  L'enregistrement passe par `usePostsStore.savePosts`, donc par la session de l'utilisateur et la RLS.
+- Le protocole (`lib/agent-protocol.ts`) et le décompte des caractères (`lib/text-length.ts`) sont des miroirs de ceux du web : `apps/web/src/lib/agent/mobile-protocol.test.ts`
+  fait tourner les deux versions sur les mêmes entrées et échoue si elles divergent.
+- La fonction Edge `agent-compose` (formulaire en un coup, modèle Claude) n'est plus appelée par l'application.
+- Mode démo (`EXPO_PUBLIC_DEMO=1`) : réponses simulées, rien n'est écrit dans un calendrier.
 
 ### Notifications push et appareil réel
 

@@ -4,10 +4,10 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { getT } from '@/i18n/server';
 import { getRepositories, getSession } from '@/lib/data';
-import { errorText } from '@/lib/form-error';
 import { ALT_MAX } from '@/lib/media/logic';
 import { MAX_MEDIA_PER_POST } from '@/lib/media/rules';
-import { supportsFirstComment, validatePost, type PostMode } from '@/lib/posts/logic';
+import type { PostMode } from '@/lib/posts/logic';
+import { savePost } from '@/lib/posts/save';
 
 export interface PostFormState {
   errors?: string[];
@@ -51,34 +51,9 @@ export async function createPostAction(_: PostFormState, formData: FormData): Pr
   const firstComment = String(formData.get('firstComment') ?? '').replace(/\r\n/g, '\n').trim();
 
   const repos = await getRepositories(ctx);
-
-  // Médias joints : le navigateur envoie les identifiants (et le texte alternatif) ; le type vient de la bibliothèque, jamais du navigateur.
-  const requested = parseMedia(formData.get('media'));
-  const library = await repos.media.byIds(requested.map((m) => m.id));
-  if (library.length !== requested.length) return { errors: [t('app.validation.mediaMissing')] };
-  // Le type et les dimensions viennent de la bibliothèque, jamais du navigateur.
-  const attached = requested.map((m, i) => ({ id: m.id, kind: library[i]!.kind, alt: m.alt }));
-  const checked = requested.map((_, i) => ({ kind: library[i]!.kind, width: library[i]!.width, height: library[i]!.height, name: library[i]!.name }));
-
-  const integrations = await repos.workspace.integrations();
-  const chosen = integrations.filter((i) => ids.includes(i.id));
-  const inactive = chosen.filter((i) => i.status !== 'active');
-  if (inactive.length > 0) {
-    return { errors: [t('app.composer.errReconnect', { names: inactive.map((i) => i.name).join(', ') })] };
-  }
-
-  const errors = validatePost({ content, networkIds: chosen.map((i) => i.networkId), publishAt, mode, firstComment, media: checked });
-  if (errors.length > 0) return { errors: errors.map((e) => errorText(t, e)) };
-
-  const res = await repos.posts.create({
-    // Le premier commentaire part avec les canaux qui savent le publier ; les autres reçoivent la publication seule.
-    targets: chosen.map((i) => ({ integrationId: i.id, firstComment: firstComment && supportsFirstComment(i.networkId) ? firstComment : null })),
-    content,
-    media: attached,
-    publishAt: publishAt ? new Date(publishAt).toISOString() : null,
-    mode,
-  });
-  if (!res.ok) return { errors: [res.error ? errorText(t, res.error) : t('app.composer.errSave')] };
+  // Le navigateur envoie les identifiants des médias (et leur texte alternatif) ; `savePost` relit leur type dans la bibliothèque.
+  const res = await savePost(repos, t, { content, integrationIds: ids, publishAt, mode, firstComment, media: parseMedia(formData.get('media')) });
+  if (!res.ok) return { errors: res.errors };
   revalidatePath('/app/calendrier');
   return { savedAt: Date.now() };
 }

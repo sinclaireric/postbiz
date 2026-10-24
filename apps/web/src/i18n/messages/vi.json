@@ -544,6 +544,7 @@
     }
   },
   "meta": {
+    "agentApp": "Tác nhân",
     "siteTitle": "Postbiz — Lên lịch bài đăng, trả lời mọi tin nhắn",
     "siteDescription": "Postbiz kết hợp lên lịch bài đăng và hộp thư hợp nhất cho tin nhắn riêng và bình luận trên Facebook, Instagram, X, LinkedIn, TikTok và YouTube.",
     "pricing": { "title": "Bảng giá", "description": "Bảng giá Postbiz: ba gói, giảm 20% khi thanh toán hàng năm. Bản beta miễn phí, không cần thẻ tín dụng." },
@@ -672,6 +673,90 @@
     }
   },
   "app": {
+    "agent": {
+      "channels": {
+        "title": "Kênh",
+        "hint": "Tác nhân chỉ dùng các kênh đã chọn.",
+        "none": "Chưa kết nối kênh nào.",
+        "add": "Kết nối kênh",
+        "reconnect": "Cần kết nối lại",
+        "selected": "Kênh đã chọn: {count}"
+      },
+      "history": {
+        "title": "Cuộc trò chuyện",
+        "new": "Cuộc trò chuyện mới",
+        "empty": "Các cuộc trò chuyện của bạn sẽ hiện ở đây.",
+        "delete": "Xóa cuộc trò chuyện “{title}”",
+        "confirmDelete": "Xóa?"
+      },
+      "welcome": {
+        "title": "Xin chào, tôi là tác nhân Postbiz của bạn.",
+        "text": "Hãy mô tả điều bạn muốn đăng: tôi sẽ soạn một bài cho từng kênh đã chọn. Bạn xem lại, chỉnh sửa, rồi lưu thành bản nháp hoặc lên lịch. Không có gì được đăng nếu bạn chưa bấm.",
+        "try": "Thử ví dụ"
+      },
+      "suggestions": {
+        "one": "Thông báo xưởng của chúng tôi mở cửa vào thứ Bảy này, giọng thân thiện.",
+        "two": "Soạn một bài về sản phẩm mới của tuần cho tất cả kênh của tôi.",
+        "three": "Tuần này đã lên lịch những gì?",
+        "four": "Viết một bài LinkedIn cho sáng mai về hậu trường của đội ngũ chúng tôi."
+      },
+      "composer": {
+        "placeholder": "Mô tả bài đăng cần soạn…",
+        "send": "Gửi",
+        "stop": "Dừng",
+        "attach": "Đính kèm phương tiện từ thư viện",
+        "attached": "Phương tiện đã đính kèm",
+        "hint": "Tác nhân có thể nhầm: hãy xem lại từng bài trước khi lên lịch.",
+        "noChannel": "Hãy chọn ít nhất một kênh để tác nhân soạn bài.",
+        "viewer": "Vai trò của bạn (người xem) không cho phép dùng tác nhân.",
+        "disabled": "Tác nhân không khả dụng: dịch vụ AI chưa được cấu hình trên máy chủ này."
+      },
+      "demoNote": "Chế độ demo: câu trả lời của tác nhân là mô phỏng, không gọi AI nào.",
+      "thinking": "Tác nhân đang suy nghĩ…",
+      "tool": {
+        "list_posts": "Đang xem lịch…",
+        "list_media": "Đang tìm trong thư viện phương tiện…",
+        "propose_posts": "Đang soạn các bài đăng…"
+      },
+      "proposals": {
+        "fallback": "Đây là những gì tôi đã soạn. Hãy xem lại từng bài, chỉnh sửa nếu cần, rồi lưu thành bản nháp hoặc lên lịch."
+      },
+      "card": {
+        "preview": "Xem trước",
+        "edit": "Chỉnh sửa",
+        "text": "Nội dung bài đăng",
+        "date": "Ngày và giờ đăng",
+        "saveDraft": "Lưu thành bản nháp",
+        "schedule": "Lên lịch",
+        "saveAllDraft": "Lưu tất cả thành bản nháp ({count})",
+        "scheduleAll": "Lên lịch tất cả ({count})",
+        "drafted": "Bản nháp",
+        "scheduled": "Đã lên lịch",
+        "scheduledFor": "Đã lên lịch vào {date}",
+        "draftHint": "Đã lưu thành bản nháp trong lịch.",
+        "openCalendar": "Xem lịch",
+        "channelGone": "Kênh này không còn khả dụng: hãy kết nối lại hoặc chọn kênh khác."
+      },
+      "errors": {
+        "disabled": "Tác nhân không khả dụng: dịch vụ AI chưa được cấu hình trên máy chủ này.",
+        "forbidden": "Vai trò của bạn không cho phép dùng tác nhân.",
+        "invalid": "Yêu cầu không hợp lệ. Hãy diễn đạt lại hoặc bắt đầu cuộc trò chuyện mới.",
+        "rate_limited": "Quá nhiều yêu cầu trong thời gian ngắn. Hãy thử lại sau vài phút.",
+        "refused": "Tác nhân không thể trả lời yêu cầu này. Hãy diễn đạt lại.",
+        "empty": "Tác nhân không soạn được gì. Hãy nói rõ hơn hoặc kiểm tra các kênh đã chọn.",
+        "failed": "Tác nhân không thể trả lời. Tin nhắn của bạn vẫn được giữ: hãy thử lại sau giây lát.",
+        "notFound": "Cuộc trò chuyện này không còn tồn tại.",
+        "alreadySaved": "Bài đăng này đã được lưu."
+      },
+      "demo": {
+        "help": "Tôi là tác nhân demo. Hãy mô tả một bài đăng (ví dụ “Thông báo xưởng mở cửa thứ Bảy”), tôi sẽ soạn cho các kênh đã chọn; hỏi những gì đã lên lịch để xem lịch.",
+        "noChannel": "Hãy chọn ít nhất một kênh mà tôi có thể đăng, rồi mô tả lại bài đăng.",
+        "intro": "Đây là những gì tôi đã soạn cho các kênh của bạn.",
+        "skipped": "Tôi chưa soạn gì cho {networks}: mạng này yêu cầu ảnh hoặc video (hãy đính kèm), hoặc chưa hỗ trợ đăng ở đó.",
+        "noPosts": "Không có gì được lên lịch trong 30 ngày tới trên các kênh đã chọn.",
+        "upcoming": "Đây là những gì được lên kế hoạch trong 30 ngày tới:"
+      }
+    },
     "demoStrip": "Chế độ demo: dữ liệu mẫu, không có gì được gửi đến mạng xã hội.",
     "demoStripLong": "Chế độ demo: dữ liệu mẫu, không có gì được gửi đến mạng xã hội. Hãy cấu hình Supabase để dùng dữ liệu thật của bạn.",
     "errors": { "generic": "Thao tác không thành công. Vui lòng thử lại sau giây lát.", "channelNotFound": "Không tìm thấy kênh." },
@@ -689,7 +774,7 @@
       "settings": "Cài đặt",
       "soon": "Sắp có"
     },
-    "titles": { "calendar": "Lịch", "inbox": "Hộp thư", "media": "Media", "channels": "Kênh", "settings": "Cài đặt" },
+    "titles": { "agent": "Tác nhân", "calendar": "Lịch", "inbox": "Hộp thư", "media": "Media", "channels": "Kênh", "settings": "Cài đặt" },
     "notifications": {
       "title": "Thông báo",
       "label": "Thông báo",

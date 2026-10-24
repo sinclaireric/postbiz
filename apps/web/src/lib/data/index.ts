@@ -1,5 +1,7 @@
+import type { SupabaseClient } from '@supabase/supabase-js';
+import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import { cache } from 'react';
-import { isDemo } from '@/lib/supabase/env';
+import { isDemo, supabaseAnonKey, supabaseUrl } from '@/lib/supabase/env';
 import { createClient } from '@/lib/supabase/server';
 import { accountIdentity, workspaceName, type AccountIdentity } from '@/lib/workspace-name';
 import { DEMO_CONTEXT, demoOrgName, demoRepositories } from './demo';
@@ -11,12 +13,9 @@ export type SessionState =
   | { status: 'no-org'; user: { id: string } & AccountIdentity }
   | { status: 'ready'; ctx: AppContext };
 
-/** Qui est connecté, et dans quelle organisation ? Mis en cache pour la durée d'une requête. */
-export const getSession = cache(async (): Promise<SessionState> => {
-  if (isDemo) return { status: 'ready', ctx: { ...DEMO_CONTEXT, org: { ...DEMO_CONTEXT.org, name: demoOrgName() } } };
-
-  const supabase = await createClient();
-  const { data } = await supabase.auth.getUser();
+/** Qui est connecté, et dans quelle organisation ? D'après la session du client Supabase donné (cookies du navigateur, ou jeton du mobile). */
+async function sessionOf(supabase: SupabaseClient, token?: string): Promise<SessionState> {
+  const { data } = await supabase.auth.getUser(token);
   const user = data.user;
   if (!user) return { status: 'anonymous' };
 
@@ -39,7 +38,33 @@ export const getSession = cache(async (): Promise<SessionState> => {
       org: { id: org.id, name: org.name, role: m.role as OrgRole },
     },
   };
+}
+
+/** Qui est connecté, et dans quelle organisation ? Mis en cache pour la durée d'une requête. */
+export const getSession = cache(async (): Promise<SessionState> => {
+  if (isDemo) return { status: 'ready', ctx: { ...DEMO_CONTEXT, org: { ...DEMO_CONTEXT.org, name: demoOrgName() } } };
+  return sessionOf(await createClient());
 });
+
+/** Le jeton d'un en-tête `Authorization: Bearer …`, ou null. */
+export function bearerToken(header: string | null): string | null {
+  const m = /^Bearer\s+([\w.~+/-]+=*)$/i.exec(header?.trim() ?? '');
+  return m ? m[1]! : null;
+}
+
+/**
+ * Session d'un client qui n'a pas de cookie (l'application mobile) : son jeton Supabase, vérifié auprès de Supabase Auth, puis des dépôts de données qui
+ * agissent avec ce jeton. La RLS de la base reste la seule autorité, exactement comme avec les cookies. Sans projet Supabase (démo), le jeton ne sert à rien.
+ */
+export async function getSessionForToken(token: string): Promise<{ session: SessionState; repos: Repositories | null }> {
+  if (isDemo) return { session: await getSession(), repos: null };
+  const supabase = createSupabaseClient(supabaseUrl, supabaseAnonKey, {
+    global: { headers: { Authorization: `Bearer ${token}` } },
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
+  const session = await sessionOf(supabase, token);
+  return { session, repos: session.status === 'ready' ? createSupabaseRepositories(supabase, session.ctx) : null };
+}
 
 export async function getRepositories(ctx: AppContext): Promise<Repositories> {
   if (ctx.mode === 'demo') return demoRepositories;

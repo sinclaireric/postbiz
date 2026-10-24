@@ -556,6 +556,7 @@
     }
   },
   "meta": {
+    "agentApp": "Agent",
     "siteTitle": "Postbiz — Beiträge planen, alle Nachrichten beantworten",
     "siteDescription": "Postbiz vereint die Planung Ihrer Beiträge und einen einheitlichen Posteingang für die privaten Nachrichten und Kommentare von Facebook, Instagram, X, LinkedIn, TikTok und YouTube.",
     "pricing": { "title": "Preise", "description": "Die Preise von Postbiz: drei Tarife, 20 % Rabatt bei jährlicher Zahlung. Die Beta ist kostenlos, ohne Kreditkarte." },
@@ -684,6 +685,90 @@
     }
   },
   "app": {
+    "agent": {
+      "channels": {
+        "title": "Kanäle",
+        "hint": "Der Agent nutzt nur die angehakten Kanäle.",
+        "none": "Kein Kanal verbunden.",
+        "add": "Kanal verbinden",
+        "reconnect": "Neu verbinden",
+        "selected": "Angehakte Kanäle: {count}"
+      },
+      "history": {
+        "title": "Unterhaltungen",
+        "new": "Neue Unterhaltung",
+        "empty": "Ihre Unterhaltungen erscheinen hier.",
+        "delete": "Unterhaltung „{title}“ löschen",
+        "confirmDelete": "Löschen?"
+      },
+      "welcome": {
+        "title": "Hallo, ich bin Ihr Postbiz-Agent.",
+        "text": "Beschreiben Sie, was Sie veröffentlichen möchten: Ich bereite für jeden angehakten Kanal einen Beitrag vor. Sie prüfen und bearbeiten ihn und speichern ihn dann als Entwurf oder planen ihn ein. Ohne Ihren Klick wird nichts veröffentlicht.",
+        "try": "Zum Beispiel"
+      },
+      "suggestions": {
+        "one": "Kündige an, dass unsere Werkstatt diesen Samstag öffnet, in herzlichem Ton.",
+        "two": "Bereite einen Beitrag über unsere Neuheit der Woche für alle meine Kanäle vor.",
+        "three": "Was ist diese Woche schon geplant?",
+        "four": "Schreibe einen LinkedIn-Beitrag für morgen früh über einen Blick hinter die Kulissen unseres Teams."
+      },
+      "composer": {
+        "placeholder": "Beschreiben Sie den vorzubereitenden Beitrag …",
+        "send": "Senden",
+        "stop": "Stopp",
+        "attach": "Medien aus der Bibliothek anhängen",
+        "attached": "Angehängte Medien",
+        "hint": "Der Agent kann sich irren: Prüfen Sie jeden Beitrag, bevor Sie ihn einplanen.",
+        "noChannel": "Haken Sie mindestens einen Kanal an, damit der Agent Beiträge vorbereiten kann.",
+        "viewer": "Mit Ihrer Rolle (Leser) können Sie den Agenten nicht nutzen.",
+        "disabled": "Der Agent ist nicht verfügbar: Der KI-Dienst ist auf diesem Server nicht eingerichtet."
+      },
+      "demoNote": "Demomodus: Die Antworten des Agenten sind simuliert, es wird keine KI aufgerufen.",
+      "thinking": "Der Agent denkt nach …",
+      "tool": {
+        "list_posts": "Prüft den Kalender …",
+        "list_media": "Durchsucht die Medienbibliothek …",
+        "propose_posts": "Bereitet die Beiträge vor …"
+      },
+      "proposals": {
+        "fallback": "Das habe ich vorbereitet. Prüfen Sie jeden Beitrag, bearbeiten Sie ihn bei Bedarf und speichern Sie ihn als Entwurf oder planen Sie ihn ein."
+      },
+      "card": {
+        "preview": "Vorschau",
+        "edit": "Bearbeiten",
+        "text": "Text des Beitrags",
+        "date": "Datum und Uhrzeit der Veröffentlichung",
+        "saveDraft": "Als Entwurf speichern",
+        "schedule": "Einplanen",
+        "saveAllDraft": "Alle als Entwurf speichern ({count})",
+        "scheduleAll": "Alle einplanen ({count})",
+        "drafted": "Entwurf",
+        "scheduled": "Geplant",
+        "scheduledFor": "Geplant für den {date}",
+        "draftHint": "Als Entwurf im Kalender gespeichert.",
+        "openCalendar": "Kalender ansehen",
+        "channelGone": "Dieser Kanal ist nicht mehr verfügbar: Verbinden Sie ihn neu oder wählen Sie einen anderen."
+      },
+      "errors": {
+        "disabled": "Der Agent ist nicht verfügbar: Der KI-Dienst ist auf diesem Server nicht eingerichtet.",
+        "forbidden": "Mit Ihrer Rolle können Sie den Agenten nicht nutzen.",
+        "invalid": "Die Anfrage ist ungültig. Formulieren Sie sie um oder beginnen Sie eine neue Unterhaltung.",
+        "rate_limited": "Zu viele Anfragen in kurzer Zeit. Versuchen Sie es in einigen Minuten erneut.",
+        "refused": "Der Agent konnte diese Anfrage nicht beantworten. Formulieren Sie sie um.",
+        "empty": "Der Agent konnte nichts vorbereiten. Präzisieren Sie Ihre Anfrage oder prüfen Sie die angehakten Kanäle.",
+        "failed": "Der Agent konnte nicht antworten. Ihre Nachricht bleibt erhalten: Versuchen Sie es gleich noch einmal.",
+        "notFound": "Diese Unterhaltung existiert nicht mehr.",
+        "alreadySaved": "Dieser Beitrag wurde bereits gespeichert."
+      },
+      "demo": {
+        "help": "Ich bin der Demo-Agent. Beschreiben Sie einen Beitrag (zum Beispiel „Kündige die offene Werkstatt am Samstag an“), und ich bereite ihn für die angehakten Kanäle vor; fragen Sie, was geplant ist, um den Kalender abzufragen.",
+        "noChannel": "Haken Sie mindestens einen Kanal an, auf dem ich veröffentlichen kann, und beschreiben Sie den Beitrag erneut.",
+        "intro": "Das habe ich für Ihre Kanäle vorbereitet.",
+        "skipped": "Für {networks} habe ich nichts vorbereitet: Das Netzwerk verlangt ein Bild oder Video (hängen Sie eines an), oder Veröffentlichen ist dort noch nicht verfügbar.",
+        "noPosts": "In den nächsten 30 Tagen ist auf den angehakten Kanälen nichts geplant.",
+        "upcoming": "Das ist in den nächsten 30 Tagen geplant:"
+      }
+    },
     "demoStrip": "Demomodus: Beispieldaten, es wird nichts an die Netzwerke gesendet.",
     "demoStripLong": "Demomodus: Beispieldaten, es wird nichts an die Netzwerke gesendet. Konfigurieren Sie Supabase, um Ihre echten Daten zu verwenden.",
     "errors": { "generic": "Der Vorgang ist fehlgeschlagen. Bitte versuchen Sie es gleich noch einmal.", "channelNotFound": "Kanal nicht gefunden." },
@@ -701,7 +786,7 @@
       "settings": "Einstellungen",
       "soon": "Demnächst verfügbar"
     },
-    "titles": { "calendar": "Kalender", "inbox": "Posteingang", "media": "Medien", "channels": "Kanäle", "settings": "Einstellungen" },
+    "titles": { "agent": "Agent", "calendar": "Kalender", "inbox": "Posteingang", "media": "Medien", "channels": "Kanäle", "settings": "Einstellungen" },
     "notifications": {
       "title": "Benachrichtigungen",
       "label": "Benachrichtigungen",

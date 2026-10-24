@@ -1,4 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
+import { sanitizeProposals } from '@/lib/agent/proposal';
+import type { AgentMessage, AgentThread } from '@/lib/agent/types';
 import { GENERIC_ERROR, type FormError } from '@/lib/form-error';
 import { replyWindow, validateReply } from '@/lib/inbox/logic';
 import { displayName } from '@/lib/media/logic';
@@ -7,7 +9,7 @@ import type {
 } from '@/lib/inbox/types';
 import { KNOWLEDGE_LIMITS } from './types';
 import type {
-  AppContext, CreatePostInput, IntegrationItem, KnowledgeInput, KnowledgeItem, KnowledgeRepository, MediaItem, MediaRepository, MemberItem, NotificationItem, OrgRole, PostItem, PostMedia, PostsRepository, Repositories, Result, WorkspaceRepository,
+  AgentRepository, AppContext, CreatePostInput, IntegrationItem, KnowledgeInput, KnowledgeItem, KnowledgeRepository, MediaItem, MediaRepository, MemberItem, NotificationItem, OrgRole, PostItem, PostMedia, PostsRepository, Repositories, Result, WorkspaceRepository,
 } from './types';
 
 // Implémentation Supabase. Toutes les requêtes passent par la clé « anon » + la session de l'utilisateur :
@@ -309,5 +311,70 @@ export function createSupabaseRepositories(supabase: SupabaseClient, ctx: AppCon
     },
   };
 
-  return { inbox, posts, workspace, media, knowledge };
+  const toThread = (r: Row): AgentThread => ({ id: r.id, title: r.title, updatedAt: r.updated_at });
+  const toAgentMessage = (r: Row): AgentMessage => ({
+    id: r.id, role: r.role === 'assistant' ? 'assistant' : 'user', text: r.content ?? '', proposals: sanitizeProposals(r.proposals),
+    mediaIds: Array.isArray(r.media_ids) ? r.media_ids.filter((m: unknown): m is string => typeof m === 'string') : [], createdAt: r.created_at,
+  });
+  const MESSAGE_COLUMNS = 'id, role, content, proposals, media_ids, created_at';
+
+  const agent: AgentRepository = {
+    async threads() {
+      const { data } = await supabase.from('agent_threads').select('id, title, updated_at').eq('org_id', ctx.org.id).eq('user_id', ctx.user.id).order('updated_at', { ascending: false }).limit(200);
+      return (data ?? []).map(toThread);
+    },
+
+    async thread(id) {
+      const { data: row } = await supabase.from('agent_threads').select('id, title, updated_at').eq('id', id).eq('org_id', ctx.org.id).eq('user_id', ctx.user.id).maybeSingle();
+      if (!row) return null;
+      const { data } = await supabase.from('agent_messages').select(MESSAGE_COLUMNS).eq('thread_id', id).order('created_at', { ascending: true }).limit(400);
+      return { thread: toThread(row), messages: (data ?? []).map(toAgentMessage) };
+    },
+
+    async saveExchange({ threadId, title, user, assistant }) {
+      let thread: AgentThread | null = null;
+      let created = false;
+      if (threadId) {
+        const { data } = await supabase.from('agent_threads').select('id, title, updated_at').eq('id', threadId).eq('org_id', ctx.org.id).eq('user_id', ctx.user.id).maybeSingle();
+        thread = data ? toThread(data) : null;
+      } else {
+        const { data } = await supabase.from('agent_threads').insert({ org_id: ctx.org.id, user_id: ctx.user.id, title }).select('id, title, updated_at').single();
+        thread = data ? toThread(data) : null;
+        created = thread !== null;
+      }
+      if (!thread) return null;
+
+      // Dates explicites : les deux messages sont écrits dans la même transaction, `now()` serait identique et l'ordre incertain.
+      const at = Date.now();
+      const { data, error } = await supabase.from('agent_messages').insert([
+        { thread_id: thread.id, org_id: ctx.org.id, role: 'user', content: user.text, proposals: [], media_ids: user.mediaIds, created_at: new Date(at).toISOString() },
+        { thread_id: thread.id, org_id: ctx.org.id, role: 'assistant', content: assistant.text, proposals: assistant.proposals, media_ids: [], created_at: new Date(at + 1).toISOString() },
+      ]).select(MESSAGE_COLUMNS);
+      const rows = [...(data ?? [])].sort((a: Row, b: Row) => String(a.created_at).localeCompare(String(b.created_at)));
+      if (error || rows.length !== 2) {
+        if (created) await supabase.from('agent_threads').delete().eq('id', thread.id);
+        return null;
+      }
+      const [userMessage, assistantMessage] = rows.map(toAgentMessage) as [AgentMessage, AgentMessage];
+      return { thread: { ...thread, updatedAt: assistantMessage.createdAt }, user: userMessage, assistant: assistantMessage };
+    },
+
+    async updateProposals(messageId, updates) {
+      const { data } = await supabase.from('agent_messages').select('proposals').eq('id', messageId).eq('org_id', ctx.org.id).maybeSingle();
+      if (!data) return fail(GENERIC_ERROR);
+      const next = sanitizeProposals(data.proposals).map((p) => {
+        const u = updates.find((x) => x.id === p.id);
+        return u ? { ...p, status: u.status, text: u.text, firstComment: u.firstComment, mediaIds: u.mediaIds, publishAt: u.publishAt } : p;
+      });
+      const { error } = await supabase.from('agent_messages').update({ proposals: next }).eq('id', messageId).eq('org_id', ctx.org.id);
+      return error ? fail(GENERIC_ERROR) : { ok: true };
+    },
+
+    async removeThread(id) {
+      const { error } = await supabase.from('agent_threads').delete().eq('id', id).eq('org_id', ctx.org.id).eq('user_id', ctx.user.id);
+      return error ? fail(GENERIC_ERROR) : { ok: true };
+    },
+  };
+
+  return { inbox, posts, workspace, media, knowledge, agent };
 }

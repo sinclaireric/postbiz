@@ -1,3 +1,4 @@
+import { useAgentStore } from "@/store/agent-store";
 import { useChannelsStore } from "@/store/channels-store";
 import { useInboxStore } from "@/store/inbox-store";
 import { useNotificationsStore } from "@/store/notifications-store";
@@ -11,4 +12,5 @@ export function resetAllStores() {
   usePostsStore.getState().reset();
   useNotificationsStore.getState().reset();
   useInboxStore.getState().reset();
+  useAgentStore.getState().reset();
 }

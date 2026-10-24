@@ -1,226 +1,299 @@
 import { Ionicons } from "@expo/vector-icons";
-import { capFirst } from "@/utils/text";
-import { haptic } from "@/lib/haptics";
-import { addDays, format, set } from "date-fns";
-import { fr } from "date-fns/locale";
-import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, TextInput, View } from "react-native";
+import { ActivityIndicator, Alert, Keyboard, KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, TextInput, View, type ScrollViewInstance } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { ProposalSet } from "@/components/agent/proposal-set";
 import { HeaderActions } from "@/components/home/header-actions";
-import { PostPreview } from "@/components/post-preview/post-preview";
+import { MediaPickerSheet } from "@/components/media/media-picker-sheet";
+import { MediaThumb } from "@/components/media/media-thumb";
 import { ChannelAvatar } from "@/components/ui/channel-avatar";
-import { DateTimeSheet } from "@/components/ui/datetime-sheet";
-import { Appear, OutlineButton, PrimaryButton } from "@/components/ui/kit";
+import { IconCircle, PrimaryButton, Sheet } from "@/components/ui/kit";
 import { TAB_BAR_HEIGHT } from "@/components/ui/main-tab-navbar";
-import { showToast } from "@/components/ui/toast";
-import { AGENT_TONES, composePosts, MAX_BRIEF_LENGTH, NETWORK_LIMITS, type AgentTone } from "@/lib/agent";
-import { formatNetworkLabel } from "@/lib/networks";
+import { agentConfigured, MAX_MEDIA_PER_MESSAGE, MAX_MESSAGE_LENGTH, NETWORK_LIMITS, NOT_CONFIGURED } from "@/lib/agent";
+import type { AgentMessage, AgentToolName } from "@/lib/agent-protocol";
+import { DEMO } from "@/lib/demo";
+import { haptic } from "@/lib/haptics";
+import type { MediaItem } from "@/lib/media";
+import { useAgentStore } from "@/store/agent-store";
 import { useChannelsStore } from "@/store/channels-store";
 import { useOrgStore } from "@/store/org-store";
-import { usePostsStore } from "@/store/posts-store";
-import type { ChannelNetwork } from "@/types";
 
-const tomorrowAtNine = () => set(addDays(new Date(), 1), { hours: 9, minutes: 0, seconds: 0, milliseconds: 0 });
+// L'agent du mobile est celui du web (même modèle, mêmes règles, mêmes conversations) : voir lib/agent.ts.
 
-const IDEAS = ["Nouveau produit ou offre du moment", "Annonce de nos horaires et jours fériés", "Coulisses : présenter l’équipe", "Un conseil utile pour nos clients"];
+const SUGGESTIONS = [
+  "Annonce l’ouverture de notre atelier ce samedi, sur un ton chaleureux.",
+  "Prépare une publication sur notre nouveauté de la semaine pour tous mes canaux.",
+  "Qu’est-ce qui est déjà programmé cette semaine ?",
+  "Écris un post LinkedIn pour demain matin sur les coulisses de notre équipe.",
+];
+
+const WORKING: Record<AgentToolName, string> = {
+  list_posts: "Consulte le calendrier…",
+  list_media: "Cherche dans la bibliothèque de médias…",
+  propose_posts: "Prépare les publications…",
+};
+
+const FALLBACK = "Voici ce que j’ai préparé. Relisez chaque publication, modifiez-la au besoin, puis enregistrez-la en brouillon ou programmez-la.";
+
+function AgentAvatar() {
+  return (
+    <View className="mt-0.5 h-8 w-8 items-center justify-center rounded-full bg-brand">
+      <Ionicons name="sparkles" size={16} color="#141414" />
+    </View>
+  );
+}
+
+function UserBubble({ message }: { message: AgentMessage }) {
+  const media = useAgentStore((s) => s.media);
+  const attached = message.mediaIds.flatMap((id) => (media[id] ? [media[id]!] : []));
+  return (
+    <View className="max-w-[86%] self-end gap-2 rounded-[22px] rounded-br-[8px] bg-ink px-4 py-3">
+      {attached.length > 0 ? (
+        <View className="flex-row flex-wrap gap-1.5">
+          {attached.map((m) => <MediaThumb key={m.id} uri={m.thumbUrl ?? m.url} kind={m.kind} size={56} radius={12} />)}
+        </View>
+      ) : null}
+      {message.text ? <Text className="font-jakarta text-[14.5px] leading-[21px] text-white">{message.text}</Text> : null}
+    </View>
+  );
+}
 
 export default function AgentScreen() {
-  const router = useRouter();
   const insets = useSafeAreaInsets();
-  const channels = useChannelsStore((s) => s.channels).filter((c) => (c.status ?? "active") === "active" && NETWORK_LIMITS[c.network]);
+  const org = useOrgStore((s) => s.current);
   const canWrite = useOrgStore((s) => s.canWrite);
+  const all = useChannelsStore((s) => s.channels);
+  const channels = useMemo(() => all.filter((c) => (c.status ?? "active") === "active" && NETWORK_LIMITS[c.network]), [all]);
 
-  const [brief, setBrief] = useState("");
-  const [tone, setTone] = useState<AgentTone>("professionnel");
+  const { messages, pendingUser, run, error, threads, activeId } = useAgentStore();
+
   const [selected, setSelected] = useState<string[]>(() => channels.map((c) => c.id));
   const touched = useRef(false);
   // Les canaux peuvent arriver après l'ouverture de l'écran : tant que l'utilisateur n'a rien choisi, on les sélectionne tous.
   useEffect(() => {
     if (!touched.current) setSelected(channels.map((c) => c.id));
-  }, [channels.length]); // eslint-disable-line react-hooks/exhaustive-deps
-  const [drafts, setDrafts] = useState<Partial<Record<ChannelNetwork, string>> | null>(null);
-  const [generating, setGenerating] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const [publishAt, setPublishAt] = useState<Date>(tomorrowAtNine);
-  const [dateOpen, setDateOpen] = useState(false);
+  }, [channels]);
 
-  const selectedChannels = useMemo(() => channels.filter((c) => selected.includes(c.id)), [channels, selected]);
-  const networks = useMemo(() => [...new Set(selectedChannels.map((c) => c.network))], [selectedChannels]);
+  const [draft, setDraft] = useState("");
+  const [attached, setAttached] = useState<MediaItem[]>([]);
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const [historyOpen, setHistoryOpen] = useState(false);
+  const [keyboard, setKeyboard] = useState(false);
+  const scroller = useRef<ScrollViewInstance>(null);
+
+  useEffect(() => {
+    const show = Keyboard.addListener(Platform.OS === "ios" ? "keyboardWillShow" : "keyboardDidShow", () => setKeyboard(true));
+    const hide = Keyboard.addListener(Platform.OS === "ios" ? "keyboardWillHide" : "keyboardDidHide", () => setKeyboard(false));
+    return () => {
+      show.remove();
+      hide.remove();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (org) void useAgentStore.getState().loadThreads();
+  }, [org]);
+
+  const picked = useMemo(() => channels.filter((c) => selected.includes(c.id)), [channels, selected]);
+  const busy = run !== null;
+  const configured = DEMO || agentConfigured();
+  const ready = canWrite && configured;
+
   const toggle = (id: string) => {
     haptic.select();
     touched.current = true;
     setSelected((cur) => (cur.includes(id) ? cur.filter((x) => x !== id) : [...cur, id]));
   };
 
-  const ready = brief.trim().length > 0 && networks.length > 0 && canWrite;
-
-  const generate = async () => {
-    setGenerating(true);
-    const result = await composePosts(brief.trim(), networks, tone);
-    setGenerating(false);
-    if (!result.ok) {
-      showToast(result.error, "error");
-      return;
+  const send = async (raw: string) => {
+    const text = raw.trim();
+    if (busy || !ready || (!text && attached.length === 0)) return;
+    haptic.tap();
+    const sentMedia = attached;
+    setDraft("");
+    setAttached([]);
+    const saved = await useAgentStore.getState().send({ text, channels: picked, media: sentMedia });
+    // Rien n'a été enregistré : le message revient dans le champ, prêt à être renvoyé.
+    if (!saved) {
+      setDraft(text);
+      setAttached(sentMedia);
     }
-    setDrafts(Object.fromEntries(result.drafts.map((d) => [d.network, d.text])));
   };
 
-  const overLimit = drafts ? networks.some((n) => (drafts[n] ?? "").length > (NETWORK_LIMITS[n] ?? Infinity)) : false;
-  const empty = drafts ? networks.some((n) => !(drafts[n] ?? "").trim()) : true;
+  const confirmDelete = (id: string, title: string) =>
+    Alert.alert("Supprimer la conversation ?", title, [
+      { text: "Annuler", style: "cancel" },
+      { text: "Supprimer", style: "destructive", onPress: () => void useAgentStore.getState().removeThread(id) },
+    ]);
 
-  const save = async (action: "draft" | "calendar") => {
-    if (!drafts) return;
-    setSaving(true);
-    const result = await usePostsStore.getState().savePosts({
-      action,
-      publishAt,
-      items: selectedChannels.map((c) => ({ channelId: c.id, thread: [(drafts[c.network] ?? "").trim()] })),
-    });
-    setSaving(false);
-    if (!result.ok) {
-      showToast(result.error, "error");
-      return;
-    }
-    usePostsStore.getState().setNavigateToDate(publishAt.toISOString());
-    showToast(action === "draft" ? "Brouillons enregistrés" : "Publications programmées", "success");
-    setBrief("");
-    setDrafts(null);
-    router.replace("/(tabs)");
-  };
+  const shown = pendingUser ? [...messages, pendingUser] : messages;
+  const empty = shown.length === 0 && !run;
+  const noChannel = ready && picked.length === 0;
 
   return (
     <SafeAreaView className="flex-1 bg-canvas" edges={["top"]}>
       <StatusBar style="dark" />
 
-      <View className="flex-row items-center justify-between px-4 pb-3 pt-2">
+      <View className="flex-row items-center justify-between px-4 pb-2 pt-2">
         <Text className="font-jakarta text-[27px] font-semibold text-ink">Agent</Text>
-        <HeaderActions />
+        <View className="flex-row items-center gap-2">
+          <IconCircle icon="time-outline" label="Conversations" size={44} onPress={() => setHistoryOpen(true)} />
+          <IconCircle icon="create-outline" label="Nouvelle conversation" size={44} onPress={() => useAgentStore.getState().newThread()} />
+          <HeaderActions />
+        </View>
       </View>
+
+      {channels.length === 0 ? (
+        <Text className="px-4 pb-2 font-jakarta text-[13px] text-ink-soft">Aucun canal actif. Connectez un canal depuis le menu du compte.</Text>
+      ) : (
+        <View>
+          <Text className="px-4 pb-1.5 font-jakarta text-[12px] text-ink-soft">L’agent n’utilise que les canaux cochés.</Text>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8, paddingHorizontal: 16, paddingBottom: 8 }} keyboardShouldPersistTaps="handled">
+            {channels.map((c) => {
+              const on = selected.includes(c.id);
+              return (
+                <Pressable
+                  key={c.id} accessibilityRole="button" accessibilityState={{ selected: on }} disabled={busy} onPress={() => toggle(c.id)}
+                  className={`h-[44px] flex-row items-center gap-2 rounded-full border pl-1.5 pr-3.5 ${on ? "border-ink bg-card" : "border-line bg-card opacity-60"}`}
+                >
+                  <ChannelAvatar avatar={c.avatar} network={c.network} name={c.name} size={30} badge={false} />
+                  <Text numberOfLines={1} className="max-w-[130px] font-jakarta text-[13px] font-medium text-ink">{c.name}</Text>
+                  {on ? <Ionicons name="checkmark-circle" size={17} color="#2F4A00" /> : null}
+                </Pressable>
+              );
+            })}
+          </ScrollView>
+        </View>
+      )}
 
       <KeyboardAvoidingView className="flex-1" behavior={Platform.OS === "ios" ? "padding" : undefined}>
         <ScrollView
-          className="flex-1"
-          contentContainerStyle={{ gap: 18, paddingHorizontal: 16, paddingBottom: TAB_BAR_HEIGHT + Math.max(insets.bottom, 8) + 24 }}
-          keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}
+          ref={scroller} className="flex-1" keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ gap: 18, paddingHorizontal: 16, paddingTop: 8, paddingBottom: 16 }}
+          onContentSizeChange={() => { if (!empty) scroller.current?.scrollToEnd({ animated: true }); }}
         >
-          <Appear index={0}>
-          <View className="gap-3 rounded-[26px] border border-line bg-card p-4">
-            <View className="flex-row items-center gap-2">
-              <View className="h-9 w-9 items-center justify-center rounded-full bg-brand">
-                <Ionicons name="sparkles" size={18} color="#141414" />
+          {empty ? (
+            <View className="items-center gap-3 pt-6">
+              <View className="h-12 w-12 items-center justify-center rounded-full bg-brand">
+                <Ionicons name="sparkles" size={22} color="#141414" />
               </View>
-              <Text className="flex-1 font-jakarta text-[15px] font-semibold text-ink">Que voulez-vous annoncer ?</Text>
-            </View>
-            <TextInput
-              className="min-h-[110px] font-jakarta text-[15px] leading-[22px] text-ink"
-              style={{ textAlignVertical: "top" }}
-              placeholder="Ex. Nouveau pain aux noix dès samedi, offre de lancement pour les 20 premiers clients."
-              placeholderTextColor="#9A9890"
-              selectionColor="#141414"
-              value={brief}
-              onChangeText={(t) => setBrief(t.slice(0, MAX_BRIEF_LENGTH))}
-              multiline
-              editable={!generating}
-            />
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8 }}>
-              {IDEAS.map((idea) => (
-                <Pressable key={idea} onPress={() => { haptic.tap(); setBrief(idea); }} className="h-[38px] items-center justify-center rounded-full bg-chip-bg px-4">
-                  <Text className="font-jakarta text-[12px] font-medium text-ink">{idea}</Text>
-                </Pressable>
-              ))}
-            </ScrollView>
-            <Text className="text-right font-jakarta text-[10px] text-ink-muted">{brief.length}/{MAX_BRIEF_LENGTH}</Text>
-          </View>
-          </Appear>
-
-          <Appear index={1} style={{ gap: 8 }}>
-            <Text className="px-1 font-jakarta text-[13.5px] font-semibold text-ink">Ton</Text>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8 }}>
-              {AGENT_TONES.map((t) => (
-                <Pressable key={t} onPress={() => { haptic.select(); setTone(t); }} className={`h-[42px] items-center justify-center rounded-full border px-5 ${tone === t ? "border-ink bg-ink" : "border-line bg-card"}`}>
-                  <Text className={`font-jakarta text-[13.5px] font-medium ${tone === t ? "text-white" : "text-ink"}`}>{t}</Text>
-                </Pressable>
-              ))}
-            </ScrollView>
-          </Appear>
-
-          <Appear index={2} style={{ gap: 8 }}>
-            <Text className="px-1 font-jakarta text-[13.5px] font-semibold text-ink">Canaux</Text>
-            {channels.length === 0 ? (
-              <Text className="px-1 font-jakarta text-[13.5px] text-ink-soft">Aucun canal actif. Connectez un canal depuis le menu du compte.</Text>
-            ) : (
-              <View className="flex-row flex-wrap gap-2">
-                {channels.map((c) => {
-                  const on = selected.includes(c.id);
-                  return (
-                    <Pressable key={c.id} onPress={() => toggle(c.id)} className={`h-[48px] flex-row items-center gap-2 rounded-full border pl-2 pr-4 ${on ? "border-ink bg-card" : "border-line bg-card opacity-60"}`}>
-                      <ChannelAvatar avatar={c.avatar} network={c.network} name={c.name} size={32} />
-                      <Text numberOfLines={1} className="max-w-[150px] font-jakarta text-[13.5px] font-medium text-ink">{c.name}</Text>
-                      {on ? <Ionicons name="checkmark-circle" size={18} color="#2F4A00" /> : null}
-                    </Pressable>
-                  );
-                })}
-              </View>
-            )}
-          </Appear>
-
-          <Appear index={3}>
-          <PrimaryButton label={generating ? "Rédaction en cours…" : drafts ? "Régénérer" : "Générer les publications"} icon="sparkles" onPress={generate} loading={generating} disabled={!ready} />
-          </Appear>
-          {!canWrite ? <Text className="text-center font-jakarta text-[12px] text-ink-soft">Votre rôle (lecteur) ne permet pas de créer des publications.</Text> : null}
-
-          {drafts ? (
-            <Appear index={0} style={{ gap: 20 }}>
-              <Text className="font-jakarta text-[19px] font-semibold text-ink">Propositions</Text>
-              {networks.map((network) => {
-                const text = drafts[network] ?? "";
-                const limit = NETWORK_LIMITS[network] ?? Infinity;
-                const channel = selectedChannels.find((c) => c.network === network)!;
-                return (
-                  <View key={network} className="gap-2">
-                    <Text className="px-1 font-jakarta text-[12.5px] font-semibold text-ink-soft">{formatNetworkLabel(network)}</Text>
-                    <PostPreview network={network} name={channel.name} username={channel.username} avatar={channel.avatar || undefined} thread={[text]} date={publishAt.toISOString()} />
-                    <TextInput
-                      className="min-h-[84px] rounded-[18px] border border-line bg-card p-3 font-jakarta text-[14.5px] leading-[20.5px] text-ink"
-                      style={{ textAlignVertical: "top" }}
-                      value={text}
-                      onChangeText={(t) => setDrafts((cur) => ({ ...cur, [network]: t }))}
-                      multiline
-                    />
-                    <Text className={`text-right font-jakarta text-[11px] ${text.length > limit ? "text-text-critical" : "text-ink-muted"}`}>
-                      {text.length}
-                      {Number.isFinite(limit) ? ` / ${limit}` : ""} caractères
-                    </Text>
-                  </View>
-                );
-              })}
-
-              <Pressable className="flex-row items-center gap-3 rounded-[20px] border border-line bg-card px-4 py-4" onPress={() => setDateOpen(true)}>
-                <Ionicons name="calendar-outline" size={22} color="#141414" />
-                <View className="flex-1">
-                  <Text className="font-jakarta text-[11px] text-ink-soft">Date de publication</Text>
-                  <Text className="font-jakarta text-[14.5px] font-semibold text-ink">{capFirst(format(publishAt, "EEEE d MMMM 'à' HH:mm", { locale: fr }))}</Text>
-                </View>
-                <Text className="font-jakarta text-[12.5px] font-semibold text-brand-ink">Modifier</Text>
-              </Pressable>
-
-              {overLimit ? <Text className="font-jakarta text-[12px] text-text-critical">Un texte dépasse la limite de son réseau : raccourcissez-le avant de continuer.</Text> : null}
-
-              <PrimaryButton label="Programmer" onPress={() => save("calendar")} loading={saving} disabled={empty || overLimit || publishAt.getTime() < Date.now() + 60_000} />
-              <OutlineButton label="Enregistrer en brouillon" onPress={() => save("draft")} disabled={saving || empty || overLimit} />
-              <Text className="font-jakarta text-[11px] leading-[16px] text-ink-muted">
-                Relisez toujours avant de programmer : l’agent peut se tromper et n’invente ni chiffre ni offre qui ne soit pas dans votre brief.
+              <Text className="text-center font-jakarta text-[20px] font-semibold text-ink">Bonjour, je suis votre agent Postbiz.</Text>
+              <Text className="text-center font-jakarta text-[13.5px] leading-[20px] text-ink-soft">
+                Décrivez ce que vous voulez publier : je prépare une publication pour chaque canal coché. Vous la relisez, la modifiez, puis vous l’enregistrez en brouillon ou la programmez. Rien n’est publié sans votre action.
               </Text>
-            </Appear>
+              {ready ? (
+                <View className="mt-2 w-full gap-2">
+                  <Text className="font-jakarta text-[12px] font-semibold text-ink-soft">Essayez par exemple</Text>
+                  {SUGGESTIONS.map((s) => (
+                    <Pressable key={s} accessibilityRole="button" onPress={() => { haptic.tap(); setDraft(s); }} className="rounded-[18px] border border-line bg-card px-4 py-3">
+                      <Text className="font-jakarta text-[13.5px] leading-[19px] text-ink">{s}</Text>
+                    </Pressable>
+                  ))}
+                </View>
+              ) : null}
+            </View>
+          ) : (
+            shown.map((m) =>
+              m.role === "user" ? (
+                <UserBubble key={m.id} message={m} />
+              ) : (
+                <View key={m.id} className="flex-row gap-3">
+                  <AgentAvatar />
+                  <View className="min-w-0 flex-1">
+                    <Text className="font-jakarta text-[14.5px] leading-[21px] text-ink">{m.text || (m.proposals.length > 0 ? FALLBACK : "")}</Text>
+                    {m.proposals.length > 0 ? <ProposalSet message={m} canWrite={canWrite} /> : null}
+                  </View>
+                </View>
+              ),
+            )
+          )}
+          {run ? (
+            <View className="flex-row gap-3">
+              <AgentAvatar />
+              <View className="min-w-0 flex-1 gap-1.5">
+                {run.text ? <Text className="font-jakarta text-[14.5px] leading-[21px] text-ink">{run.text}</Text> : null}
+                <View className="flex-row items-center gap-2">
+                  <ActivityIndicator size="small" color="#6B6A64" />
+                  <Text className="font-jakarta text-[12.5px] text-ink-soft">{run.tool ? WORKING[run.tool] : "L’agent réfléchit…"}</Text>
+                </View>
+              </View>
+            </View>
           ) : null}
         </ScrollView>
+
+        {/* La barre flottante couvre le bas de l'écran : le champ de saisie se place au-dessus, sauf quand le clavier la recouvre. */}
+        <View style={{ paddingHorizontal: 16, paddingBottom: keyboard ? 8 : TAB_BAR_HEIGHT + Math.max(insets.bottom, 8) - 8, gap: 8 }}>
+          {DEMO ? <Text className="rounded-[14px] bg-chip-bg px-3 py-1.5 text-center font-jakarta text-[12px] text-ink-soft">Mode démo : les réponses de l’agent sont simulées, aucune IA n’est appelée.</Text> : null}
+          {!canWrite ? <Text className="font-jakarta text-[12.5px] text-ink-soft">Votre rôle (lecteur) ne permet pas d’utiliser l’agent.</Text> : null}
+          {canWrite && !configured ? <Text className="rounded-[14px] bg-chip-bg px-3 py-2 font-jakarta text-[12.5px] text-ink-soft">{NOT_CONFIGURED}</Text> : null}
+          {noChannel ? <Text className="font-jakarta text-[12.5px] font-medium text-text-critical">Cochez au moins un canal pour que l’agent puisse préparer des publications.</Text> : null}
+          {error ? (
+            <Pressable accessibilityRole="alert" onPress={() => useAgentStore.getState().clearError()} className="rounded-[14px] bg-[#FCE8E6] px-3 py-2">
+              <Text className="font-jakarta text-[12.5px] font-medium text-text-critical">{error}</Text>
+            </Pressable>
+          ) : null}
+          {attached.length > 0 ? (
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8 }}>
+              {attached.map((m) => (
+                <View key={m.id}>
+                  <MediaThumb uri={m.thumbUrl ?? m.url} kind={m.kind} size={52} />
+                  <Pressable
+                    accessibilityRole="button" accessibilityLabel={`Retirer ${m.name}`} onPress={() => setAttached((cur) => cur.filter((x) => x.id !== m.id))}
+                    className="absolute -right-1.5 -top-1.5 h-6 w-6 items-center justify-center rounded-full bg-ink"
+                  >
+                    <Ionicons name="close" size={14} color="#FFFFFF" />
+                  </Pressable>
+                </View>
+              ))}
+            </ScrollView>
+          ) : null}
+          <View className="flex-row items-end gap-2 rounded-[28px] border border-line bg-card p-1.5">
+            <IconCircle icon="image-outline" label="Joindre des médias de la bibliothèque" size={44} onPress={ready && !busy && attached.length < MAX_MEDIA_PER_MESSAGE ? () => setPickerOpen(true) : undefined} />
+            <TextInput
+              className="max-h-[140px] min-h-[44px] flex-1 px-1 py-2.5 font-jakarta text-[14.5px] leading-[20px] text-ink"
+              placeholder="Décrivez la publication à préparer…" placeholderTextColor="#9A9890" selectionColor="#141414"
+              value={draft} onChangeText={(t) => setDraft(t.slice(0, MAX_MESSAGE_LENGTH))} multiline editable={ready}
+            />
+            {busy ? (
+              <Pressable accessibilityRole="button" accessibilityLabel="Arrêter" onPress={() => useAgentStore.getState().stop()} className="h-[44px] w-[44px] items-center justify-center rounded-full bg-ink">
+                <Ionicons name="stop" size={16} color="#FFFFFF" />
+              </Pressable>
+            ) : (
+              <Pressable
+                accessibilityRole="button" accessibilityLabel="Envoyer" disabled={!ready || (!draft.trim() && attached.length === 0)} onPress={() => void send(draft)}
+                className="h-[44px] w-[44px] items-center justify-center rounded-full bg-ink" style={{ opacity: !ready || (!draft.trim() && attached.length === 0) ? 0.3 : 1 }}
+              >
+                <Ionicons name="arrow-up" size={20} color="#FFFFFF" />
+              </Pressable>
+            )}
+          </View>
+          <Text className="text-center font-jakarta text-[10.5px] text-ink-muted">L’agent peut se tromper : relisez chaque publication avant de la programmer.</Text>
+        </View>
       </KeyboardAvoidingView>
 
-      <DateTimeSheet visible={dateOpen} onClose={() => setDateOpen(false)} value={publishAt} onSave={(d) => { setPublishAt(d); setDateOpen(false); }} />
+      <MediaPickerSheet visible={pickerOpen} onClose={() => setPickerOpen(false)} initial={attached} onConfirm={(items) => { setAttached(items.slice(0, MAX_MEDIA_PER_MESSAGE)); setPickerOpen(false); }} />
+
+      <Sheet visible={historyOpen} onClose={() => setHistoryOpen(false)} title="Conversations">
+        <View className="gap-2 pb-2">
+          <PrimaryButton label="Nouvelle conversation" icon="add" onPress={() => { useAgentStore.getState().newThread(); setHistoryOpen(false); }} />
+          {threads.length === 0 ? (
+            <Text className="px-1 pt-3 font-jakarta text-[13.5px] text-ink-soft">Vos conversations apparaîtront ici.</Text>
+          ) : (
+            threads.map((t) => (
+              <View key={t.id} className={`flex-row items-center rounded-[18px] ${t.id === activeId ? "bg-chip-bg" : ""}`}>
+                <Pressable accessibilityRole="button" className="min-w-0 flex-1 px-4 py-3.5" onPress={() => { void useAgentStore.getState().openThread(t.id); setHistoryOpen(false); }}>
+                  <Text numberOfLines={2} className="font-jakarta text-[14px] text-ink">{t.title}</Text>
+                </Pressable>
+                <Pressable accessibilityRole="button" accessibilityLabel={`Supprimer la conversation ${t.title}`} onPress={() => confirmDelete(t.id, t.title)} className="h-11 w-11 items-center justify-center">
+                  <Ionicons name="trash-outline" size={18} color="#6B6A64" />
+                </Pressable>
+              </View>
+            ))
+          )}
+        </View>
+      </Sheet>
     </SafeAreaView>
   );
 }

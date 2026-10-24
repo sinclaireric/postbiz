@@ -1039,6 +1039,7 @@
     "c1Soon": { "title": "Publishing is coming", "text": "You can already connect your {network} account. Sending posts arrives with media support." }
   },
   "meta": {
+    "agentApp": "Agent",
     "siteTitle": "Postbiz — Schedule your posts, answer all your messages",
     "siteDescription": "Postbiz combines post scheduling and a unified inbox for the private messages and comments of Facebook, Instagram, X, LinkedIn, TikTok and YouTube.",
     "pricing": {
@@ -1194,6 +1195,90 @@
     }
   },
   "app": {
+    "agent": {
+      "channels": {
+        "title": "Channels",
+        "hint": "The agent only uses the channels you tick.",
+        "none": "No channel connected.",
+        "add": "Connect a channel",
+        "reconnect": "Needs reconnecting",
+        "selected": "Channels ticked: {count}"
+      },
+      "history": {
+        "title": "Conversations",
+        "new": "New conversation",
+        "empty": "Your conversations will appear here.",
+        "delete": "Delete the conversation “{title}”",
+        "confirmDelete": "Delete?"
+      },
+      "welcome": {
+        "title": "Hello, I’m your Postbiz agent.",
+        "text": "Describe what you want to publish: I prepare a post for each ticked channel. You review it, edit it, then save it as a draft or schedule it. Nothing is published without your click.",
+        "try": "Try for example"
+      },
+      "suggestions": {
+        "one": "Announce that our workshop opens this Saturday, in a warm tone.",
+        "two": "Prepare a post about our new product of the week for all my channels.",
+        "three": "What is already scheduled this week?",
+        "four": "Write a LinkedIn post for tomorrow morning about behind the scenes with our team."
+      },
+      "composer": {
+        "placeholder": "Describe the post to prepare…",
+        "send": "Send",
+        "stop": "Stop",
+        "attach": "Attach media from the library",
+        "attached": "Attached media",
+        "hint": "The agent can make mistakes: review every post before you schedule it.",
+        "noChannel": "Tick at least one channel so the agent can prepare posts.",
+        "viewer": "Your role (viewer) does not allow using the agent.",
+        "disabled": "The agent is not available: the AI service is not configured on this server."
+      },
+      "demoNote": "Demo mode: the agent’s replies are simulated, no AI is called.",
+      "thinking": "The agent is thinking…",
+      "tool": {
+        "list_posts": "Checking the calendar…",
+        "list_media": "Searching the media library…",
+        "propose_posts": "Preparing the posts…"
+      },
+      "proposals": {
+        "fallback": "Here is what I prepared. Review each post, edit it if needed, then save it as a draft or schedule it."
+      },
+      "card": {
+        "preview": "Preview",
+        "edit": "Edit",
+        "text": "Post text",
+        "date": "Publication date and time",
+        "saveDraft": "Save as draft",
+        "schedule": "Schedule",
+        "saveAllDraft": "Save all as drafts ({count})",
+        "scheduleAll": "Schedule all ({count})",
+        "drafted": "Draft",
+        "scheduled": "Scheduled",
+        "scheduledFor": "Scheduled for {date}",
+        "draftHint": "Saved as a draft in the calendar.",
+        "openCalendar": "View the calendar",
+        "channelGone": "This channel is no longer available: reconnect it or pick another one."
+      },
+      "errors": {
+        "disabled": "The agent is not available: the AI service is not configured on this server.",
+        "forbidden": "Your role does not allow using the agent.",
+        "invalid": "The request is not valid. Rephrase it, or start a new conversation.",
+        "rate_limited": "Too many requests in a short time. Try again in a few minutes.",
+        "refused": "The agent could not answer this request. Rephrase it.",
+        "empty": "The agent could not prepare anything. Be more specific, or check the ticked channels.",
+        "failed": "The agent could not answer. Your message is kept: try again in a moment.",
+        "notFound": "This conversation no longer exists.",
+        "alreadySaved": "This post has already been saved."
+      },
+      "demo": {
+        "help": "I’m the demo agent. Describe a post (for example “Announce the workshop open on Saturday”) and I prepare it for the ticked channels; ask what is scheduled to look at the calendar.",
+        "noChannel": "Tick at least one channel I can publish to, then describe the post again.",
+        "intro": "Here is what I prepared for your channels.",
+        "skipped": "I prepared nothing for {networks}: the network requires a picture or a video (attach one), or publishing is not available there yet.",
+        "noPosts": "Nothing is scheduled in the next 30 days on the ticked channels.",
+        "upcoming": "Here is what is planned in the next 30 days:"
+      }
+    },
     "demoStrip": "Demo mode: sample data, nothing is sent to the networks.",
     "demoStripLong": "Demo mode: sample data, nothing is sent to the networks. Configure Supabase to use your real data.",
     "nav": {
@@ -1211,6 +1296,7 @@
       "soon": "Coming soon"
     },
     "titles": {
+      "agent": "Agent",
       "calendar": "Calendar",
       "inbox": "Inbox",
       "media": "Media",

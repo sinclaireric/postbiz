@@ -541,6 +541,7 @@
     }
   },
   "meta": {
+    "agentApp": "Agente",
     "siteTitle": "Postbiz — Agende seus posts, responda a todas as suas mensagens",
     "siteDescription": "O Postbiz reúne o agendamento das suas publicações e uma caixa de entrada unificada para as mensagens privadas e os comentários do Facebook, Instagram, X, LinkedIn, TikTok e YouTube.",
     "pricing": { "title": "Preços", "description": "Os preços do Postbiz: três planos, 20% de desconto no plano anual. O beta é gratuito, sem cartão de crédito." },
@@ -669,6 +670,90 @@
     }
   },
   "app": {
+    "agent": {
+      "channels": {
+        "title": "Canais",
+        "hint": "O agente só usa os canais marcados.",
+        "none": "Nenhum canal conectado.",
+        "add": "Conectar um canal",
+        "reconnect": "Precisa reconectar",
+        "selected": "Canais marcados: {count}"
+      },
+      "history": {
+        "title": "Conversas",
+        "new": "Nova conversa",
+        "empty": "As suas conversas aparecerão aqui.",
+        "delete": "Excluir a conversa «{title}»",
+        "confirmDelete": "Excluir?"
+      },
+      "welcome": {
+        "title": "Olá, sou o seu agente Postbiz.",
+        "text": "Descreva o que quer publicar: preparo uma publicação para cada canal marcado. Você a revisa, edita e depois a salva como rascunho ou a agenda. Nada é publicado sem o seu clique.",
+        "try": "Experimente, por exemplo"
+      },
+      "suggestions": {
+        "one": "Anuncie que a nossa oficina abre neste sábado, num tom caloroso.",
+        "two": "Prepare uma publicação sobre a novidade da semana para todos os meus canais.",
+        "three": "O que já está agendado esta semana?",
+        "four": "Escreva um post no LinkedIn para amanhã de manhã sobre os bastidores da nossa equipe."
+      },
+      "composer": {
+        "placeholder": "Descreva a publicação a preparar…",
+        "send": "Enviar",
+        "stop": "Parar",
+        "attach": "Anexar mídias da biblioteca",
+        "attached": "Mídias anexadas",
+        "hint": "O agente pode errar: revise cada publicação antes de agendá-la.",
+        "noChannel": "Marque pelo menos um canal para o agente poder preparar publicações.",
+        "viewer": "O seu papel (leitor) não permite usar o agente.",
+        "disabled": "O agente não está disponível: o serviço de IA não está configurado neste servidor."
+      },
+      "demoNote": "Modo demonstração: as respostas do agente são simuladas, nenhuma IA é chamada.",
+      "thinking": "O agente está pensando…",
+      "tool": {
+        "list_posts": "Consultando o calendário…",
+        "list_media": "Procurando na biblioteca de mídias…",
+        "propose_posts": "Preparando as publicações…"
+      },
+      "proposals": {
+        "fallback": "Aqui está o que preparei. Revise cada publicação, edite-a se necessário e salve-a como rascunho ou agende-a."
+      },
+      "card": {
+        "preview": "Pré-visualização",
+        "edit": "Editar",
+        "text": "Texto da publicação",
+        "date": "Data e hora de publicação",
+        "saveDraft": "Salvar como rascunho",
+        "schedule": "Agendar",
+        "saveAllDraft": "Salvar tudo como rascunho ({count})",
+        "scheduleAll": "Agendar tudo ({count})",
+        "drafted": "Rascunho",
+        "scheduled": "Agendada",
+        "scheduledFor": "Agendada para {date}",
+        "draftHint": "Salva como rascunho no calendário.",
+        "openCalendar": "Ver o calendário",
+        "channelGone": "Este canal já não está disponível: reconecte-o ou escolha outro."
+      },
+      "errors": {
+        "disabled": "O agente não está disponível: o serviço de IA não está configurado neste servidor.",
+        "forbidden": "O seu papel não permite usar o agente.",
+        "invalid": "O pedido não é válido. Reformule-o ou abra uma nova conversa.",
+        "rate_limited": "Pedidos demais em pouco tempo. Tente novamente em alguns minutos.",
+        "refused": "O agente não conseguiu responder a este pedido. Reformule-o.",
+        "empty": "O agente não conseguiu preparar nada. Seja mais preciso ou verifique os canais marcados.",
+        "failed": "O agente não conseguiu responder. A sua mensagem foi mantida: tente novamente daqui a pouco.",
+        "notFound": "Esta conversa já não existe.",
+        "alreadySaved": "Esta publicação já foi salva."
+      },
+      "demo": {
+        "help": "Sou o agente de demonstração. Descreva uma publicação (por exemplo «Anuncie a oficina aberta no sábado») e eu a preparo para os canais marcados; pergunte o que está agendado para consultar o calendário.",
+        "noChannel": "Marque pelo menos um canal em que eu possa publicar e descreva a publicação de novo.",
+        "intro": "Aqui está o que preparei para os seus canais.",
+        "skipped": "Não preparei nada para {networks}: a rede exige uma imagem ou um vídeo (anexe um), ou a publicação ainda não está disponível.",
+        "noPosts": "Não há nada agendado nos próximos 30 dias nos canais marcados.",
+        "upcoming": "Aqui está o que está previsto nos próximos 30 dias:"
+      }
+    },
     "demoStrip": "Modo demonstração: dados de exemplo, nada é enviado às redes.",
     "demoStripLong": "Modo demonstração: dados de exemplo, nada é enviado às redes. Configure o Supabase para usar seus dados reais.",
     "errors": { "generic": "A operação falhou. Tente novamente em instantes.", "channelNotFound": "Canal não encontrado." },
@@ -686,7 +771,7 @@
       "settings": "Ajustes",
       "soon": "Em breve"
     },
-    "titles": { "calendar": "Calendário", "inbox": "Caixa de entrada", "media": "Mídia", "channels": "Canais", "settings": "Configurações" },
+    "titles": { "agent": "Agente", "calendar": "Calendário", "inbox": "Caixa de entrada", "media": "Mídia", "channels": "Canais", "settings": "Configurações" },
     "notifications": {
       "title": "Notificações",
       "label": "Notificações",

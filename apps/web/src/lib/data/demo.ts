@@ -1,9 +1,10 @@
+import type { AgentMessage, AgentThread } from '@/lib/agent/types';
 import { replyWindow, validateReply } from '@/lib/inbox/logic';
 import type {
   ConversationDetail, ConversationStatus, ConversationSummary, InboxRepository, MessageItem, NetworkId, NoteItem,
 } from '@/lib/inbox/types';
 import type {
-  AppContext, CreatePostInput, IntegrationItem, KnowledgeInput, KnowledgeItem, KnowledgeRepository, MediaItem, MediaRepository, MemberItem, NotificationItem, PostItem, PostsRepository, Repositories, Result, WorkspaceRepository,
+  AgentRepository, AppContext, CreatePostInput, IntegrationItem, KnowledgeInput, KnowledgeItem, KnowledgeRepository, MediaItem, MediaRepository, MemberItem, NotificationItem, PostItem, PostsRepository, Repositories, Result, WorkspaceRepository,
 } from './types';
 
 // Mode démo : données d'exemple en mémoire, partagées par tous les visiteurs du serveur de développement.
@@ -29,6 +30,8 @@ interface Store {
   posts: PostItem[];
   knowledge: KnowledgeItem[];
   media: MediaItem[];
+  /** Conversations de l'agent (la plus récente en dernier). */
+  agentThreads: { thread: AgentThread; messages: AgentMessage[] }[];
   orgName: string;
   seq: number;
 }
@@ -152,7 +155,7 @@ function seed(): Store {
   });
 
   return {
-    conversations, integrations, media: library, orgName: DEMO_CONTEXT.org.name, seq,
+    conversations, integrations, media: library, agentThreads: [], orgName: DEMO_CONTEXT.org.name, seq,
     notifications: [
       { id: 'nt1', type: 'post_error', title: 'Canal à reconnecter', body: 'Le jeton d’accès a expiré : reconnectez le canal.', createdAt: ago(3 * H), read: false, href: '/app/calendrier' },
       { id: 'nt2', type: 'message_failed', title: 'Réponse non envoyée', body: 'La fenêtre de 24 h est dépassée : Meta n’autorise plus de réponse à cette conversation.', createdAt: ago(26 * H), read: true, href: '/app/inbox?c=c5' },
@@ -319,5 +322,45 @@ const knowledge: KnowledgeRepository = {
   },
 };
 
-export const demoRepositories: Repositories = { inbox, posts, workspace, media, knowledge };
+/** Conversations de l'agent du mode démo : en mémoire, comme le reste ; une seule personne (la démo) les voit. */
+const agent: AgentRepository = {
+  async threads() {
+    return [...(store().agentThreads ??= [])].map((t) => ({ ...t.thread })).sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+  },
+  async thread(threadId) {
+    const t = (store().agentThreads ??= []).find((x) => x.thread.id === threadId);
+    return t ? structuredClone(t) : null;
+  },
+  async saveExchange({ threadId, title, user, assistant }) {
+    const threads = (store().agentThreads ??= []);
+    let entry = threadId ? threads.find((x) => x.thread.id === threadId) : undefined;
+    if (threadId && !entry) return null;
+    const now = Date.now();
+    if (!entry) {
+      entry = { thread: { id: id('a'), title, updatedAt: new Date(now).toISOString() }, messages: [] };
+      threads.push(entry);
+    }
+    const userMessage: AgentMessage = { id: id('am'), role: 'user', text: user.text, proposals: [], mediaIds: user.mediaIds, createdAt: new Date(now).toISOString() };
+    const assistantMessage: AgentMessage = { id: id('am'), role: 'assistant', text: assistant.text, proposals: structuredClone(assistant.proposals), mediaIds: [], createdAt: new Date(now + 1).toISOString() };
+    entry.messages.push(userMessage, assistantMessage);
+    entry.thread.updatedAt = assistantMessage.createdAt;
+    return structuredClone({ thread: entry.thread, user: userMessage, assistant: assistantMessage });
+  },
+  async updateProposals(messageId, updates) {
+    const message = (store().agentThreads ??= []).flatMap((t) => t.messages).find((m) => m.id === messageId);
+    if (!message) return { ok: false, error: { key: 'app.agent.errors.failed' } };
+    for (const u of updates) {
+      const proposal = message.proposals.find((p) => p.id === u.id);
+      if (proposal) Object.assign(proposal, { status: u.status, text: u.text, firstComment: u.firstComment, mediaIds: u.mediaIds, publishAt: u.publishAt });
+    }
+    return { ok: true };
+  },
+  async removeThread(threadId) {
+    const s = store();
+    s.agentThreads = (s.agentThreads ?? []).filter((t) => t.thread.id !== threadId);
+    return { ok: true };
+  },
+};
+
+export const demoRepositories: Repositories = { inbox, posts, workspace, media, knowledge, agent };
 export const demoOrgName = () => store().orgName;
