@@ -16,7 +16,8 @@ const ORGANIZATIONS = 'https://api.linkedin.com/rest/organizations';
 const PROFILE_SCOPES = ['openid', 'profile', 'w_member_social'];
 // rw_organization_admin : lister les Pages administrées ; w_organization_social : publier et commenter au nom de la Page.
 // Pas d'openid/profile : l'application des Pages n'a que la Community Management API, sans « Sign In with LinkedIn ».
-const PAGE_SCOPES = ['rw_organization_admin', 'w_organization_social'];
+// r_organization_social : statistiques de la Page (impressions, interactions, abonnés), relevées chaque jour par le worker.
+const PAGE_SCOPES = ['rw_organization_admin', 'w_organization_social', 'r_organization_social'];
 const PROFILE_KEYS = ['LINKEDIN_CLIENT_ID', 'LINKEDIN_CLIENT_SECRET'] as const;
 const PAGE_KEYS = ['LINKEDIN_PAGE_CLIENT_ID', 'LINKEDIN_PAGE_CLIENT_SECRET'] as const;
 type Keys = readonly [string, string];

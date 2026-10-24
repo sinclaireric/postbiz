@@ -1,6 +1,7 @@
 import type { Env } from '@postbiz/core';
 import { OutcomeUnknownError } from './errors.ts';
 import { mutate, type Fetch } from './http.ts';
+import { xMetrics } from './insights/x.ts';
 import { oauthRefresher } from './oauth.ts';
 import type { SocialProvider } from './types.ts';
 
@@ -11,6 +12,7 @@ export const createXProvider = (fetchImpl: Fetch = fetch, env: Env = process.env
   supportsThreads: false,
   supportsMedia: false,
   refreshToken: oauthRefresher('x', fetchImpl, env),
+  metrics: xMetrics(fetchImpl),
   async publish({ accessToken, posts }) {
     const post = posts[0]!;
     const res = await mutate(

@@ -1096,6 +1096,7 @@
     "inbox": "Inbox",
     "media": "Media",
     "channelsApp": "Channels",
+    "analyticsApp": "Analytics",
     "settings": "Settings",
     "welcome": "Welcome",
     "titleTemplate": "{page} · Postbiz"
@@ -1301,7 +1302,113 @@
       "inbox": "Inbox",
       "media": "Media",
       "channels": "Channels",
-      "settings": "Settings"
+      "settings": "Settings",
+      "analytics": "Analytics"
+    },
+    "analytics": {
+      "filters": {
+        "channel": "Channel",
+        "all": "All channels",
+        "period": "Period"
+      },
+      "period": {
+        "d7": "7 days",
+        "d30": "30 days",
+        "d90": "90 days"
+      },
+      "range": "{from} – {to} · compared with {prevFrom} – {prevTo}",
+      "summary": {
+        "title": "Summary"
+      },
+      "group": {
+        "audience": "Audience",
+        "activity": "Activity"
+      },
+      "metric": {
+        "followers": "Followers",
+        "reach": "Reach",
+        "engagement": "Engagement",
+        "engagementRate": "Engagement rate",
+        "published": "Posts",
+        "received": "Messages received",
+        "replies": "Replies sent",
+        "failed": "Failures"
+      },
+      "hint": {
+        "followers": "Total followers across your channels.",
+        "reach": "How many times your content was seen.",
+        "engagement": "Likes, comments, shares and saves.",
+        "engagementRate": "Interactions divided by reach.",
+        "published": "Posts sent on your channels.",
+        "received": "Direct messages and comments received.",
+        "replies": "Replies sent from the inbox.",
+        "failed": "Posts the network rejected or that need checking."
+      },
+      "card": {
+        "noData": "No data yet",
+        "vsPrevious": "vs previous period",
+        "points": "{value} pp",
+        "info": "What this metric means"
+      },
+      "delta": {
+        "up": "Up",
+        "down": "Down",
+        "flat": "Unchanged"
+      },
+      "audienceNotice": {
+        "title": "Audience statistics",
+        "text": "Audience statistics (followers, reach, engagement) are collected every day from your networks. They appear here after the first collection."
+      },
+      "scopeNotice": {
+        "title": "Permission to renew",
+        "text": "To collect statistics for {channels}, reconnect the channel: the network will ask you for an additional permission."
+      },
+      "detail": {
+        "previous": "Previous period",
+        "perDay": "Average per day",
+        "peak": "Best day",
+        "start": "Start of period",
+        "change": "Change",
+        "changePerDay": "Change per day",
+        "noDataText": "No statistics received for this channel in this period."
+      },
+      "chart": {
+        "label": "{metric}: {total}, from {from} to {to}",
+        "bar": "{date}: {value}",
+        "table": "Show day-by-day values",
+        "tableDay": "Day",
+        "tableValue": "Value"
+      },
+      "recent": {
+        "title": "Recent posts",
+        "range": "{from} – {to}",
+        "empty": "No posts sent in this period.",
+        "open": "View on {network}",
+        "noText": "Post without text"
+      },
+      "performance": {
+        "title": "Performance by channel",
+        "sorted": "Ranked by the selected metric.",
+        "total": "Total",
+        "show": "Show “{metric}”"
+      },
+      "queue": {
+        "title": "Publishing queue",
+        "upcoming": "Scheduled in the next 7 days",
+        "drafts": "Drafts",
+        "open": "Open the calendar"
+      },
+      "empty": {
+        "title": "No channel connected",
+        "text": "Connect a channel to see its figures here.",
+        "cta": "Connect a channel"
+      },
+      "notes": {
+        "source": "Activity: calculated by Postbiz. Audience: collected daily from the networks. Days counted in UTC.",
+        "demo": "Demo mode: all these figures are sample data, not measurements.",
+        "truncated": "Very high volume: these totals are partial.",
+        "error": "Some statistics couldn’t be loaded right now: figures may be incomplete."
+      }
     },
     "notifications": {
       "title": "Notifications",

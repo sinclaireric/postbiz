@@ -1,6 +1,7 @@
 import type { Env } from '@postbiz/core';
 import { PublishRejectedError } from './errors.ts';
 import type { Fetch } from './http.ts';
+import { youtubeMetrics } from './insights/youtube.ts';
 import { oauthRefresher } from './oauth.ts';
 import type { SocialProvider } from './types.ts';
 
@@ -11,6 +12,7 @@ export const createYouTubeProvider = (fetchImpl: Fetch = fetch, env: Env = proce
   supportsThreads: false,
   supportsMedia: false,
   refreshToken: oauthRefresher('google', fetchImpl, env),
+  metrics: youtubeMetrics(fetchImpl),
   async publish() {
     throw new PublishRejectedError('La publication sur YouTube n’est pas encore disponible (l’envoi de vidéos n’est pas branché).');
   },

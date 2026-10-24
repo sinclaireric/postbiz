@@ -1,5 +1,6 @@
 import { DEFAULT_LINKEDIN_API_VERSION, linkedInApiVersion, type Env } from '@postbiz/core';
 import { OutcomeUnknownError } from './errors.ts';
+import { linkedInPageMetrics } from './insights/linkedin.ts';
 import { mutate, type Fetch } from './http.ts';
 import { oauthRefresher } from './oauth.ts';
 import type { SocialProvider } from './types.ts';
@@ -23,6 +24,8 @@ export const createLinkedInProvider = (fetchImpl: Fetch = fetch, env: Env = proc
   supportsMedia: false,
   // Les Pages ont leur propre application LinkedIn : on rafraîchit avec ses clés.
   refreshToken: oauthRefresher(family, fetchImpl, env),
+  // Statistiques : les Pages seulement (l'API n'en donne pas pour un profil personnel).
+  metrics: family === 'linkedin_page' ? linkedInPageMetrics(fetchImpl, env) : undefined,
   async publish({ accessToken, integration, posts }) {
     const post = posts[0]!;
     const author = (integration.settings.author_urn as string | undefined) ?? `urn:li:person:${integration.internalId}`;

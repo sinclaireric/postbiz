@@ -1,5 +1,6 @@
 import { OutcomeUnknownError, PublishRejectedError } from './errors.ts';
 import { mutate, type Fetch } from './http.ts';
+import { facebookMetrics } from './insights/facebook.ts';
 import { GRAPH_VERSION as VERSION } from './meta.ts';
 import type { ResolvedMedia, SocialProvider } from './types.ts';
 
@@ -34,6 +35,7 @@ export const createFacebookProvider = (fetchImpl: Fetch = fetch): SocialProvider
     id: 'facebook',
     supportsThreads: false,
     supportsMedia: true,
+    metrics: facebookMetrics(fetchImpl),
     async publish({ accessToken, integration, posts }) {
       const post = posts[0]!;
       const page = integration.internalId;

@@ -347,7 +347,7 @@ describe('completeConnection — LinkedIn : profil et Pages', () => {
 
   it('les Pages demandent les permissions d’organisation et laissent choisir celles à connecter', async () => {
     const { store, done, url, deps } = await liStart('linkedin_page');
-    expect(new URL(url).searchParams.get('scope')).toBe('rw_organization_admin w_organization_social');
+    expect(new URL(url).searchParams.get('scope')).toBe('rw_organization_admin w_organization_social r_organization_social');
     expect(done.kind).toBe('select');
     expect(store.channels.size).toBe(0);
     if (done.kind !== 'select') throw new Error();

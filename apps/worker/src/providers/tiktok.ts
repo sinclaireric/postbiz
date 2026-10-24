@@ -1,6 +1,7 @@
 import type { Env } from '@postbiz/core';
 import { PublishRejectedError } from './errors.ts';
 import type { Fetch } from './http.ts';
+import { tiktokMetrics } from './insights/tiktok.ts';
 import { oauthRefresher } from './oauth.ts';
 import type { SocialProvider } from './types.ts';
 
@@ -11,6 +12,7 @@ export const createTikTokProvider = (fetchImpl: Fetch = fetch, env: Env = proces
   supportsThreads: false,
   supportsMedia: false,
   refreshToken: oauthRefresher('tiktok', fetchImpl, env),
+  metrics: tiktokMetrics(fetchImpl),
   async publish() {
     throw new PublishRejectedError('La publication sur TikTok n’est pas encore disponible (l’envoi de vidéos n’est pas branché).');
   },

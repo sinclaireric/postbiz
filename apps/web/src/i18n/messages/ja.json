@@ -525,6 +525,7 @@
     "inbox": "受信トレイ",
     "media": "メディア",
     "channelsApp": "チャネル",
+    "analyticsApp": "分析",
     "settings": "設定",
     "welcome": "ようこそ",
     "titleTemplate": "{page} · Postbiz"
@@ -729,7 +730,112 @@
       "settings": "設定",
       "soon": "近日対応"
     },
-    "titles": { "agent": "エージェント", "calendar": "カレンダー", "inbox": "受信トレイ", "media": "メディア", "channels": "チャネル", "settings": "設定" },
+    "titles": { "agent": "エージェント", "calendar": "カレンダー", "inbox": "受信トレイ", "media": "メディア", "channels": "チャネル", "settings": "設定", "analytics": "分析" },
+    "analytics": {
+      "filters": {
+        "channel": "チャネル",
+        "all": "すべてのチャネル",
+        "period": "期間"
+      },
+      "period": {
+        "d7": "7日間",
+        "d30": "30日間",
+        "d90": "90日間"
+      },
+      "range": "{from} – {to} · 比較対象:{prevFrom} – {prevTo}",
+      "summary": {
+        "title": "サマリー"
+      },
+      "group": {
+        "audience": "オーディエンス",
+        "activity": "アクティビティ"
+      },
+      "metric": {
+        "followers": "フォロワー",
+        "reach": "リーチ",
+        "engagement": "エンゲージメント",
+        "engagementRate": "エンゲージメント率",
+        "published": "投稿",
+        "received": "受信メッセージ",
+        "replies": "送信した返信",
+        "failed": "失敗"
+      },
+      "hint": {
+        "followers": "すべてのチャネルのフォロワー総数です。",
+        "reach": "コンテンツが表示された回数です。",
+        "engagement": "いいね、コメント、シェア、保存の合計です。",
+        "engagementRate": "インタラクション数をリーチで割った値です。",
+        "published": "チャネルに送信された投稿です。",
+        "received": "受信したダイレクトメッセージとコメントです。",
+        "replies": "受信トレイから送信した返信です。",
+        "failed": "ネットワークに拒否された、または確認が必要な投稿です。"
+      },
+      "card": {
+        "noData": "データはまだありません",
+        "vsPrevious": "前の期間比",
+        "points": "{value}ポイント",
+        "info": "指標の説明"
+      },
+      "delta": {
+        "up": "増加",
+        "down": "減少",
+        "flat": "変化なし"
+      },
+      "audienceNotice": {
+        "title": "オーディエンス統計",
+        "text": "オーディエンス統計(フォロワー、リーチ、エンゲージメント)は、SNSから毎日収集されます。初回の収集後にここに表示されます。"
+      },
+      "scopeNotice": {
+        "title": "権限の更新が必要です",
+        "text": "{channels}の統計を収集するには、チャネルを再接続してください。ネットワークから追加の権限を求められます。"
+      },
+      "detail": {
+        "previous": "前の期間",
+        "perDay": "1日あたりの平均",
+        "peak": "最も多い日",
+        "start": "期間の開始時",
+        "change": "増減",
+        "changePerDay": "1日あたりの増減",
+        "noDataText": "この期間、このチャネルの統計は受信されていません。"
+      },
+      "chart": {
+        "label": "{metric}:{total}({from}〜{to})",
+        "bar": "{date}:{value}",
+        "table": "日別の値を表示",
+        "tableDay": "日付",
+        "tableValue": "値"
+      },
+      "recent": {
+        "title": "最近の投稿",
+        "range": "{from} – {to}",
+        "empty": "この期間に送信された投稿はありません。",
+        "open": "{network}で見る",
+        "noText": "テキストなしの投稿"
+      },
+      "performance": {
+        "title": "チャネル別パフォーマンス",
+        "sorted": "選択中の指標で並べ替えています。",
+        "total": "合計",
+        "show": "「{metric}」を表示"
+      },
+      "queue": {
+        "title": "投稿キュー",
+        "upcoming": "今後7日間の予約",
+        "drafts": "下書き",
+        "open": "カレンダーを開く"
+      },
+      "empty": {
+        "title": "接続済みのチャネルがありません",
+        "text": "チャネルを接続すると、ここに数値が表示されます。",
+        "cta": "チャネルを接続"
+      },
+      "notes": {
+        "source": "アクティビティ:Postbizが集計。オーディエンス:SNSから毎日収集。日付はUTC基準です。",
+        "demo": "デモモード:ここにある数値はすべてサンプルデータで、実測値ではありません。",
+        "truncated": "データ量が非常に多いため、これらの合計は一部のみです。",
+        "error": "現在、一部の統計を読み込めませんでした。数値が不完全な可能性があります。"
+      }
+    },
     "notifications": {
       "title": "通知",
       "label": "通知",

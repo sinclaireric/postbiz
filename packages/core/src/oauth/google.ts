@@ -9,7 +9,8 @@ const AUTHORIZE = 'https://accounts.google.com/o/oauth2/v2/auth';
 const TOKEN = 'https://oauth2.googleapis.com/token';
 const REVOKE = 'https://oauth2.googleapis.com/revoke';
 const CHANNELS = 'https://www.googleapis.com/youtube/v3/channels?part=snippet&mine=true';
-const SCOPES = ['https://www.googleapis.com/auth/youtube.upload', 'https://www.googleapis.com/auth/youtube.force-ssl'];
+// yt-analytics.readonly : statistiques de la chaîne (vues, interactions), relevées chaque jour par le worker (l'abonné compte vient de youtube.force-ssl).
+const SCOPES = ['https://www.googleapis.com/auth/youtube.upload', 'https://www.googleapis.com/auth/youtube.force-ssl', 'https://www.googleapis.com/auth/yt-analytics.readonly'];
 const KEYS = ['GOOGLE_CLIENT_ID', 'GOOGLE_CLIENT_SECRET'] as const;
 
 async function token(ctx: OAuthContext, form: Record<string, string>): Promise<TokenSet> {

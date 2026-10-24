@@ -5,6 +5,8 @@ export interface WorkerConfig {
   dryRun: boolean;
   pollIntervalMs: number;
   refreshIntervalMs: number;
+  metricsIntervalMs: number;
+  metricsBatch: number;
   postBatch: number;
   messageBatch: number;
   commentBatch: number;
@@ -21,6 +23,9 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): WorkerConfig {
     dryRun: env.WORKER_DRY_RUN === '1',
     pollIntervalMs: int(env.WORKER_POLL_INTERVAL_MS, 5_000),
     refreshIntervalMs: int(env.WORKER_REFRESH_INTERVAL_MS, 60_000),
+    // La collecte des statistiques ne presse pas : un passage toutes les 5 minutes réclame les canaux dont l'échéance (6 h) est passée.
+    metricsIntervalMs: int(env.WORKER_METRICS_INTERVAL_MS, 300_000),
+    metricsBatch: int(env.WORKER_METRICS_BATCH, 10),
     postBatch: int(env.WORKER_POST_BATCH, 5),
     messageBatch: int(env.WORKER_MESSAGE_BATCH, 20),
     commentBatch: int(env.WORKER_COMMENT_BATCH, 10),

@@ -1114,6 +1114,7 @@
     "inbox": "Boîte de réception",
     "media": "Médias",
     "channelsApp": "Canaux",
+    "analyticsApp": "Analyses",
     "settings": "Réglages",
     "welcome": "Bienvenue",
     "titleTemplate": "{page} · Postbiz"
@@ -1319,7 +1320,113 @@
       "inbox": "Boîte de réception",
       "media": "Médias",
       "channels": "Canaux",
-      "settings": "Paramètres"
+      "settings": "Paramètres",
+      "analytics": "Analyses"
+    },
+    "analytics": {
+      "filters": {
+        "channel": "Canal",
+        "all": "Tous les canaux",
+        "period": "Période"
+      },
+      "period": {
+        "d7": "7 jours",
+        "d30": "30 jours",
+        "d90": "90 jours"
+      },
+      "range": "{from} – {to} · comparé au {prevFrom} – {prevTo}",
+      "summary": {
+        "title": "Résumé"
+      },
+      "group": {
+        "audience": "Audience",
+        "activity": "Activité"
+      },
+      "metric": {
+        "followers": "Abonnés",
+        "reach": "Portée",
+        "engagement": "Engagement",
+        "engagementRate": "Taux d’engagement",
+        "published": "Publications",
+        "received": "Messages reçus",
+        "replies": "Réponses envoyées",
+        "failed": "Échecs"
+      },
+      "hint": {
+        "followers": "Nombre total d’abonnés sur vos canaux.",
+        "reach": "Combien de fois vos contenus ont été vus.",
+        "engagement": "J’aime, commentaires, partages et enregistrements.",
+        "engagementRate": "Interactions divisées par la portée.",
+        "published": "Publications envoyées sur vos canaux.",
+        "received": "Messages privés et commentaires reçus.",
+        "replies": "Réponses envoyées depuis la boîte de réception.",
+        "failed": "Publications refusées par le réseau ou à vérifier."
+      },
+      "card": {
+        "noData": "Pas encore de données",
+        "vsPrevious": "vs période préc.",
+        "points": "{value} pt",
+        "info": "Définition de la métrique"
+      },
+      "delta": {
+        "up": "En hausse",
+        "down": "En baisse",
+        "flat": "Stable"
+      },
+      "audienceNotice": {
+        "title": "Statistiques d’audience",
+        "text": "Les statistiques d’audience (abonnés, portée, engagement) sont relevées chaque jour auprès de vos réseaux. Elles apparaissent ici après la première collecte."
+      },
+      "scopeNotice": {
+        "title": "Autorisation à renouveler",
+        "text": "Pour relever les statistiques de {channels}, reconnectez le canal : le réseau vous demandera une autorisation supplémentaire."
+      },
+      "detail": {
+        "previous": "Période précédente",
+        "perDay": "Moyenne par jour",
+        "peak": "Meilleur jour",
+        "start": "Début de période",
+        "change": "Évolution",
+        "changePerDay": "Évolution par jour",
+        "noDataText": "Aucune statistique reçue pour ce canal sur cette période."
+      },
+      "chart": {
+        "label": "{metric} : {total}, du {from} au {to}",
+        "bar": "{date} : {value}",
+        "table": "Voir les valeurs jour par jour",
+        "tableDay": "Jour",
+        "tableValue": "Valeur"
+      },
+      "recent": {
+        "title": "Publications récentes",
+        "range": "{from} – {to}",
+        "empty": "Aucune publication envoyée sur cette période.",
+        "open": "Voir sur {network}",
+        "noText": "Publication sans texte"
+      },
+      "performance": {
+        "title": "Performance par canal",
+        "sorted": "Classé selon la métrique sélectionnée.",
+        "total": "Total",
+        "show": "Afficher « {metric} »"
+      },
+      "queue": {
+        "title": "File de publication",
+        "upcoming": "Prévues sous 7 jours",
+        "drafts": "Brouillons",
+        "open": "Ouvrir le calendrier"
+      },
+      "empty": {
+        "title": "Aucun canal connecté",
+        "text": "Connectez un canal pour voir ses chiffres ici.",
+        "cta": "Connecter un canal"
+      },
+      "notes": {
+        "source": "Activité : calculée par Postbiz. Audience : relevée chaque jour auprès des réseaux. Jours comptés en UTC.",
+        "demo": "Mode démo : tous ces chiffres sont des données d’exemple, pas des mesures.",
+        "truncated": "Volume très élevé : ces totaux sont partiels.",
+        "error": "Impossible de charger toutes les statistiques pour le moment : les chiffres peuvent être incomplets."
+      }
     },
     "notifications": {
       "title": "Notifications",

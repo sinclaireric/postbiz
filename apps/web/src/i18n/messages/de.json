@@ -582,6 +582,7 @@
     "inbox": "Posteingang",
     "media": "Medien",
     "channelsApp": "Kanäle",
+    "analyticsApp": "Analysen",
     "settings": "Einstellungen",
     "welcome": "Willkommen",
     "titleTemplate": "{page} · Postbiz"
@@ -786,7 +787,112 @@
       "settings": "Einstellungen",
       "soon": "Demnächst verfügbar"
     },
-    "titles": { "agent": "Agent", "calendar": "Kalender", "inbox": "Posteingang", "media": "Medien", "channels": "Kanäle", "settings": "Einstellungen" },
+    "titles": { "agent": "Agent", "calendar": "Kalender", "inbox": "Posteingang", "media": "Medien", "channels": "Kanäle", "settings": "Einstellungen", "analytics": "Analysen" },
+    "analytics": {
+      "filters": {
+        "channel": "Kanal",
+        "all": "Alle Kanäle",
+        "period": "Zeitraum"
+      },
+      "period": {
+        "d7": "7 Tage",
+        "d30": "30 Tage",
+        "d90": "90 Tage"
+      },
+      "range": "{from} – {to} · im Vergleich zu {prevFrom} – {prevTo}",
+      "summary": {
+        "title": "Überblick"
+      },
+      "group": {
+        "audience": "Zielgruppe",
+        "activity": "Aktivität"
+      },
+      "metric": {
+        "followers": "Follower",
+        "reach": "Reichweite",
+        "engagement": "Interaktionen",
+        "engagementRate": "Interaktionsrate",
+        "published": "Beiträge",
+        "received": "Empfangene Nachrichten",
+        "replies": "Gesendete Antworten",
+        "failed": "Fehler"
+      },
+      "hint": {
+        "followers": "Gesamtzahl der Follower in Ihren Kanälen.",
+        "reach": "Wie oft Ihre Inhalte gesehen wurden.",
+        "engagement": "Likes, Kommentare, Shares und Speicherungen.",
+        "engagementRate": "Interaktionen geteilt durch die Reichweite.",
+        "published": "In Ihren Kanälen veröffentlichte Beiträge.",
+        "received": "Empfangene Direktnachrichten und Kommentare.",
+        "replies": "Aus dem Posteingang gesendete Antworten.",
+        "failed": "Vom Netzwerk abgelehnte oder zu prüfende Beiträge."
+      },
+      "card": {
+        "noData": "Noch keine Daten",
+        "vsPrevious": "ggü. Vorzeitraum",
+        "points": "{value} Pp.",
+        "info": "Bedeutung dieser Kennzahl"
+      },
+      "delta": {
+        "up": "Anstieg",
+        "down": "Rückgang",
+        "flat": "Unverändert"
+      },
+      "audienceNotice": {
+        "title": "Zielgruppen-Statistiken",
+        "text": "Die Zielgruppen-Statistiken (Follower, Reichweite, Interaktionen) werden täglich aus Ihren Netzwerken erfasst. Sie erscheinen hier nach der ersten Erfassung."
+      },
+      "scopeNotice": {
+        "title": "Berechtigung erneuern",
+        "text": "Um die Statistiken von {channels} zu erfassen, verbinden Sie den Kanal erneut: Das Netzwerk fragt eine zusätzliche Berechtigung ab."
+      },
+      "detail": {
+        "previous": "Vorheriger Zeitraum",
+        "perDay": "Durchschnitt pro Tag",
+        "peak": "Bester Tag",
+        "start": "Beginn des Zeitraums",
+        "change": "Veränderung",
+        "changePerDay": "Veränderung pro Tag",
+        "noDataText": "Für diesen Kanal wurden in diesem Zeitraum keine Statistiken empfangen."
+      },
+      "chart": {
+        "label": "{metric}: {total}, vom {from} bis {to}",
+        "bar": "{date}: {value}",
+        "table": "Werte Tag für Tag anzeigen",
+        "tableDay": "Tag",
+        "tableValue": "Wert"
+      },
+      "recent": {
+        "title": "Neueste Beiträge",
+        "range": "{from} – {to}",
+        "empty": "In diesem Zeitraum wurden keine Beiträge gesendet.",
+        "open": "Auf {network} ansehen",
+        "noText": "Beitrag ohne Text"
+      },
+      "performance": {
+        "title": "Leistung nach Kanal",
+        "sorted": "Sortiert nach der gewählten Kennzahl.",
+        "total": "Gesamt",
+        "show": "„{metric}“ anzeigen"
+      },
+      "queue": {
+        "title": "Veröffentlichungswarteschlange",
+        "upcoming": "Geplant in den nächsten 7 Tagen",
+        "drafts": "Entwürfe",
+        "open": "Kalender öffnen"
+      },
+      "empty": {
+        "title": "Kein Kanal verbunden",
+        "text": "Verbinden Sie einen Kanal, um hier seine Zahlen zu sehen.",
+        "cta": "Kanal verbinden"
+      },
+      "notes": {
+        "source": "Aktivität: von Postbiz berechnet. Zielgruppe: täglich aus den Netzwerken erfasst. Tage in UTC gezählt.",
+        "demo": "Demomodus: Alle diese Zahlen sind Beispieldaten, keine Messwerte.",
+        "truncated": "Sehr hohes Volumen: Diese Summen sind unvollständig.",
+        "error": "Nicht alle Statistiken konnten gerade geladen werden: Die Zahlen sind möglicherweise unvollständig."
+      }
+    },
     "notifications": {
       "title": "Benachrichtigungen",
       "label": "Benachrichtigungen",

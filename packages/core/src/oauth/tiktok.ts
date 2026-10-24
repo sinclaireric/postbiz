@@ -8,7 +8,8 @@ const AUTHORIZE = 'https://www.tiktok.com/v2/auth/authorize/';
 const TOKEN = 'https://open.tiktokapis.com/v2/oauth/token/';
 const REVOKE = 'https://open.tiktokapis.com/v2/oauth/revoke/';
 const USER = 'https://open.tiktokapis.com/v2/user/info/?fields=open_id,avatar_url,display_name';
-const SCOPES = ['user.info.basic', 'video.publish', 'video.upload'];
+// user.info.stats : nombre d'abonnés du compte, relevé chaque jour par le worker.
+const SCOPES = ['user.info.basic', 'video.publish', 'video.upload', 'user.info.stats'];
 const KEYS = ['TIKTOK_CLIENT_KEY', 'TIKTOK_CLIENT_SECRET'] as const;
 
 async function token(ctx: OAuthContext, form: Record<string, string>): Promise<{ tokens: TokenSet; openId: string | null }> {

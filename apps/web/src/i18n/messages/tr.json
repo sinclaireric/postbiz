@@ -570,6 +570,7 @@
     "inbox": "Gelen kutusu",
     "media": "Medya",
     "channelsApp": "Kanallar",
+    "analyticsApp": "Analitik",
     "settings": "Ayarlar",
     "welcome": "Hoş geldiniz",
     "titleTemplate": "{page} · Postbiz"
@@ -774,7 +775,112 @@
       "settings": "Ayarlar",
       "soon": "Yakında"
     },
-    "titles": { "agent": "Ajan", "calendar": "Takvim", "inbox": "Gelen kutusu", "media": "Medya", "channels": "Kanallar", "settings": "Ayarlar" },
+    "titles": { "agent": "Ajan", "calendar": "Takvim", "inbox": "Gelen kutusu", "media": "Medya", "channels": "Kanallar", "settings": "Ayarlar", "analytics": "Analitik" },
+    "analytics": {
+      "filters": {
+        "channel": "Kanal",
+        "all": "Tüm kanallar",
+        "period": "Dönem"
+      },
+      "period": {
+        "d7": "7 gün",
+        "d30": "30 gün",
+        "d90": "90 gün"
+      },
+      "range": "{from} – {to} · karşılaştırma: {prevFrom} – {prevTo}",
+      "summary": {
+        "title": "Özet"
+      },
+      "group": {
+        "audience": "Kitle",
+        "activity": "Etkinlik"
+      },
+      "metric": {
+        "followers": "Takipçiler",
+        "reach": "Erişim",
+        "engagement": "Etkileşim",
+        "engagementRate": "Etkileşim oranı",
+        "published": "Gönderiler",
+        "received": "Gelen mesajlar",
+        "replies": "Gönderilen yanıtlar",
+        "failed": "Hatalar"
+      },
+      "hint": {
+        "followers": "Kanallarınızdaki toplam takipçi sayısı.",
+        "reach": "İçeriklerinizin kaç kez görüntülendiği.",
+        "engagement": "Beğeniler, yorumlar, paylaşımlar ve kaydetmeler.",
+        "engagementRate": "Etkileşimlerin erişime bölümü.",
+        "published": "Kanallarınıza gönderilen gönderiler.",
+        "received": "Gelen özel mesajlar ve yorumlar.",
+        "replies": "Gelen kutusundan gönderilen yanıtlar.",
+        "failed": "Ağ tarafından reddedilen veya kontrol edilmesi gereken gönderiler."
+      },
+      "card": {
+        "noData": "Henüz veri yok",
+        "vsPrevious": "önceki döneme göre",
+        "points": "{value} puan",
+        "info": "Bu metriğin anlamı"
+      },
+      "delta": {
+        "up": "Artış",
+        "down": "Düşüş",
+        "flat": "Değişmedi"
+      },
+      "audienceNotice": {
+        "title": "Kitle istatistikleri",
+        "text": "Kitle istatistikleri (takipçi, erişim, etkileşim) her gün sosyal ağlarınızdan toplanır. İlk toplamadan sonra burada görünür."
+      },
+      "scopeNotice": {
+        "title": "İznin yenilenmesi gerekiyor",
+        "text": "{channels} için istatistik toplamak için kanalı yeniden bağlayın: ağ sizden ek bir izin isteyecek."
+      },
+      "detail": {
+        "previous": "Önceki dönem",
+        "perDay": "Günlük ortalama",
+        "peak": "En iyi gün",
+        "start": "Dönem başı",
+        "change": "Değişim",
+        "changePerDay": "Günlük değişim",
+        "noDataText": "Bu kanal için bu dönemde istatistik alınmadı."
+      },
+      "chart": {
+        "label": "{metric}: {total}, {from} – {to} arası",
+        "bar": "{date}: {value}",
+        "table": "Değerleri gün gün göster",
+        "tableDay": "Gün",
+        "tableValue": "Değer"
+      },
+      "recent": {
+        "title": "Son gönderiler",
+        "range": "{from} – {to}",
+        "empty": "Bu dönemde gönderi yayınlanmadı.",
+        "open": "{network} üzerinde gör",
+        "noText": "Metinsiz gönderi"
+      },
+      "performance": {
+        "title": "Kanal performansı",
+        "sorted": "Seçili metriğe göre sıralandı.",
+        "total": "Toplam",
+        "show": "“{metric}” göster"
+      },
+      "queue": {
+        "title": "Yayın kuyruğu",
+        "upcoming": "Önümüzdeki 7 güne planlanan",
+        "drafts": "Taslaklar",
+        "open": "Takvimi aç"
+      },
+      "empty": {
+        "title": "Bağlı kanal yok",
+        "text": "Rakamlarını burada görmek için bir kanal bağlayın.",
+        "cta": "Kanal bağla"
+      },
+      "notes": {
+        "source": "Etkinlik: Postbiz hesaplar. Kitle: her gün sosyal ağlardan toplanır. Günler UTC’ye göre sayılır.",
+        "demo": "Demo modu: buradaki tüm rakamlar örnek veridir, ölçüm değildir.",
+        "truncated": "Hacim çok yüksek: bu toplamlar eksiktir.",
+        "error": "Şu anda istatistiklerin tamamı yüklenemedi: rakamlar eksik olabilir."
+      }
+    },
     "notifications": {
       "title": "Bildirimler",
       "label": "Bildirimler",

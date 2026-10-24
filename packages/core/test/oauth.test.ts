@@ -161,7 +161,7 @@ describe('LinkedIn', () => {
       expect(missingEnv(lp, PAGE_ENV)).toEqual([]);
       const ctx = { ...fakeNet({}).ctx, env: PAGE_ENV };
       const u = new URL(lp.authorizeUrl(ctx, { network: 'linkedin_page', redirectUri: 'https://app.test/cb', state: 'S', codeChallenge: null }));
-      expect(u.searchParams.get('scope')).toBe('rw_organization_admin w_organization_social');
+      expect(u.searchParams.get('scope')).toBe('rw_organization_admin w_organization_social r_organization_social');
       expect(u.searchParams.get('client_id')).toBe('lp-id');
     });
     it('échange le code et rafraîchit avec les clés de l’application des Pages, pas celles du profil', async () => {
@@ -211,7 +211,7 @@ describe('Instagram Login (standalone)', () => {
     const u = new URL(ig.authorizeUrl({ ...fakeNet({}).ctx, env: IG_ENV }, { network: 'instagram_standalone', redirectUri: 'https://app.test/cb', state: 'S', codeChallenge: null }));
     expect(u.origin + u.pathname).toBe('https://www.instagram.com/oauth/authorize');
     expect(u.searchParams.get('client_id')).toBe('ig-id');
-    expect(u.searchParams.get('scope')).toBe('instagram_business_basic,instagram_business_manage_messages,instagram_business_manage_comments');
+    expect(u.searchParams.get('scope')).toBe('instagram_business_basic,instagram_business_manage_messages,instagram_business_manage_comments,instagram_business_manage_insights');
     expect(u.searchParams.has('code_challenge')).toBe(false);
   });
   it('échange le code (réponse à plat ou dans data[0]), puis le jeton court contre un jeton de 60 jours qui sert aussi de refresh token', async () => {
@@ -271,6 +271,12 @@ describe('Google / YouTube', () => {
     expect(u.searchParams.get('prompt')).toBe('consent');
     expect(u.searchParams.get('code_challenge_method')).toBe('S256');
   });
+  it('demande l’autorisation des statistiques de la chaîne en plus de l’envoi de vidéos', () => {
+    const u = new URL(g.authorizeUrl(fakeNet({}).ctx, { network: 'youtube', redirectUri: 'https://app.test/cb', state: 'S', codeChallenge: 'CH' }));
+    expect(u.searchParams.get('scope')!.split(' ')).toEqual(expect.arrayContaining([
+      'https://www.googleapis.com/auth/youtube.upload', 'https://www.googleapis.com/auth/youtube.force-ssl', 'https://www.googleapis.com/auth/yt-analytics.readonly',
+    ]));
+  });
   it('le rafraîchissement sans nouveau refresh token le laisse inchangé (null)', async () => {
     const { ctx } = fakeNet({ 'oauth2.googleapis.com/token': { body: { access_token: 'AT2', expires_in: 3599 } } });
     expect(await g.refresh!(ctx, 'RT')).toEqual({ accessToken: 'AT2', refreshToken: null, expiresAt: new Date(NOW.getTime() + 3599_000) });
@@ -294,7 +300,7 @@ describe('TikTok', () => {
   it('construit l’URL avec client_key et scopes séparés par des virgules', () => {
     const u = new URL(t.authorizeUrl(fakeNet({}).ctx, { network: 'tiktok', redirectUri: 'https://app.test/cb', state: 'S', codeChallenge: null }));
     expect(u.searchParams.get('client_key')).toBe('tt-key');
-    expect(u.searchParams.get('scope')).toBe('user.info.basic,video.publish,video.upload');
+    expect(u.searchParams.get('scope')).toBe('user.info.basic,video.publish,video.upload,user.info.stats');
   });
   it('traite une erreur renvoyée dans un corps 200 comme un refus', async () => {
     const { ctx } = fakeNet({ '/oauth/token': { status: 200, body: { error: 'invalid_grant', error_description: 'Refresh token is expired' } } });
@@ -341,6 +347,15 @@ describe('Meta', () => {
     expect(scope('facebook')).toContain('pages_messaging');
     expect(scope('facebook')).not.toContain('instagram_manage_messages');
     expect(scope('instagram')).toEqual(expect.arrayContaining(['pages_show_list', 'instagram_manage_messages', 'instagram_content_publish']));
+  });
+
+  it('demande les statistiques : read_insights pour une Page, instagram_manage_insights en plus pour Instagram', () => {
+    const { ctx } = fakeNet({});
+    const scope = (network: 'facebook' | 'instagram') =>
+      new URL(m.authorizeUrl(ctx, { network, redirectUri: 'https://app.test/cb', state: 'S', codeChallenge: null })).searchParams.get('scope')!.split(',');
+    expect(scope('facebook')).toContain('read_insights');
+    expect(scope('facebook')).not.toContain('instagram_manage_insights');
+    expect(scope('instagram')).toEqual(expect.arrayContaining(['read_insights', 'instagram_manage_insights']));
   });
 
   it('échange le code puis obtient un jeton longue durée, sans mettre le secret dans l’URL', async () => {

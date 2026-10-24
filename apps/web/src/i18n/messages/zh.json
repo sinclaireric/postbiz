@@ -522,6 +522,7 @@
     "inbox": "收件箱",
     "media": "媒体",
     "channelsApp": "渠道",
+    "analyticsApp": "分析",
     "settings": "设置",
     "welcome": "欢迎",
     "titleTemplate": "{page} · Postbiz"
@@ -726,7 +727,112 @@
       "settings": "设置",
       "soon": "即将推出"
     },
-    "titles": { "agent": "智能体", "calendar": "日历", "inbox": "收件箱", "media": "媒体", "channels": "渠道", "settings": "设置" },
+    "titles": { "agent": "智能体", "calendar": "日历", "inbox": "收件箱", "media": "媒体", "channels": "渠道", "settings": "设置", "analytics": "分析" },
+    "analytics": {
+      "filters": {
+        "channel": "渠道",
+        "all": "所有渠道",
+        "period": "时间段"
+      },
+      "period": {
+        "d7": "7 天",
+        "d30": "30 天",
+        "d90": "90 天"
+      },
+      "range": "{from} – {to} · 对比 {prevFrom} – {prevTo}",
+      "summary": {
+        "title": "概览"
+      },
+      "group": {
+        "audience": "受众",
+        "activity": "活动"
+      },
+      "metric": {
+        "followers": "粉丝",
+        "reach": "触达",
+        "engagement": "互动",
+        "engagementRate": "互动率",
+        "published": "发布",
+        "received": "收到的消息",
+        "replies": "已发送的回复",
+        "failed": "失败"
+      },
+      "hint": {
+        "followers": "你所有渠道的粉丝总数。",
+        "reach": "你的内容被查看的次数。",
+        "engagement": "点赞、评论、分享和收藏。",
+        "engagementRate": "互动数除以触达数。",
+        "published": "在你的渠道上发出的帖子。",
+        "received": "收到的私信和评论。",
+        "replies": "从收件箱发出的回复。",
+        "failed": "被网络拒绝或需要核实的发布。"
+      },
+      "card": {
+        "noData": "暂无数据",
+        "vsPrevious": "较上一时间段",
+        "points": "{value} 个百分点",
+        "info": "指标说明"
+      },
+      "delta": {
+        "up": "上升",
+        "down": "下降",
+        "flat": "持平"
+      },
+      "audienceNotice": {
+        "title": "受众统计",
+        "text": "受众统计(粉丝、触达、互动)每天从你的社交网络收集,首次收集后会显示在这里。"
+      },
+      "scopeNotice": {
+        "title": "需要更新授权",
+        "text": "要收集 {channels} 的统计数据,请重新连接该渠道:网络会请求额外的授权。"
+      },
+      "detail": {
+        "previous": "上一时间段",
+        "perDay": "日均",
+        "peak": "最佳日",
+        "start": "期初",
+        "change": "变化",
+        "changePerDay": "日均变化",
+        "noDataText": "此渠道在该时间段内没有收到统计数据。"
+      },
+      "chart": {
+        "label": "{metric}:{total},{from} 至 {to}",
+        "bar": "{date}:{value}",
+        "table": "查看每日数值",
+        "tableDay": "日期",
+        "tableValue": "数值"
+      },
+      "recent": {
+        "title": "最近发布",
+        "range": "{from} – {to}",
+        "empty": "此时间段内没有发出的帖子。",
+        "open": "在 {network} 上查看",
+        "noText": "无文字的帖子"
+      },
+      "performance": {
+        "title": "各渠道表现",
+        "sorted": "按所选指标排序。",
+        "total": "合计",
+        "show": "显示“{metric}”"
+      },
+      "queue": {
+        "title": "发布队列",
+        "upcoming": "未来 7 天已排期",
+        "drafts": "草稿",
+        "open": "打开日历"
+      },
+      "empty": {
+        "title": "尚未连接渠道",
+        "text": "连接一个渠道,即可在此查看其数据。",
+        "cta": "连接渠道"
+      },
+      "notes": {
+        "source": "活动:由 Postbiz 计算。受众:每天从社交网络收集。按 UTC 计日。",
+        "demo": "演示模式:这里的所有数字都是示例数据,并非真实测量。",
+        "truncated": "数据量非常大:这些合计并不完整。",
+        "error": "暂时无法加载全部统计数据:数字可能不完整。"
+      }
+    },
     "notifications": {
       "title": "通知",
       "label": "通知",

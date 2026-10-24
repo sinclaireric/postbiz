@@ -44,8 +44,8 @@ Pour tous les réseaux : prévoyez d'abord un domaine, les pages `/cgu`, `/confi
    (`META_APP_SECRET` est le même que celui de la connexion OAuth.)
 7. **Connexion dans Postbiz** (Facebook Login). Si l'application utilise « Facebook Login for Business » (cas d'utilisation « Tout gérer sur votre Page », non combinable avec la connexion classique),
    renseigner `META_LOGIN_CONFIG_ID` : Postbiz envoie alors `config_id` à la place de `scope`, et les permissions sont celles de la configuration créée chez Meta (même liste ci-dessous). : permissions demandées — Facebook : `pages_show_list`, `pages_manage_metadata` (nécessaire à l'abonnement
-   aux webhooks), `pages_manage_posts`, `pages_read_engagement`, `pages_manage_engagement`, `pages_messaging` ; Instagram : celles-ci plus
-   `instagram_basic`, `instagram_content_publish`, `instagram_manage_messages`, `instagram_manage_comments`. Postbiz échange le code contre un jeton
+   aux webhooks), `pages_manage_posts`, `pages_read_engagement`, `pages_manage_engagement`, `pages_messaging`, `read_insights` (statistiques de la Page) ; Instagram : celles-ci plus
+   `instagram_basic`, `instagram_content_publish`, `instagram_manage_messages`, `instagram_manage_comments`, `instagram_manage_insights` (statistiques du compte). Postbiz échange le code contre un jeton
    longue durée (~60 jours), liste les Pages (`/me/accounts`) et les comptes Instagram professionnels liés, vous laisse cocher ceux à connecter, puis enregistre
    le **jeton de Page** (sans expiration, donc rien à rafraîchir) et abonne la Page aux champs `messages`, `messaging_postbacks`, `feed`.
    Les Pages gérées uniquement via un portefeuille Business Manager peuvent exiger la permission `business_management` (non demandée).
@@ -59,7 +59,7 @@ Pour tous les réseaux : prévoyez d'abord un domaine, les pages `/cgu`, `/confi
 1. Application Meta avec le cas d'utilisation **« Gérer les messages et les contenus sur Instagram »**, puis la rubrique **« Configuration de l'API avec la connexion Instagram »**.
 2. Y relever l'**ID de l'application Instagram** et sa **clé secrète** (distincts de ceux de l'application Meta) : `INSTAGRAM_APP_ID` et `INSTAGRAM_APP_SECRET`.
 3. Y déclarer l'adresse de retour `<site>/api/oauth/callback/instagram_login` et, pour le mode Développement, ajouter les comptes Instagram à tester (rôle « Testeur Instagram »).
-4. **Connexion dans Postbiz** : autorisation sur `instagram.com/oauth/authorize` (scopes `instagram_business_basic`, `instagram_business_manage_messages`, `instagram_business_manage_comments` ;
+4. **Connexion dans Postbiz** : autorisation sur `instagram.com/oauth/authorize` (scopes `instagram_business_basic`, `instagram_business_manage_messages`, `instagram_business_manage_comments`, `instagram_business_manage_insights` ;
    `instagram_business_content_publish` sera ajouté avec la publication), puis jeton court (1 h) → jeton de **60 jours** (`ig_exchange_token`). Ce jeton se prolonge de lui-même (`ig_refresh_token`, au moins 24 h après sa création,
    avant son expiration) : Postbiz le garde aussi comme « refresh token » pour que le worker le prolonge. Le compte est enregistré comme un canal `instagram` ordinaire
    (`settings.login = 'instagram'`, `settings.graph_host = 'graph.instagram.com'`) : même boîte de réception, mêmes règles. Le compte doit être **professionnel** (Business ou Créateur).
@@ -75,7 +75,7 @@ Pour tous les réseaux : prévoyez d'abord un domaine, les pages `/cgu`, `/confi
    conditions de YouTube). Le domaine du site doit être déclaré dans « Domaines autorisés ».
 3. Quota par défaut : 10 000 unités par jour. Les applications non auditées peuvent voir leurs vidéos envoyées par API restreintes en privé : demander l'**audit** de l'API.
 4. Pas de messages privés : commentaires uniquement.
-5. **Connexion dans Postbiz** : OAuth 2.0 avec PKCE, scopes `youtube.upload` et `youtube.force-ssl`, `access_type=offline` + `prompt=consent`. Le jeton d'accès dure 1 h et
+5. **Connexion dans Postbiz** : OAuth 2.0 avec PKCE, scopes `youtube.upload`, `youtube.force-ssl` et `yt-analytics.readonly` (statistiques de la chaîne), `access_type=offline` + `prompt=consent`. Le jeton d'accès dure 1 h et
    est rafraîchi par le worker. ⚠️ Tant que l'écran de consentement est en mode **« Test »**, Google fait expirer le refresh token au bout de **7 jours** : le canal passera alors
    à « À reconnecter ». Passez en production (et obtenez la vérification) avant d'inviter de vrais utilisateurs.
    La publication YouTube n'est pas écrite (l'envoi de vidéos n'est pas branché) : le canal se connecte et garde un jeton valide.
@@ -85,7 +85,7 @@ Pour tous les réseaux : prévoyez d'abord un domaine, les pages `/cgu`, `/confi
 1. developers.tiktok.com : application avec Login Kit et Content Posting API.
 2. Un **audit** est nécessaire : tant qu'il n'est pas passé, les publications sont privées. Les champs « Terms of Service URL » et « Privacy Policy URL » de l'application sont
    `<SITE>/cgu` et `<SITE>/confidentialite` (elles décrivent les données TikTok reçues et l'usage de l'API de publication).
-3. **Connexion dans Postbiz** : Login Kit v2, scopes `user.info.basic`, `video.publish`, `video.upload`. Pas de PKCE (non documenté pour le flux web ; **à vérifier**, TikTok l'exige pour les
+3. **Connexion dans Postbiz** : Login Kit v2, scopes `user.info.basic`, `video.publish`, `video.upload`, `user.info.stats` (nombre d'abonnés). Pas de PKCE (non documenté pour le flux web ; **à vérifier**, TikTok l'exige pour les
    applications bureau/mobiles). Jeton d'accès 24 h, refresh token ~365 jours et **renouvelé à chaque rafraîchissement** : Postbiz enregistre toujours le nouveau. TikTok peut répondre
    `200` avec un champ `error` : géré comme un refus. La publication TikTok n'est pas écrite (vidéo requise).
 4. La messagerie (Business Messaging API) est soumise à approbation, réservée aux comptes Business, et d'après un guide tiers indisponible dans l'EEE, en Suisse et au Royaume-Uni : à confirmer avant d'en faire une promesse.
@@ -98,7 +98,7 @@ Pour tous les réseaux : prévoyez d'abord un domaine, les pages `/cgu`, `/confi
    créer une **seconde application LinkedIn** réservée aux Pages, avec `LINKEDIN_PAGE_CLIENT_ID` et `LINKEDIN_PAGE_CLIENT_SECRET`, et y déclarer l'adresse de retour `<site>/api/oauth/callback/linkedin_page`.
 3. La messagerie (personnelle et des Pages) n'est **pas ouverte** aux applications tierces, sauf partenaires nommés par LinkedIn.
 4. **Connexion dans Postbiz** : profil personnel uniquement (scopes `openid profile w_member_social`) ; l'identifiant du profil devient `settings.author_urn`. **LinkedIn Page** (canal `linkedin_page`, famille OAuth à part, seconde application LinkedIn) : scopes
-   `rw_organization_admin w_organization_social` ; Postbiz liste les Pages dont vous êtes administrateur (`organizationAcls`, rôle `ADMINISTRATOR`), vous laisse cocher celles à connecter, et
+   `rw_organization_admin w_organization_social r_organization_social` (statistiques de la Page) ; Postbiz liste les Pages dont vous êtes administrateur (`organizationAcls`, rôle `ADMINISTRATOR`), vous laisse cocher celles à connecter, et
    `settings.author_urn` vaut `urn:li:organization:<id>` (le worker publie alors au nom de la Page). Le jeton dure ~60 jours et **LinkedIn ne délivre de refresh token qu'à certains partenaires** :
    pour une application standard, le canal passe à « À reconnecter » à l'expiration (le worker notifie les administrateurs) — il faut reconnecter tous les ~2 mois. Pas de PKCE (non documenté pour ce flux).
 5. L'en-tête `LinkedIn-Version` (AAAAMM) doit rester récent : variable `LINKEDIN_API_VERSION`.
@@ -110,6 +110,33 @@ Pour tous les réseaux : prévoyez d'abord un domaine, les pages `/cgu`, `/confi
    (secret en authentification Basic), PKCE S256. Jeton d'accès 2 h ; le refresh token de X est **à usage unique** : Postbiz enregistre le nouveau à chaque rafraîchissement,
    un seul worker rafraîchit un jeton à la fois (verrou en base). Si le worker plante entre la réponse de X et l'enregistrement, l'ancien refresh token est perdu et le canal passera à « À reconnecter ».
 3. L'accès à l'API est payant et change régulièrement (offres, paiement à l'usage). Les messages privés dépendent de l'offre ; une source signale un plafond de lecture sur l'offre d'entrée. **Vérifiez la grille tarifaire actuelle.**
+
+## Statistiques d'audience (page Analyses)
+
+Le worker relève chaque jour, auprès de chaque réseau, trois chiffres par canal (comme Postiz, mais **enregistrés** : table `channel_metrics_daily`, migration
+`20261029000001_channel_metrics.sql`, au lieu d'être relus en direct à chaque affichage) : les **abonnés** (niveau en fin de journée), la **portée** et les **interactions** (quantités du jour).
+Le code est dans `apps/worker/src/engine/metrics.ts` (planification) et `apps/worker/src/providers/insights/` (un fichier par réseau).
+
+| Réseau | Ce qui est relevé | Historique au premier passage | Autorisation demandée |
+|---|---|---|---|
+| Facebook (Page) | portée = `page_total_media_view_unique`, interactions = `page_post_engagements` (par jour) ; abonnés = `followers_count` de la Page | 90 jours (sauf abonnés : du jour) | `read_insights` |
+| Instagram (Page ou Instagram Login) | portée = `reach` (par jour) ; interactions = `total_interactions`, lues jour par jour ; abonnés = `followers_count` | 30 jours (limite de Meta) | `instagram_manage_insights` / `instagram_business_manage_insights` |
+| Page LinkedIn | impressions et j'aime + commentaires + partages par jour (`organizationalEntityShareStatistics`) ; abonnés de la Page (`networkSizes`) | 90 jours | `r_organization_social` |
+| YouTube | vues et j'aime + commentaires + partages par jour (API YouTube Analytics) ; `subscriberCount` | 90 jours (les 1 à 2 derniers jours arrivent avec retard) | `yt-analytics.readonly` |
+| TikTok | abonnés seulement (`user/info`) : ni portée ni historique par jour | du jour | `user.info.stats` |
+| X | abonnés seulement (`users/me`, `public_metrics`) : impressions et interactions n'existent que par publication | du jour | aucune de plus |
+| LinkedIn (profil personnel) | rien : l'API n'en donne pas | n/a | n/a |
+
+- **Rythme** : un passage du worker toutes les 5 minutes (`WORKER_METRICS_INTERVAL_MS`, 300000) réclame au plus 10 canaux (`WORKER_METRICS_BATCH`) dont l'échéance est passée ; un canal est
+  relevé **toutes les 6 heures** (le jour en cours se corrige d'un relevé à l'autre ; les 7 derniers jours sont relus à chaque fois). Rien n'est relevé en mode essai (`WORKER_DRY_RUN=1`).
+- **Abonnés** : Meta, LinkedIn, TikTok et X ne donnent que le total du jour : la courbe se construit à partir de la connexion du canal (la variation apparaît dès le deuxième jour).
+- **Autorisation manquante** : un canal connecté **avant** l'ajout de ces autorisations est refusé par le réseau (403, code Meta 10/200, `scope_not_authorized`…). Le canal passe à l'état de collecte
+  `missing_scope` (table `channel_metrics_sync`), la page Analyses demande de le **reconnecter**, et le worker revérifie toutes les 3 heures. Ce qui a pu être lu (les abonnés par exemple) est gardé.
+  Un jeton refusé (401) passe le canal à « À reconnecter » ; une panne passagère (5xx, quota, réseau) est réessayée avec un délai croissant, de 15 minutes à 12 heures.
+- **Revue des réseaux** : `read_insights`, `instagram_manage_insights`, `r_organization_social` (accès Community Management), `yt-analytics.readonly` (écran de consentement Google) et `user.info.stats`
+  doivent être ajoutés à la revue d'application de chaque réseau. Avec « Facebook Login for Business » (`META_LOGIN_CONFIG_ID`), ajouter les deux permissions Meta à la configuration chez Meta.
+- ⚠️ **Rien n'a été exécuté contre les vraies API** : les adresses, métriques et formats suivent la documentation et le code de Postiz ; les tests utilisent des réseaux simulés. À valider avec un canal de test
+  par réseau avant de promettre ces statistiques (Meta a retiré plusieurs anciennes métriques de Page en juin 2026 : en cas de métrique refusée, le message de l'API est enregistré dans `channel_metrics_sync.error`).
 
 ## Fonctionnement et limites de la connexion
 

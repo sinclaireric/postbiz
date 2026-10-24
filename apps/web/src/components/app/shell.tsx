@@ -25,7 +25,7 @@ const MAIN: NavItem[] = [
   { href: '/app/calendrier', label: 'app.nav.calendar', icon: 'calendar' },
   { href: '/app/inbox', label: 'app.nav.inbox', icon: 'inbox', badge: 'inbox' },
   { href: '/app/agent', label: 'app.nav.agent', icon: 'agent' },
-  { href: '/app/analyses', label: 'app.nav.analytics', icon: 'analytics', soon: true },
+  { href: '/app/analyses', label: 'app.nav.analytics', icon: 'analytics' },
   { href: '/app/medias', label: 'app.nav.media', icon: 'media' },
   { href: '/app/canaux', label: 'app.nav.channels', icon: 'channels' },
 ];
@@ -33,12 +33,13 @@ const BOTTOM: NavItem[] = [
   { href: '/app/facturation', label: 'app.nav.billing', icon: 'billing', soon: true },
   { href: '/app/reglages', label: 'app.nav.settings', icon: 'settings' },
 ];
-const MOBILE: NavItem[] = [MAIN[0]!, MAIN[1]!, MAIN[2]!, MAIN[4]!, MAIN[5]!, BOTTOM[1]!];
+const MOBILE: NavItem[] = [...MAIN, BOTTOM[1]!];
 
 const TITLES: Record<string, MessageKey> = {
   '/app/calendrier': 'app.titles.calendar',
   '/app/inbox': 'app.titles.inbox',
   '/app/agent': 'app.titles.agent',
+  '/app/analyses': 'app.titles.analytics',
   '/app/medias': 'app.titles.media',
   '/app/canaux': 'app.titles.channels',
   '/app/reglages': 'app.titles.settings',

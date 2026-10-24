@@ -1,4 +1,5 @@
 import type { AgentMessage, AgentProposal, AgentProposalStatus, AgentThread } from '@/lib/agent/types';
+import type { AnalyticsRepository } from '@/lib/analytics/types';
 import type { FormError } from '@/lib/form-error';
 import type { MediaKind } from '@/lib/media/rules';
 import type { NetworkId } from '@/lib/inbox/types';
@@ -209,6 +210,7 @@ export interface AgentRepository {
 
 export interface Repositories {
   agent: AgentRepository;
+  analytics: AnalyticsRepository;
   media: MediaRepository;
   knowledge: KnowledgeRepository;
   inbox: InboxRepository;

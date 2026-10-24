@@ -14,7 +14,7 @@ const SHORT_TOKEN = 'https://api.instagram.com/oauth/access_token';
 const GRAPH_HOST = 'graph.instagram.com';
 const GRAPH = `https://${GRAPH_HOST}`;
 // Pas de instagram_business_content_publish : la publication n'existe pas encore, et une permission absente de l'application fait refuser la connexion.
-const SCOPES = ['instagram_business_basic', 'instagram_business_manage_messages', 'instagram_business_manage_comments'];
+const SCOPES = ['instagram_business_basic', 'instagram_business_manage_messages', 'instagram_business_manage_comments', 'instagram_business_manage_insights'];
 const KEYS = ['INSTAGRAM_APP_ID', 'INSTAGRAM_APP_SECRET'] as const;
 /** Champs auxquels le compte s'abonne (webhooks). */
 export const INSTAGRAM_LOGIN_SUBSCRIBED_FIELDS = ['messages', 'comments', 'messaging_postbacks'] as const;

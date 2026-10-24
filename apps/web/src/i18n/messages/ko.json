@@ -525,6 +525,7 @@
     "inbox": "받은편지함",
     "media": "미디어",
     "channelsApp": "채널",
+    "analyticsApp": "분석",
     "settings": "설정",
     "welcome": "환영합니다",
     "titleTemplate": "{page} · Postbiz"
@@ -729,7 +730,112 @@
       "settings": "설정",
       "soon": "출시 예정"
     },
-    "titles": { "agent": "에이전트", "calendar": "캘린더", "inbox": "받은편지함", "media": "미디어", "channels": "채널", "settings": "설정" },
+    "titles": { "agent": "에이전트", "calendar": "캘린더", "inbox": "받은편지함", "media": "미디어", "channels": "채널", "settings": "설정", "analytics": "분석" },
+    "analytics": {
+      "filters": {
+        "channel": "채널",
+        "all": "모든 채널",
+        "period": "기간"
+      },
+      "period": {
+        "d7": "7일",
+        "d30": "30일",
+        "d90": "90일"
+      },
+      "range": "{from} – {to} · 비교 기간: {prevFrom} – {prevTo}",
+      "summary": {
+        "title": "요약"
+      },
+      "group": {
+        "audience": "오디언스",
+        "activity": "활동"
+      },
+      "metric": {
+        "followers": "팔로워",
+        "reach": "도달",
+        "engagement": "참여",
+        "engagementRate": "참여율",
+        "published": "게시물",
+        "received": "받은 메시지",
+        "replies": "보낸 답장",
+        "failed": "실패"
+      },
+      "hint": {
+        "followers": "모든 채널의 팔로워 총수입니다.",
+        "reach": "콘텐츠가 노출된 횟수입니다.",
+        "engagement": "좋아요, 댓글, 공유, 저장의 합계입니다.",
+        "engagementRate": "상호작용 수를 도달로 나눈 값입니다.",
+        "published": "채널에 게시된 게시물입니다.",
+        "received": "받은 다이렉트 메시지와 댓글입니다.",
+        "replies": "받은편지함에서 보낸 답장입니다.",
+        "failed": "네트워크가 거부했거나 확인이 필요한 게시물입니다."
+      },
+      "card": {
+        "noData": "아직 데이터가 없습니다",
+        "vsPrevious": "이전 기간 대비",
+        "points": "{value}%p",
+        "info": "지표 설명"
+      },
+      "delta": {
+        "up": "증가",
+        "down": "감소",
+        "flat": "변동 없음"
+      },
+      "audienceNotice": {
+        "title": "오디언스 통계",
+        "text": "오디언스 통계(팔로워, 도달, 참여)는 소셜 네트워크에서 매일 수집됩니다. 첫 수집이 끝나면 여기에 표시됩니다."
+      },
+      "scopeNotice": {
+        "title": "권한 갱신 필요",
+        "text": "{channels}의 통계를 수집하려면 채널을 다시 연결하세요. 네트워크에서 추가 권한을 요청합니다."
+      },
+      "detail": {
+        "previous": "이전 기간",
+        "perDay": "일 평균",
+        "peak": "최고의 날",
+        "start": "기간 시작 시점",
+        "change": "변화",
+        "changePerDay": "일 평균 변화",
+        "noDataText": "이 기간 동안 이 채널의 통계를 받지 못했습니다."
+      },
+      "chart": {
+        "label": "{metric}: {total}, {from}부터 {to}까지",
+        "bar": "{date}: {value}",
+        "table": "일별 값 보기",
+        "tableDay": "날짜",
+        "tableValue": "값"
+      },
+      "recent": {
+        "title": "최근 게시물",
+        "range": "{from} – {to}",
+        "empty": "이 기간에 게시된 게시물이 없습니다.",
+        "open": "{network}에서 보기",
+        "noText": "텍스트 없는 게시물"
+      },
+      "performance": {
+        "title": "채널별 성과",
+        "sorted": "선택한 지표 기준으로 정렬되었습니다.",
+        "total": "합계",
+        "show": "“{metric}” 보기"
+      },
+      "queue": {
+        "title": "게시 대기열",
+        "upcoming": "향후 7일 예약",
+        "drafts": "임시 저장",
+        "open": "캘린더 열기"
+      },
+      "empty": {
+        "title": "연결된 채널이 없습니다",
+        "text": "채널을 연결하면 여기에서 수치를 볼 수 있습니다.",
+        "cta": "채널 연결"
+      },
+      "notes": {
+        "source": "활동: Postbiz가 계산합니다. 오디언스: 소셜 네트워크에서 매일 수집합니다. 날짜는 UTC 기준입니다.",
+        "demo": "데모 모드: 여기의 모든 수치는 예시 데이터이며 실제 측정값이 아닙니다.",
+        "truncated": "데이터 양이 매우 많아 이 합계는 일부만 반영되었습니다.",
+        "error": "지금은 일부 통계를 불러오지 못했습니다. 수치가 불완전할 수 있습니다."
+      }
+    },
     "notifications": {
       "title": "알림",
       "label": "알림",

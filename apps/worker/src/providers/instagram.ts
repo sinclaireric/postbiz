@@ -1,6 +1,7 @@
 import type { Env } from '@postbiz/core';
 import { OutcomeUnknownError, PublishRejectedError } from './errors.ts';
 import { mutate, type Fetch } from './http.ts';
+import { instagramMetrics } from './insights/instagram.ts';
 import { GRAPH_VERSION, graphHost } from './meta.ts';
 import { oauthRefresher } from './oauth.ts';
 import type { ResolvedMedia, SocialProvider } from './types.ts';
@@ -87,6 +88,7 @@ export const createInstagramProvider = (fetchImpl: Fetch = fetch, env: Env = pro
     supportsThreads: false,
     supportsMedia: true,
     refreshToken: oauthRefresher('instagram_login', fetchImpl, env),
+    metrics: instagramMetrics(fetchImpl),
 
     async publish({ accessToken, integration, posts }) {
       const post = posts[0]!;

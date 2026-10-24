@@ -570,6 +570,7 @@
     "inbox": "Hộp thư",
     "media": "Media",
     "channelsApp": "Kênh",
+    "analyticsApp": "Phân tích",
     "settings": "Cài đặt",
     "welcome": "Chào mừng",
     "titleTemplate": "{page} · Postbiz"
@@ -774,7 +775,112 @@
       "settings": "Cài đặt",
       "soon": "Sắp có"
     },
-    "titles": { "agent": "Tác nhân", "calendar": "Lịch", "inbox": "Hộp thư", "media": "Media", "channels": "Kênh", "settings": "Cài đặt" },
+    "titles": { "agent": "Tác nhân", "calendar": "Lịch", "inbox": "Hộp thư", "media": "Media", "channels": "Kênh", "settings": "Cài đặt", "analytics": "Phân tích" },
+    "analytics": {
+      "filters": {
+        "channel": "Kênh",
+        "all": "Tất cả kênh",
+        "period": "Khoảng thời gian"
+      },
+      "period": {
+        "d7": "7 ngày",
+        "d30": "30 ngày",
+        "d90": "90 ngày"
+      },
+      "range": "{from} – {to} · so với {prevFrom} – {prevTo}",
+      "summary": {
+        "title": "Tóm tắt"
+      },
+      "group": {
+        "audience": "Đối tượng",
+        "activity": "Hoạt động"
+      },
+      "metric": {
+        "followers": "Người theo dõi",
+        "reach": "Lượt tiếp cận",
+        "engagement": "Tương tác",
+        "engagementRate": "Tỷ lệ tương tác",
+        "published": "Bài đăng",
+        "received": "Tin nhắn nhận được",
+        "replies": "Phản hồi đã gửi",
+        "failed": "Lỗi"
+      },
+      "hint": {
+        "followers": "Tổng số người theo dõi trên các kênh của bạn.",
+        "reach": "Số lần nội dung của bạn được xem.",
+        "engagement": "Lượt thích, bình luận, chia sẻ và lưu.",
+        "engagementRate": "Số tương tác chia cho lượt tiếp cận.",
+        "published": "Bài đăng đã gửi trên các kênh của bạn.",
+        "received": "Tin nhắn riêng và bình luận nhận được.",
+        "replies": "Phản hồi gửi từ hộp thư đến.",
+        "failed": "Bài đăng bị mạng xã hội từ chối hoặc cần kiểm tra."
+      },
+      "card": {
+        "noData": "Chưa có dữ liệu",
+        "vsPrevious": "so với kỳ trước",
+        "points": "{value} điểm %",
+        "info": "Ý nghĩa của chỉ số"
+      },
+      "delta": {
+        "up": "Tăng",
+        "down": "Giảm",
+        "flat": "Không đổi"
+      },
+      "audienceNotice": {
+        "title": "Thống kê đối tượng",
+        "text": "Thống kê đối tượng (người theo dõi, lượt tiếp cận, tương tác) được thu thập hằng ngày từ mạng xã hội của bạn. Chúng sẽ hiện ở đây sau lần thu thập đầu tiên."
+      },
+      "scopeNotice": {
+        "title": "Cần cấp lại quyền",
+        "text": "Để thu thập thống kê của {channels}, hãy kết nối lại kênh: mạng xã hội sẽ yêu cầu thêm một quyền."
+      },
+      "detail": {
+        "previous": "Kỳ trước",
+        "perDay": "Trung bình mỗi ngày",
+        "peak": "Ngày tốt nhất",
+        "start": "Đầu kỳ",
+        "change": "Thay đổi",
+        "changePerDay": "Thay đổi mỗi ngày",
+        "noDataText": "Chưa nhận được thống kê nào của kênh này trong khoảng thời gian này."
+      },
+      "chart": {
+        "label": "{metric}: {total}, từ {from} đến {to}",
+        "bar": "{date}: {value}",
+        "table": "Xem giá trị từng ngày",
+        "tableDay": "Ngày",
+        "tableValue": "Giá trị"
+      },
+      "recent": {
+        "title": "Bài đăng gần đây",
+        "range": "{from} – {to}",
+        "empty": "Không có bài đăng nào được gửi trong khoảng thời gian này.",
+        "open": "Xem trên {network}",
+        "noText": "Bài đăng không có văn bản"
+      },
+      "performance": {
+        "title": "Hiệu suất theo kênh",
+        "sorted": "Sắp xếp theo chỉ số đã chọn.",
+        "total": "Tổng",
+        "show": "Hiển thị “{metric}”"
+      },
+      "queue": {
+        "title": "Hàng đợi đăng bài",
+        "upcoming": "Đã lên lịch trong 7 ngày tới",
+        "drafts": "Bản nháp",
+        "open": "Mở lịch"
+      },
+      "empty": {
+        "title": "Chưa kết nối kênh nào",
+        "text": "Kết nối một kênh để xem số liệu của kênh ở đây.",
+        "cta": "Kết nối kênh"
+      },
+      "notes": {
+        "source": "Hoạt động: do Postbiz tính. Đối tượng: thu thập hằng ngày từ mạng xã hội. Ngày tính theo UTC.",
+        "demo": "Chế độ demo: mọi số liệu ở đây là dữ liệu mẫu, không phải số đo thực tế.",
+        "truncated": "Khối lượng rất lớn: các tổng này chỉ là một phần.",
+        "error": "Hiện chưa tải được toàn bộ thống kê: số liệu có thể chưa đầy đủ."
+      }
+    },
     "notifications": {
       "title": "Thông báo",
       "label": "Thông báo",

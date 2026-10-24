@@ -11,8 +11,9 @@ const GRAPH = `https://graph.facebook.com/${DEFAULT_GRAPH_VERSION}`;
 const AUTHORIZE = `https://www.facebook.com/${DEFAULT_GRAPH_VERSION}/dialog/oauth`;
 const KEYS = ['META_APP_ID', 'META_APP_SECRET'] as const;
 
-const PAGE_SCOPES = ['pages_show_list', 'pages_manage_metadata', 'pages_manage_posts', 'pages_read_engagement', 'pages_manage_engagement', 'pages_messaging'];
-const INSTAGRAM_SCOPES = ['instagram_basic', 'instagram_content_publish', 'instagram_manage_messages', 'instagram_manage_comments'];
+// read_insights : statistiques de la Page (portée, interactions) relevées chaque jour par le worker (page Analyses).
+const PAGE_SCOPES = ['pages_show_list', 'pages_manage_metadata', 'pages_manage_posts', 'pages_read_engagement', 'pages_manage_engagement', 'pages_messaging', 'read_insights'];
+const INSTAGRAM_SCOPES = ['instagram_basic', 'instagram_content_publish', 'instagram_manage_messages', 'instagram_manage_comments', 'instagram_manage_insights'];
 /**
  * Champs de la Page auxquels l'application s'abonne. L'abonnement REMPLACE la liste précédente : Facebook et Instagram
  * partagent la même Page, donc on envoie toujours l'union complète pour qu'une connexion n'en désabonne pas une autre.

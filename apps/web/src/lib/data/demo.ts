@@ -1,4 +1,7 @@
 import type { AgentMessage, AgentThread } from '@/lib/agent/types';
+import { demoDailyRows } from '@/lib/analytics/demo';
+import { queueCounts } from '@/lib/analytics/logic';
+import type { AnalyticsRepository } from '@/lib/analytics/types';
 import { replyWindow, validateReply } from '@/lib/inbox/logic';
 import type {
   ConversationDetail, ConversationStatus, ConversationSummary, InboxRepository, MessageItem, NetworkId, NoteItem,
@@ -173,6 +176,10 @@ function seed(): Store {
       post(4, 'youtube', 'Maison Lune TV', 'Finition à l’huile : le guide complet', 52, 'draft'),
       post(5, 'facebook', 'Maison Lune', 'Rappel : -10 % jusqu’à dimanche.', -3, 'error', 'Le jeton d’accès a expiré : reconnectez le canal.'),
       post(6, 'linkedin', 'Camille Moreau', 'Trois gestes de l’atelier qui font la durée d’un meuble.', -30, 'published', null, { firstComment: 'Le guide complet est sur notre site (lien en bio).', firstCommentState: 'failed', firstCommentError: 'LinkedIn a refusé le commentaire : accès insuffisant.' }),
+      post(7, 'instagram', 'maison.lune', 'Un tabouret, trois essences de bois : laquelle choisiriez-vous ? 🪵', -70, 'published'),
+      post(8, 'facebook', 'Maison Lune', 'Merci pour vos messages après le week-end portes ouvertes, on a adoré vous rencontrer.', -120, 'published'),
+      post(9, 'youtube', 'Maison Lune TV', 'Visite de l’atelier : du chêne massif au meuble fini', -200, 'published'),
+      post(10, 'instagram', 'maison.lune', 'Les finitions de la collection d’automne, en coulisses.', -330, 'published'),
     ],
     knowledge: [
       { id: 'k1', title: 'Ton de la marque', updatedAt: ago(30 * H), content: 'Maison Lune est un atelier de mobilier en bois massif, à Lyon. Nous tutoyons nos clients, avec un ton chaleureux et simple. Jamais de jargon ni de promesses exagérées. Nous parlons de matière, de geste et de durée.' },
@@ -362,5 +369,26 @@ const agent: AgentRepository = {
   },
 };
 
-export const demoRepositories: Repositories = { inbox, posts, workspace, media, knowledge, agent };
+/**
+ * Analyses de la démo : les séries sont fabriquées (voir lib/analytics/demo.ts), la file de publication est celle des publications d'exemple,
+ * pour que ses chiffres collent au calendrier.
+ */
+const analytics: AnalyticsRepository = {
+  async load(window, now = new Date()) {
+    const s = store();
+    return {
+      rows: demoDailyRows(s.integrations, window),
+      queue: queueCounts(s.posts.map((p) => ({ integrationId: p.integrationId, state: p.state, at: p.publishAt })), now),
+      recent: s.posts
+        .filter((p) => p.state === 'published' && p.publishAt)
+        .sort((a, b) => b.publishAt!.localeCompare(a.publishAt!))
+        .map((p) => ({ id: p.id, integrationId: p.integrationId, content: p.content, at: p.publishAt!, url: p.releaseUrl })),
+      collection: [],
+      truncated: false,
+      error: false,
+    };
+  },
+};
+
+export const demoRepositories: Repositories = { inbox, posts, workspace, media, knowledge, analytics, agent };
 export const demoOrgName = () => store().orgName;

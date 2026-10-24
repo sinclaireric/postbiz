@@ -1,6 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { sanitizeProposals } from '@/lib/agent/proposal';
 import type { AgentMessage, AgentThread } from '@/lib/agent/types';
+import { createSupabaseAnalytics } from '@/lib/analytics/supabase';
 import { GENERIC_ERROR, type FormError } from '@/lib/form-error';
 import { replyWindow, validateReply } from '@/lib/inbox/logic';
 import { displayName } from '@/lib/media/logic';
@@ -376,5 +377,5 @@ export function createSupabaseRepositories(supabase: SupabaseClient, ctx: AppCon
     },
   };
 
-  return { inbox, posts, workspace, media, knowledge, agent };
+  return { inbox, posts, workspace, media, knowledge, agent, analytics: createSupabaseAnalytics(supabase, ctx) };
 }

@@ -57,6 +57,28 @@ export interface RefreshedTokens {
   expiresAt: Date | null;
 }
 
+/** Un relevé : la valeur d'une métrique d'audience pour un jour (UTC, « 2026-10-24 »). `followers` est un niveau, les autres des quantités du jour. */
+export interface MetricPoint {
+  day: string;
+  metric: 'followers' | 'reach' | 'engagement';
+  value: number;
+}
+
+export interface MetricsInput {
+  accessToken: string;
+  integration: { id: string; internalId: string; settings: Record<string, unknown> };
+  /** Premier passage sur ce canal : remonter tout l'historique que le réseau donne (jusqu'à 90 jours) ; sinon, seulement les derniers jours. */
+  backfill: boolean;
+  /** Aujourd'hui, en UTC (« 2026-10-24 »). */
+  today: string;
+}
+
+export interface MetricsResult {
+  points: MetricPoint[];
+  /** Une partie des métriques n'a pas pu être lue : `missing_scope` (autorisation à renouveler) ou `error` (passager). Les relevés lus sont gardés. */
+  problem?: { kind: 'missing_scope' | 'error'; message: string };
+}
+
 export interface SocialProvider {
   id: string;
   supportsThreads: boolean;
@@ -73,4 +95,10 @@ export interface SocialProvider {
    * Lève ReconnectRequiredError (refus définitif : il faut reconnecter) ou RefreshTransientError (réessayer plus tard).
    */
   refreshToken?(input: RefreshInput): Promise<RefreshedTokens>;
+  /**
+   * Relève les statistiques d'audience du canal (abonnés, portée, interactions) ; absent si on ne sait pas les lire. Lève ReconnectRequiredError
+   * si le jeton est refusé ; pour une panne partielle, renvoie les relevés lus et `problem`. Seul un échec total lève MissingScopeError /
+   * MetricsUnavailableError.
+   */
+  metrics?(input: MetricsInput): Promise<MetricsResult>;
 }
