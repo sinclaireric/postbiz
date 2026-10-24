@@ -5,11 +5,12 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useMemo, useRef, useState } from "react";
 import { BackHandler, KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, TextInput, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { useEffect } from "react";
 
+import { CropSheet } from "@/components/media/crop-sheet";
 import { MediaPickerSheet } from "@/components/media/media-picker-sheet";
 import { haptic } from "@/lib/haptics";
+import { useScreenInsets } from "@/lib/insets";
 import { MediaThumb } from "@/components/media/media-thumb";
 import { PostPreview } from "@/components/post-preview/post-preview";
 import { ChannelAvatar } from "@/components/ui/channel-avatar";
@@ -17,8 +18,8 @@ import { DateTimeSheet } from "@/components/ui/datetime-sheet";
 import { Appear, IconCircle, OutlineButton, PrimaryButton, Sheet } from "@/components/ui/kit";
 import { showToast } from "@/components/ui/toast";
 import { NETWORK_LIMITS } from "@/lib/agent";
-import { mediaByIds, type MediaItem } from "@/lib/media";
-import { validateMedia } from "@/lib/media-rules";
+import { cropMedia, mediaByIds, type MediaItem } from "@/lib/media";
+import { needsInstagramCrop, validateMedia } from "@/lib/media-rules";
 import { useOrgStore } from "@/store/org-store";
 import { formatNetworkLabel } from "@/lib/networks";
 import { useChannelsStore } from "@/store/channels-store";
@@ -30,6 +31,7 @@ const nextHour = () => set(addHours(new Date(), 1), { minutes: 0, seconds: 0, mi
 
 export default function CreatePostScreen() {
   const router = useRouter();
+  const insets = useScreenInsets();
   const params = useLocalSearchParams<{ postId?: string; dateTime?: string; channelId?: string }>();
   const allChannels = useChannelsStore((s) => s.channels);
   const posts = usePostsStore((s) => s.posts);
@@ -48,6 +50,8 @@ export default function CreatePostScreen() {
   });
   const [attached, setAttached] = useState<MediaItem[]>([]);
   const [mediaSheet, setMediaSheet] = useState(false);
+  const [cropTarget, setCropTarget] = useState<MediaItem | null>(null);
+  const [autoCropping, setAutoCropping] = useState(false);
   const selectionTouched = useRef(false);
   const [overrides, setOverrides] = useState<Record<string, string>>({});
   const [publishAt, setPublishAt] = useState<Date>(() => (initialEdit ? new Date(initialEdit.scheduledAt) : params.dateTime ? new Date(params.dateTime) : nextHour()));
@@ -78,6 +82,31 @@ export default function CreatePostScreen() {
   // Elles ne bloquent pas un brouillon (on peut ajouter le média plus tard).
   const mediaProblems = selectedChannels.flatMap((c) => validateMedia(c.network, formatNetworkLabel(c.network), attached));
   const scheduleProblems = [...new Set([...problems, ...mediaProblems])];
+  // Images au format refusé par Instagram : on propose de les recadrer plutôt que de laisser l'erreur.
+  const toCrop = selectedChannels.some((c) => c.network === "instagram") ? attached.filter(needsInstagramCrop) : [];
+
+  const swapMedia = (original: MediaItem, cropped: MediaItem) => setAttached((cur) => cur.map((m) => (m.id === original.id ? cropped : m)));
+
+  const autoCropAll = async () => {
+    if (autoCropping || toCrop.length === 0) return;
+    setAutoCropping(true);
+    let done = 0;
+    for (const m of toCrop) {
+      const result = await cropMedia(m);
+      if (!result.ok || !result.item) {
+        showToast(result.ok ? "Le recadrage a échoué. Réessayez." : result.error, "error");
+        break;
+      }
+      swapMedia(m, result.item);
+      done += 1;
+    }
+    setAutoCropping(false);
+    if (done > 0) {
+      haptic.success();
+      touch();
+      showToast(done > 1 ? `${done} images recadrées pour Instagram` : "Image recadrée pour Instagram", "success");
+    }
+  };
   const inPast = publishAt.getTime() < Date.now() + 60_000;
 
   const requestClose = () => {
@@ -167,7 +196,7 @@ export default function CreatePostScreen() {
   const drafts = posts.filter((p) => p.dbState === "draft" && p.id !== editId);
 
   return (
-    <SafeAreaView className="flex-1 bg-canvas" edges={["top", "bottom"]}>
+    <View className="flex-1 bg-canvas" style={{ paddingTop: insets.top, paddingBottom: insets.bottom }}>
       <StatusBar style="dark" />
       <KeyboardAvoidingView className="flex-1" behavior={Platform.OS === "ios" ? "padding" : undefined}>
         <View className="h-[64px] flex-row items-center justify-between gap-3 px-4">
@@ -259,6 +288,19 @@ export default function CreatePostScreen() {
                 </ScrollView>
               ) : null}
 
+              {toCrop.length > 0 ? (
+                <View className="mx-4 gap-3 rounded-[20px] bg-brand-soft p-4">
+                  <View className="flex-row items-start gap-3">
+                    <Ionicons name="crop-outline" size={20} color="#2F4A00" style={{ marginTop: 1 }} />
+                    <Text className="flex-1 font-jakarta text-[12.5px] leading-[17px] text-brand-ink">
+                      {toCrop.length > 1 ? `${toCrop.length} images n’ont pas un format accepté par Instagram` : `« ${toCrop[0].name} » n’a pas un format accepté par Instagram`} (entre 4:5 et 1,91:1). {toCrop.length > 1 ? "Recadrez-les" : "Recadrez-la"} en un geste : l’original est conservé.
+                    </Text>
+                  </View>
+                  <PrimaryButton label="Recadrer automatiquement" icon="sparkles-outline" onPress={autoCropAll} loading={autoCropping} />
+                  <OutlineButton label="Ajuster à la main" onPress={() => setCropTarget(toCrop[0])} disabled={autoCropping} />
+                </View>
+              ) : null}
+
               <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 16, gap: 8 }}>
                 <Pressable onPress={() => setMediaSheet(true)} className="h-[48px] flex-row items-center gap-2 rounded-full bg-chip-bg px-5">
                   <Ionicons name="attach" size={20} color="#141414" />
@@ -328,6 +370,7 @@ export default function CreatePostScreen() {
         </ScrollView>
       </KeyboardAvoidingView>
 
+      <CropSheet item={cropTarget} onClose={() => setCropTarget(null)} onDone={(original, cropped) => { swapMedia(original, cropped); setCropTarget(null); touch(); }} />
       <MediaPickerSheet visible={mediaSheet} onClose={() => setMediaSheet(false)} initial={attached} onConfirm={(items) => { setAttached(items); setMediaSheet(false); touch(); }} />
 
       <Sheet visible={channelSheet} onClose={() => setChannelSheet(false)} title="Choisir les canaux" right={<IconCircle icon="checkmark" label="Terminé" onPress={() => setChannelSheet(false)} active />}>
@@ -386,6 +429,11 @@ export default function CreatePostScreen() {
               {scheduleProblems.map((p) => (
                 <Text key={p} className="font-jakarta text-[12px] text-text-critical">{p}</Text>
               ))}
+              {toCrop.length > 0 ? (
+                <Pressable hitSlop={8} disabled={autoCropping} onPress={autoCropAll} className="mt-2 self-start">
+                  <Text className="font-jakarta text-[12.5px] font-semibold text-brand-ink">{autoCropping ? "Recadrage…" : "Recadrer automatiquement pour Instagram"}</Text>
+                </Pressable>
+              ) : null}
             </View>
           ) : null}
           {scheduleProblems.length === 0 && inPast ? <Text className="font-jakarta text-[12px] text-text-critical">La date est dans le passé : choisissez-en une autre pour programmer.</Text> : null}
@@ -441,6 +489,6 @@ export default function CreatePostScreen() {
           </Pressable>
         </View>
       </Sheet>
-    </SafeAreaView>
+    </View>
   );
 }

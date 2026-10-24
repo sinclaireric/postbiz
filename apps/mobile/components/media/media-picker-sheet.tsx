@@ -32,6 +32,7 @@ export function MediaPickerSheet({
   const [library, setLibrary] = useState<MediaItem[] | null>(null);
   const [picked, setPicked] = useState<MediaItem[]>([]);
   const [busy, setBusy] = useState(false);
+  const [progress, setProgress] = useState<{ done: number; total: number } | null>(null);
 
   useEffect(() => {
     if (!visible || !orgId) return;
@@ -57,8 +58,9 @@ export function MediaPickerSheet({
 
   const importFromPhone = async () => {
     setBusy(true);
-    const result = await pickAndUpload();
+    const result = await pickAndUpload((done, total) => setProgress({ done, total }));
     setBusy(false);
+    setProgress(null);
     if (!result.ok) {
       showToast(result.error, "error");
       return;
@@ -91,7 +93,7 @@ export function MediaPickerSheet({
             style={{ width: size, height: size, borderRadius: 12, borderWidth: 1.5, borderStyle: "dashed", borderColor: "#B9B7AE", alignItems: "center", justifyContent: "center", gap: 4 }}
           >
             {busy ? <ActivityIndicator color="#2F4A00" /> : <Ionicons name="cloud-upload-outline" size={26} color="#2F4A00" />}
-            <Text className="px-1 text-center font-jakarta text-[11px] font-semibold text-brand-ink">{busy ? "Envoi…" : "Importer"}</Text>
+            <Text className="px-1 text-center font-jakarta text-[11px] font-semibold text-brand-ink">{progress ? `${Math.min(progress.done + 1, progress.total)}/${progress.total}` : busy ? "Envoi…" : "Importer"}</Text>
           </Pressable>
         ) : null}
         {library === null ? (

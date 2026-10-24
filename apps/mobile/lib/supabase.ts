@@ -5,6 +5,9 @@ import { AppState, Platform } from 'react-native';
 const url = process.env.EXPO_PUBLIC_SUPABASE_URL ?? '';
 const anonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY ?? '';
 
+export const supabaseUrl = url;
+export const supabaseAnonKey = anonKey;
+
 /** Faux si les variables EXPO_PUBLIC_SUPABASE_URL / EXPO_PUBLIC_SUPABASE_ANON_KEY manquent : l'app affiche alors un écran d'aide. */
 export const isSupabaseConfigured = url.length > 0 && anonKey.length > 0;
 

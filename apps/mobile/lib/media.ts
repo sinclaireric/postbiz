@@ -1,9 +1,11 @@
+import * as FileSystem from "expo-file-system/legacy";
 import * as ImageManipulator from "expo-image-manipulator";
 import * as ImagePicker from "expo-image-picker";
 
 import { fail, GENERIC_ERROR, ok, type Result } from "@/lib/errors";
+import { cropRect, nearestInstagramRatio, outputSize } from "@/lib/image-fit";
 import { MAX_MEDIA_BYTES, type MediaKind } from "@/lib/media-rules";
-import { supabase } from "@/lib/supabase";
+import { supabase, supabaseAnonKey, supabaseUrl } from "@/lib/supabase";
 import { useAuthStore } from "@/store/auth-store";
 import { useOrgStore } from "@/store/org-store";
 import { uuidv4 } from "@/utils/uuid";
@@ -31,6 +33,7 @@ export type MediaItem = {
 };
 
 const SIGNED_URL_SECONDS = 3600;
+const EXTENSIONS: Record<string, string> = { "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp", "image/gif": "gif", "video/mp4": "mp4", "video/quicktime": "mov" };
 const THUMB_MAX_PX = 480;
 const JPEG_MAX_PX = 4096;
 const COLUMNS = "id, path, name, mime_type, kind, size_bytes, width, height, duration_seconds, alt, thumbnail_path, created_at";
@@ -97,12 +100,34 @@ export async function mediaByIds(orgId: string, ids: string[]): Promise<MediaIte
   return ids.map((id) => byId.get(id)).filter((m): m is MediaItem => !!m);
 }
 
-/** Envoie un fichier local (sans le charger en mémoire : le corps est lu depuis le disque par la couche native). */
-async function uploadFile(path: string, uri: string, name: string, type: string): Promise<boolean> {
-  const form = new FormData();
-  form.append("files", { uri, name, type } as unknown as Blob);
-  const { error } = await supabase.storage.from("media").upload(path, form, { upsert: false });
-  return !error;
+/** Message lisible pour une réponse d'erreur du stockage. */
+function storageErrorMessage(status: number): string {
+  if (status === 401 || status === 403) return "Vous n’avez pas le droit d’ajouter des médias à cette organisation.";
+  if (status === 413) return "Ce fichier dépasse la taille maximale acceptée par le stockage.";
+  if (status >= 500) return "Le stockage est momentanément indisponible. Réessayez dans un instant.";
+  return `Le stockage a refusé le fichier (code ${status}).`;
+}
+
+/**
+ * Envoie un fichier local dans le bucket `media`, directement depuis le disque (rien n'est chargé en mémoire).
+ * Le client Supabase JS ne convient pas ici : sur React Native, `storage.upload` casse avec FormData et Blob. On appelle donc
+ * l'API de stockage avec le jeton de la session, en corps binaire. Renvoie null si tout va bien, sinon le message d'erreur.
+ */
+async function uploadFile(path: string, uri: string, type: string): Promise<string | null> {
+  const { data } = await supabase.auth.getSession();
+  const token = data.session?.access_token;
+  if (!token) return "Session expirée. Reconnectez-vous.";
+  const encodedPath = path.split("/").map(encodeURIComponent).join("/");
+  try {
+    const res = await FileSystem.uploadAsync(`${supabaseUrl}/storage/v1/object/media/${encodedPath}`, uri, {
+      httpMethod: "POST",
+      uploadType: FileSystem.FileSystemUploadType.BINARY_CONTENT,
+      headers: { Authorization: `Bearer ${token}`, apikey: supabaseAnonKey, "Content-Type": type, "x-upsert": "false", "cache-control": "max-age=3600" },
+    });
+    return res.status >= 200 && res.status < 300 ? null : storageErrorMessage(res.status);
+  } catch {
+    return "Envoi impossible. Vérifiez votre connexion.";
+  }
 }
 
 async function renditions(uri: string, width: number | null, height: number | null, isJpeg: boolean): Promise<{ thumb: string | null; jpeg: string | null }> {
@@ -125,8 +150,77 @@ async function renditions(uri: string, width: number | null, height: number | nu
 
 export type UploadResult = Result & { items?: MediaItem[] };
 
+type LocalAsset = {
+  uri: string;
+  name: string;
+  mime: string;
+  isVideo: boolean;
+  width: number | null;
+  height: number | null;
+  sizeBytes: number | null;
+  durationSeconds: number | null;
+};
+
+/** Envoie un fichier local (avec vignette et version JPEG) et l'enregistre dans la médiathèque. */
+async function storeAsset(orgId: string, userId: string, a: LocalAsset): Promise<{ id: string } | { error: string }> {
+  const uuid = uuidv4();
+  const base = `${orgId}/${uuid}`;
+  const paths = { original: `${base}-${safeFileName(a.name)}`, thumb: `${base}-thumb.jpg`, jpeg: `${base}-instagram.jpg` };
+  const uploaded: string[] = [];
+  const cleanup = async () => {
+    if (uploaded.length > 0) await supabase.storage.from("media").remove(uploaded);
+  };
+  try {
+    const sendError = await uploadFile(paths.original, a.uri, a.mime);
+    if (sendError) return { error: sendError };
+    uploaded.push(paths.original);
+
+    let thumb: string | null = null;
+    let jpeg: string | null = null;
+    if (!a.isVideo) {
+      const r = await renditions(a.uri, a.width, a.height, a.mime === "image/jpeg");
+      if (r.thumb && !(await uploadFile(paths.thumb, r.thumb, "image/jpeg"))) {
+        uploaded.push(paths.thumb);
+        thumb = paths.thumb;
+      }
+      if (r.jpeg && !(await uploadFile(paths.jpeg, r.jpeg, "image/jpeg"))) {
+        uploaded.push(paths.jpeg);
+        jpeg = paths.jpeg;
+      }
+    }
+
+    const { data: row, error } = await supabase
+      .from("media")
+      .insert({
+        org_id: orgId,
+        bucket: "media",
+        path: paths.original,
+        name: a.name.slice(0, 255),
+        mime_type: a.mime,
+        size_bytes: a.sizeBytes,
+        width: a.width || null,
+        height: a.height || null,
+        duration_seconds: a.durationSeconds,
+        status: "ready",
+        thumbnail_path: thumb,
+        normalized_path: jpeg,
+        created_by: userId,
+      })
+      .select("id")
+      .single();
+    if (error || !row) {
+      await cleanup();
+      return { error: GENERIC_ERROR };
+    }
+    return { id: row.id as string };
+  } catch {
+    await cleanup();
+    return { error: "Envoi impossible. Vérifiez votre connexion." };
+  }
+}
+
 /** Choisit des images ou vidéos dans la photothèque du téléphone et les ajoute à la médiathèque. */
-export async function pickAndUpload(): Promise<UploadResult> {
+export async function pickAndUpload(onProgress?: (done: number, total: number) => void): Promise<UploadResult> {
   const org = useOrgStore.getState().current;
   const user = useAuthStore.getState().user;
   if (!org || !user) return fail("Session expirée. Reconnectez-vous.");
@@ -150,68 +244,80 @@ export async function pickAndUpload(): Promise<UploadResult> {
   if (picked.canceled || picked.assets.length === 0) return { ...ok(), items: [] };
 
   const createdIds: string[] = [];
+  onProgress?.(0, picked.assets.length);
   for (const asset of picked.assets) {
-    const uuid = uuidv4();
-    const ext = (asset.fileName?.split(".").pop() ?? asset.uri.split(".").pop() ?? "").toLowerCase().replace(/[^a-z0-9]/g, "").slice(0, 5);
-    const isVideo = asset.type === "video";
-    const mime = asset.mimeType ?? (isVideo ? "video/mp4" : ext === "png" ? "image/png" : "image/jpeg");
-    const name = asset.fileName ?? `${isVideo ? "video" : "photo"}-${uuid.slice(0, 8)}.${ext || (isVideo ? "mp4" : "jpg")}`;
+    const isVideo = asset.type === "video" || asset.type === "pairedVideo";
+    const mime = (asset.mimeType ?? (isVideo ? "video/mp4" : "image/jpeg")).toLowerCase();
+    // Le nom suit le type réel : iOS convertit le HEIC en JPEG mais garde parfois « IMG_0001.HEIC ».
+    const ext = EXTENSIONS[mime] ?? (asset.fileName?.split(".").pop() ?? "").toLowerCase().replace(/[^a-z0-9]/g, "").slice(0, 5);
+    const stem = (asset.fileName ?? `${isVideo ? "video" : "photo"}-${uuidv4().slice(0, 8)}`).replace(/\.[^./]+$/, "");
+    const name = ext ? `${stem}.${ext}` : stem;
     if (asset.fileSize && asset.fileSize > MAX_MEDIA_BYTES) return fail(`« ${name} » dépasse 1 Go.`);
 
-    const base = `${org.id}/${uuid}`;
-    const paths = { original: `${base}-${safeFileName(name)}`, thumb: `${base}-thumb.jpg`, jpeg: `${base}-instagram.jpg` };
-    const uploaded: string[] = [];
-    const cleanup = async () => {
-      if (uploaded.length > 0) await supabase.storage.from("media").remove(uploaded);
-    };
-    try {
-      if (!(await uploadFile(paths.original, asset.uri, name, mime))) return fail(`L’envoi de « ${name} » a échoué. Vérifiez votre connexion.`);
-      uploaded.push(paths.original);
-
-      let thumb: string | null = null;
-      let jpeg: string | null = null;
-      if (!isVideo) {
-        const r = await renditions(asset.uri, asset.width ?? null, asset.height ?? null, mime === "image/jpeg");
-        if (r.thumb && (await uploadFile(paths.thumb, r.thumb, "thumb.jpg", "image/jpeg"))) {
-          uploaded.push(paths.thumb);
-          thumb = paths.thumb;
-        }
-        if (r.jpeg && (await uploadFile(paths.jpeg, r.jpeg, "instagram.jpg", "image/jpeg"))) {
-          uploaded.push(paths.jpeg);
-          jpeg = paths.jpeg;
-        }
-      }
-
-      const { data: row, error } = await supabase
-        .from("media")
-        .insert({
-          org_id: org.id,
-          bucket: "media",
-          path: paths.original,
-          name: name.slice(0, 255),
-          mime_type: mime,
-          size_bytes: asset.fileSize ?? null,
-          width: asset.width || null,
-          height: asset.height || null,
-          duration_seconds: asset.duration ? asset.duration / 1000 : null,
-          status: "ready",
-          thumbnail_path: thumb,
-          normalized_path: jpeg,
-          created_by: user.id,
-        })
-        .select("id")
-        .single();
-      if (error || !row) {
-        await cleanup();
-        return fail(GENERIC_ERROR);
-      }
-      createdIds.push(row.id as string);
-    } catch {
-      await cleanup();
-      return fail("Envoi impossible. Vérifiez votre connexion.");
-    }
+    const stored = await storeAsset(org.id, user.id, {
+      uri: asset.uri,
+      name,
+      mime,
+      isVideo,
+      width: asset.width ?? null,
+      height: asset.height ?? null,
+      sizeBytes: asset.fileSize ?? null,
+      durationSeconds: asset.duration ? asset.duration / 1000 : null,
+    });
+    if ("error" in stored) return fail(stored.error);
+    createdIds.push(stored.id);
+    onProgress?.(createdIds.length, picked.assets.length);
   }
   return { ...ok(), items: await mediaByIds(org.id, createdIds) };
+}
+
+export type CropResult = Result & { item?: MediaItem };
+
+/**
+ * Recadre une image de la médiathèque au format `ratio` (largeur / hauteur) autour du point de vue (`fx`, `fy`, de 0 à 1),
+ * et l'enregistre comme nouveau média (l'original est conservé). Sans `ratio`, le format accepté le plus proche est choisi.
+ */
+export async function cropMedia(item: MediaItem, o: { ratio?: number; fx?: number; fy?: number } = {}): Promise<CropResult> {
+  const org = useOrgStore.getState().current;
+  const user = useAuthStore.getState().user;
+  if (!org || !user) return fail("Session expirée. Reconnectez-vous.");
+  if (!item.url) return fail("Image introuvable dans le stockage.");
+
+  const local = `${FileSystem.cacheDirectory}crop-${uuidv4()}`;
+  let rendered: string | null = null;
+  try {
+    const dl = await FileSystem.downloadAsync(item.url, local);
+    if (dl.status < 200 || dl.status >= 300) return fail("Impossible de récupérer l’image. Réessayez.");
+
+    const source = await ImageManipulator.ImageManipulator.manipulate(local).renderAsync();
+    const rect = cropRect(source.width, source.height, o.ratio ?? nearestInstagramRatio(source.width, source.height), o.fx, o.fy);
+    const size = outputSize(rect);
+    const ctx = ImageManipulator.ImageManipulator.manipulate(local).crop(rect);
+    if (size.width !== rect.width || size.height !== rect.height) ctx.resize(size);
+    const image = await ctx.renderAsync();
+    const saved = await image.saveAsync({ format: ImageManipulator.SaveFormat.JPEG, compress: 0.92 });
+    rendered = saved.uri;
+
+    const stem = item.name.replace(/\.[^./]+$/, "").replace(/-instagram$/, "");
+    const stored = await storeAsset(org.id, user.id, {
+      uri: saved.uri,
+      name: `${stem}-instagram.jpg`,
+      mime: "image/jpeg",
+      isVideo: false,
+      width: saved.width,
+      height: saved.height,
+      sizeBytes: null,
+      durationSeconds: null,
+    });
+    if ("error" in stored) return fail(stored.error);
+    const [created] = await mediaByIds(org.id, [stored.id]);
+    return created ? { ...ok(), item: { ...created, alt: item.alt } } : fail(GENERIC_ERROR);
+  } catch {
+    return fail("Le recadrage a échoué. Réessayez.");
+  } finally {
+    await FileSystem.deleteAsync(local, { idempotent: true }).catch(() => {});
+    if (rendered) await FileSystem.deleteAsync(rendered, { idempotent: true }).catch(() => {});
+  }
 }
 
 /** Supprime les médias qu'aucune publication en attente n'utilise ; les autres sont gardés (comme sur le web). */

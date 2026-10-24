@@ -1,3 +1,4 @@
+import { INSTAGRAM_MAX_RATIO, INSTAGRAM_MIN_RATIO, instagramRatioOk } from "@/lib/image-fit";
 import type { ChannelNetwork } from "@/types";
 
 // Règles de médias par réseau, identiques à celles du web (apps/web/src/lib/media/rules.ts), avec des messages en français.
@@ -24,7 +25,7 @@ export const MAX_MEDIA_PER_POST = 20;
 export const MAX_MEDIA_BYTES = 1024 * 1024 * 1024;
 
 /** Instagram : image entre 4:5 et 1,91:1, au moins 320 px de large. */
-const INSTAGRAM_IMAGE = { minRatio: 0.8, maxRatio: 1.91, minWidth: 320 } as const;
+const INSTAGRAM_IMAGE = { minRatio: INSTAGRAM_MIN_RATIO, maxRatio: INSTAGRAM_MAX_RATIO, minWidth: 320 } as const;
 
 export interface MediaLike {
   kind: MediaKind;
@@ -32,6 +33,9 @@ export interface MediaLike {
   width: number | null;
   height: number | null;
 }
+
+/** Image dont le format est refusé par Instagram mais qu'un recadrage rend acceptable. */
+export const needsInstagramCrop = (m: MediaLike) => m.kind === "image" && !!m.width && !!m.height && !instagramRatioOk(m.width, m.height);
 
 export const requiresMedia = (network: ChannelNetwork) => REQUIRES_MEDIA.includes(network);
 
@@ -56,7 +60,7 @@ export function validateMedia(network: ChannelNetwork, label: string, items: rea
     for (const m of items) {
       if (m.kind !== "image" || !m.width || !m.height) continue; // dimensions inconnues : Instagram tranchera
       const ratio = m.width / m.height;
-      if (ratio < INSTAGRAM_IMAGE.minRatio - 1e-6 || ratio > INSTAGRAM_IMAGE.maxRatio + 1e-6) errors.push(`Instagram : le format de « ${m.name} » n’est pas accepté (entre 4:5 et 1,91:1).`);
+      if (ratio < INSTAGRAM_IMAGE.minRatio - 1e-6 || ratio > INSTAGRAM_IMAGE.maxRatio + 1e-6) errors.push(`Instagram : le format de « ${m.name} » n’est pas accepté (entre 4:5 et 1,91:1) : recadrez-la.`);
       else if (m.width < INSTAGRAM_IMAGE.minWidth) errors.push(`Instagram : « ${m.name} » est trop petite (${INSTAGRAM_IMAGE.minWidth} px de large minimum).`);
     }
   }

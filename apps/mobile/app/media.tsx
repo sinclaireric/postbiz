@@ -2,7 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useCallback, useEffect, useState } from "react";
-import { ActivityIndicator, FlatList, Pressable, RefreshControl, useWindowDimensions, View } from "react-native";
+import { ActivityIndicator, FlatList, Pressable, RefreshControl, Text, useWindowDimensions, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { MediaThumb } from "@/components/media/media-thumb";
@@ -24,6 +24,7 @@ export default function MediaScreen() {
   const canWrite = useOrgStore((s) => s.canWrite);
   const [items, setItems] = useState<MediaItem[] | null>(null);
   const [busy, setBusy] = useState(false);
+  const [progress, setProgress] = useState<{ done: number; total: number } | null>(null);
   const [refreshing, setRefreshing] = useState(false);
   const [toDelete, setToDelete] = useState<MediaItem | null>(null);
 
@@ -39,8 +40,9 @@ export default function MediaScreen() {
 
   const upload = async () => {
     setBusy(true);
-    const result = await pickAndUpload();
+    const result = await pickAndUpload((done, total) => setProgress({ done, total }));
     setBusy(false);
+    setProgress(null);
     if (!result.ok) showToast(result.error, "error");
     else if (result.items?.length) showToast(`${result.items.length} média${result.items.length > 1 ? "s" : ""} ajouté${result.items.length > 1 ? "s" : ""}`, "success");
     await load();
@@ -71,6 +73,13 @@ export default function MediaScreen() {
           ) : undefined
         }
       />
+
+      {progress ? (
+        <View className="mx-4 mb-2 flex-row items-center gap-2 rounded-2xl bg-brand-soft px-4 py-3">
+          <ActivityIndicator size="small" color="#2F4A00" />
+          <Text className="font-jakarta text-[13px] font-medium text-brand-ink">{`Envoi en cours… ${Math.min(progress.done + 1, progress.total)}/${progress.total}`}</Text>
+        </View>
+      ) : null}
 
       {items === null ? (
         <View className="flex-1 items-center justify-center">
