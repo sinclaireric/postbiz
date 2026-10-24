@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ListFilters } from '@/components/admin/list-filters';
-import { PhaseCell, PlanCell } from '@/components/admin/phase-cell';
+import { PhaseCell, PlanCell, SuspendedBadge } from '@/components/admin/phase-cell';
 import { Pager } from '@/components/admin/pager';
 import { formatFullDate, formatNumber } from '@/i18n/format';
 import { getT } from '@/i18n/server';
@@ -60,6 +60,7 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
                   <td className={td}>
                     <Link href={`${base}/${u.userId}`} className="font-medium underline-offset-4 hover:underline">{u.name ?? u.email}</Link>
                     {u.name && u.name !== u.email && <p className="text-xs text-muted" dir="ltr">{u.email}</p>}
+                    {u.suspended && <p className="mt-1"><SuspendedBadge t={t} /></p>}
                     {!u.emailConfirmed && <p className="mt-1 text-xs font-medium text-warn">{t('admin.cell.unconfirmed')}</p>}
                   </td>
                   <td className={td}>

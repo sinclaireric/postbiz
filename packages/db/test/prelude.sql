@@ -11,7 +11,13 @@ create table auth.users (
   raw_app_meta_data jsonb not null default '{}'::jsonb,
   created_at timestamptz not null default now(),
   last_sign_in_at timestamptz,
-  email_confirmed_at timestamptz
+  email_confirmed_at timestamptz,
+  banned_until timestamptz
+);
+-- Sessions de Supabase Auth : l'espace propriétaire les supprime pour déconnecter un compte suspendu.
+create table auth.sessions (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references auth.users (id) on delete cascade
 );
 create function auth.uid() returns uuid language sql stable as $$
   select nullif(current_setting('request.jwt.claim.sub', true), '')::uuid

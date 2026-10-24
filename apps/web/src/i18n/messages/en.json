@@ -304,6 +304,29 @@
     }
   },
   "admin": {
+    "suspend": {
+      "badge": "Suspended",
+      "title": "Account suspension",
+      "explain": "A suspended account can no longer sign in: its sessions are closed, it can no longer reach its organizations, and its scheduled posts, first comments and replies are no longer sent. Its data is kept.",
+      "open": "Suspend this account",
+      "reasonLabel": "Reason (optional, visible only to you)",
+      "reasonPlaceholder": "E.g. spam, payment dispute…",
+      "confirm": "Confirm suspension",
+      "protected": "This account cannot be suspended: it is yours or a platform administrator’s.",
+      "bannerTitle": "Account suspended on {date}",
+      "reason": "Reason: {reason}",
+      "by": "By {email}",
+      "restore": "Restore the account",
+      "restoreNote": "The account will be able to sign in again. Scheduled posts whose time has passed will be sent right away.",
+      "flash": {
+        "suspended": "Account suspended: its sessions are closed.",
+        "restored": "Account restored.",
+        "demo": "Demo mode: nothing was changed.",
+        "self": "You cannot suspend your own account.",
+        "protected": "A platform administrator cannot be suspended.",
+        "error": "The operation failed. Check that the suspension migration is applied, then try again."
+      }
+    },
     "user": {
       "back": "Back to users",
       "account": "Account",
@@ -1166,7 +1189,8 @@
       "rateLimit": "Too many attempts. Please try again in a few minutes.",
       "weakPassword": "This password is too weak. Choose a longer one.",
       "samePassword": "Choose a password different from the old one.",
-      "generic": "Something went wrong. Please try again in a moment."
+      "generic": "Something went wrong. Please try again in a moment.",
+      "suspended": "This account is suspended. Contact us to find out more."
     }
   },
   "app": {

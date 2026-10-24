@@ -45,6 +45,7 @@ export interface AdminUserRow extends SubscriptionInfo {
   orgsCount: number;
   channelsCount: number;
   postsCount: number;
+  suspended: boolean;
 }
 
 export interface AdminOrgRow extends SubscriptionInfo {
@@ -112,3 +113,13 @@ export interface AdminUserDetail {
   provider: string;
   orgs: AdminUserOrg[];
 }
+
+/** Suspension d'un compte, et si ce compte est protégé (administrateur de la plateforme). */
+export interface AdminUserStatus {
+  suspension: { at: string; reason: string | null; byEmail: string | null } | null;
+  isPlatformAdmin: boolean;
+}
+
+/** Résultat d'une action de suspension, porté par `?ok=` au retour sur la fiche. */
+export const FLASHES = ['suspended', 'restored', 'demo', 'self', 'protected', 'error'] as const;
+export type Flash = (typeof FLASHES)[number];

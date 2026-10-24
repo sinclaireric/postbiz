@@ -304,6 +304,29 @@
     }
   },
   "admin": {
+    "suspend": {
+      "badge": "Suspendu",
+      "title": "Suspension du compte",
+      "explain": "Un compte suspendu ne peut plus se connecter : ses sessions sont fermées, il n’accède plus à ses organisations, et ses publications, premiers commentaires et réponses programmés ne partent plus. Ses données sont conservées.",
+      "open": "Suspendre ce compte",
+      "reasonLabel": "Motif (facultatif, visible de vous seul)",
+      "reasonPlaceholder": "Ex. : spam, litige de paiement…",
+      "confirm": "Confirmer la suspension",
+      "protected": "Ce compte ne peut pas être suspendu : c’est le vôtre ou celui d’un administrateur de la plateforme.",
+      "bannerTitle": "Compte suspendu le {date}",
+      "reason": "Motif : {reason}",
+      "by": "Par {email}",
+      "restore": "Rétablir le compte",
+      "restoreNote": "Le compte pourra se reconnecter. Les publications programmées dont l’heure est passée partiront aussitôt.",
+      "flash": {
+        "suspended": "Compte suspendu : ses sessions sont fermées.",
+        "restored": "Compte rétabli.",
+        "demo": "Mode démo : rien n’a été modifié.",
+        "self": "Vous ne pouvez pas suspendre votre propre compte.",
+        "protected": "Un administrateur de la plateforme ne peut pas être suspendu.",
+        "error": "L’opération a échoué. Vérifiez que la migration de suspension est appliquée, puis réessayez."
+      }
+    },
     "user": {
       "back": "Retour aux utilisateurs",
       "account": "Compte",
@@ -1184,7 +1207,8 @@
       "rateLimit": "Trop de tentatives. Réessayez dans quelques minutes.",
       "weakPassword": "Ce mot de passe est trop faible. Choisissez-en un plus long.",
       "samePassword": "Choisissez un mot de passe différent de l’ancien.",
-      "generic": "Une erreur est survenue. Réessayez dans un instant."
+      "generic": "Une erreur est survenue. Réessayez dans un instant.",
+      "suspended": "Ce compte est suspendu. Contactez-nous pour en savoir plus."
     }
   },
   "app": {

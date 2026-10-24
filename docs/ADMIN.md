@@ -9,11 +9,11 @@ Tableau de bord réservé au propriétaire du SaaS : `https://getpostbiz.com/adm
 | `/admin/utilisateurs/[id]` | Fiche d'un utilisateur (clic sur son nom dans la liste) : compte (inscription, dernière connexion, e-mail confirmé, mode de connexion), chacune de ses organisations avec son rôle, son abonnement (offre, statut, dates, identifiants Stripe), son activité (membres, publications par état, dernière publiée) et ses canaux (réseau, état, jeton valable jusqu'au). **Aucun texte de publication ni de message, aucun jeton** : seulement des métadonnées et des chiffres |
 | `/admin/abonnements` | Une ligne par organisation : propriétaire, offre, statut, membres, canaux, publications. Puces de statut avec leur effectif |
 
-L'espace est en lecture seule : il ne modifie ni abonnement ni compte.
+L'espace est en lecture seule, sauf la suspension d'un compte (voir plus bas) : il ne modifie ni abonnement ni organisation.
 
 ## Mise en route
 
-1. **Appliquer les migrations** `supabase/migrations/20261025000001_platform_admin.sql` puis `20261026000001_admin_user_detail.sql` (éditeur SQL de Supabase, ou `supabase db push`).
+1. **Appliquer les migrations** `supabase/migrations/20261025000001_platform_admin.sql` puis `20261026000001_admin_user_detail.sql`, puis `20261027000001_user_suspension.sql` (éditeur SQL de Supabase, ou `supabase db push`).
    Sans elle, `/admin` répond « page introuvable » pour tout le monde.
 2. **Se déclarer propriétaire**, dans l'éditeur SQL (le service_role seul peut écrire dans `platform_admins`) :
 
@@ -28,9 +28,25 @@ L'espace est en lecture seule : il ne modifie ni abonnement ni compte.
 ## Comment c'est protégé
 
 - La liste des administrateurs est dans la base (`platform_admins`), sans aucun droit pour les clients.
-- Chaque fonction (`admin_overview`, `admin_users`, `admin_organizations`, `admin_user_detail`) vérifie `is_platform_admin()` elle-même et refuse sinon (erreur `forbidden`) : un utilisateur ordinaire qui appellerait l'API directement n'obtient rien.
+- Chaque fonction (`admin_overview`, `admin_users`, `admin_organizations`, `admin_user_detail`, `admin_user_status`, `admin_suspend_user`, `admin_restore_user`) vérifie `is_platform_admin()` elle-même et refuse sinon (erreur `forbidden`) : un utilisateur ordinaire qui appellerait l'API directement n'obtient rien.
 - Pour un utilisateur connecté qui n'est pas propriétaire, `/admin` répond « page introuvable » (l'existence de l'espace n'est pas confirmée). Sans session, on est renvoyé vers la connexion. `/admin` est exclu des moteurs de recherche (`robots.txt` et `noindex`).
 - Aucune clé `service_role` n'est utilisée côté site pour cet espace.
+
+## Suspendre un utilisateur
+
+Sur la fiche d'un utilisateur : **Suspendre ce compte** (avec un motif facultatif, visible de vous seul), puis **Rétablir le compte**. Un administrateur de la plateforme et soi-même ne peuvent pas être suspendus.
+
+Migration : `supabase/migrations/20261027000001_user_suspension.sql` (à appliquer après les deux précédentes).
+
+Une suspension :
+1. refuse la connexion (`auth.users.banned_until`, vérifié par Supabase Auth ; l'écran de connexion affiche « Ce compte est suspendu ») ;
+2. ferme ses sessions tout de suite (`auth.sessions`) ;
+3. retire tout accès aux données : les politiques d'accès (`is_org_member`, `has_org_role`, `shares_org_with`) répondent « non » à un compte suspendu, même avec un jeton encore valide ;
+4. empêche le worker d'envoyer ses publications, ses premiers commentaires et ses réponses de messagerie (`claim_due_posts`, `claim_first_comments`, `claim_outbound_messages`).
+
+Ses données sont conservées. **Au rétablissement, les publications programmées dont l'heure est passée partent aussitôt** : relisez la file avant de rétablir un compte suspendu longtemps. Les organisations dont il est membre continuent d'exister pour leurs autres membres, mais ses propres publications restent en attente.
+
+L'état est dans `user_suspensions` (aucun droit pour les clients). Pour suspendre ou rétablir à la main : `select public.admin_suspend_user('<id>', 'motif')` / `select public.admin_restore_user('<id>')` en étant connecté comme propriétaire, ou, en SQL pur, supprimer la ligne et remettre `auth.users.banned_until` à `null`.
 
 ## Abonnements et essais
 

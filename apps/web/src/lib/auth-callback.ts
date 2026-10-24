@@ -12,6 +12,7 @@ export const AUTH_LINK_ERRORS = {
   annule: 'auth.linkErrors.annule',
   confirmation: 'auth.linkErrors.confirmation',
   organisation: 'auth.linkErrors.organisation',
+  suspendu: 'auth.errors.suspended',
 } as const satisfies Record<string, MessageKey>;
 export type AuthLinkError = keyof typeof AUTH_LINK_ERRORS;
 

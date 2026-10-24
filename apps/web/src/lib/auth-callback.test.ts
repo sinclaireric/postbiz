@@ -12,6 +12,7 @@ describe('retour de connexion (Google et liens e-mail)', () => {
   it('ne retient que les vrais codes d’erreur', () => {
     expect(authLinkErrorKey('annule')).toBe('auth.linkErrors.annule');
     expect(authLinkErrorKey('google')).toBe('auth.linkErrors.google');
+    expect(authLinkErrorKey('suspendu')).toBe('auth.errors.suspended');
     for (const other of [undefined, '', 'inconnu', 'toString', '__proto__', 'constructor']) expect(authLinkErrorKey(other)).toBeUndefined();
   });
 

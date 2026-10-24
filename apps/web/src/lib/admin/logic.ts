@@ -1,5 +1,5 @@
 import { PLANS, pricePerMonth } from '@/lib/pricing';
-import { PHASES, type AdminChannel, type AdminOrgRow, type AdminOverview, type AdminSubscription, type AdminUserDetail, type AdminUserOrg, type AdminUserRow, type ChannelStatus, type ListQuery, type Phase, type PlanCount } from './types';
+import { FLASHES, PHASES, type AdminChannel, type AdminOrgRow, type AdminOverview, type AdminSubscription, type AdminUserDetail, type AdminUserOrg, type AdminUserRow, type AdminUserStatus, type ChannelStatus, type Flash, type ListQuery, type Phase, type PlanCount } from './types';
 
 export const PAGE_SIZE = 25;
 const DAY = 86_400_000;
@@ -62,6 +62,7 @@ export function parseUserRow(raw: unknown): AdminUserRow {
     orgsCount: num(r.orgs_count),
     channelsCount: num(r.channels_count),
     postsCount: num(r.posts_count),
+    suspended: r.suspended === true,
   };
 }
 
@@ -224,4 +225,34 @@ export function listHref(base: string, q: Partial<ListQuery>): string {
   if (q.page && q.page > 1) p.set('page', String(q.page));
   const s = p.toString();
   return s ? `${base}?${s}` : base;
+}
+
+/** Réponse de `admin_user_status()`. */
+export function parseUserStatus(raw: unknown): AdminUserStatus {
+  const r = obj(raw);
+  const s = obj(r.suspension);
+  return {
+    suspension: str(s.at) ? { at: str(s.at)!, reason: str(s.reason), byEmail: str(s.by_email) } : null,
+    isPlatformAdmin: r.is_platform_admin === true,
+  };
+}
+
+/** Message d'erreur de la base → résultat affiché sur la fiche. Les messages sont ceux levés par `admin_suspend_user`. */
+export function suspensionFailure(message: string | undefined): Flash {
+  const m = (message ?? '').toLowerCase();
+  if (m.includes('cannot suspend yourself')) return 'self';
+  if (m.includes('cannot suspend a platform admin')) return 'protected';
+  return 'error';
+}
+
+/** `?ok=` de la fiche : seules les valeurs connues sont acceptées. */
+export function parseFlash(v: string | string[] | undefined): Flash | null {
+  const s = first(v);
+  return s && (FLASHES as readonly string[]).includes(s) ? (s as Flash) : null;
+}
+
+/** Motif saisi dans le formulaire : sans espaces autour, 500 caractères au plus ; vide → absent. */
+export function cleanReason(v: FormDataEntryValue | null): string | null {
+  const s = typeof v === 'string' ? v.trim().slice(0, 500) : '';
+  return s === '' ? null : s;
 }

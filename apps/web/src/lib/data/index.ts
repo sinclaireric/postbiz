@@ -55,3 +55,10 @@ export async function provisionOrganization(identity: AccountIdentity): Promise<
   const { error } = await supabase.rpc('ensure_organization', { p_name: workspaceName(identity) });
   return !error;
 }
+
+/** Le compte connecté est-il suspendu par le propriétaire de la plateforme ? (Suspendu, il ne voit plus aucune organisation.) */
+export async function isAccountSuspended(): Promise<boolean> {
+  const supabase = await createClient();
+  const { data } = await supabase.rpc('is_suspended');
+  return data === true;
+}

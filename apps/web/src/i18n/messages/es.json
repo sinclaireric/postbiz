@@ -670,7 +670,8 @@
       "rateLimit": "Demasiados intentos. Inténtalo de nuevo en unos minutos.",
       "weakPassword": "Esta contraseña es demasiado débil. Elige una más larga.",
       "samePassword": "Elige una contraseña distinta de la anterior.",
-      "generic": "Ha ocurrido un error. Inténtalo de nuevo en un momento."
+      "generic": "Ha ocurrido un error. Inténtalo de nuevo en un momento.",
+      "suspended": "Esta cuenta está suspendida. Contáctanos para saber más."
     }
   },
   "app": {

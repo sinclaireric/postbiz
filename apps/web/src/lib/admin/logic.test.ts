@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { demoOrganizations, demoOverview, demoUserDetail, demoUsers } from './demo';
-import { PAGE_SIZE, daysUntil, isUserId, listHref, pageCount, parseListQuery, parseOrgRow, parseOverview, parsePage, parsePhase, parseUserDetail, parseUserRow, percent, revenue, totalOf } from './logic';
+import { demoOrganizations, demoOverview, demoUserDetail, demoUserStatus, demoUsers } from './demo';
+import { PAGE_SIZE, daysUntil, isUserId, listHref, pageCount, parseListQuery, parseOrgRow, parseOverview, parsePage, parsePhase, parseUserDetail, parseUserRow, parseUserStatus, parseFlash, cleanReason, suspensionFailure, percent, revenue, totalOf } from './logic';
 import { PHASES, type PlanCount } from './types';
 
 describe('parseOverview', () => {
@@ -196,5 +196,47 @@ describe('fiche d’un utilisateur', () => {
     expect(Object.values(d.orgs[0]!.posts.byState).reduce((a, b) => a + b, 0)).toBe(row.postsCount);
     expect(d.orgs[0]!.subscription).toMatchObject({ plan: row.plan, phase: 'paying' });
     expect(demoUserDetail('00000000-0000-4000-9000-ffffffffffff', now)).toBeNull();
+  });
+});
+
+describe('suspension', () => {
+  it('parseUserRow lit l’indicateur de suspension (faux par défaut)', () => {
+    expect(parseUserRow({ user_id: 'u', email: 'a@b.fr', suspended: true }).suspended).toBe(true);
+    expect(parseUserRow({ user_id: 'u', email: 'a@b.fr' }).suspended).toBe(false);
+  });
+
+  it('parseUserStatus lit la suspension et la protection du compte', () => {
+    expect(parseUserStatus({ suspension: { at: '2026-10-20T10:00:00Z', reason: 'spam', by_email: 'moi@x.fr' }, is_platform_admin: false }))
+      .toEqual({ suspension: { at: '2026-10-20T10:00:00Z', reason: 'spam', byEmail: 'moi@x.fr' }, isPlatformAdmin: false });
+    expect(parseUserStatus({ suspension: null, is_platform_admin: true })).toEqual({ suspension: null, isPlatformAdmin: true });
+    for (const bad of [null, undefined, {}, 'x']) expect(parseUserStatus(bad)).toEqual({ suspension: null, isPlatformAdmin: false });
+  });
+
+  it('suspensionFailure traduit les refus de la base', () => {
+    expect(suspensionFailure('cannot suspend yourself')).toBe('self');
+    expect(suspensionFailure('cannot suspend a platform admin')).toBe('protected');
+    for (const other of ['forbidden', 'user not found', undefined, 'function admin_suspend_user does not exist']) expect(suspensionFailure(other)).toBe('error');
+  });
+
+  it('parseFlash n’accepte que les résultats connus', () => {
+    for (const ok of ['suspended', 'restored', 'demo', 'self', 'protected', 'error']) expect(parseFlash(ok)).toBe(ok);
+    for (const bad of ['<script>', '', undefined, 'toString']) expect(parseFlash(bad)).toBeNull();
+  });
+
+  it('cleanReason rogne, coupe à 500 caractères et traite le vide comme une absence', () => {
+    expect(cleanReason('  spam  ')).toBe('spam');
+    expect(cleanReason('x'.repeat(900))).toHaveLength(500);
+    expect(cleanReason('   ')).toBeNull();
+    expect(cleanReason(null)).toBeNull();
+    expect(cleanReason(new File([], 'x'))).toBeNull();
+  });
+
+  it('la démo contient des comptes suspendus, avec leur motif', () => {
+    const now = new Date('2026-10-23T12:00:00Z');
+    const rows = demoUsers({ search: '', phase: null, page: 1 }, now).rows;
+    const suspended = rows.find((r) => r.suspended)!;
+    expect(suspended).toBeDefined();
+    expect(demoUserStatus(suspended.userId, now).suspension?.reason).toBeTruthy();
+    expect(demoUserStatus(rows.find((r) => !r.suspended)!.userId, now).suspension).toBeNull();
   });
 });

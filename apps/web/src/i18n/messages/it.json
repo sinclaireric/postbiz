@@ -673,7 +673,8 @@
       "rateLimit": "Troppi tentativi. Riprova tra qualche minuto.",
       "weakPassword": "Questa password è troppo debole. Sceglierne una più lunga.",
       "samePassword": "Scegli una password diversa da quella precedente.",
-      "generic": "Si è verificato un errore. Riprova tra un istante."
+      "generic": "Si è verificato un errore. Riprova tra un istante.",
+      "suspended": "Questo account è sospeso. Contattaci per saperne di più."
     }
   },
   "app": {

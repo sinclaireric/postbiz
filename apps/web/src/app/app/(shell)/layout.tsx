@@ -4,7 +4,7 @@ import { signOut } from '@/app/(auth)/actions';
 import { AppShell } from '@/components/app/shell';
 import { Onboarding } from '@/components/onboarding/onboarding';
 import { getAdminAccess } from '@/lib/admin/data';
-import { getRepositories, getSession, provisionOrganization } from '@/lib/data';
+import { getRepositories, getSession, isAccountSuspended, provisionOrganization } from '@/lib/data';
 import { getT } from '@/i18n/server';
 import { networkAvailability } from '@/lib/oauth/availability';
 import { networkById } from '@/lib/networks';
@@ -17,6 +17,8 @@ export default async function ShellLayout({ children }: { children: React.ReactN
   const session = await getSession();
   if (session.status === 'anonymous') redirect('/login');
   if (session.status === 'no-org') {
+    // Un compte suspendu ne voit plus son organisation : on le déconnecte au lieu de lui en créer une.
+    if (!isDemo && (await isAccountSuspended())) redirect('/auth/suspended');
     // Première connexion : l'organisation est créée sans question, puis on ouvre l'onboarding.
     const ok = await provisionOrganization(session.user);
     redirect(ok ? '/app/calendrier?onboarding=true' : '/login?erreur=organisation');

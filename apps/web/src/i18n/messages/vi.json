@@ -667,7 +667,8 @@
       "rateLimit": "Quá nhiều lần thử. Vui lòng thử lại sau vài phút.",
       "weakPassword": "Mật khẩu này quá yếu. Hãy chọn mật khẩu dài hơn.",
       "samePassword": "Hãy chọn mật khẩu khác với mật khẩu cũ.",
-      "generic": "Đã xảy ra lỗi. Vui lòng thử lại sau giây lát."
+      "generic": "Đã xảy ra lỗi. Vui lòng thử lại sau giây lát.",
+      "suspended": "Tài khoản này đã bị tạm ngưng. Hãy liên hệ với chúng tôi để biết thêm chi tiết."
     }
   },
   "app": {

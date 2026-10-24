@@ -667,7 +667,8 @@
       "rateLimit": "Çok fazla deneme yapıldı. Birkaç dakika sonra tekrar deneyin.",
       "weakPassword": "Bu parola çok zayıf. Daha uzun bir parola seçin.",
       "samePassword": "Öncekinden farklı bir parola seçin.",
-      "generic": "Bir hata oluştu. Birazdan tekrar deneyin."
+      "generic": "Bir hata oluştu. Birazdan tekrar deneyin.",
+      "suspended": "Bu hesap askıya alındı. Daha fazla bilgi için bizimle iletişime geçin."
     }
   },
   "app": {

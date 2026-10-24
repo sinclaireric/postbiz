@@ -44,3 +44,8 @@ export function PlanCell({ sub, t }: { sub: SubscriptionInfo; t: T }) {
     </div>
   );
 }
+
+/** Compte suspendu par le propriétaire de la plateforme. */
+export function SuspendedBadge({ t }: { t: T }) {
+  return <span className="inline-flex items-center rounded-full bg-danger-soft px-2.5 py-0.5 text-xs font-semibold whitespace-nowrap text-danger">{t('admin.suspend.badge')}</span>;
+}

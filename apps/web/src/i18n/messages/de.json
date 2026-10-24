@@ -679,7 +679,8 @@
       "rateLimit": "Zu viele Versuche. Bitte versuchen Sie es in einigen Minuten erneut.",
       "weakPassword": "Dieses Passwort ist zu schwach. Wählen Sie ein längeres.",
       "samePassword": "Wählen Sie ein Passwort, das sich vom alten unterscheidet.",
-      "generic": "Ein Fehler ist aufgetreten. Bitte versuchen Sie es gleich noch einmal."
+      "generic": "Ein Fehler ist aufgetreten. Bitte versuchen Sie es gleich noch einmal.",
+      "suspended": "Dieses Konto ist gesperrt. Kontaktieren Sie uns für weitere Informationen."
     }
   },
   "app": {

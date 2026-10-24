@@ -3,15 +3,17 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { FieldList } from '@/components/admin/field-list';
 import { MeterList } from '@/components/admin/meter-list';
-import { PhaseBadge, PhaseCell, PlanCell } from '@/components/admin/phase-cell';
+import { PhaseBadge, PhaseCell, PlanCell, SuspendedBadge } from '@/components/admin/phase-cell';
 import { SocialIcon } from '@/components/social-icon';
 import { Badge } from '@/components/ui';
 import { formatFullDate, formatNumber } from '@/i18n/format';
 import { getT } from '@/i18n/server';
-import { loadUserDetail } from '@/lib/admin/data';
+import { loadUserDetail, loadUserStatus } from '@/lib/admin/data';
 import { requireAdmin } from '@/lib/admin/guard';
+import { parseFlash } from '@/lib/admin/logic';
 import type { AdminChannel } from '@/lib/admin/types';
 import { networkName } from '@/lib/networks';
+import { restoreUserAction, suspendUserAction } from './actions';
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getT();
@@ -25,12 +27,16 @@ const h2 = 'text-lg font-semibold';
 const h3 = 'text-xs font-bold tracking-[0.14em] text-muted uppercase';
 const CHANNEL_TONE = { active: 'ok', refresh_needed: 'warn', disabled: 'neutral' } as const;
 
-export default async function AdminUserPage({ params }: { params: Promise<{ id: string }> }) {
-  await requireAdmin();
+export default async function AdminUserPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<Record<string, string | string[] | undefined>> }) {
+  const admin = await requireAdmin();
   const { id } = await params;
+  const flash = parseFlash((await searchParams).ok);
   const t = await getT();
   const user = await loadUserDetail(id);
   if (!user) notFound();
+  const status = await loadUserStatus(id);
+  const suspension = status.suspension;
+  const canSuspend = !suspension && id !== admin.id && !status.isPlatformAdmin;
 
   const date = (iso: string | null) => (iso ? formatFullDate(t.locale, new Date(iso)) : null);
   const n = (v: number) => formatNumber(t.locale, v);
@@ -44,9 +50,29 @@ export default async function AdminUserPage({ params }: { params: Promise<{ id: 
       <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2">
         <h1 className="text-[28px] font-semibold tracking-tight">{user.name ?? user.email}</h1>
         {primary && <PhaseBadge phase={primary.phase} t={t} />}
+        {suspension && <SuspendedBadge t={t} />}
         {!user.emailConfirmedAt && <Badge tone="warn">{t('admin.cell.unconfirmed')}</Badge>}
       </div>
       {user.name && user.name !== user.email && <p className="mt-1 text-muted" dir="ltr">{user.email}</p>}
+
+      {flash && (
+        <p role="status" className={`mt-5 rounded-2xl px-4 py-3 text-sm font-medium ${flash === 'suspended' || flash === 'restored' ? 'bg-ok-soft text-ok' : flash === 'demo' ? 'bg-wash text-muted' : 'bg-danger-soft text-danger'}`}>
+          {t(`admin.suspend.flash.${flash}`)}
+        </p>
+      )}
+
+      {suspension && (
+        <section className="mt-5 rounded-3xl border border-danger/30 bg-danger-soft p-6" aria-labelledby="suspended">
+          <h2 id="suspended" className="text-lg font-semibold text-danger">{t('admin.suspend.bannerTitle', { date: date(suspension.at) ?? '' })}</h2>
+          {suspension.reason && <p className="mt-2 text-sm">{t('admin.suspend.reason', { reason: suspension.reason })}</p>}
+          {suspension.byEmail && <p className="mt-1 text-xs text-muted">{t('admin.suspend.by', { email: suspension.byEmail })}</p>}
+          <p className="mt-3 text-sm text-muted">{t('admin.suspend.restoreNote')}</p>
+          <form action={restoreUserAction} className="mt-4">
+            <input type="hidden" name="user" value={user.id} />
+            <button type="submit" className="inline-flex h-10 items-center rounded-full bg-ink px-5 text-sm font-semibold text-white hover:bg-black/80">{t('admin.suspend.restore')}</button>
+          </form>
+        </section>
+      )}
 
       <section className={`${card} mt-6`} aria-labelledby="account">
         <h2 id="account" className={h2}>{t('admin.user.account')}</h2>
@@ -153,6 +179,30 @@ export default async function AdminUserPage({ params }: { params: Promise<{ id: 
           </section>
         );
       })}
+
+      {!suspension && (
+        <section className={`${card} mt-8`} aria-labelledby="suspension">
+          <h2 id="suspension" className={h2}>{t('admin.suspend.title')}</h2>
+          <p className="mt-2 text-sm leading-relaxed text-muted">{t('admin.suspend.explain')}</p>
+          {canSuspend ? (
+            <details className="group mt-4">
+              <summary className="inline-flex h-10 cursor-pointer list-none items-center rounded-full border border-danger/40 px-5 text-sm font-semibold text-danger hover:bg-danger-soft [&::-webkit-details-marker]:hidden">{t('admin.suspend.open')}</summary>
+              <form action={suspendUserAction} className="mt-4 grid max-w-xl gap-3">
+                <input type="hidden" name="user" value={user.id} />
+                <label className="grid gap-1 text-xs font-semibold text-muted">
+                  {t('admin.suspend.reasonLabel')}
+                  <textarea name="reason" rows={3} maxLength={500} placeholder={t('admin.suspend.reasonPlaceholder')} className="rounded-2xl border border-line bg-surface px-4 py-3 text-[15px] font-normal text-ink outline-none focus:border-ink focus:ring-4 focus:ring-lime/40" />
+                </label>
+                <div>
+                  <button type="submit" className="inline-flex h-10 items-center rounded-full bg-danger px-5 text-sm font-semibold text-white hover:brightness-110">{t('admin.suspend.confirm')}</button>
+                </div>
+              </form>
+            </details>
+          ) : (
+            <p className="mt-4 rounded-2xl bg-wash px-4 py-3 text-sm text-muted">{t('admin.suspend.protected')}</p>
+          )}
+        </section>
+      )}
 
       <p className="mt-6 text-xs text-subtle">{t('admin.user.privacyNote')}</p>
     </>

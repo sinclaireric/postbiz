@@ -39,5 +39,6 @@ export function authErrorKey(message: string | undefined): MessageKey {
   if (m.includes('rate limit') || m.includes('too many') || m.includes('for security purposes')) return 'auth.errors.rateLimit';
   if (m.includes('password should be') || m.includes('weak password')) return 'auth.errors.weakPassword';
   if (m.includes('same password')) return 'auth.errors.samePassword';
+  if (m.includes('banned')) return 'auth.errors.suspended';
   return 'auth.errors.generic';
 }

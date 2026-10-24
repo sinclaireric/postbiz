@@ -27,6 +27,7 @@ describe('validation des formulaires', () => {
     expect(authErrorKey('Invalid login credentials')).toBe('auth.errors.invalidCredentials');
     expect(authErrorKey('Email not confirmed')).toBe('auth.errors.emailNotConfirmed');
     expect(authErrorKey('For security purposes, you can only request this after 59 seconds.')).toBe('auth.errors.rateLimit');
+    expect(authErrorKey('User is banned')).toBe('auth.errors.suspended');
     expect(authErrorKey('quelque chose d’inattendu')).toBe('auth.errors.generic');
     expect(authErrorKey(undefined)).toBe('auth.errors.generic');
   });

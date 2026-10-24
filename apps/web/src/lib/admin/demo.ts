@@ -1,4 +1,4 @@
-import { PHASES, type AdminChannel, type AdminOrgRow, type AdminOverview, type AdminPage, type AdminUserDetail, type AdminUserRow, type ListQuery, type Phase, type PlanCount } from './types';
+import { PHASES, type AdminChannel, type AdminOrgRow, type AdminOverview, type AdminPage, type AdminUserDetail, type AdminUserRow, type AdminUserStatus, type ListQuery, type Phase, type PlanCount } from './types';
 import { PAGE_SIZE } from './logic';
 
 // Données d'exemple de l'espace propriétaire (mode démo, sans Supabase). Déterministes, sauf les dates qui suivent l'horloge.
@@ -67,7 +67,7 @@ function build(now: Date): Account[] {
     accounts.push({
       user: {
         ...sub, userId, email, name: `${first} ${last}`, createdAt: iso(created), lastSignInAt: lastSeen ? iso(lastSeen) : null,
-        emailConfirmed: rand() > 0.07, orgId, orgName: company, role: 'admin', orgsCount: 1, channelsCount: channels, postsCount: posts,
+        emailConfirmed: rand() > 0.07, orgId, orgName: company, role: 'admin', orgsCount: 1, channelsCount: channels, postsCount: posts, suspended: i % 17 === 5,
       },
       org: { ...sub, orgId, name: company, createdAt: iso(created), ownerEmail: email, membersCount: members, channelsCount: channels, postsCount: posts },
     });
@@ -189,5 +189,14 @@ export function demoUserDetail(id: string, now = new Date()): AdminUserDetail | 
         lastCreatedAt: u.postsCount > 0 ? iso(now.getTime() - DAY) : null,
       },
     }],
+  };
+}
+
+/** Un compte d'exemple sur dix-sept est suspendu : de quoi voir l'écran sans rien modifier. */
+export function demoUserStatus(id: string, now = new Date()): AdminUserStatus {
+  const account = build(now).find((a) => a.user.userId === id);
+  return {
+    suspension: account?.user.suspended ? { at: new Date(now.getTime() - 3 * DAY).toISOString(), reason: 'Messages non sollicités envoyés en masse.', byEmail: 'proprietaire@postbiz.demo' } : null,
+    isPlatformAdmin: false,
   };
 }

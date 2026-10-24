@@ -664,7 +664,8 @@
       "rateLimit": "Muitas tentativas. Tente novamente em alguns minutos.",
       "weakPassword": "Esta senha é muito fraca. Escolha uma mais longa.",
       "samePassword": "Escolha uma senha diferente da anterior.",
-      "generic": "Ocorreu um erro. Tente novamente em instantes."
+      "generic": "Ocorreu um erro. Tente novamente em instantes.",
+      "suspended": "Esta conta está suspensa. Entre em contato conosco para saber mais."
     }
   },
   "app": {
