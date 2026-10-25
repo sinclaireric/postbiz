@@ -18,7 +18,7 @@
       "package": "com.postbiz.app",
       "softwareKeyboardLayoutMode": "pan",
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
+        "backgroundColor": "#C6F432",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
@@ -35,18 +35,18 @@
         "expo-splash-screen",
         {
           "image": "./assets/images/splash-icon.png",
-          "imageWidth": 200,
+          "imageWidth": 240,
           "resizeMode": "contain",
-          "backgroundColor": "#FFFFFF",
+          "backgroundColor": "#F8F7F4",
           "dark": {
-            "backgroundColor": "#FFFFFF"
+            "backgroundColor": "#F8F7F4"
           }
         }
       ],
       [
         "expo-system-ui",
         {
-          "backgroundColor": "#FFFFFF"
+          "backgroundColor": "#F8F7F4"
         }
       ],
       [
@@ -59,13 +59,15 @@
       [
         "expo-notifications",
         {
-          "color": "#612BD3"
+          "color": "#2F4A00",
+          "icon": "./assets/images/notification-icon.png"
         }
       ],
       [
         "expo-image-picker",
         {
-          "photosPermission": "Postbiz accède à vos photos pour les ajouter à votre médiathèque."
+          "photosPermission": "Postbiz accède à vos photos pour les ajouter à votre médiathèque.",
+          "microphonePermission": false
         }
       ]
     ],
@@ -74,14 +76,19 @@
       "reactCompiler": true
     },
     "extra": {
-      "router": {},
-      "eas": {
-        "projectId": "81a11c63-1c09-43d4-b3fd-20f98b14e307"
+      "router": {
+        "asyncRoutes": {
+          "web": true
+        }
       },
       "expo-navigation-bar": {
-        "barStyle": "dark-content"
+        "barStyle": "dark-content",
+        "style": "dark-content"
+      },
+      "eas": {
+        "projectId": "de70579f-348f-470b-9989-feceaeb9a432"
       }
     },
-    "owner": "diony20822"
+    "owner": "sinclaireric60"
   }
 }
