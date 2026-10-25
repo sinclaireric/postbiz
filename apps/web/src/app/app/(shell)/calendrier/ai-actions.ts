@@ -9,6 +9,9 @@ import { parseAiRequest } from '@/lib/ai/request';
 import type { AiRequest, AiResult } from '@/lib/ai/types';
 import { getRepositories, getSession } from '@/lib/data';
 import { digest } from '@/lib/digest';
+import { consultForAssist } from '@/lib/kb/consult';
+import { defaultEmbedder } from '@/lib/kb/embed';
+import { splitKnowledge } from '@/lib/kb/split';
 
 const usesKnowledge = (req: AiRequest) => (req.mode === 'ideas' ? req.knowledge : req.useKnowledge);
 
@@ -27,7 +30,11 @@ export async function assistAction(raw: unknown): Promise<AiResult> {
   if (!(req.mode === 'ideas' ? ideasLimiter : assistLimiter).take(ctx.user.id)) return { ok: false, error: 'rate_limited' };
 
   const repos = await getRepositories(ctx);
-  const entries = usesKnowledge(req) ? (await repos.knowledge.list()).map(({ title, content }) => ({ title, content })) : [];
+  // Les fiches épinglées partent en entier (instructions mises en cache) ; les autres ne sont consultées que si la demande s'y rapporte.
+  const split = splitKnowledge(usesKnowledge(req) ? await repos.knowledge.list() : []);
+  const entries = split.inPrompt.map(({ title, content }) => ({ title, content }));
+  const found = await consultForAssist(req, { knowledge: repos.knowledge, embedder: defaultEmbedder() }, split);
   const language = languageName(LOCALE_META[await getLocale()].tag);
-  return runAssist(req, { entries, orgName: ctx.org.name, language, safetyId: await digest(ctx.user.id) });
+  const result = await runAssist(req, { entries, passages: found.passages, orgName: ctx.org.name, language, safetyId: await digest(ctx.user.id) });
+  return result.ok && found.consulted.length > 0 ? { ...result, consulted: found.consulted } : result;
 }

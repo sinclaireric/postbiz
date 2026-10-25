@@ -1,6 +1,7 @@
 import { networkName } from '@/lib/networks';
 import type { NetworkId } from '@/lib/inbox/types';
 import { NETWORK_RULES, tightestLimit } from '@/lib/posts/logic';
+import { neutralize } from '@/lib/kb/format';
 import { countLength } from '@/lib/text/length';
 import type { AiAction, AiLength, AiTone, KnowledgeEntry } from './types';
 
@@ -57,12 +58,16 @@ export function networkBrief(networkIds: NetworkId[]): string {
   return `Target networks (one text will be used for all of them, so respect the strictest limit):\n${lines.join('\n')}`;
 }
 
-/** La base de connaissance en un bloc, du plus récent au plus ancien, dans la limite du budget. Null si elle est vide. */
+const entryText = (entry: KnowledgeEntry) => `<entry title=${JSON.stringify(entry.title)}>\n${neutralize(entry.content).trim()}\n</entry>`;
+/** Place qu'une fiche épinglée prend dans le prompt (en signes) : de quoi savoir, avant d'écrire, ce qui tient dans le budget. */
+export const knowledgeEntrySize = (entry: KnowledgeEntry): number => entryText(entry).length;
+
+/** Les fiches épinglées en un bloc, du plus récent au plus ancien, dans la limite du budget. Null s'il n'y en a pas. */
 export function knowledgeBlock(entries: KnowledgeEntry[], budget = KNOWLEDGE_BUDGET): string | null {
   const parts: string[] = [];
   let used = 0;
   for (const entry of entries) {
-    const part = `<entry title=${JSON.stringify(entry.title)}>\n${entry.content.trim()}\n</entry>`;
+    const part = entryText(entry);
     if (used + part.length > budget) break;
     parts.push(part);
     used += part.length;
@@ -85,6 +90,8 @@ export interface PromptContext {
   /** Langue d'écriture, en anglais (« French »). */
   language: string;
   today: string;
+  /** Les passages de la base retrouvés pour cette demande (voir `passagesBlock`) ; ils changent à chaque demande, donc ils viennent dans la demande et non dans les instructions mises en cache. */
+  passages?: string | null;
 }
 
 const TONE: Record<AiTone, string> = {
@@ -113,6 +120,7 @@ export function writePrompt(ctx: PromptContext, req: { topic: string; tone: AiTo
     `Task: write ${PROPOSALS_PER_REQUEST} different post proposals about the topic below. Vary the angle and the opening line of each one.`,
     `Tone: ${TONE[req.tone]}. Length: ${LENGTH[req.length]}.`,
     req.useKnowledge ? 'Draw on the knowledge base when it is relevant to the topic, and stay consistent with the brand voice it describes.' : '',
+    req.useKnowledge ? ctx.passages ?? '' : '',
     `<topic>\n${req.topic}\n</topic>`,
   ].filter(Boolean).join('\n\n');
 }
@@ -137,6 +145,7 @@ export function improvePrompt(ctx: PromptContext, req: { action: AiAction; text:
     `Every result must be at most ${max} characters.`,
     `Task: ${instruction(req.tone)} Return ${proposals} ${proposals === 1 ? 'version' : 'different versions'}.`,
     req.useKnowledge ? 'Use the knowledge base only to stay consistent with the brand voice and facts.' : '',
+    req.useKnowledge ? ctx.passages ?? '' : '',
     `<text>\n${req.text}\n</text>`,
   ].filter(Boolean).join('\n\n');
 }
@@ -170,6 +179,7 @@ export function ideasPrompt(
     networkBrief(req.networkIds),
     `Every post text must be at most ${max} characters; aim for no more than 90% of that. Tone: ${TONE[req.tone]}.`,
     `Task: propose ${IDEAS_PER_REQUEST} post ideas based on ${origins}.${req.theme ? ` Theme: ${req.theme}.` : ''} For each idea give a short title, the angle (one sentence on why this subject is relevant now), and the ready-to-publish post text.`,
+    req.knowledge ? ctx.passages ?? '' : '',
     news
       ? `Set "origin" to "news" for an idea built on a news item and copy "source_url" exactly from the list of sources below; never write a URL that is not in that list. Set "origin" to "knowledge" and "source_url" to "" for an idea built on the knowledge base. Do not state a news fact that is not in the research notes.`
       : 'Set "origin" to "knowledge" and "source_url" to "" for every idea.',

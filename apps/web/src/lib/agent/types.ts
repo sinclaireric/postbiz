@@ -21,6 +21,8 @@ export const AGENT_LIMITS = {
   generationPrompt: 2_000,
   /** Images de la médiathèque que l'on peut donner à Seedance comme référence (comme dans Postiz). */
   videoReferences: 3,
+  /** Recherches dans la base de connaissance pour une même demande. */
+  knowledgeSearches: 3,
 } as const;
 
 /** `pending` : à relire ; `draft` : enregistrée en brouillon ; `scheduled` : programmée. */
@@ -109,7 +111,7 @@ export type AgentEvent =
   | { type: 'done'; thread: AgentThread; user: AgentMessage; assistant: AgentMessage }
   | { type: 'error'; code: AgentErrorCode };
 
-export const AGENT_TOOLS = ['list_posts', 'list_media', 'propose_posts', 'generate_image', 'generate_video', 'video_status'] as const;
+export const AGENT_TOOLS = ['list_posts', 'list_media', 'propose_posts', 'generate_image', 'generate_video', 'video_status', 'search_knowledge'] as const;
 export type AgentToolName = (typeof AGENT_TOOLS)[number];
 
 /** Corps de la requête envoyée à la route d'API (donnée non fiable : relue par `parseChatRequest`). */

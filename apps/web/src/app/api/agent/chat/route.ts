@@ -12,6 +12,9 @@ import type { AgentErrorCode, AgentEvent } from '@/lib/agent/types';
 import { bearerToken, getRepositories, getSession, getSessionForToken } from '@/lib/data';
 import { digest } from '@/lib/digest';
 import { generationSetup } from '@/lib/agent/setup';
+import { defaultEmbedder } from '@/lib/kb/embed';
+import { retrieve } from '@/lib/kb/retrieve';
+import { splitKnowledge } from '@/lib/kb/split';
 
 export const dynamic = 'force-dynamic';
 /**
@@ -98,10 +101,19 @@ export async function POST(request: Request): Promise<Response> {
             generation: tools,
           }, userContent, attached);
         } else {
+          // Les fiches épinglées partent en entier ; les autres (indexées) se consultent par recherche : l'agent en voit les titres et les cherche au besoin.
+          const split = splitKnowledge(knowledge);
+          const searchable = split.searchable.filter((k) => k.chunkCount > 0);
+          const embedder = defaultEmbedder();
+          const exclude = split.inPrompt.map((k) => k.id);
           result = await runAgentTurn({
-            client: sdkAgentClient(), channels, knowledge: knowledge.map(({ title, content }) => ({ title, content })), orgName: ctx.org.name,
+            client: sdkAgentClient(), channels, knowledge: split.inPrompt.map(({ title, content }) => ({ title, content })), catalog: searchable.map((k) => k.title), orgName: ctx.org.name,
             language, timeZone: req.timeZone, now, history: buildHistory(existing?.messages ?? []),
-            tools: createToolbox(repos, integrations, req.timeZone, now, tools), features, emit, attached, signal: abort.signal,
+            tools: createToolbox(repos, integrations, req.timeZone, now, tools, searchable.length > 0 ? async (query) => {
+              const found = await retrieve({ knowledge: repos.knowledge, embedder }, query, { exclude, signal: abort.signal });
+              return { passages: found.passages, found: found.found };
+            } : undefined),
+            features: { ...features, knowledge: searchable.length > 0 }, emit, attached, signal: abort.signal,
             safetyId: await digest(ctx.user.id), cacheKey: await digest(ctx.org.id),
           }, userContent);
           // Seulement des nombres : aucun contenu de publication ni de conversation dans les journaux.

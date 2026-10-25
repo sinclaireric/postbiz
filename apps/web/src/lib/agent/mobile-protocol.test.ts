@@ -22,6 +22,7 @@ const events: AgentEvent[] = [
   { type: 'tool', name: 'generate_image' },
   { type: 'tool', name: 'generate_video' },
   { type: 'tool', name: 'video_status' },
+  { type: 'tool', name: 'search_knowledge' },
   { type: 'media', media: [{ id: 'g1', kind: 'image', name: 'ai-image-phare.jpg', alt: 'Un phare', url: 'https://cdn.test/g1.jpg', thumbUrl: null, durationSeconds: null }] },
   { type: 'job', job: { id: 'j1', status: 'pending', orientation: 'vertical', prompt: 'Un phare', mediaId: null, error: null, createdAt: '2026-10-27T10:00:00Z' } },
   { type: 'proposals', proposals: [proposal], media: [{ id: 'm1', kind: 'image', name: 'a.jpg', alt: '', url: null, thumbUrl: null, durationSeconds: null }] },

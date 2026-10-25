@@ -573,7 +573,8 @@
     "analyticsApp": "Phân tích",
     "settings": "Cài đặt",
     "welcome": "Chào mừng",
-    "titleTemplate": "{page} · Postbiz"
+    "titleTemplate": "{page} · Postbiz",
+    "knowledgeApp": "Cơ sở kiến thức"
   },
   "legal": {
     "updated": "Cập nhật lần cuối: {date}",
@@ -720,7 +721,8 @@
         "propose_posts": "Đang soạn các bài đăng…",
         "generate_image": "Đang tạo hình ảnh…",
         "generate_video": "Đang bắt đầu video…",
-        "video_status": "Đang kiểm tra video…"
+        "video_status": "Đang kiểm tra video…",
+        "search_knowledge": "Đang tra cứu cơ sở kiến thức…"
       },
       "proposals": {
         "fallback": "Đây là những gì tôi đã soạn. Hãy xem lại từng bài, chỉnh sửa nếu cần, rồi lưu thành bản nháp hoặc lên lịch."
@@ -797,9 +799,10 @@
       "channels": "Kênh",
       "billing": "Thanh toán",
       "settings": "Cài đặt",
-      "soon": "Sắp có"
+      "soon": "Sắp có",
+      "knowledge": "Kiến thức"
     },
-    "titles": { "agent": "Tác nhân", "calendar": "Lịch", "inbox": "Hộp thư", "media": "Media", "channels": "Kênh", "settings": "Cài đặt", "analytics": "Phân tích" },
+    "titles": { "agent": "Tác nhân", "calendar": "Lịch", "inbox": "Hộp thư", "media": "Media", "channels": "Kênh", "settings": "Cài đặt", "analytics": "Phân tích", "knowledge": "Cơ sở kiến thức" },
     "analytics": {
       "filters": {
         "channel": "Kênh",
@@ -957,7 +960,32 @@
       "pickTitle": "Chọn một hội thoại",
       "pickText": "Những hội thoại khẩn cấp nhất — khung trả lời 24 giờ sắp đóng — xuất hiện ở đầu danh sách.",
       "notFound": "Không tìm thấy hội thoại.",
-      "unknownContact": "Người liên hệ không xác định"
+      "unknownContact": "Người liên hệ không xác định",
+      "suggest": {
+        "button": "Gợi ý câu trả lời",
+        "loading": "Đang soạn…",
+        "draft": "Gợi ý của AI: hãy đọc và chỉnh sửa trước khi gửi.",
+        "needsHuman": "Chủ đề nhạy cảm: nên để một người trong nhóm xử lý.",
+        "ungrounded": "Cơ sở kiến thức của bạn không có câu trả lời cho việc này: hãy tự hoàn thiện câu trả lời.",
+        "sources": "Nguồn đã tra cứu: {titles}",
+        "replaceConfirm": "Thay văn bản của bạn bằng gợi ý?",
+        "errors": {
+          "disabled": "Gợi ý trả lời không khả dụng: dịch vụ AI chưa được cấu hình trên máy chủ này.",
+          "forbidden": "Vai trò của bạn không cho phép gợi ý câu trả lời.",
+          "invalid": "Không thể gợi ý câu trả lời cho cuộc trò chuyện này.",
+          "rate_limited": "Quá nhiều gợi ý trong thời gian ngắn, hoặc đã đạt giới hạn trong ngày. Hãy thử lại sau.",
+          "refused": "AI không thể trả lời tin nhắn này. Hãy tự viết câu trả lời.",
+          "failed": "Gợi ý thất bại. Hãy thử lại sau giây lát.",
+          "not_found": "Không tìm thấy cuộc trò chuyện.",
+          "window_closed": "Khung 24 giờ đã hết: không thể trả lời nữa."
+        },
+        "demo": {
+          "found": "Xin chào {name}, cảm ơn bạn đã nhắn tin! {answer}",
+          "foundAnon": "Xin chào, cảm ơn bạn đã nhắn tin! {answer}",
+          "notFound": "Xin chào {name}, cảm ơn bạn đã nhắn tin. Chúng tôi sẽ phản hồi bạn rất sớm.",
+          "notFoundAnon": "Xin chào, cảm ơn bạn đã nhắn tin. Chúng tôi sẽ phản hồi bạn rất sớm."
+        }
+      }
     },
     "validation": {
       "mediaAspect": "{network}: “{name}” không có tỉ lệ được chấp nhận (từ 4:5 đến 1,91:1, không quá cao hay quá rộng).",
@@ -1170,7 +1198,13 @@
         "refused": "Trợ lý không xử lý được yêu cầu này. Hãy thử diễn đạt lại.",
         "empty": "Trợ lý không tìm thấy nội dung dùng được. Hãy thử chủ đề khác.",
         "failed": "Trợ lý tạm thời không khả dụng. Hãy thử lại sau giây lát."
-      }
+      },
+      "base": {
+        "intro": "Cơ sở kiến thức của bạn cung cấp cho trợ lý AI này, mục Trợ lý và các gợi ý trả lời trong hộp thư. Mục đã ghim luôn được dùng; các mục khác được tra cứu khi yêu cầu của bạn liên quan.",
+        "stats": "Luôn được dùng: {pinned} · Tra cứu khi cần: {search}",
+        "manage": "Quản lý cơ sở kiến thức"
+      },
+      "consulted": "Nguồn đã tra cứu: {titles}"
     },
     "knowledge": {
       "add": "Thêm mục",
@@ -1189,7 +1223,9 @@
       "save": "Lưu",
       "titleLabel": "Tiêu đề",
       "titlePlaceholder": "VD: Giọng điệu thương hiệu",
-      "viewerNote": "Vai trò của bạn (người xem) không cho phép sửa cơ sở kiến thức."
+      "viewerNote": "Vai trò của bạn (người xem) không cho phép sửa cơ sở kiến thức.",
+      "errIndex": "Mục đã được lưu nhưng chưa lập chỉ mục được. Mục sẽ được lập chỉ mục khi bạn mở lại trang này.",
+      "errChunks": "Cơ sở của bạn quá lớn để lập chỉ mục mục này (đã đạt giới hạn)."
     },
     "emoji": {
       "search": "Tìm biểu tượng cảm xúc",
@@ -1344,6 +1380,48 @@
       "check2": { "title": "Lên lịch một bài đăng", "text": "Trên lịch, nhấp vào một khung giờ trống, viết nội dung và chọn kênh.", "cta": "Mở lịch" },
       "check3": { "title": "Trả lời tin nhắn của bạn", "text": "Tin nhắn riêng và bình luận đổ về hộp thư theo thời gian thực.", "cta": "Mở hộp thư" },
       "start": "Bắt đầu"
+    },
+    "knowledgePage": {
+      "intro": "Những gì AI biết về hoạt động của bạn: giọng điệu thương hiệu, ưu đãi, sản phẩm, câu hỏi thường gặp. AI dùng chúng để viết bài đăng của bạn (trong trình soạn thảo và ở mục Trợ lý) và gợi ý câu trả lời trong hộp thư.",
+      "privacy": "Các mục được lưu trong không gian Postbiz của bạn. Khi AI cần, các đoạn liên quan sẽ được gửi đến OpenAI cùng với yêu cầu: đừng đưa dữ liệu cá nhân của khách hàng vào đó.",
+      "demoNote": "Chế độ demo: tìm kiếm theo từ khóa, không gọi AI nào.",
+      "noEmbeddings": "Tìm kiếm theo ngữ nghĩa chưa bật trên máy chủ này (thiếu OPENAI_API_KEY): AI chỉ tìm theo từ khóa.",
+      "budget": "Mục đã ghim: {used} / {max} ký tự",
+      "overBudget": "Các mục đã ghim vượt quá ngân sách: những mục cũ nhất không còn được gửi đầy đủ, AI tra cứu khi cần.",
+      "list": "Các mục",
+      "empty": "Chưa có mục nào. Hãy bắt đầu với giọng điệu thương hiệu, ưu đãi và câu hỏi thường gặp của bạn.",
+      "soon": "Sắp có: nhập tài liệu (PDF, Word) và trang web.",
+      "reindex": "Lập chỉ mục lại",
+      "pin": {
+        "on": "Luôn được dùng",
+        "off": "Tra cứu khi cần",
+        "switch": "Luôn gửi mục “{title}” cho AI",
+        "hint": "Mục đã ghim được gửi đầy đủ trong mỗi yêu cầu (giọng điệu thương hiệu, quy tắc). Nếu không, AI chỉ tra cứu khi câu hỏi liên quan đến mục đó."
+      },
+      "state": {
+        "pending": "Cần lập chỉ mục",
+        "words": "Chỉ tìm theo từ khóa",
+        "indexed": "Đã lập chỉ mục",
+        "passages": "Số đoạn: {count}"
+      },
+      "test": {
+        "title": "Thử một câu hỏi",
+        "hint": "Hãy hỏi như một khách hàng: bạn sẽ thấy các đoạn mà AI tìm được.",
+        "placeholder": "VD: Chủ nhật bên bạn có mở cửa không?",
+        "run": "Tìm",
+        "running": "Đang tìm…",
+        "hybrid": "Tìm theo ngữ nghĩa và theo từ khóa",
+        "words": "Chỉ tìm theo từ khóa",
+        "none": "Không có gì phù hợp trong cơ sở kiến thức: AI sẽ không thể trả lời từ đó.",
+        "relevant": "Phù hợp",
+        "weak": "Ít phù hợp",
+        "errors": {
+          "forbidden": "Vai trò của bạn không cho phép thử cơ sở kiến thức.",
+          "invalid": "Hãy nhập một câu hỏi.",
+          "rate_limited": "Tìm kiếm liên tiếp quá nhiều. Hãy thử lại sau vài phút.",
+          "failed": "Tìm kiếm thất bại. Hãy thử lại sau giây lát."
+        }
+      }
     }
   }
 }

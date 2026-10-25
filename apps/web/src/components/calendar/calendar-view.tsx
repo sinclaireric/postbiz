@@ -12,7 +12,7 @@ import type { MessageKey } from '@/i18n/types';
 import {
   HOURS, addDays, dayKey, defaultTimeForDay, groupPosts, isPastSlot, monthGrid, rangeLabel, sameDay, shiftAnchor, slotKey, slotStart,
   toLocalInputValue, weekDays, type CalendarView as View, filterByChannel } from '@/lib/calendar/logic';
-import type { FirstCommentState, IntegrationItem, KnowledgeItem, PostItem, PostState } from '@/lib/data/types';
+import type { FirstCommentState, IntegrationItem, KnowledgeBrief, PostItem, PostState } from '@/lib/data/types';
 import { ChannelsPanel } from './channels-panel';
 import { MediaThumb } from '@/components/media/media-thumb';
 import { Composer } from './composer';
@@ -81,7 +81,7 @@ const Chevron = ({ dir }: { dir: 'left' | 'right' }) => (
   <svg className="rtl:rotate-180" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d={dir === 'left' ? 'm10 3-5 5 5 5' : 'm6 3 5 5-5 5'} stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" /></svg>
 );
 
-export function CalendarView({ posts, integrations, knowledge, aiEnabled, canWrite, orgId, userId, demo }: { posts: PostItem[]; integrations: IntegrationItem[]; knowledge: KnowledgeItem[]; aiEnabled: boolean; canWrite: boolean; orgId: string; userId: string; demo: boolean }) {
+export function CalendarView({ posts, integrations, knowledge, aiEnabled, canWrite, orgId, userId, demo }: { posts: PostItem[]; integrations: IntegrationItem[]; knowledge: KnowledgeBrief[]; aiEnabled: boolean; canWrite: boolean; orgId: string; userId: string; demo: boolean }) {
   const t = useT();
   // Les dates dépendent du fuseau du navigateur : on les calcule après le montage pour éviter tout décalage serveur/client.
   const [now, setNow] = useState<Date | null>(null);

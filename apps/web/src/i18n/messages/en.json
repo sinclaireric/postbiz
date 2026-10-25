@@ -622,7 +622,7 @@
         "li1": "Supabase Inc. — database, authentication and file storage.",
         "li2": "Vercel Inc. — hosting of the website and the app.",
         "li3": "Email delivery provider — sign-in messages and notifications.",
-        "li4": "OpenAI — AI assistant, agent and picture generation, only when you use them: the text you enter, your knowledge base and, for the agent, your connected channels’ names and recent posts are sent to it to produce the answer; pictures are generated from the description the agent writes.",
+        "li4": "OpenAI — AI assistant, agent, picture generation, knowledge base search and reply suggestions, only when you use them: the text you enter, your knowledge base (each entry is also turned into numerical vectors when you save it), the messages of the conversation you ask a reply for and, for the agent, your connected channels’ names and recent posts are sent to it to produce the answer; pictures are generated from the description the agent writes.",
         "li5": "Evolink (Seedance) — video generation, only when you ask the agent for a video: the description of the video and, if you choose reference pictures, temporary links to those pictures are sent to it.",
         "p1": "The social networks you connect are separate data controllers, governed by their own policies. Some processors are located outside the European Union, notably in the United States: transfers then rely on the mechanisms provided for by the GDPR (adequacy decision or standard contractual clauses)."
       },
@@ -1100,7 +1100,8 @@
     "analyticsApp": "Analytics",
     "settings": "Settings",
     "welcome": "Welcome",
-    "titleTemplate": "{page} · Postbiz"
+    "titleTemplate": "{page} · Postbiz",
+    "knowledgeApp": "Knowledge base"
   },
   "auth": {
     "email": "E-mail",
@@ -1243,7 +1244,8 @@
         "propose_posts": "Preparing the posts…",
         "generate_image": "Generating the picture…",
         "generate_video": "Starting the video…",
-        "video_status": "Checking the video…"
+        "video_status": "Checking the video…",
+        "search_knowledge": "Searching the knowledge base…"
       },
       "proposals": {
         "fallback": "Here is what I prepared. Review each post, edit it if needed, then save it as a draft or schedule it."
@@ -1319,7 +1321,8 @@
       "channels": "Channels",
       "billing": "Billing",
       "settings": "Settings",
-      "soon": "Coming soon"
+      "soon": "Coming soon",
+      "knowledge": "Knowledge"
     },
     "titles": {
       "agent": "Agent",
@@ -1328,7 +1331,8 @@
       "media": "Media",
       "channels": "Channels",
       "settings": "Settings",
-      "analytics": "Analytics"
+      "analytics": "Analytics",
+      "knowledge": "Knowledge base"
     },
     "analytics": {
       "filters": {
@@ -1529,7 +1533,32 @@
       "pickTitle": "Choose a conversation",
       "pickText": "The most urgent ones — those whose 24-hour reply window is about to close — appear at the top of the list.",
       "notFound": "Conversation not found.",
-      "unknownContact": "Unknown contact"
+      "unknownContact": "Unknown contact",
+      "suggest": {
+        "button": "Suggest a reply",
+        "loading": "Writing…",
+        "draft": "AI suggestion: read it and edit it before sending.",
+        "needsHuman": "Sensitive subject: someone on the team should handle this.",
+        "ungrounded": "Nothing in your knowledge base answers this: complete the reply yourself.",
+        "sources": "Sources consulted: {titles}",
+        "replaceConfirm": "Replace your text with the suggestion?",
+        "errors": {
+          "disabled": "Reply suggestions are not available: the AI service is not configured on this server.",
+          "forbidden": "Your role does not allow suggesting a reply.",
+          "invalid": "A reply cannot be suggested for this conversation.",
+          "rate_limited": "Too many suggestions in a short time, or the daily limit is reached. Try again later.",
+          "refused": "The AI could not answer this message. Write the reply yourself.",
+          "failed": "The suggestion failed. Try again in a moment.",
+          "not_found": "Conversation not found.",
+          "window_closed": "The 24-hour window has passed: replies are no longer possible."
+        },
+        "demo": {
+          "found": "Hello {name}, thanks for your message! {answer}",
+          "foundAnon": "Hello, thanks for your message! {answer}",
+          "notFound": "Hello {name}, thanks for your message. We will get back to you very soon.",
+          "notFoundAnon": "Hello, thanks for your message. We will get back to you very soon."
+        }
+      }
     },
     "validation": {
       "mediaAspect": "{network}: “{name}” isn’t an accepted shape (between 4:5 and 1.91:1, neither too tall nor too wide).",
@@ -1755,7 +1784,13 @@
         "refused": "The assistant could not process this request. Try rephrasing it.",
         "empty": "The assistant found nothing usable. Try another topic.",
         "failed": "The assistant is temporarily unavailable. Try again in a moment."
-      }
+      },
+      "base": {
+        "intro": "Your knowledge base feeds this assistant, the agent and the reply suggestions in the inbox. Pinned entries are always used; the others are looked up when your request is about them.",
+        "stats": "Always used: {pinned} · Looked up when needed: {search}",
+        "manage": "Manage the knowledge base"
+      },
+      "consulted": "Sources consulted: {titles}"
     },
     "knowledge": {
       "add": "Add an entry",
@@ -1774,7 +1809,9 @@
       "save": "Save",
       "titleLabel": "Title",
       "titlePlaceholder": "E.g. Brand tone",
-      "viewerNote": "Your role (viewer) does not allow editing the knowledge base."
+      "viewerNote": "Your role (viewer) does not allow editing the knowledge base.",
+      "errIndex": "The entry was saved but could not be indexed. It will be indexed the next time you open this page.",
+      "errChunks": "Your knowledge base is too big to index this entry (limit reached)."
     },
     "emoji": {
       "search": "Search emoji",
@@ -1951,6 +1988,48 @@
     "errors": {
       "generic": "The operation failed. Please try again in a moment.",
       "channelNotFound": "Channel not found."
+    },
+    "knowledgePage": {
+      "intro": "What the AI knows about your business: brand tone, offers, products, frequently asked questions. It uses it to write your posts (AI assistant and agent) and to suggest replies in the inbox.",
+      "privacy": "Entries are stored in your Postbiz workspace. When the AI needs them, the relevant passages are sent to OpenAI with the request: do not put customers’ personal data in them.",
+      "demoNote": "Demo mode: the search works on words and no AI is called.",
+      "noEmbeddings": "Search by meaning is not active on this server (OPENAI_API_KEY is missing): the AI only searches by words.",
+      "budget": "Pinned entries: {used} / {max} characters",
+      "overBudget": "The pinned entries are over the budget: the oldest ones are no longer sent in full, the AI looks them up when needed.",
+      "list": "Entries",
+      "empty": "No entries yet. Start with your brand tone, your offers and your frequently asked questions.",
+      "soon": "Coming soon: import documents (PDF, Word) and a website.",
+      "reindex": "Reindex",
+      "pin": {
+        "on": "Always used",
+        "off": "Looked up when needed",
+        "switch": "Always send the entry “{title}” to the AI",
+        "hint": "A pinned entry is sent in full with every request (brand tone, rules). Otherwise the AI only looks it up when the question is about it."
+      },
+      "state": {
+        "pending": "To index",
+        "words": "Search by words only",
+        "indexed": "Indexed",
+        "passages": "Passages: {count}"
+      },
+      "test": {
+        "title": "Test a question",
+        "hint": "Ask a question the way a customer would: you see the passages the AI would find.",
+        "placeholder": "E.g. Are you open on Sundays?",
+        "run": "Search",
+        "running": "Searching…",
+        "hybrid": "Search by meaning and by words",
+        "words": "Search by words only",
+        "none": "Nothing relevant found in the knowledge base: the AI could not answer from it.",
+        "relevant": "Relevant",
+        "weak": "Weak match",
+        "errors": {
+          "forbidden": "Your role does not allow testing the knowledge base.",
+          "invalid": "Enter a question.",
+          "rate_limited": "Too many searches in a row. Try again in a few minutes.",
+          "failed": "The search failed. Try again in a moment."
+        }
+      }
     }
   }
 }

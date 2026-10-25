@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation';
 import { getT } from '@/i18n/server';
 import { getRepositories, getSession } from '@/lib/data';
 import { errorText } from '@/lib/form-error';
+import { settleSuggestion } from '@/lib/inbox/suggest';
 import type { ConversationStatus } from '@/lib/inbox/types';
 
 export interface ReplyState {
@@ -34,6 +35,9 @@ export async function sendReplyAction(_: ReplyState, formData: FormData): Promis
   const repos = await getRepositories(auth.ctx);
   const res = await repos.inbox.sendReply(conversationId, body);
   if (!res.ok) return { error: res.error ? errorText(await getT(), res.error) : undefined };
+  // La réponse partait d'une suggestion de l'IA : on garde ce qu'on en a fait (envoyée telle quelle, ou modifiée), pour mesurer sa qualité.
+  const suggestionId = String(formData.get('suggestionId') ?? '');
+  if (/^[\w-]{1,64}$/.test(suggestionId)) await settleSuggestion(repos, suggestionId, body);
   revalidatePath('/app/inbox');
   return { sentAt: Date.now() };
 }

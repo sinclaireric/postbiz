@@ -1,5 +1,6 @@
 import type { AgentMessage, AgentThread } from '@/lib/agent/types';
 import { demoDailyRows } from '@/lib/analytics/demo';
+import { chunkKnowledge } from '@/lib/kb/chunk';
 import { queueCounts } from '@/lib/analytics/logic';
 import type { AnalyticsRepository } from '@/lib/analytics/types';
 import { replyWindow, validateReply } from '@/lib/inbox/logic';
@@ -7,7 +8,7 @@ import type {
   ConversationDetail, ConversationStatus, ConversationSummary, InboxRepository, MessageItem, NetworkId, NoteItem,
 } from '@/lib/inbox/types';
 import type {
-  AgentRepository, AppContext, CreatePostInput, GenerationRepository, IntegrationItem, KnowledgeInput, KnowledgeItem, KnowledgeRepository, MediaItem, MediaRepository, MemberItem, NotificationItem, PostItem, PostsRepository, Repositories, Result, VideoJobRecord, WorkspaceRepository,
+  AgentRepository, AppContext, CreatePostInput, GenerationRepository, IntegrationItem, KnowledgeInput, KnowledgeItem, KnowledgeRepository, MediaItem, MediaRepository, MemberItem, NotificationItem, PostItem, PostsRepository, Repositories, Result, SuggestionRepository, VideoJobRecord, WorkspaceRepository,
 } from './types';
 
 // Mode démo : données d'exemple en mémoire, partagées par tous les visiteurs du serveur de développement.
@@ -32,6 +33,8 @@ interface Store {
   members: MemberItem[];
   posts: PostItem[];
   knowledge: KnowledgeItem[];
+  /** Passages de la recherche (sans vecteur : la démo ne fait aucun appel à l'IA, elle cherche par les mots). */
+  knowledgeChunks: { itemId: string; ord: number; content: string; heading: string | null }[];
   media: MediaItem[];
   /** Conversations de l'agent (la plus récente en dernier). */
   agentThreads: { thread: AgentThread; messages: AgentMessage[] }[];
@@ -39,6 +42,8 @@ interface Store {
   videoJobs: VideoJobRecord[];
   /** Générations lancées depuis l'ouverture de la démo (pour le plafond journalier). */
   generations: { kind: 'image' | 'video'; at: number }[];
+  /** Suggestions de réponse de l'inbox (démo : texte simulé). */
+  suggestions: { id: string; at: number; reply: string; outcome: 'sent' | 'edited' | null }[];
   orgName: string;
   seq: number;
 }
@@ -162,7 +167,7 @@ function seed(): Store {
   });
 
   return {
-    conversations, integrations, media: library, agentThreads: [], videoJobs: [], generations: [], orgName: DEMO_CONTEXT.org.name, seq,
+    conversations, integrations, media: library, agentThreads: [], videoJobs: [], generations: [], suggestions: [], orgName: DEMO_CONTEXT.org.name, seq,
     notifications: [
       { id: 'nt1', type: 'post_error', title: 'Canal à reconnecter', body: 'Le jeton d’accès a expiré : reconnectez le canal.', createdAt: ago(3 * H), read: false, href: '/app/calendrier' },
       { id: 'nt2', type: 'message_failed', title: 'Réponse non envoyée', body: 'La fenêtre de 24 h est dépassée : Meta n’autorise plus de réponse à cette conversation.', createdAt: ago(26 * H), read: true, href: '/app/inbox?c=c5' },
@@ -185,12 +190,20 @@ function seed(): Store {
       post(9, 'youtube', 'Maison Lune TV', 'Visite de l’atelier : du chêne massif au meuble fini', -200, 'published'),
       post(10, 'instagram', 'maison.lune', 'Les finitions de la collection d’automne, en coulisses.', -330, 'published'),
     ],
-    knowledge: [
-      { id: 'k1', title: 'Ton de la marque', updatedAt: ago(30 * H), content: 'Maison Lune est un atelier de mobilier en bois massif, à Lyon. Nous tutoyons nos clients, avec un ton chaleureux et simple. Jamais de jargon ni de promesses exagérées. Nous parlons de matière, de geste et de durée.' },
-      { id: 'k2', title: 'Offres en cours', updatedAt: ago(8 * H), content: 'Livraison offerte dès 60 € d’achat en France. -10 % sur la collection d’automne jusqu’à dimanche. Reprise gratuite de l’ancien meuble pour tout achat d’une table.' },
-      { id: 'k3', title: 'Questions fréquentes', updatedAt: ago(2 * H), content: 'Délai de fabrication : 3 à 4 semaines. Finitions : huile naturelle ou cire. Garantie 5 ans. Atelier ouvert au public le samedi de 10 h à 17 h.' },
-    ],
+    // La fiche des questions fréquentes n'est pas épinglée : l'IA ne la lit que si la question s'y rapporte (c'est ce que montre « Tester une question »).
+    knowledge: knowledgeSeed(),
+    knowledgeChunks: knowledgeSeed().flatMap((k) => chunkKnowledge(k.title, k.content).map((c, ord) => ({ itemId: k.id, ord, content: c.content, heading: c.heading }))),
   };
+}
+
+/** Les fiches de la démo, déjà indexées (par les mots). */
+function knowledgeSeed(): KnowledgeItem[] {
+  const items: Omit<KnowledgeItem, 'chunkCount' | 'indexedAt' | 'embeddedAt'>[] = [
+    { id: 'k1', pinned: true, title: 'Ton de la marque', updatedAt: ago(30 * H), content: 'Maison Lune est un atelier de mobilier en bois massif, à Lyon. Nous tutoyons nos clients, avec un ton chaleureux et simple. Jamais de jargon ni de promesses exagérées. Nous parlons de matière, de geste et de durée.' },
+    { id: 'k2', pinned: true, title: 'Offres en cours', updatedAt: ago(8 * H), content: 'Livraison offerte dès 60 € d’achat en France. -10 % sur la collection d’automne jusqu’à dimanche. Reprise gratuite de l’ancien meuble pour tout achat d’une table.' },
+    { id: 'k3', pinned: false, title: 'Questions fréquentes', updatedAt: ago(2 * H), content: 'Délai de fabrication : 3 à 4 semaines. Livraison en France et en Belgique, 5 à 7 jours ouvrés après la fabrication. Finitions : huile naturelle ou cire. Garantie 5 ans. Atelier ouvert au public le samedi de 10 h à 17 h.' },
+  ];
+  return items.map((k) => ({ ...k, chunkCount: chunkKnowledge(k.title, k.content).length, indexedAt: ago(k.id === 'k3' ? 2 * H : 8 * H), embeddedAt: null }));
 }
 
 const g = globalThis as unknown as { __postbizDemo?: Store };
@@ -312,24 +325,72 @@ const media: MediaRepository = {
   },
 };
 
+/** Les mots d'un texte, comme la base les compte (minuscules, lettres et chiffres). */
+const wordsOf = (text: string) => [...new Set(text.toLowerCase().split(/[^\p{L}\p{N}]+/u).filter(Boolean))];
+/** Deux mots se correspondent s'ils sont égaux ou, à partir de cinq lettres, s'ils commencent pareil (« livrez » et « livraison ») : la démo n'a ni vecteurs ni radicaux, ce rapprochement lui en tient lieu. */
+const sameWord = (a: string, b: string) => a === b || (a.length >= 5 && b.length >= 5 && a.slice(0, 4) === b.slice(0, 4));
+
 const knowledge: KnowledgeRepository = {
   async list() {
-    return [...store().knowledge].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+    return [...store().knowledge].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt)).map((k) => ({ ...k }));
   },
-  async create(input: KnowledgeInput): Promise<Result> {
-    store().knowledge.push({ id: id('k'), title: input.title.trim(), content: input.content.trim(), updatedAt: new Date().toISOString() });
-    return { ok: true };
+  async create(input: KnowledgeInput) {
+    const item: KnowledgeItem = { id: id('k'), title: input.title.trim(), content: input.content.trim(), updatedAt: new Date().toISOString(), pinned: true, chunkCount: 0, indexedAt: null, embeddedAt: null };
+    store().knowledge.push(item);
+    return { ok: true, id: item.id };
   },
   async update(itemId, input) {
+    const s = store();
+    const item = s.knowledge.find((k) => k.id === itemId);
+    if (!item) return { ok: false, error: { key: 'app.knowledge.errSave' } };
+    const changed = item.title !== input.title.trim() || item.content !== input.content.trim();
+    Object.assign(item, { title: input.title.trim(), content: input.content.trim(), updatedAt: new Date().toISOString() });
+    // Comme la base : un titre ou un contenu modifié supprime les passages, la fiche est à réindexer.
+    if (changed) {
+      s.knowledgeChunks = s.knowledgeChunks.filter((c) => c.itemId !== itemId);
+      Object.assign(item, { chunkCount: 0, indexedAt: null, embeddedAt: null });
+    }
+    return { ok: true };
+  },
+  async setPinned(itemId, pinned) {
     const item = store().knowledge.find((k) => k.id === itemId);
     if (!item) return { ok: false, error: { key: 'app.knowledge.errSave' } };
-    Object.assign(item, { title: input.title.trim(), content: input.content.trim(), updatedAt: new Date().toISOString() });
+    item.pinned = pinned;
     return { ok: true };
   },
   async remove(itemId) {
     const s = store();
     s.knowledge = s.knowledge.filter((k) => k.id !== itemId);
+    s.knowledgeChunks = s.knowledgeChunks.filter((c) => c.itemId !== itemId);
     return { ok: true };
+  },
+  async replaceChunks(itemId, chunks) {
+    const s = store();
+    const item = s.knowledge.find((k) => k.id === itemId);
+    if (!item) return { ok: false, error: { key: 'app.knowledge.errIndex' } };
+    s.knowledgeChunks = s.knowledgeChunks.filter((c) => c.itemId !== itemId);
+    chunks.forEach((c, ord) => s.knowledgeChunks.push({ itemId, ord, content: c.content, heading: c.meta.heading ?? null }));
+    Object.assign(item, { chunkCount: chunks.length, indexedAt: new Date().toISOString(), embeddedAt: chunks.length > 0 && chunks.every((c) => c.embedding) ? new Date().toISOString() : null });
+    return { ok: true };
+  },
+  /** Recherche par les mots (la démo n'a pas de vecteurs) : les passages qui contiennent des mots de la question, les plus fournis d'abord. */
+  async search({ terms, limit, perItem, exclude }) {
+    const s = store();
+    const title = new Map(s.knowledge.map((k) => [k.id, k.title]));
+    const scored = s.knowledgeChunks
+      .filter((c) => !exclude.includes(c.itemId) && title.has(c.itemId))
+      .map((c) => ({ c, hits: terms.filter((t) => wordsOf(c.content).some((w) => sameWord(t, w))).length }))
+      .filter((x) => x.hits > 0)
+      .sort((a, b) => b.hits - a.hits || a.c.ord - b.c.ord);
+    const taken = new Map<string, number>();
+    return scored
+      .filter(({ c }) => {
+        const n = (taken.get(c.itemId) ?? 0) + 1;
+        taken.set(c.itemId, n);
+        return n <= perItem;
+      })
+      .slice(0, limit)
+      .map(({ c, hits }) => ({ chunkId: `${c.itemId}:${c.ord}`, itemId: c.itemId, title: title.get(c.itemId)!, content: c.content, heading: c.heading, similarity: 0, termHits: hits, score: hits }));
   },
 };
 
@@ -426,6 +487,26 @@ const generation: GenerationRepository = {
   },
 };
 
+/** Suggestions de réponse de la démo : gardées en mémoire, comme le reste. */
+const suggestions: SuggestionRepository = {
+  async countToday() {
+    const since = Date.now() - 86_400_000;
+    return store().suggestions.filter((x) => x.at > since).length;
+  },
+  async log(i) {
+    const entry = { id: id('sg'), at: Date.now(), reply: i.reply, outcome: null as 'sent' | 'edited' | null };
+    store().suggestions.push(entry);
+    return entry.id;
+  },
+  async reply(suggestionId) {
+    return store().suggestions.find((x) => x.id === suggestionId)?.reply ?? null;
+  },
+  async settle(suggestionId, outcome) {
+    const entry = store().suggestions.find((x) => x.id === suggestionId);
+    if (entry && entry.outcome === null) entry.outcome = outcome;
+  },
+};
+
 /**
  * Analyses de la démo : les séries sont fabriquées (voir lib/analytics/demo.ts), la file de publication est celle des publications d'exemple,
  * pour que ses chiffres collent au calendrier.
@@ -447,5 +528,5 @@ const analytics: AnalyticsRepository = {
   },
 };
 
-export const demoRepositories: Repositories = { inbox, posts, workspace, media, knowledge, analytics, agent, generation };
+export const demoRepositories: Repositories = { inbox, posts, workspace, media, knowledge, analytics, agent, generation, suggestions };
 export const demoOrgName = () => store().orgName;

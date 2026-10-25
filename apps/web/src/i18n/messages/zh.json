@@ -525,7 +525,8 @@
     "analyticsApp": "分析",
     "settings": "设置",
     "welcome": "欢迎",
-    "titleTemplate": "{page} · Postbiz"
+    "titleTemplate": "{page} · Postbiz",
+    "knowledgeApp": "知识库"
   },
   "legal": {
     "updated": "最后更新:{date}",
@@ -672,7 +673,8 @@
         "propose_posts": "正在准备帖子……",
         "generate_image": "正在生成图片…",
         "generate_video": "正在启动视频…",
-        "video_status": "正在检查视频…"
+        "video_status": "正在检查视频…",
+        "search_knowledge": "正在查阅知识库…"
       },
       "proposals": {
         "fallback": "这是我准备的内容。请检查每条帖子,必要时修改,然后存为草稿或安排发布。"
@@ -749,9 +751,10 @@
       "channels": "渠道",
       "billing": "账单",
       "settings": "设置",
-      "soon": "即将推出"
+      "soon": "即将推出",
+      "knowledge": "知识"
     },
-    "titles": { "agent": "智能体", "calendar": "日历", "inbox": "收件箱", "media": "媒体", "channels": "渠道", "settings": "设置", "analytics": "分析" },
+    "titles": { "agent": "智能体", "calendar": "日历", "inbox": "收件箱", "media": "媒体", "channels": "渠道", "settings": "设置", "analytics": "分析", "knowledge": "知识库" },
     "analytics": {
       "filters": {
         "channel": "渠道",
@@ -909,7 +912,32 @@
       "pickTitle": "选择一个会话",
       "pickText": "最紧急的会话(24 小时回复窗口即将关闭的)会显示在列表顶部。",
       "notFound": "未找到该会话。",
-      "unknownContact": "未知联系人"
+      "unknownContact": "未知联系人",
+      "suggest": {
+        "button": "建议回复",
+        "loading": "撰写中…",
+        "draft": "AI 的建议:发送前请先阅读并修改。",
+        "needsHuman": "敏感话题:应由团队成员处理。",
+        "ungrounded": "你的知识库中没有能回答此问题的内容:请自己补充回复。",
+        "sources": "参考的来源:{titles}",
+        "replaceConfirm": "用建议替换你的文本吗?",
+        "errors": {
+          "disabled": "回复建议不可用:此服务器未配置 AI 服务。",
+          "forbidden": "你的角色不允许建议回复。",
+          "invalid": "无法为此会话建议回复。",
+          "rate_limited": "短时间内建议过多,或已达每日上限。请稍后再试。",
+          "refused": "AI 无法回答此消息。请自己撰写回复。",
+          "failed": "建议失败。请稍后再试。",
+          "not_found": "找不到该会话。",
+          "window_closed": "24 小时窗口已过:无法再回复。"
+        },
+        "demo": {
+          "found": "{name} 你好,感谢你的留言!{answer}",
+          "foundAnon": "你好,感谢你的留言!{answer}",
+          "notFound": "{name} 你好,感谢你的留言。我们会尽快回复你。",
+          "notFoundAnon": "你好,感谢你的留言。我们会尽快回复你。"
+        }
+      }
     },
     "validation": {
       "mediaAspect": "{network}:“{name}”的画面比例不被接受(须在 4:5 到 1.91:1 之间,不能过高或过宽)。",
@@ -1122,7 +1150,13 @@
         "refused": "助手无法处理此请求,请换种说法。",
         "empty": "助手没有找到可用的内容,请换个主题试试。",
         "failed": "助手暂时不可用,请稍后再试。"
-      }
+      },
+      "base": {
+        "intro": "你的知识库为此助手、智能体和收件箱的回复建议提供内容。已置顶的条目始终使用;其他条目在你的请求与之相关时查阅。",
+        "stats": "始终使用:{pinned} · 需要时查阅:{search}",
+        "manage": "管理知识库"
+      },
+      "consulted": "参考的来源:{titles}"
     },
     "knowledge": {
       "add": "添加条目",
@@ -1141,7 +1175,9 @@
       "save": "保存",
       "titleLabel": "标题",
       "titlePlaceholder": "例如:品牌语气",
-      "viewerNote": "你的角色(只读)无法修改知识库。"
+      "viewerNote": "你的角色(只读)无法修改知识库。",
+      "errIndex": "条目已保存,但无法建立索引。下次打开此页面时会建立索引。",
+      "errChunks": "你的知识库太大,无法为此条目建立索引(已达上限)。"
     },
     "emoji": {
       "search": "搜索表情",
@@ -1296,6 +1332,48 @@
       "check2": { "title": "排期一条帖子", "text": "在日历中点击空闲时间段,写下内容并选择渠道。", "cta": "打开日历" },
       "check3": { "title": "回复你的消息", "text": "私信和评论会实时进入收件箱。", "cta": "打开收件箱" },
       "start": "开始"
+    },
+    "knowledgePage": {
+      "intro": "AI 对你的业务了解的内容:品牌语气、优惠、产品、常见问题。它用这些来撰写你的帖子(AI 助手和智能体),并在收件箱中建议回复。",
+      "privacy": "条目保存在你的 Postbiz 空间中。AI 需要时,相关段落会随请求一起发送给 OpenAI:请不要在其中放入客户的个人数据。",
+      "demoNote": "演示模式:按词语搜索,不会调用任何 AI。",
+      "noEmbeddings": "此服务器未启用语义搜索(缺少 OPENAI_API_KEY):AI 只按词语搜索。",
+      "budget": "已置顶条目:{used} / {max} 个字符",
+      "overBudget": "已置顶条目超出额度:最早的条目不再完整发送,AI 会在需要时查阅。",
+      "list": "条目",
+      "empty": "还没有条目。先从你的品牌语气、优惠和常见问题开始吧。",
+      "soon": "即将推出:导入文档(PDF、Word)和网站。",
+      "reindex": "重新索引",
+      "pin": {
+        "on": "始终使用",
+        "off": "需要时查阅",
+        "switch": "始终把条目“{title}”发送给 AI",
+        "hint": "已置顶的条目会随每个请求完整发送(品牌语气、规则)。否则只有在问题与之相关时,AI 才会查阅。"
+      },
+      "state": {
+        "pending": "待索引",
+        "words": "仅按词语搜索",
+        "indexed": "已索引",
+        "passages": "段落:{count}"
+      },
+      "test": {
+        "title": "测试一个问题",
+        "hint": "像客户那样提问:你会看到 AI 能找到的段落。",
+        "placeholder": "例如:周日营业吗?",
+        "run": "搜索",
+        "running": "搜索中…",
+        "hybrid": "按语义和词语搜索",
+        "words": "仅按词语搜索",
+        "none": "知识库中没有找到相关内容:AI 无法据此回答。",
+        "relevant": "相关",
+        "weak": "相关性弱",
+        "errors": {
+          "forbidden": "你的角色不允许测试知识库。",
+          "invalid": "请输入一个问题。",
+          "rate_limited": "连续搜索过多。请几分钟后再试。",
+          "failed": "搜索失败。请稍后再试。"
+        }
+      }
     }
   }
 }

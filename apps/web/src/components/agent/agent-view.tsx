@@ -27,6 +27,7 @@ const ERROR_KEY: Record<AgentErrorCode, MessageKey> = {
 const TOOL_KEY: Record<AgentToolName, MessageKey> = {
   list_posts: 'app.agent.tool.list_posts', list_media: 'app.agent.tool.list_media', propose_posts: 'app.agent.tool.propose_posts',
   generate_image: 'app.agent.tool.generate_image', generate_video: 'app.agent.tool.generate_video', video_status: 'app.agent.tool.video_status',
+  search_knowledge: 'app.agent.tool.search_knowledge',
 };
 const SUGGESTIONS: MessageKey[] = ['app.agent.suggestions.one', 'app.agent.suggestions.two', 'app.agent.suggestions.three', 'app.agent.suggestions.four'];
 

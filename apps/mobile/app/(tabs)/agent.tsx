@@ -38,6 +38,7 @@ const WORKING: Record<AgentToolName, string> = {
   generate_image: "Génère l’image…",
   generate_video: "Lance la vidéo…",
   video_status: "Vérifie la vidéo…",
+  search_knowledge: "Consulte la base de connaissance…",
 };
 
 const FALLBACK = "Voici ce que j’ai préparé. Relisez chaque publication, modifiez-la au besoin, puis enregistrez-la en brouillon ou programmez-la.";

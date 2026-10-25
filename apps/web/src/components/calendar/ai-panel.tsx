@@ -5,12 +5,12 @@ import { assistAction } from '@/app/app/(shell)/calendrier/ai-actions';
 import { Button } from '@/components/ui';
 import { useT } from '@/i18n/client';
 import { AI_ACTIONS, AI_LENGTHS, AI_TONES, type AiAction, type AiErrorCode, type AiIdea, type AiLength, type AiProposal, type AiRequest, type AiResult, type AiTone } from '@/lib/ai/types';
-import type { KnowledgeItem } from '@/lib/data/types';
+import type { KnowledgeBrief } from '@/lib/data/types';
 import type { NetworkId } from '@/lib/inbox/types';
 import type { MessageKey } from '@/i18n/types';
 import { maxCharsFor } from '@/lib/ai/prompt';
 import { SparklesIcon } from './composer-icons';
-import { KnowledgePanel } from './knowledge-panel';
+import { KnowledgeSummary } from './knowledge-summary';
 
 export type AiTab = 'write' | 'improve' | 'ideas' | 'knowledge';
 type Tab = AiTab;
@@ -116,7 +116,7 @@ function Idea({ idea, max, onApply }: { idea: AiIdea; max: number; onApply: (tex
  * d'après l'actualité et la base de connaissance. Rien n'est publié ni inséré sans clic : chaque proposition se relit puis s'applique.
  */
 export function AiPanel({ enabled, canWrite, content, networkIds, knowledge, tab, onTabChange, onApply }: {
-  enabled: boolean; canWrite: boolean; content: string; networkIds: NetworkId[]; knowledge: KnowledgeItem[]; tab: AiTab; onTabChange: (tab: AiTab) => void; onApply: (text: string, mode: ApplyMode) => void;
+  enabled: boolean; canWrite: boolean; content: string; networkIds: NetworkId[]; knowledge: KnowledgeBrief[]; tab: AiTab; onTabChange: (tab: AiTab) => void; onApply: (text: string, mode: ApplyMode) => void;
 }) {
   const t = useT();
   const [pending, startTransition] = useTransition();
@@ -169,11 +169,14 @@ export function AiPanel({ enabled, canWrite, content, networkIds, knowledge, tab
     if (!result) return null;
     if (!result.ok) return <p role="alert" className="rounded-2xl bg-danger-soft px-4 py-3 text-sm font-medium text-danger">{t(ERROR_LABEL[result.error])}</p>;
     return (
-      <ul className="grid gap-2.5" aria-live="polite">
-        {result.mode === 'ideas'
-          ? result.ideas.map((idea, i) => <Idea key={i} idea={idea} max={max} onApply={onApply} />)
-          : result.proposals.map((p, i) => <Proposal key={i} proposal={p} max={max} onApply={onApply} />)}
-      </ul>
+      <div className="grid gap-2.5" aria-live="polite">
+        <ul className="grid gap-2.5">
+          {result.mode === 'ideas'
+            ? result.ideas.map((idea, i) => <Idea key={i} idea={idea} max={max} onApply={onApply} />)
+            : result.proposals.map((p, i) => <Proposal key={i} proposal={p} max={max} onApply={onApply} />)}
+        </ul>
+        {result.consulted && result.consulted.length > 0 && <p className="text-xs leading-relaxed text-subtle">{t('app.ai.consulted', { titles: result.consulted.join(', ') })}</p>}
+      </div>
     );
   };
 
@@ -276,7 +279,7 @@ export function AiPanel({ enabled, canWrite, content, networkIds, knowledge, tab
         </div>
       )}
 
-      {tab === 'knowledge' && <KnowledgePanel items={knowledge} canWrite={canWrite} />}
+      {tab === 'knowledge' && <KnowledgeSummary items={knowledge} />}
 
       {tab !== 'knowledge' && <p className="text-xs leading-relaxed text-subtle">{t('app.ai.privacy')} {t('app.ai.review')}</p>}
     </div>

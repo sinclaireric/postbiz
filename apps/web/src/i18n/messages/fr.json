@@ -622,7 +622,7 @@
         "li1": "Supabase Inc. — base de données, authentification et stockage des fichiers.",
         "li2": "Vercel Inc. — hébergement du site et de l’application.",
         "li3": "Prestataire d’envoi d’e-mails — messages de connexion et notifications.",
-        "li4": "OpenAI — assistant IA, agent et génération d’images, uniquement quand vous les utilisez : le texte saisi, la base de connaissance et, pour l’agent, le nom de vos canaux connectés et vos publications récentes lui sont transmis pour produire la réponse ; les images sont générées d’après la description que rédige l’agent.",
+        "li4": "OpenAI — assistant IA, agent, génération d’images, recherche dans la base de connaissance et suggestions de réponse, uniquement quand vous les utilisez : le texte saisi, la base de connaissance (chaque fiche est aussi convertie en vecteurs numériques à l’enregistrement), les messages de la conversation pour laquelle vous demandez une réponse et, pour l’agent, le nom de vos canaux connectés et vos publications récentes lui sont transmis pour produire la réponse ; les images sont générées d’après la description que rédige l’agent.",
         "li5": "Evolink (Seedance) — génération de vidéos, uniquement quand vous demandez une vidéo à l’agent : la description de la vidéo et, si vous choisissez des images de référence, des liens temporaires vers ces images lui sont transmis.",
         "p1": "Les réseaux sociaux que vous connectez sont des responsables de traitement distincts, régis par leurs propres politiques. Certains sous-traitants sont situés hors de l’Union européenne, notamment aux États-Unis : les transferts reposent alors sur les mécanismes prévus par le RGPD (décision d’adéquation ou clauses contractuelles types)."
       },
@@ -1118,7 +1118,8 @@
     "analyticsApp": "Analyses",
     "settings": "Réglages",
     "welcome": "Bienvenue",
-    "titleTemplate": "{page} · Postbiz"
+    "titleTemplate": "{page} · Postbiz",
+    "knowledgeApp": "Base de connaissance"
   },
   "auth": {
     "email": "E-mail",
@@ -1261,7 +1262,8 @@
         "propose_posts": "Prépare les publications…",
         "generate_image": "Génération de l’image…",
         "generate_video": "Lancement de la vidéo…",
-        "video_status": "Vérification de la vidéo…"
+        "video_status": "Vérification de la vidéo…",
+        "search_knowledge": "Consulte la base de connaissance…"
       },
       "proposals": {
         "fallback": "Voici ce que j’ai préparé. Relisez chaque publication, modifiez-la au besoin, puis enregistrez-la en brouillon ou programmez-la."
@@ -1337,7 +1339,8 @@
       "channels": "Canaux",
       "billing": "Facturation",
       "settings": "Paramètres",
-      "soon": "Bientôt disponible"
+      "soon": "Bientôt disponible",
+      "knowledge": "Connaissances"
     },
     "titles": {
       "agent": "Agent",
@@ -1346,7 +1349,8 @@
       "media": "Médias",
       "channels": "Canaux",
       "settings": "Paramètres",
-      "analytics": "Analyses"
+      "analytics": "Analyses",
+      "knowledge": "Base de connaissance"
     },
     "analytics": {
       "filters": {
@@ -1547,7 +1551,32 @@
       "pickTitle": "Choisissez une conversation",
       "pickText": "Les plus urgentes — celles dont la fenêtre de réponse de 24 h va se fermer — apparaissent en haut de la liste.",
       "notFound": "Conversation introuvable.",
-      "unknownContact": "Contact inconnu"
+      "unknownContact": "Contact inconnu",
+      "suggest": {
+        "button": "Suggérer une réponse",
+        "loading": "Rédaction…",
+        "draft": "Suggestion de l’IA : relisez-la et corrigez-la avant d’envoyer.",
+        "needsHuman": "Sujet sensible : à traiter par une personne de l’équipe.",
+        "ungrounded": "Rien dans votre base ne répond à cette question : complétez la réponse vous-même.",
+        "sources": "Sources consultées : {titles}",
+        "replaceConfirm": "Remplacer votre texte par la suggestion ?",
+        "errors": {
+          "disabled": "La suggestion n’est pas disponible : le service d’IA n’est pas configuré sur ce serveur.",
+          "forbidden": "Votre rôle ne permet pas de suggérer une réponse.",
+          "invalid": "Aucune réponse ne peut être suggérée pour cette conversation.",
+          "rate_limited": "Trop de suggestions en peu de temps, ou limite du jour atteinte. Réessayez plus tard.",
+          "refused": "L’IA n’a pas pu répondre à ce message. Écrivez la réponse vous-même.",
+          "failed": "La suggestion a échoué. Réessayez dans un instant.",
+          "not_found": "Conversation introuvable.",
+          "window_closed": "La fenêtre de 24 h est dépassée : il n’est plus possible de répondre."
+        },
+        "demo": {
+          "found": "Bonjour {name}, merci pour votre message ! {answer}",
+          "foundAnon": "Bonjour, merci pour votre message ! {answer}",
+          "notFound": "Bonjour {name}, merci pour votre message. Nous revenons vers vous très vite.",
+          "notFoundAnon": "Bonjour, merci pour votre message. Nous revenons vers vous très vite."
+        }
+      }
     },
     "validation": {
       "mediaAspect": "{network} : « {name} » n’a pas un format accepté (entre 4:5 et 1,91:1, ni trop haute ni trop large).",
@@ -1773,7 +1802,13 @@
         "refused": "L’assistant n’a pas pu traiter cette demande. Reformulez-la.",
         "empty": "L’assistant n’a rien trouvé d’utilisable. Essayez avec un autre sujet.",
         "failed": "L’assistant est momentanément indisponible. Réessayez dans un instant."
-      }
+      },
+      "base": {
+        "intro": "Votre base de connaissance alimente cet assistant, l’agent et les suggestions de réponse de l’inbox. Les fiches épinglées sont toujours utilisées ; les autres sont consultées quand votre demande s’y rapporte.",
+        "stats": "Toujours utilisées : {pinned} · Consultées au besoin : {search}",
+        "manage": "Gérer la base de connaissance"
+      },
+      "consulted": "Sources consultées : {titles}"
     },
     "knowledge": {
       "add": "Ajouter une fiche",
@@ -1792,7 +1827,9 @@
       "save": "Enregistrer",
       "titleLabel": "Titre",
       "titlePlaceholder": "Ex. : Ton de la marque",
-      "viewerNote": "Votre rôle (lecteur) ne permet pas de modifier la base de connaissance."
+      "viewerNote": "Votre rôle (lecteur) ne permet pas de modifier la base de connaissance.",
+      "errIndex": "La fiche est enregistrée mais n’a pas pu être indexée. Elle le sera à la prochaine ouverture de cette page.",
+      "errChunks": "Votre base est trop volumineuse pour indexer cette fiche (limite atteinte)."
     },
     "emoji": {
       "search": "Rechercher un émoji",
@@ -1969,6 +2006,48 @@
     "errors": {
       "generic": "L’opération a échoué. Réessayez dans un instant.",
       "channelNotFound": "Canal introuvable."
+    },
+    "knowledgePage": {
+      "intro": "Ce que l’IA sait de votre activité : ton de la marque, offres, produits, questions fréquentes. Elle s’en sert pour rédiger vos publications (assistant IA et agent) et pour suggérer des réponses dans l’inbox.",
+      "privacy": "Les fiches sont enregistrées dans votre espace Postbiz. Quand l’IA en a besoin, les passages concernés sont envoyés à OpenAI avec la demande : n’y mettez pas de données personnelles de clients.",
+      "demoNote": "Mode démo : la recherche se fait par les mots, aucune IA n’est appelée.",
+      "noEmbeddings": "La recherche par le sens n’est pas active sur ce serveur (OPENAI_API_KEY absente) : l’IA ne cherche que par les mots.",
+      "budget": "Fiches épinglées : {used} / {max} signes",
+      "overBudget": "Les fiches épinglées dépassent le budget : les plus anciennes ne sont plus envoyées en entier, l’IA les consulte au besoin.",
+      "list": "Fiches",
+      "empty": "Aucune fiche pour l’instant. Commencez par le ton de votre marque, vos offres et vos questions fréquentes.",
+      "soon": "Bientôt : importer des documents (PDF, Word) et un site web.",
+      "reindex": "Réindexer",
+      "pin": {
+        "on": "Toujours utilisée",
+        "off": "Consultée au besoin",
+        "switch": "Toujours envoyer la fiche « {title} » à l’IA",
+        "hint": "Une fiche épinglée est envoyée en entier à chaque demande (ton de la marque, règles). Sinon, l’IA ne la consulte que si la question s’y rapporte."
+      },
+      "state": {
+        "pending": "À indexer",
+        "words": "Recherche par les mots seulement",
+        "indexed": "Indexée",
+        "passages": "Passages : {count}"
+      },
+      "test": {
+        "title": "Tester une question",
+        "hint": "Posez une question comme le ferait un client : vous voyez les passages que l’IA retrouverait.",
+        "placeholder": "Ex. Vous êtes ouverts le dimanche ?",
+        "run": "Chercher",
+        "running": "Recherche…",
+        "hybrid": "Recherche par le sens et par les mots",
+        "words": "Recherche par les mots seulement",
+        "none": "Rien de pertinent dans la base de connaissance : l’IA ne pourrait pas y trouver de quoi répondre.",
+        "relevant": "Pertinent",
+        "weak": "Peu pertinent",
+        "errors": {
+          "forbidden": "Votre rôle ne permet pas de tester la base de connaissance.",
+          "invalid": "Saisissez une question.",
+          "rate_limited": "Trop de recherches d’affilée. Réessayez dans quelques minutes.",
+          "failed": "La recherche a échoué. Réessayez dans un instant."
+        }
+      }
     }
   }
 }

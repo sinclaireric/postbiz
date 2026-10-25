@@ -38,8 +38,8 @@ export interface AiIdea {
 export type AiErrorCode = 'disabled' | 'forbidden' | 'invalid' | 'rate_limited' | 'refused' | 'empty' | 'failed';
 
 export type AiResult =
-  | { ok: true; mode: 'write' | 'improve'; proposals: AiProposal[] }
-  | { ok: true; mode: 'ideas'; ideas: AiIdea[] }
+  | { ok: true; mode: 'write' | 'improve'; proposals: AiProposal[]; consulted?: string[] }
+  | { ok: true; mode: 'ideas'; ideas: AiIdea[]; consulted?: string[] }
   | { ok: false; error: AiErrorCode };
 
 /** Une fiche de la base de connaissance, telle que l'assistant la reçoit. */

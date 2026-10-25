@@ -576,7 +576,8 @@
     "analyticsApp": "Analíticas",
     "settings": "Ajustes",
     "welcome": "Bienvenido",
-    "titleTemplate": "{page} · Postbiz"
+    "titleTemplate": "{page} · Postbiz",
+    "knowledgeApp": "Base de conocimiento"
   },
   "legal": {
     "updated": "Última actualización: {date}",
@@ -723,7 +724,8 @@
         "propose_posts": "Preparando las publicaciones…",
         "generate_image": "Generando la imagen…",
         "generate_video": "Iniciando el vídeo…",
-        "video_status": "Comprobando el vídeo…"
+        "video_status": "Comprobando el vídeo…",
+        "search_knowledge": "Consultando la base de conocimiento…"
       },
       "proposals": {
         "fallback": "Esto es lo que he preparado. Revisa cada publicación, edítala si hace falta y guárdala como borrador o prográmala."
@@ -800,9 +802,10 @@
       "channels": "Canales",
       "billing": "Facturación",
       "settings": "Ajustes",
-      "soon": "Próximamente"
+      "soon": "Próximamente",
+      "knowledge": "Conocimiento"
     },
-    "titles": { "agent": "Agente", "calendar": "Calendario", "inbox": "Bandeja de entrada", "media": "Medios", "channels": "Canales", "settings": "Ajustes", "analytics": "Analíticas" },
+    "titles": { "agent": "Agente", "calendar": "Calendario", "inbox": "Bandeja de entrada", "media": "Medios", "channels": "Canales", "settings": "Ajustes", "analytics": "Analíticas", "knowledge": "Base de conocimiento" },
     "analytics": {
       "filters": {
         "channel": "Canal",
@@ -962,7 +965,32 @@
       "pickTitle": "Elige una conversación",
       "pickText": "Las más urgentes — aquellas cuya ventana de respuesta de 24 h está a punto de cerrarse — aparecen arriba de la lista.",
       "notFound": "Conversación no encontrada.",
-      "unknownContact": "Contacto desconocido"
+      "unknownContact": "Contacto desconocido",
+      "suggest": {
+        "button": "Sugerir una respuesta",
+        "loading": "Redactando…",
+        "draft": "Sugerencia de la IA: léela y corrígela antes de enviar.",
+        "needsHuman": "Tema delicado: debería encargarse una persona del equipo.",
+        "ungrounded": "Nada en tu base responde a esto: completa la respuesta tú mismo.",
+        "sources": "Fuentes consultadas: {titles}",
+        "replaceConfirm": "¿Reemplazar tu texto por la sugerencia?",
+        "errors": {
+          "disabled": "Las sugerencias de respuesta no están disponibles: el servicio de IA no está configurado en este servidor.",
+          "forbidden": "Tu rol no permite sugerir una respuesta.",
+          "invalid": "No se puede sugerir una respuesta para esta conversación.",
+          "rate_limited": "Demasiadas sugerencias en poco tiempo, o límite diario alcanzado. Inténtalo más tarde.",
+          "refused": "La IA no ha podido responder a este mensaje. Escribe la respuesta tú mismo.",
+          "failed": "La sugerencia ha fallado. Vuelve a intentarlo en un momento.",
+          "not_found": "Conversación no encontrada.",
+          "window_closed": "La ventana de 24 h ha pasado: ya no es posible responder."
+        },
+        "demo": {
+          "found": "Hola {name}, ¡gracias por tu mensaje! {answer}",
+          "foundAnon": "Hola, ¡gracias por tu mensaje! {answer}",
+          "notFound": "Hola {name}, gracias por tu mensaje. Te respondemos muy pronto.",
+          "notFoundAnon": "Hola, gracias por tu mensaje. Te respondemos muy pronto."
+        }
+      }
     },
     "validation": {
       "mediaAspect": "{network}: «{name}» no tiene un formato aceptado (entre 4:5 y 1,91:1, ni demasiado alta ni demasiado ancha).",
@@ -1176,7 +1204,13 @@
         "refused": "El asistente no pudo procesar esta solicitud. Prueba a reformularla.",
         "empty": "El asistente no encontró nada utilizable. Prueba con otro tema.",
         "failed": "El asistente no está disponible por el momento. Inténtalo de nuevo en un instante."
-      }
+      },
+      "base": {
+        "intro": "Tu base de conocimiento alimenta a este asistente, al agente y a las sugerencias de respuesta de la bandeja. Las fichas fijadas se usan siempre; las demás se consultan cuando tu petición trata de ellas.",
+        "stats": "Siempre usadas: {pinned} · Consultadas cuando hace falta: {search}",
+        "manage": "Gestionar la base de conocimiento"
+      },
+      "consulted": "Fuentes consultadas: {titles}"
     },
     "knowledge": {
       "add": "Añadir una ficha",
@@ -1195,7 +1229,9 @@
       "save": "Guardar",
       "titleLabel": "Título",
       "titlePlaceholder": "P. ej.: Tono de la marca",
-      "viewerNote": "Tu rol (lector) no permite modificar la base de conocimiento."
+      "viewerNote": "Tu rol (lector) no permite modificar la base de conocimiento.",
+      "errIndex": "La ficha se ha guardado, pero no se ha podido indexar. Se indexará la próxima vez que abras esta página.",
+      "errChunks": "Tu base es demasiado grande para indexar esta ficha (límite alcanzado)."
     },
     "emoji": {
       "search": "Buscar emoji",
@@ -1352,6 +1388,48 @@
       "check2": { "title": "Programa una publicación", "text": "En el calendario, haz clic en una franja libre, escribe y elige los canales.", "cta": "Abrir el calendario" },
       "check3": { "title": "Responde a tus mensajes", "text": "Los mensajes privados y los comentarios llegan en directo a la bandeja de entrada.", "cta": "Abrir la bandeja de entrada" },
       "start": "Empezar"
+    },
+    "knowledgePage": {
+      "intro": "Lo que la IA sabe de tu negocio: tono de la marca, ofertas, productos, preguntas frecuentes. Lo usa para redactar tus publicaciones (asistente de IA y agente) y para sugerir respuestas en la bandeja.",
+      "privacy": "Las fichas se guardan en tu espacio de Postbiz. Cuando la IA las necesita, los pasajes correspondientes se envían a OpenAI junto con la petición: no incluyas datos personales de clientes.",
+      "demoNote": "Modo demostración: la búsqueda se hace por palabras y no se llama a ninguna IA.",
+      "noEmbeddings": "La búsqueda por significado no está activa en este servidor (falta OPENAI_API_KEY): la IA solo busca por palabras.",
+      "budget": "Fichas fijadas: {used} / {max} caracteres",
+      "overBudget": "Las fichas fijadas superan el presupuesto: las más antiguas ya no se envían completas, la IA las consulta cuando hace falta.",
+      "list": "Fichas",
+      "empty": "Aún no hay fichas. Empieza por el tono de tu marca, tus ofertas y tus preguntas frecuentes.",
+      "soon": "Próximamente: importar documentos (PDF, Word) y un sitio web.",
+      "reindex": "Reindexar",
+      "pin": {
+        "on": "Siempre usada",
+        "off": "Consultada cuando hace falta",
+        "switch": "Enviar siempre la ficha «{title}» a la IA",
+        "hint": "Una ficha fijada se envía completa en cada petición (tono de la marca, reglas). Si no, la IA solo la consulta cuando la pregunta trata de ese tema."
+      },
+      "state": {
+        "pending": "Por indexar",
+        "words": "Búsqueda solo por palabras",
+        "indexed": "Indexada",
+        "passages": "Pasajes: {count}"
+      },
+      "test": {
+        "title": "Probar una pregunta",
+        "hint": "Haz una pregunta como lo haría un cliente: verás los pasajes que la IA encontraría.",
+        "placeholder": "Ej. ¿Abren los domingos?",
+        "run": "Buscar",
+        "running": "Buscando…",
+        "hybrid": "Búsqueda por significado y por palabras",
+        "words": "Búsqueda solo por palabras",
+        "none": "No hay nada relevante en la base de conocimiento: la IA no podría responder a partir de ella.",
+        "relevant": "Relevante",
+        "weak": "Coincidencia débil",
+        "errors": {
+          "forbidden": "Tu rol no permite probar la base de conocimiento.",
+          "invalid": "Escribe una pregunta.",
+          "rate_limited": "Demasiadas búsquedas seguidas. Vuelve a intentarlo en unos minutos.",
+          "failed": "La búsqueda ha fallado. Vuelve a intentarlo en un momento."
+        }
+      }
     }
   }
 }

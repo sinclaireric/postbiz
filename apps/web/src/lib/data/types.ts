@@ -1,4 +1,5 @@
 import type { AgentMessage, AgentProposal, AgentProposalStatus, AgentThread, AgentVideoJob, VideoOrientation } from '@/lib/agent/types';
+import type { KnowledgeChunkInput, KnowledgeHit, KnowledgeSearchQuery } from '@/lib/kb/types';
 import type { AnalyticsRepository } from '@/lib/analytics/types';
 import type { FormError } from '@/lib/form-error';
 import type { MediaKind } from '@/lib/media/rules';
@@ -157,19 +158,37 @@ export interface KnowledgeItem {
   title: string;
   content: string;
   updatedAt: string;
+  /** Épinglée : envoyée en entier à l'IA à chaque demande (voix de la marque, règles). Sinon, consultée seulement par la recherche. */
+  pinned: boolean;
+  /** Nombre de passages de la recherche. */
+  chunkCount: number;
+  /** Date de la dernière indexation ; null : jamais indexée, ou modifiée depuis (à réindexer). */
+  indexedAt: string | null;
+  /** Date à laquelle tous ses passages avaient leur vecteur ; null : cherchable par les mots seulement. */
+  embeddedAt: string | null;
 }
+
+/** Ce que le composeur sait d'une fiche : de quoi les compter, pas leur contenu (qui peut peser plusieurs centaines de Ko). */
+export type KnowledgeBrief = Pick<KnowledgeItem, 'id' | 'title' | 'pinned'>;
 
 export interface KnowledgeInput {
   title: string;
   content: string;
 }
 
-/** Fiches que l'assistant IA lit pour écrire dans la voix de l'organisation (ton, offres, produits, questions fréquentes). */
+/** Fiches que l'IA lit pour écrire dans la voix de l'organisation et répondre juste (ton, offres, produits, questions fréquentes). */
 export interface KnowledgeRepository {
   list(): Promise<KnowledgeItem[]>;
-  create(input: KnowledgeInput): Promise<Result>;
+  /** Crée une fiche ; `id` est celui de la nouvelle fiche, pour l'indexer ensuite. */
+  create(input: KnowledgeInput): Promise<Result & { id?: string }>;
+  /** Modifier le titre ou le contenu supprime les passages de la fiche : elle est à réindexer. */
   update(id: string, input: KnowledgeInput): Promise<Result>;
+  setPinned(id: string, pinned: boolean): Promise<Result>;
   remove(id: string): Promise<Result>;
+  /** Remplace les passages d'une fiche (l'index de la recherche). */
+  replaceChunks(itemId: string, chunks: KnowledgeChunkInput[]): Promise<Result>;
+  /** Cherche des passages dans la base de l'organisation, par le sens (si `embedding`) et par les mots. */
+  search(query: KnowledgeSearchQuery): Promise<KnowledgeHit[]>;
 }
 
 /** Ce que l'utilisateur a fait d'une publication préparée par l'agent : son état, et le texte, les médias et la date tels qu'il les a enregistrés. */
@@ -246,9 +265,22 @@ export interface GenerationRepository {
   settleJob(id: string, result: { status: 'pending' } | { status: 'completed'; mediaId: string } | { status: 'failed'; error: string }): Promise<boolean>;
 }
 
+/** Les réponses suggérées par l'IA dans l'inbox, gardées pour mesurer ce qu'on en fait et plafonner leur nombre par jour. */
+export interface SuggestionRepository {
+  /** Suggestions préparées par l'organisation sur les dernières 24 heures. */
+  countToday(): Promise<number>;
+  /** Garde une suggestion ; rend son identifiant, ou null si elle n'a pas pu l'être. */
+  log(input: { conversationId: string; reply: string; grounded: boolean; needsHuman: boolean; sources: string[]; model: string; inputTokens: number | null; outputTokens: number | null }): Promise<string | null>;
+  /** Le texte suggéré (pour savoir si la réponse envoyée a été modifiée). */
+  reply(id: string): Promise<string | null>;
+  /** Marque ce que l'utilisateur en a fait, une seule fois. */
+  settle(id: string, outcome: 'sent' | 'edited'): Promise<void>;
+}
+
 export interface Repositories {
   agent: AgentRepository;
   generation: GenerationRepository;
+  suggestions: SuggestionRepository;
   analytics: AnalyticsRepository;
   media: MediaRepository;
   knowledge: KnowledgeRepository;

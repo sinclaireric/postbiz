@@ -585,7 +585,8 @@
     "analyticsApp": "Analysen",
     "settings": "Einstellungen",
     "welcome": "Willkommen",
-    "titleTemplate": "{page} · Postbiz"
+    "titleTemplate": "{page} · Postbiz",
+    "knowledgeApp": "Wissensdatenbank"
   },
   "legal": {
     "updated": "Zuletzt aktualisiert: {date}",
@@ -732,7 +733,8 @@
         "propose_posts": "Bereitet die Beiträge vor …",
         "generate_image": "Bild wird erstellt …",
         "generate_video": "Video wird gestartet …",
-        "video_status": "Video wird geprüft …"
+        "video_status": "Video wird geprüft …",
+        "search_knowledge": "Durchsucht die Wissensdatenbank …"
       },
       "proposals": {
         "fallback": "Das habe ich vorbereitet. Prüfen Sie jeden Beitrag, bearbeiten Sie ihn bei Bedarf und speichern Sie ihn als Entwurf oder planen Sie ihn ein."
@@ -809,9 +811,10 @@
       "channels": "Kanäle",
       "billing": "Abrechnung",
       "settings": "Einstellungen",
-      "soon": "Demnächst verfügbar"
+      "soon": "Demnächst verfügbar",
+      "knowledge": "Wissen"
     },
-    "titles": { "agent": "Agent", "calendar": "Kalender", "inbox": "Posteingang", "media": "Medien", "channels": "Kanäle", "settings": "Einstellungen", "analytics": "Analysen" },
+    "titles": { "agent": "Agent", "calendar": "Kalender", "inbox": "Posteingang", "media": "Medien", "channels": "Kanäle", "settings": "Einstellungen", "analytics": "Analysen", "knowledge": "Wissensdatenbank" },
     "analytics": {
       "filters": {
         "channel": "Kanal",
@@ -971,7 +974,32 @@
       "pickTitle": "Wählen Sie eine Unterhaltung",
       "pickText": "Die dringendsten – deren 24-Stunden-Antwortfenster bald schließt – stehen oben in der Liste.",
       "notFound": "Unterhaltung nicht gefunden.",
-      "unknownContact": "Unbekannter Kontakt"
+      "unknownContact": "Unbekannter Kontakt",
+      "suggest": {
+        "button": "Antwort vorschlagen",
+        "loading": "Wird geschrieben …",
+        "draft": "Vorschlag der KI: Lesen und bearbeiten Sie ihn vor dem Senden.",
+        "needsHuman": "Heikles Thema: Das sollte jemand aus dem Team übernehmen.",
+        "ungrounded": "Nichts in Ihrer Wissensdatenbank beantwortet das: Ergänzen Sie die Antwort selbst.",
+        "sources": "Genutzte Quellen: {titles}",
+        "replaceConfirm": "Ihren Text durch den Vorschlag ersetzen?",
+        "errors": {
+          "disabled": "Antwortvorschläge sind nicht verfügbar: Der KI-Dienst ist auf diesem Server nicht eingerichtet.",
+          "forbidden": "Ihre Rolle erlaubt keine Antwortvorschläge.",
+          "invalid": "Für diese Unterhaltung kann keine Antwort vorgeschlagen werden.",
+          "rate_limited": "Zu viele Vorschläge in kurzer Zeit oder Tageslimit erreicht. Versuchen Sie es später erneut.",
+          "refused": "Die KI konnte diese Nachricht nicht beantworten. Schreiben Sie die Antwort selbst.",
+          "failed": "Der Vorschlag ist fehlgeschlagen. Versuchen Sie es gleich noch einmal.",
+          "not_found": "Unterhaltung nicht gefunden.",
+          "window_closed": "Das 24-Stunden-Fenster ist abgelaufen: Antworten sind nicht mehr möglich."
+        },
+        "demo": {
+          "found": "Hallo {name}, danke für Ihre Nachricht! {answer}",
+          "foundAnon": "Hallo, danke für Ihre Nachricht! {answer}",
+          "notFound": "Hallo {name}, danke für Ihre Nachricht. Wir melden uns in Kürze bei Ihnen.",
+          "notFoundAnon": "Hallo, danke für Ihre Nachricht. Wir melden uns in Kürze bei Ihnen."
+        }
+      }
     },
     "validation": {
       "mediaAspect": "{network}: „{name}“ hat kein zulässiges Format (zwischen 4:5 und 1,91:1, weder zu hoch noch zu breit).",
@@ -1185,7 +1213,13 @@
         "refused": "Der Assistent konnte diese Anfrage nicht verarbeiten. Formulieren Sie sie um.",
         "empty": "Der Assistent hat nichts Brauchbares gefunden. Versuchen Sie ein anderes Thema.",
         "failed": "Der Assistent ist vorübergehend nicht verfügbar. Versuchen Sie es gleich noch einmal."
-      }
+      },
+      "base": {
+        "intro": "Ihre Wissensdatenbank speist diesen Assistenten, den Agenten und die Antwortvorschläge in der Inbox. Angeheftete Einträge werden immer verwendet; die anderen werden nachgeschlagen, wenn Ihre Anfrage dazu passt.",
+        "stats": "Immer verwendet: {pinned} · Bei Bedarf nachgeschlagen: {search}",
+        "manage": "Wissensdatenbank verwalten"
+      },
+      "consulted": "Genutzte Quellen: {titles}"
     },
     "knowledge": {
       "add": "Eintrag hinzufügen",
@@ -1204,7 +1238,9 @@
       "save": "Speichern",
       "titleLabel": "Titel",
       "titlePlaceholder": "Z. B. Markenton",
-      "viewerNote": "Ihre Rolle (Leser) erlaubt es nicht, die Wissensdatenbank zu ändern."
+      "viewerNote": "Ihre Rolle (Leser) erlaubt es nicht, die Wissensdatenbank zu ändern.",
+      "errIndex": "Der Eintrag wurde gespeichert, konnte aber nicht indexiert werden. Das geschieht beim nächsten Öffnen dieser Seite.",
+      "errChunks": "Ihre Wissensdatenbank ist zu groß, um diesen Eintrag zu indexieren (Limit erreicht)."
     },
     "emoji": {
       "search": "Emoji suchen",
@@ -1361,6 +1397,48 @@
       "check2": { "title": "Planen Sie einen Beitrag", "text": "Klicken Sie im Kalender auf einen freien Zeitslot, schreiben Sie und wählen Sie die Kanäle.", "cta": "Kalender öffnen" },
       "check3": { "title": "Beantworten Sie Ihre Nachrichten", "text": "Private Nachrichten und Kommentare erscheinen live im Posteingang.", "cta": "Posteingang öffnen" },
       "start": "Los geht’s"
+    },
+    "knowledgePage": {
+      "intro": "Was die KI über Ihr Unternehmen weiß: Markenton, Angebote, Produkte, häufige Fragen. Sie nutzt es, um Ihre Beiträge zu schreiben (KI-Assistent und Agent) und um Antworten in der Inbox vorzuschlagen.",
+      "privacy": "Die Einträge werden in Ihrem Postbiz-Bereich gespeichert. Braucht die KI sie, werden die betreffenden Passagen mit der Anfrage an OpenAI gesendet: Tragen Sie dort keine personenbezogenen Kundendaten ein.",
+      "demoNote": "Demomodus: Die Suche arbeitet mit Wörtern, es wird keine KI aufgerufen.",
+      "noEmbeddings": "Die Suche nach Bedeutung ist auf diesem Server nicht aktiv (OPENAI_API_KEY fehlt): Die KI sucht nur nach Wörtern.",
+      "budget": "Angeheftete Einträge: {used} / {max} Zeichen",
+      "overBudget": "Die angehefteten Einträge überschreiten das Budget: Die ältesten werden nicht mehr vollständig gesendet, die KI schlägt sie bei Bedarf nach.",
+      "list": "Einträge",
+      "empty": "Noch keine Einträge. Beginnen Sie mit dem Ton Ihrer Marke, Ihren Angeboten und Ihren häufigen Fragen.",
+      "soon": "Demnächst: Dokumente (PDF, Word) und eine Website importieren.",
+      "reindex": "Neu indexieren",
+      "pin": {
+        "on": "Immer verwendet",
+        "off": "Bei Bedarf nachgeschlagen",
+        "switch": "Eintrag „{title}“ immer an die KI senden",
+        "hint": "Ein angehefteter Eintrag wird bei jeder Anfrage vollständig gesendet (Markenton, Regeln). Sonst schlägt die KI ihn nur nach, wenn die Frage dazu passt."
+      },
+      "state": {
+        "pending": "Zu indexieren",
+        "words": "Suche nur nach Wörtern",
+        "indexed": "Indexiert",
+        "passages": "Passagen: {count}"
+      },
+      "test": {
+        "title": "Eine Frage testen",
+        "hint": "Stellen Sie eine Frage wie ein Kunde: Sie sehen die Passagen, die die KI finden würde.",
+        "placeholder": "Z. B. Haben Sie sonntags geöffnet?",
+        "run": "Suchen",
+        "running": "Suche läuft …",
+        "hybrid": "Suche nach Bedeutung und nach Wörtern",
+        "words": "Suche nur nach Wörtern",
+        "none": "Nichts Passendes in der Wissensdatenbank: Die KI könnte daraus nicht antworten.",
+        "relevant": "Passend",
+        "weak": "Schwacher Treffer",
+        "errors": {
+          "forbidden": "Ihre Rolle erlaubt es nicht, die Wissensdatenbank zu testen.",
+          "invalid": "Geben Sie eine Frage ein.",
+          "rate_limited": "Zu viele Suchen hintereinander. Versuchen Sie es in einigen Minuten erneut.",
+          "failed": "Die Suche ist fehlgeschlagen. Versuchen Sie es gleich noch einmal."
+        }
+      }
     }
   }
 }

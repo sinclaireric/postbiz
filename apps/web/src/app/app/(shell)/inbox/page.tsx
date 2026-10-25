@@ -4,6 +4,8 @@ import { NetworkDot, NetworkLabel } from '@/components/app/network-dot';
 import { RealtimeRefresh } from '@/components/app/realtime-refresh';
 import { Badge } from '@/components/ui';
 import { getT } from '@/i18n/server';
+import { aiConfigured } from '@/lib/ai/assistant';
+import { suggestionsPerDay } from '@/lib/inbox/limits';
 import type { MessageKey, T } from '@/i18n/types';
 import { formatRelative } from '@/i18n/format';
 import { getRepositories, getSession } from '@/lib/data';
@@ -106,7 +108,7 @@ function Bubble({ t, m, now }: { t: T; m: MessageItem; now: Date }) {
   );
 }
 
-function Thread({ t, c, params, now, canReply }: { t: T; c: ConversationDetail; params: Params; now: Date; canReply: boolean }) {
+function Thread({ t, c, params, now, canReply, canSuggest }: { t: T; c: ConversationDetail; params: Params; now: Date; canReply: boolean; canSuggest: boolean }) {
   const name = c.contactName || t('app.inbox.unknownContact');
   const w = replyWindow(c.replyWindowExpiresAt, now);
   const isDm = c.kind === 'dm';
@@ -170,6 +172,8 @@ function Thread({ t, c, params, now, canReply }: { t: T; c: ConversationDetail; 
       </details>
 
       <ReplyForm
+        key={c.id}
+        canSuggest={canSuggest}
         conversationId={c.id}
         disabled={replyBlocked}
         disabledReason={reason}
@@ -205,6 +209,8 @@ export default async function InboxPage({ searchParams }: { searchParams: Promis
   const presentNetworks = NETWORKS.filter((n) => all.some((c) => c.networkId === n.id));
   const base: Params = { status: status === 'active' ? undefined : status, net: params.net, q: params.q };
   const canReply = ctx.org.role !== 'viewer';
+  // La suggestion de réponse : pour qui peut répondre, quand l'IA est configurée (ou en démonstration, où elle est simulée) et que le plafond du jour n'est pas à zéro.
+  const canSuggest = canReply && (ctx.mode === 'demo' || aiConfigured()) && suggestionsPerDay() > 0;
 
   return (
     <div className="flex h-full min-h-0 flex-1">
@@ -259,7 +265,7 @@ export default async function InboxPage({ searchParams }: { searchParams: Promis
       </aside>
 
       {selected ? (
-        <Thread t={t} c={selected} params={base} now={now} canReply={canReply} />
+        <Thread t={t} c={selected} params={base} now={now} canReply={canReply} canSuggest={canSuggest} />
       ) : (
         <section className="hidden min-h-0 flex-1 items-center justify-center bg-paper lg:flex">
           <div className="max-w-sm text-center">

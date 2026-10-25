@@ -6,7 +6,7 @@ import type { SessionState } from '@/lib/data';
 import { DEMO_CONTEXT, demoRepositories } from '@/lib/data/demo';
 
 // La route lit la session, la langue et les dépôts de données dans le contexte de la requête Next : on les remplace par ceux de la démo.
-const state = vi.hoisted(() => ({ session: null as unknown, client: null as unknown, images: null as unknown, videos: null as unknown, byToken: null as unknown as (token: string) => Promise<{ session: unknown; repos: unknown }>, cookieReads: 0 }));
+const state = vi.hoisted(() => ({ session: null as unknown, client: null as unknown, images: null as unknown, videos: null as unknown, embedder: null as unknown, byToken: null as unknown as (token: string) => Promise<{ session: unknown; repos: unknown }>, cookieReads: 0 }));
 vi.mock('@/i18n/server', () => ({
   getT: async () => ((key: string, params?: Record<string, unknown>) => (params ? `${key} ${JSON.stringify(params)}` : key)),
   getLocale: async () => 'fr',
@@ -18,6 +18,7 @@ vi.mock('@/lib/data', async () => ({
   getSessionForToken: (token: string) => state.byToken(token),
 }));
 vi.mock('@/lib/agent/run', async (original) => ({ ...(await original<typeof import('@/lib/agent/run')>()), sdkAgentClient: () => state.client }));
+vi.mock('@/lib/kb/embed', async (original) => ({ ...(await original<typeof import('@/lib/kb/embed')>()), defaultEmbedder: () => state.embedder }));
 vi.mock('@/lib/agent/generate', async (original) => ({ ...(await original<typeof import('@/lib/agent/generate')>()), sdkImageProvider: () => state.images, evolinkVideoProvider: () => state.videos }));
 
 const { POST } = await import('./route');
@@ -39,6 +40,7 @@ beforeEach(() => {
   state.session = ready();
   state.cookieReads = 0;
   state.byToken = async () => ({ session: { status: 'anonymous' }, repos: null });
+  state.embedder = null;
   delete process.env.OPENAI_API_KEY;
   delete process.env.EVOLINK_API_KEY;
   delete process.env.AGENT_IMAGES_PER_DAY;
@@ -234,12 +236,13 @@ describe('POST /api/agent/chat : génération d’images et de vidéos', () => {
   it('propose la génération d’images avec la clé de l’agent, et celle des vidéos seulement avec une clé Evolink', async () => {
     let calls = stream([{ status: 'completed', usage, output: [say('Bonjour !')] }]);
     await events(await post({ message: 'Salut', channelIds: ['i2'] }));
-    expect(calls[0]!.tools.map((t) => t.name)).toEqual(['propose_posts', 'list_posts', 'list_media', 'generate_image']);
+    // La base de la démo a une fiche consultable (les questions fréquentes) : l'agent a aussi l'outil de recherche.
+    expect(calls[0]!.tools.map((t) => t.name)).toEqual(['propose_posts', 'list_posts', 'list_media', 'search_knowledge', 'generate_image']);
 
     process.env.EVOLINK_API_KEY = 'cle-evolink';
     calls = stream([{ status: 'completed', usage, output: [say('Bonjour !')] }]);
     await events(await post({ message: 'Salut', channelIds: ['i2'] }));
-    expect(calls[0]!.tools.map((t) => t.name)).toEqual(['propose_posts', 'list_posts', 'list_media', 'generate_image', 'generate_video', 'video_status']);
+    expect(calls[0]!.tools.map((t) => t.name)).toEqual(['propose_posts', 'list_posts', 'list_media', 'search_knowledge', 'generate_image', 'generate_video', 'video_status']);
   });
 
   it('un plafond journalier à 0 retire l’outil correspondant', async () => {
@@ -248,7 +251,7 @@ describe('POST /api/agent/chat : génération d’images et de vidéos', () => {
     process.env.AGENT_VIDEOS_PER_DAY = '0';
     const calls = stream([{ status: 'completed', usage, output: [say('Bonjour !')] }]);
     await events(await post({ message: 'Salut', channelIds: ['i2'] }));
-    expect(calls[0]!.tools.map((t) => t.name)).toEqual(['propose_posts', 'list_posts', 'list_media']);
+    expect(calls[0]!.tools.map((t) => t.name)).toEqual(['propose_posts', 'list_posts', 'list_media', 'search_knowledge']);
     expect(calls[0]!.instructions).not.toContain('generate_image');
   });
 
@@ -312,5 +315,73 @@ describe('POST /api/agent/chat : génération d’images et de vidéos', () => {
     const done = list.at(-1) as Extract<AgentEvent, { type: 'done' }>;
     expect(done.assistant.mediaIds).toHaveLength(1);
     expect(JSON.stringify(calls[1]!.input)).toContain('limit of 1 generated pictures per day');
+  });
+});
+
+describe('POST /api/agent/chat : base de connaissance', () => {
+  const stream = (replies: unknown[]) => {
+    const calls: { tools: { name: string }[]; instructions: string; input: { type?: string; output?: string }[] }[] = [];
+    state.client = {
+      async stream(params, onText) {
+        calls.push(structuredClone(params) as never);
+        const next = replies.shift() as { output: { type: string; content?: { type: string; text?: string }[] }[] };
+        for (const item of next.output) if (item.type === 'message') for (const part of item.content!) if (part.type === 'output_text') onText(part.text!);
+        return next as never;
+      },
+    } satisfies AgentClient;
+    return calls;
+  };
+
+  beforeEach(() => {
+    process.env.OPENAI_API_KEY = 'test-key-not-used';
+    state.session = ready({ mode: 'supabase' });
+  });
+
+  it('les fiches épinglées partent en entier ; les autres se consultent : leurs titres sont donnés, leur contenu seulement à la demande', async () => {
+    const calls = stream([
+      { status: 'completed', usage, output: [use('s1', 'search_knowledge', { query: 'horaires atelier samedi' })] },
+      { status: 'completed', usage, output: [say('Il est ouvert le samedi de 10 h à 17 h.')] },
+    ]);
+    const list = await events(await post({ message: 'Quels sont les horaires de l’atelier ?', channelIds: ['i2'] }));
+    expect(list.map((e) => e.type)).toEqual(['tool', 'text', 'done']);
+    expect(list[0]).toEqual({ type: 'tool', name: 'search_knowledge' });
+
+    const first = calls[0]!;
+    expect(first.tools.map((t) => t.name)).toContain('search_knowledge');
+    // Fiches épinglées de la démo : dans les instructions. Fiche des questions fréquentes (non épinglée) : seulement son titre.
+    expect(first.instructions).toContain('Ton de la marque');
+    expect(first.instructions).toContain('Offres en cours');
+    expect(first.instructions).toContain('Searchable sources of the knowledge base');
+    expect(first.instructions).toContain('- "Questions fréquentes"');
+    expect(first.instructions).not.toContain('Délai de fabrication');
+
+    const found = JSON.parse(calls[1]!.input.find((i) => i.type === 'function_call_output')!.output!) as { passages: { source: string; text: string }[] };
+    expect(found.passages[0]).toMatchObject({ source: 'Questions fréquentes' });
+    expect(found.passages[0]!.text).toContain('Atelier ouvert au public le samedi de 10 h à 17 h');
+  });
+
+  it('sans service d’embeddings ou s’il échoue, la recherche se fait par les mots et l’agent répond quand même', async () => {
+    const log = vi.spyOn(console, 'error').mockImplementation(() => {});
+    state.embedder = { embed: async () => { throw new Error('boum'); } };
+    const calls = stream([
+      { status: 'completed', usage, output: [use('s1', 'search_knowledge', { query: 'garantie finitions' })] },
+      { status: 'completed', usage, output: [say('Garantie de 5 ans.')] },
+    ]);
+    const list = await events(await post({ message: 'Quelle garantie ?', channelIds: ['i2'] }));
+    expect(list.at(-1)!.type).toBe('done');
+    const found = JSON.parse(calls[1]!.input.find((i) => i.type === 'function_call_output')!.output!) as { passages: { text: string }[] };
+    expect(found.passages[0]!.text).toContain('Garantie 5 ans');
+    log.mockRestore();
+  });
+
+  it('une question sans rapport avec la base : « rien de pertinent », l’agent n’invente pas', async () => {
+    const calls = stream([
+      { status: 'completed', usage, output: [use('s1', 'search_knowledge', { query: 'partenariat universités' })] },
+      { status: 'completed', usage, output: [say('Je n’ai pas cette information.')] },
+    ]);
+    await events(await post({ message: 'Annonce notre partenariat avec les universités', channelIds: ['i2'] }));
+    const out = JSON.parse(calls[1]!.input.find((i) => i.type === 'function_call_output')!.output!) as { passages: unknown[]; note: string };
+    expect(out.passages).toEqual([]);
+    expect(out.note).toMatch(/Do not guess/);
   });
 });

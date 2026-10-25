@@ -16,7 +16,9 @@ const shiftDay = (day: string, days: number) => new Date(Date.parse(`${day}T00:0
  * si le serveur la propose, range ses fichiers dans la médiathèque. Rien ne passe
  * par une autre voie que ces dépôts : la RLS de la base reste la seule autorité sur ce que l'agent voit.
  */
-export function createToolbox(repos: Pick<Repositories, 'posts' | 'media'>, integrations: readonly IntegrationItem[], timeZone: string, now: Date, generation?: GenerationTools): AgentToolbox {
+export function createToolbox(
+  repos: Pick<Repositories, 'posts' | 'media'>, integrations: readonly IntegrationItem[], timeZone: string, now: Date, generation?: GenerationTools, searchKnowledge?: AgentToolbox['searchKnowledge'],
+): AgentToolbox {
   const channelName = new Map(integrations.map((i) => [i.id, `${networkName(i.networkId)} "${i.name}"`]));
   const today = utcToLocal(now, timeZone).slice(0, 10);
 
@@ -50,5 +52,6 @@ export function createToolbox(repos: Pick<Repositories, 'posts' | 'media'>, inte
     mediaByIds: (ids: string[]): Promise<MediaItem[]> => repos.media.byIds(ids),
 
     generation,
+    searchKnowledge,
   };
 }

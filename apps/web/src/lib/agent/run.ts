@@ -1,6 +1,8 @@
 import OpenAI from 'openai';
 import { knowledgeBlock } from '@/lib/ai/prompt';
 import type { KnowledgeEntry } from '@/lib/ai/types';
+import { neutralize } from '@/lib/kb/format';
+import { KB, type KnowledgePassage } from '@/lib/kb/types';
 import type { IntegrationItem, MediaItem } from '@/lib/data/types';
 import { agentConfigured, agentModel, DEFAULT_AGENT_MODEL } from './config';
 import { toAgentMedia } from './media';
@@ -55,13 +57,18 @@ export interface AgentToolbox {
   mediaByIds(ids: string[]): Promise<MediaItem[]>;
   /** Génération d'images et de vidéos : absente quand le serveur ne les propose pas. */
   generation?: GenerationTools;
+  /** Recherche dans la base de connaissance (les fiches qui ne sont pas épinglées) : absente quand la base n'a rien de consultable. */
+  searchKnowledge?(query: string): Promise<{ passages: KnowledgePassage[]; found: boolean }>;
 }
 
 export interface AgentTurnDeps {
   client: AgentClient;
   model?: string;
   channels: readonly IntegrationItem[];
+  /** Les fiches épinglées de la base de connaissance : envoyées en entier, dans les instructions. */
   knowledge: KnowledgeEntry[];
+  /** Titres des fiches que l'agent peut consulter par recherche (`search_knowledge`), pour qu'il sache ce que la base contient. */
+  catalog?: string[];
   orgName: string;
   /** Langue de l'application, en anglais (« French »). */
   language: string;
@@ -104,10 +111,11 @@ export interface AgentTurnResult {
 }
 
 /** Règles, puis base de connaissance : le début identique d'une demande à l'autre, que le cache de prompt réutilise. La date et les canaux viennent après. */
-export function instructionsFor(knowledge: KnowledgeEntry[], features?: AgentFeatures): string {
+export function instructionsFor(knowledge: KnowledgeEntry[], features?: AgentFeatures, catalog: string[] = []): string {
   const rules = agentRules(features);
   const block = knowledgeBlock(knowledge);
-  return block ? `${rules}\n\n${block}` : rules;
+  const sources = features?.knowledge && catalog.length > 0 ? `Searchable sources of the knowledge base (read them with search_knowledge):\n${catalog.slice(0, 30).map((title) => `- ${JSON.stringify(title)}`).join('\n')}` : null;
+  return [rules, block, sources].filter(Boolean).join('\n\n');
 }
 
 type ImageOutcome = Awaited<ReturnType<GenerationTools['generateImage']>>;
@@ -138,8 +146,9 @@ export async function runAgentTurn(deps: AgentTurnDeps, userContent: string): Pr
   const features: AgentFeatures = {
     image: Boolean(deps.features?.image && deps.tools.generation),
     video: Boolean(deps.features?.video && deps.tools.generation),
+    knowledge: Boolean(deps.features?.knowledge && deps.tools.searchKnowledge),
   };
-  const instructions = instructionsFor(deps.knowledge, features);
+  const instructions = instructionsFor(deps.knowledge, features, deps.catalog);
   const toolDefs = agentToolDefs(features);
   const context = sessionBlock({ orgName: deps.orgName, language: deps.language, timeZone: deps.timeZone, now, channels: deps.channels });
   // La date et les canaux viennent juste avant la demande, après l'historique : le début de la requête reste identique d'un message à l'autre.
@@ -150,6 +159,7 @@ export async function runAgentTurn(deps: AgentTurnDeps, userContent: string): Pr
   let proposalMedia: AgentMedia[] = [];
   const images: AgentMedia[] = [];
   const jobs: AgentVideoJob[] = [];
+  let searches = 0;
 
   for (let turn = 0; turn < AGENT_LIMITS.toolTurns; turn++) {
     deps.signal?.throwIfAborted();
@@ -214,6 +224,18 @@ export async function runAgentTurn(deps: AgentTurnDeps, userContent: string): Pr
         const { items, text: data } = await deps.tools.listMedia({ search: text(args.search, 80) });
         for (const m of items) known.set(m.id, m);
         output(data);
+      } else if (call.name === 'search_knowledge') {
+        const query = text(args.query, KB.queryChars);
+        if (!features.knowledge) output('The knowledge base is not available.');
+        else if (!query) output('The query is missing. Call the tool again with a short query.');
+        else if (searches >= AGENT_LIMITS.knowledgeSearches) output(`You already searched ${AGENT_LIMITS.knowledgeSearches} times in this request. Use what you have, or ask the user.`);
+        else {
+          searches++;
+          const found = await deps.tools.searchKnowledge!(query);
+          output(found.found
+            ? { passages: found.passages.map((p) => ({ source: p.title, ...(p.heading ? { section: p.heading } : {}), text: neutralize(p.content) })) }
+            : { passages: [], note: 'Nothing relevant in the knowledge base. Do not guess: write around it, or tell the user what is missing and ask.' });
+        }
       } else if (call.name === 'generate_image') {
         if (!features.image) {
           output('Picture generation is not available. Tell the user.');

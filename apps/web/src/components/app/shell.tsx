@@ -27,13 +27,15 @@ const MAIN: NavItem[] = [
   { href: '/app/agent', label: 'app.nav.agent', icon: 'agent' },
   { href: '/app/analyses', label: 'app.nav.analytics', icon: 'analytics' },
   { href: '/app/medias', label: 'app.nav.media', icon: 'media' },
+  { href: '/app/connaissances', label: 'app.nav.knowledge', icon: 'knowledge' },
   { href: '/app/canaux', label: 'app.nav.channels', icon: 'channels' },
 ];
 const BOTTOM: NavItem[] = [
   { href: '/app/facturation', label: 'app.nav.billing', icon: 'billing', soon: true },
   { href: '/app/reglages', label: 'app.nav.settings', icon: 'settings' },
 ];
-const MOBILE: NavItem[] = [...MAIN, BOTTOM[1]!];
+// La barre du bas du téléphone n'a de la place que pour sept entrées : la base de connaissance se gère depuis un ordinateur ou le panneau IA du composeur.
+const MOBILE: NavItem[] = [...MAIN.filter((n) => n.icon !== 'knowledge'), BOTTOM[1]!];
 
 const TITLES: Record<string, MessageKey> = {
   '/app/calendrier': 'app.titles.calendar',
@@ -41,6 +43,7 @@ const TITLES: Record<string, MessageKey> = {
   '/app/agent': 'app.titles.agent',
   '/app/analyses': 'app.titles.analytics',
   '/app/medias': 'app.titles.media',
+  '/app/connaissances': 'app.titles.knowledge',
   '/app/canaux': 'app.titles.channels',
   '/app/reglages': 'app.titles.settings',
 };

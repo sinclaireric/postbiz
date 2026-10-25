@@ -8,6 +8,11 @@ const migrationsDir = join(here, '../../../supabase/migrations');
 
 export type Db = PGlite;
 
+/** PGlite n'embarque pas pgvector : le type `vector` des migrations devient `real[]`, la distance `<=>` vient du prélude. */
+export function emulatePgvector(sql: string): string {
+  return sql.replace(/create extension if not exists vector[^;]*;/gi, '').replace(/extensions\.vector(\(\d+\))?/g, 'real[]');
+}
+
 /** Base vierge : prélude Supabase puis toutes les migrations du dépôt, dans l'ordre. */
 export async function createDb(): Promise<Db> {
   const db = new PGlite();
@@ -15,7 +20,7 @@ export async function createDb(): Promise<Db> {
   const files = readdirSync(migrationsDir).filter((f) => f.endsWith('.sql')).sort();
   for (const f of files) {
     try {
-      await db.exec(readFileSync(join(migrationsDir, f), 'utf8'));
+      await db.exec(emulatePgvector(readFileSync(join(migrationsDir, f), 'utf8')));
     } catch (e) {
       throw new Error(`Migration ${f} : ${(e as Error).message}`);
     }

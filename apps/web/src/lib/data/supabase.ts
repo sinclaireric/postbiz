@@ -2,6 +2,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import { sanitizeProposals } from '@/lib/agent/proposal';
 import type { AgentMessage, AgentThread } from '@/lib/agent/types';
 import { createSupabaseAnalytics } from '@/lib/analytics/supabase';
+import type { KnowledgeHit } from '@/lib/kb/types';
 import { GENERIC_ERROR, type FormError } from '@/lib/form-error';
 import { replyWindow, validateReply } from '@/lib/inbox/logic';
 import { displayName, safeFileName } from '@/lib/media/logic';
@@ -10,7 +11,7 @@ import type {
 } from '@/lib/inbox/types';
 import { KNOWLEDGE_LIMITS } from './types';
 import type {
-  AgentRepository, AppContext, CreatePostInput, GenerationRepository, IntegrationItem, KnowledgeInput, KnowledgeItem, KnowledgeRepository, MediaItem, MediaRepository, MemberItem, NotificationItem, OrgRole, PostItem, PostMedia, PostsRepository, Repositories, Result, VideoJobRecord, WorkspaceRepository,
+  AgentRepository, AppContext, CreatePostInput, GenerationRepository, IntegrationItem, KnowledgeInput, KnowledgeItem, KnowledgeRepository, MediaItem, MediaRepository, MemberItem, NotificationItem, OrgRole, PostItem, PostMedia, PostsRepository, Repositories, Result, SuggestionRepository, VideoJobRecord, WorkspaceRepository,
 } from './types';
 
 // Implémentation Supabase. Toutes les requêtes passent par la clé « anon » + la session de l'utilisateur :
@@ -277,23 +278,29 @@ export function createSupabaseRepositories(supabase: SupabaseClient, ctx: AppCon
     },
   };
 
+  const KNOWLEDGE_COLUMNS = 'id, title, content, updated_at, pinned, chunk_count, indexed_at, embedded_at';
+  const toKnowledge = (k: Row): KnowledgeItem => ({
+    id: k.id, title: k.title, content: k.content, updatedAt: k.updated_at, pinned: k.pinned !== false, chunkCount: k.chunk_count ?? 0,
+    indexedAt: k.indexed_at ?? null, embeddedAt: k.embedded_at ?? null,
+  });
+
   const knowledge: KnowledgeRepository = {
     async list() {
       const { data } = await supabase
         .from('knowledge_items')
-        .select('id, title, content, updated_at')
+        .select(KNOWLEDGE_COLUMNS)
         .eq('org_id', ctx.org.id)
         .order('updated_at', { ascending: false })
         .limit(KNOWLEDGE_LIMITS.items);
-      return (data ?? []).map((k: Row): KnowledgeItem => ({ id: k.id, title: k.title, content: k.content, updatedAt: k.updated_at }));
+      return (data ?? []).map(toKnowledge);
     },
 
     async create(input: KnowledgeInput) {
-      const { error } = await supabase.from('knowledge_items').insert({
+      const { data, error } = await supabase.from('knowledge_items').insert({
         org_id: ctx.org.id, title: input.title.trim(), content: input.content.trim(), created_by: ctx.user.id,
-      });
+      }).select('id').single();
       if (error?.message?.includes('knowledge_items_limit')) return fail({ key: 'app.knowledge.errLimit', params: { max: KNOWLEDGE_LIMITS.items } });
-      return error ? fail({ key: 'app.knowledge.errSave' }) : { ok: true };
+      return error || !data ? fail({ key: 'app.knowledge.errSave' }) : { ok: true, id: data.id as string };
     },
 
     async update(id, input) {
@@ -306,9 +313,30 @@ export function createSupabaseRepositories(supabase: SupabaseClient, ctx: AppCon
       return error || !data?.length ? fail({ key: 'app.knowledge.errSave' }) : { ok: true };
     },
 
+    async setPinned(id, pinned) {
+      const { data, error } = await supabase.from('knowledge_items').update({ pinned }).eq('id', id).eq('org_id', ctx.org.id).select('id');
+      return error || !data?.length ? fail({ key: 'app.knowledge.errSave' }) : { ok: true };
+    },
+
     async remove(id) {
       const { error } = await supabase.from('knowledge_items').delete().eq('id', id).eq('org_id', ctx.org.id);
       return error ? fail({ key: 'app.knowledge.errSave' }) : { ok: true };
+    },
+
+    async replaceChunks(itemId, chunks) {
+      // Une seule fonction côté base : elle contrôle le rôle de l'appelant et les plafonds, et remplace les passages d'un bloc.
+      const { error } = await supabase.rpc('knowledge_replace_chunks', { p_item: itemId, p_chunks: chunks.map((c) => ({ content: c.content, embedding: c.embedding, meta: c.meta })) });
+      if (error?.message?.includes('knowledge_chunks_limit')) return fail({ key: 'app.knowledge.errChunks' });
+      return error ? fail({ key: 'app.knowledge.errIndex' }) : { ok: true };
+    },
+
+    async search(q) {
+      const { data, error } = await supabase.rpc('knowledge_search', { p_org: ctx.org.id, p_embedding: q.embedding, p_terms: q.terms, p_limit: q.limit, p_per_item: q.perItem, p_exclude: q.exclude });
+      if (error) throw new Error(`knowledge_search : ${error.code ?? 'erreur'}`);
+      return ((data ?? []) as Row[]).map((r): KnowledgeHit => ({
+        chunkId: r.chunk_id, itemId: r.item_id, title: r.title, content: r.content, heading: typeof r.meta?.heading === 'string' ? r.meta.heading : null,
+        similarity: Number(r.similarity) || 0, termHits: Number(r.term_hits) || 0, score: Number(r.score) || 0,
+      }));
     },
   };
 
@@ -445,5 +473,32 @@ export function createSupabaseRepositories(supabase: SupabaseClient, ctx: AppCon
     },
   };
 
-  return { inbox, posts, workspace, media, knowledge, agent, generation, analytics: createSupabaseAnalytics(supabase, ctx) };
+  // ---------------------------------------------------------------- suggestions de réponse (inbox)
+  const suggestions: SuggestionRepository = {
+    async countToday() {
+      const since = new Date(Date.now() - 86_400_000).toISOString();
+      const { count } = await supabase.from('ai_reply_suggestions').select('id', { count: 'exact', head: true }).eq('org_id', ctx.org.id).gte('created_at', since);
+      return count ?? 0;
+    },
+
+    async log(i) {
+      const { data, error } = await supabase.from('ai_reply_suggestions').insert({
+        org_id: ctx.org.id, conversation_id: i.conversationId, user_id: ctx.user.id, reply: i.reply, grounded: i.grounded, needs_human: i.needsHuman,
+        sources: i.sources.map((title) => ({ title })), model: i.model, input_tokens: i.inputTokens, output_tokens: i.outputTokens,
+      }).select('id').single();
+      return error || !data ? null : (data.id as string);
+    },
+
+    async reply(id) {
+      const { data } = await supabase.from('ai_reply_suggestions').select('reply').eq('id', id).eq('org_id', ctx.org.id).maybeSingle();
+      return typeof data?.reply === 'string' ? data.reply : null;
+    },
+
+    async settle(id, outcome) {
+      // Une seule fois : une suggestion déjà marquée n'est pas remise en cause.
+      await supabase.from('ai_reply_suggestions').update({ outcome }).eq('id', id).eq('org_id', ctx.org.id).eq('user_id', ctx.user.id).is('outcome', null);
+    },
+  };
+
+  return { inbox, posts, workspace, media, knowledge, agent, generation, suggestions, analytics: createSupabaseAnalytics(supabase, ctx) };
 }

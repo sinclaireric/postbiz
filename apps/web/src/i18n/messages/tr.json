@@ -573,7 +573,8 @@
     "analyticsApp": "Analitik",
     "settings": "Ayarlar",
     "welcome": "Hoş geldiniz",
-    "titleTemplate": "{page} · Postbiz"
+    "titleTemplate": "{page} · Postbiz",
+    "knowledgeApp": "Bilgi tabanı"
   },
   "legal": {
     "updated": "Son güncelleme: {date}",
@@ -720,7 +721,8 @@
         "propose_posts": "Gönderileri hazırlıyor…",
         "generate_image": "Görsel oluşturuluyor…",
         "generate_video": "Video başlatılıyor…",
-        "video_status": "Video kontrol ediliyor…"
+        "video_status": "Video kontrol ediliyor…",
+        "search_knowledge": "Bilgi tabanında arıyor…"
       },
       "proposals": {
         "fallback": "İşte hazırladıklarım. Her gönderiyi gözden geçirin, gerekirse düzenleyin, sonra taslak olarak kaydedin ya da zamanlayın."
@@ -797,9 +799,10 @@
       "channels": "Kanallar",
       "billing": "Faturalandırma",
       "settings": "Ayarlar",
-      "soon": "Yakında"
+      "soon": "Yakında",
+      "knowledge": "Bilgi"
     },
-    "titles": { "agent": "Ajan", "calendar": "Takvim", "inbox": "Gelen kutusu", "media": "Medya", "channels": "Kanallar", "settings": "Ayarlar", "analytics": "Analitik" },
+    "titles": { "agent": "Ajan", "calendar": "Takvim", "inbox": "Gelen kutusu", "media": "Medya", "channels": "Kanallar", "settings": "Ayarlar", "analytics": "Analitik", "knowledge": "Bilgi tabanı" },
     "analytics": {
       "filters": {
         "channel": "Kanal",
@@ -959,7 +962,32 @@
       "pickTitle": "Bir konuşma seçin",
       "pickText": "En acil olanlar — 24 saatlik yanıt penceresi kapanmak üzere olanlar — listenin başında görünür.",
       "notFound": "Konuşma bulunamadı.",
-      "unknownContact": "Bilinmeyen kişi"
+      "unknownContact": "Bilinmeyen kişi",
+      "suggest": {
+        "button": "Yanıt öner",
+        "loading": "Yazılıyor…",
+        "draft": "Yapay zekâ önerisi: göndermeden önce okuyup düzeltin.",
+        "needsHuman": "Hassas konu: ekipten biri ilgilenmeli.",
+        "ungrounded": "Bilgi tabanınızda buna yanıt veren bir şey yok: yanıtı kendiniz tamamlayın.",
+        "sources": "Başvurulan kaynaklar: {titles}",
+        "replaceConfirm": "Metniniz öneriyle değiştirilsin mi?",
+        "errors": {
+          "disabled": "Yanıt önerileri kullanılamıyor: yapay zekâ hizmeti bu sunucuda yapılandırılmamış.",
+          "forbidden": "Rolünüz yanıt önermeye izin vermiyor.",
+          "invalid": "Bu konuşma için yanıt önerilemiyor.",
+          "rate_limited": "Kısa sürede çok fazla öneri istendi ya da günlük sınıra ulaşıldı. Daha sonra yeniden deneyin.",
+          "refused": "Yapay zekâ bu mesajı yanıtlayamadı. Yanıtı kendiniz yazın.",
+          "failed": "Öneri başarısız oldu. Birazdan yeniden deneyin.",
+          "not_found": "Konuşma bulunamadı.",
+          "window_closed": "24 saatlik pencere sona erdi: artık yanıt vermek mümkün değil."
+        },
+        "demo": {
+          "found": "Merhaba {name}, mesajınız için teşekkürler! {answer}",
+          "foundAnon": "Merhaba, mesajınız için teşekkürler! {answer}",
+          "notFound": "Merhaba {name}, mesajınız için teşekkürler. Çok yakında size dönüş yapacağız.",
+          "notFoundAnon": "Merhaba, mesajınız için teşekkürler. Çok yakında size dönüş yapacağız."
+        }
+      }
     },
     "validation": {
       "mediaAspect": "{network}: “{name}” kabul edilen bir oranda değil (4:5 ile 1,91:1 arasında; ne çok uzun ne çok geniş).",
@@ -1173,7 +1201,13 @@
         "refused": "Asistan bu isteği işleyemedi. Farklı bir şekilde ifade etmeyi deneyin.",
         "empty": "Asistan kullanılabilir bir şey bulamadı. Başka bir konu deneyin.",
         "failed": "Asistan geçici olarak kullanılamıyor. Birazdan tekrar deneyin."
-      }
+      },
+      "base": {
+        "intro": "Bilgi tabanınız bu asistanı, ajanı ve gelen kutusundaki yanıt önerilerini besler. Sabitlenmiş kayıtlar her zaman kullanılır; diğerlerine isteğiniz onlarla ilgiliyse bakılır.",
+        "stats": "Her zaman kullanılan: {pinned} · Gerektiğinde bakılan: {search}",
+        "manage": "Bilgi tabanını yönet"
+      },
+      "consulted": "Başvurulan kaynaklar: {titles}"
     },
     "knowledge": {
       "add": "Kayıt ekle",
@@ -1192,7 +1226,9 @@
       "save": "Kaydet",
       "titleLabel": "Başlık",
       "titlePlaceholder": "Örn.: Marka tonu",
-      "viewerNote": "Rolünüz (okuyucu) bilgi tabanını düzenlemeye izin vermiyor."
+      "viewerNote": "Rolünüz (okuyucu) bilgi tabanını düzenlemeye izin vermiyor.",
+      "errIndex": "Kayıt saklandı ama dizinlenemedi. Bu sayfayı bir sonraki açışınızda dizinlenecek.",
+      "errChunks": "Bilgi tabanınız bu kaydı dizinlemek için çok büyük (sınıra ulaşıldı)."
     },
     "emoji": {
       "search": "Emoji ara",
@@ -1349,6 +1385,48 @@
       "check2": { "title": "Bir yayın planlayın", "text": "Takvimde boş bir zaman dilimine tıklayın, yazın ve kanalları seçin.", "cta": "Takvimi aç" },
       "check3": { "title": "Mesajlarınıza yanıt verin", "text": "Özel mesajlar ve yorumlar gelen kutusuna canlı olarak düşer.", "cta": "Gelen kutusunu aç" },
       "start": "Başla"
+    },
+    "knowledgePage": {
+      "intro": "Yapay zekânın işletmeniz hakkında bildikleri: marka tonu, teklifler, ürünler, sık sorulan sorular. Bunları gönderilerinizi yazmak (yapay zekâ asistanı ve ajan) ve gelen kutusunda yanıt önermek için kullanır.",
+      "privacy": "Kayıtlar Postbiz alanınızda saklanır. Yapay zekânın bunlara ihtiyacı olduğunda ilgili bölümler istekle birlikte OpenAI’a gönderilir: içlerine müşterilerin kişisel verilerini koymayın.",
+      "demoNote": "Demo modu: arama sözcüklerle yapılır, hiçbir yapay zekâ çağrılmaz.",
+      "noEmbeddings": "Anlama göre arama bu sunucuda etkin değil (OPENAI_API_KEY yok): yapay zekâ yalnızca sözcüklerle arar.",
+      "budget": "Sabitlenmiş kayıtlar: {used} / {max} karakter",
+      "overBudget": "Sabitlenmiş kayıtlar bütçeyi aşıyor: en eskileri artık tam olarak gönderilmiyor, yapay zekâ gerektiğinde onlara bakıyor.",
+      "list": "Kayıtlar",
+      "empty": "Henüz kayıt yok. Markanızın tonuyla, tekliflerinizle ve sık sorulan sorularla başlayın.",
+      "soon": "Yakında: belge (PDF, Word) ve web sitesi içe aktarma.",
+      "reindex": "Yeniden dizinle",
+      "pin": {
+        "on": "Her zaman kullanılır",
+        "off": "Gerektiğinde bakılır",
+        "switch": "“{title}” kaydını her zaman yapay zekâya gönder",
+        "hint": "Sabitlenmiş kayıt her istekte tam olarak gönderilir (marka tonu, kurallar). Aksi halde yapay zekâ ona yalnızca soru o konudaysa bakar."
+      },
+      "state": {
+        "pending": "Dizinlenecek",
+        "words": "Yalnızca sözcüklerle arama",
+        "indexed": "Dizinlendi",
+        "passages": "Bölüm: {count}"
+      },
+      "test": {
+        "title": "Bir soruyu dene",
+        "hint": "Bir müşteri gibi soru sorun: yapay zekânın bulacağı bölümleri görürsünüz.",
+        "placeholder": "Örn. Pazar günleri açık mısınız?",
+        "run": "Ara",
+        "running": "Aranıyor…",
+        "hybrid": "Anlama ve sözcüklere göre arama",
+        "words": "Yalnızca sözcüklerle arama",
+        "none": "Bilgi tabanında ilgili bir şey bulunamadı: yapay zekâ buradan yanıt veremezdi.",
+        "relevant": "İlgili",
+        "weak": "Zayıf eşleşme",
+        "errors": {
+          "forbidden": "Rolünüz bilgi tabanını denemeye izin vermiyor.",
+          "invalid": "Bir soru yazın.",
+          "rate_limited": "Art arda çok fazla arama. Birkaç dakika sonra yeniden deneyin.",
+          "failed": "Arama başarısız oldu. Birazdan yeniden deneyin."
+        }
+      }
     }
   }
 }

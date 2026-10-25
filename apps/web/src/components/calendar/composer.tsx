@@ -10,7 +10,7 @@ import { Button } from '@/components/ui';
 import { LOCALE_META } from '@/i18n/config';
 import { useLocale, useT } from '@/i18n/client';
 import { toLocalInputValue } from '@/lib/calendar/logic';
-import type { IntegrationItem, KnowledgeItem, MediaItem } from '@/lib/data/types';
+import type { IntegrationItem, KnowledgeBrief, MediaItem } from '@/lib/data/types';
 import { MEDIA_RULES, validateMedia } from '@/lib/media/rules';
 import { appendText } from '@/lib/posts/edit';
 import { FIRST_COMMENT_RULES, NETWORK_RULES, supportsFirstComment } from '@/lib/posts/logic';
@@ -100,7 +100,7 @@ type Side = 'preview' | 'ai';
 export function Composer({
   integrations, knowledge, aiEnabled, canWrite, orgId, userId, demo, initialLocal = '', initialChannel = null, onSaved, onClose,
 }: {
-  integrations: IntegrationItem[]; knowledge: KnowledgeItem[]; aiEnabled: boolean; canWrite: boolean; orgId: string; userId: string; demo: boolean;
+  integrations: IntegrationItem[]; knowledge: KnowledgeBrief[]; aiEnabled: boolean; canWrite: boolean; orgId: string; userId: string; demo: boolean;
   initialLocal?: string; /** Canal affiché dans le calendrier : il est coché d'office. */ initialChannel?: string | null; onSaved?: () => void; onClose: () => void;
 }) {
   const t = useT();

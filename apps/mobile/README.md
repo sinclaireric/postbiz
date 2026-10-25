@@ -49,7 +49,7 @@ EXPO_PUBLIC_DEMO=1 npx expo start --web
 
 L'onglet Agent est un chat qui appelle l'agent du site : `POST {EXPO_PUBLIC_WEB_URL}/api/agent/chat`, avec le jeton Supabase de l'utilisateur (`Authorization: Bearer …`).
 Même modèle que l'agent de Postiz (GPT-5.2, d'OpenAI), mêmes règles (limites par réseau, médias exigés, premier commentaire, date dans le futur), mêmes outils (calendrier,
-médiathèque, préparation de publications) et **mêmes conversations** : un fil commencé sur le téléphone se poursuit sur le site, et inversement (tables `agent_threads` et
+médiathèque, base de connaissance, préparation de publications) et **mêmes conversations** : un fil commencé sur le téléphone se poursuit sur le site, et inversement (tables `agent_threads` et
 `agent_messages`, lues et écrites ici avec la session de l'utilisateur, sous RLS).
 
 - `EXPO_PUBLIC_WEB_URL` (l'adresse du site, voir `.env.example`) doit être renseignée ; sans elle, l'écran le dit au lieu de planter.

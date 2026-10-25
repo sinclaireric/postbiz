@@ -1,6 +1,8 @@
 import OpenAI from 'openai';
 import { fitsLimits, ideasPrompt, improvePrompt, IMPROVE_ACTIONS, knowledgeBlock, newsResearchPrompt, PROPOSALS_PER_REQUEST, PROPOSALS_SCHEMA, IDEAS_SCHEMA, SYSTEM_RULES, writePrompt, type NewsSource, type PromptContext } from './prompt';
 import { normalizeIdeas, normalizeProposals, parseJsonText } from './parse';
+import { passagesBlock } from '@/lib/kb/format';
+import type { KnowledgePassage } from '@/lib/kb/types';
 import type { AiErrorCode, AiRequest, AiResult, KnowledgeEntry } from './types';
 
 type Params = Omit<OpenAI.Responses.ResponseCreateParams, 'stream'>;
@@ -20,6 +22,7 @@ export interface AiResponse {
   status?: string | null;
   output: Output[];
   incomplete_details?: { reason?: string | null } | null;
+  usage?: { input_tokens: number; output_tokens: number } | null;
 }
 
 /** Ce dont l'assistant a besoin du SDK : un seul appel, pour pouvoir le remplacer dans les tests. */
@@ -33,7 +36,7 @@ export function sdkClient(): AiClient {
   return { create: (params) => client.responses.create({ ...params, stream: false }) };
 }
 
-class RefusedError extends Error {}
+export class RefusedError extends Error {}
 
 /** Le texte d'une réponse : les parties « texte » de ses messages, mises bout à bout. */
 export function textOf(response: AiResponse): string {
@@ -55,7 +58,8 @@ export function citationsOf(response: AiResponse): NewsSource[] {
   return [...found.values()];
 }
 
-function check(response: AiResponse) {
+/** Lève une erreur si la réponse est un refus du modèle, ou si elle est incomplète (un JSON coupé ne doit jamais être lu). */
+export function check(response: AiResponse) {
   const refused = response.output.some((item) => item.type === 'message' && item.content.some((part) => part.type === 'refusal'));
   if (response.incomplete_details?.reason === 'content_filter' || (refused && !textOf(response).trim())) throw new RefusedError();
   if (response.status === 'failed' || response.status === 'incomplete') throw new Error('réponse de l’assistant incomplète');
@@ -101,7 +105,10 @@ async function researchNews(client: AiClient, model: string, entries: KnowledgeE
 }
 
 export interface AssistDeps {
+  /** Les fiches épinglées : envoyées en entier, dans les instructions (mises en cache). */
   entries: KnowledgeEntry[];
+  /** Les passages de la base retrouvés pour cette demande (ou un aperçu de la base) : envoyés avec la demande. */
+  passages?: KnowledgePassage[];
   orgName: string;
   /** Langue d'écriture, en anglais (« French »). */
   language: string;
@@ -116,7 +123,8 @@ export interface AssistDeps {
 export async function runAssist(req: AiRequest, deps: AssistDeps): Promise<AiResult> {
   const client = deps.client ?? sdkClient();
   const model = deps.model ?? aiModel();
-  const ctx: PromptContext = { orgName: deps.orgName, language: deps.language, today: (deps.now ?? new Date()).toISOString().slice(0, 10) };
+  const passages = passagesBlock(deps.passages ?? []);
+  const ctx: PromptContext = { orgName: deps.orgName, language: deps.language, today: (deps.now ?? new Date()).toISOString().slice(0, 10), passages };
   try {
     if (req.mode === 'write') {
       const entries = req.useKnowledge ? deps.entries : [];
@@ -132,19 +140,21 @@ export async function runAssist(req: AiRequest, deps: AssistDeps): Promise<AiRes
     }
 
     const entries = req.knowledge ? deps.entries : [];
+    // La base compte quand elle a de quoi dire : des fiches épinglées, ou des passages (retrouvés pour le thème, ou un aperçu de la base).
+    const hasKnowledge = req.knowledge && (entries.length > 0 || passages !== null);
     // Sans thème ni base de connaissance, rien ne dit de quoi parler : la demande n'a pas de sens.
-    if (!req.theme && entries.length === 0) return { ok: false, error: 'invalid' };
-    const news = req.news ? await researchNews(client, model, entries, newsResearchPrompt(ctx, { theme: req.theme, hasKnowledge: entries.length > 0 }), deps.safetyId) : null;
+    if (!req.theme && !hasKnowledge) return { ok: false, error: 'invalid' };
+    const news = req.news ? await researchNews(client, model, entries, newsResearchPrompt(ctx, { theme: req.theme, hasKnowledge }), deps.safetyId) : null;
     if (req.news && !req.knowledge && (!news || news.sources.length === 0)) return { ok: false, error: 'empty' };
-    const raw = await generate(client, model, entries, ideasPrompt(ctx, { theme: req.theme, tone: req.tone, networkIds: req.networkIds, knowledge: entries.length > 0 }, news && news.sources.length > 0 ? news : null), 'ideas', IDEAS_SCHEMA, 12_000, deps.safetyId);
-    const ideas = normalizeIdeas(raw, fitsLimits(req.networkIds), news?.sources ?? [], news !== null, entries.length > 0);
+    const raw = await generate(client, model, entries, ideasPrompt(ctx, { theme: req.theme, tone: req.tone, networkIds: req.networkIds, knowledge: hasKnowledge }, news && news.sources.length > 0 ? news : null), 'ideas', IDEAS_SCHEMA, 12_000, deps.safetyId);
+    const ideas = normalizeIdeas(raw, fitsLimits(req.networkIds), news?.sources ?? [], news !== null, hasKnowledge);
     return ideas.length > 0 ? { ok: true, mode: 'ideas', ideas } : { ok: false, error: 'empty' };
   } catch (error) {
     return { ok: false, error: errorCode(error) };
   }
 }
 
-function errorCode(error: unknown): AiErrorCode {
+export function errorCode(error: unknown): AiErrorCode {
   if (error instanceof RefusedError) return 'refused';
   // Quota épuisé (compte sans crédit) : l'assistant n'est pas utilisable, ce n'est pas une rafale de demandes.
   if (error instanceof OpenAI.RateLimitError) return error.code === 'insufficient_quota' ? 'disabled' : 'rate_limited';

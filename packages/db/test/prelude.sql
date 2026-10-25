@@ -30,3 +30,16 @@ alter default privileges in schema public grant all on sequences to anon, authen
 grant select on auth.users to service_role;
 
 create publication supabase_realtime;
+
+-- Supabase range ses extensions dans le schéma « extensions ». PGlite seul n'embarque pas pgvector : le harness remplace le type `vector` des migrations par
+-- `real[]` (voir `emulatePgvector` dans harness.ts) et l'opérateur de distance cosinus `<=>` par celui-ci. Cela vérifie notre SQL (droits, plafonds,
+-- fusion des rangs). Les mêmes tests de recherche ont aussi été rejoués une fois contre le vrai pgvector (module `@electric-sql/pglite-pgvector`, hors dépôt) ;
+-- ce que ni l'un ni l'autre ne couvre : PostgREST et un projet Supabase hébergé.
+create schema extensions;
+grant usage on schema extensions to anon, authenticated, service_role;
+create function extensions.cosine_distance(a real[], b real[]) returns float8
+language sql immutable as $$
+  select 1 - sum(x::float8 * y::float8) / nullif(sqrt(sum(x::float8 * x::float8)) * sqrt(sum(y::float8 * y::float8)), 0)
+  from unnest(a, b) as t(x, y)
+$$;
+create operator extensions.<=> (leftarg = real[], rightarg = real[], function = extensions.cosine_distance);
