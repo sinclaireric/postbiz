@@ -1,13 +1,18 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { createEventParser, parseEventLine, sanitizeProposals, type AgentEvent } from "./agent-protocol.ts";
+import { createEventParser, parseEventLine, parseVideoJobResponse, sanitizeProposals, type AgentEvent } from "./agent-protocol.ts";
 
 const thread = { id: "t1", title: "Bonjour", updatedAt: "2026-10-27T10:00:00Z" };
-const msg = (role: "user" | "assistant", text: string) => ({ id: role, role, text, proposals: [], mediaIds: [], createdAt: "2026-10-27T10:00:00Z" });
+const msg = (role: "user" | "assistant", text: string) => ({ id: role, role, text, proposals: [], mediaIds: [], jobIds: [], createdAt: "2026-10-27T10:00:00Z" });
 const events: AgentEvent[] = [
   { type: "text", delta: "Bonjour\nà tous" },
   { type: "tool", name: "list_media" },
+  { type: "tool", name: "generate_image" },
+  { type: "tool", name: "generate_video" },
+  { type: "tool", name: "video_status" },
+  { type: "media", media: [{ id: "g1", kind: "image", name: "ai-image-phare.jpg", alt: "", url: null, thumbUrl: null, durationSeconds: null }] },
+  { type: "job", job: { id: "j1", status: "pending", orientation: "vertical", prompt: "Un phare", mediaId: null, error: null, createdAt: "2026-10-27T10:00:00Z" } },
   { type: "done", thread, user: msg("user", "Salut"), assistant: msg("assistant", "Oui") },
   { type: "error", code: "failed" },
 ];
@@ -55,4 +60,19 @@ test("sanitizeProposals corrige les champs facultatifs abîmés au lieu d'écart
   assert.equal(p?.publishAt, null);
   assert.deepEqual(p?.mediaIds, ["m1"]);
   assert.equal(p?.firstComment, null);
+});
+
+const job = { id: "j1", status: "pending", orientation: "vertical", prompt: "x", mediaId: null, error: null, createdAt: "2026-10-27T10:00:00Z" };
+const video = { id: "m1", kind: "video", name: "v.mp4", alt: "", url: null, thumbUrl: null, durationSeconds: 8 };
+
+test("parseVideoJobResponse relit une réponse correcte", () => {
+  assert.deepEqual(parseVideoJobResponse({ job, media: null, url: null }), { job, media: null, url: null });
+  const done = { ...job, status: "completed", mediaId: "m1" };
+  assert.deepEqual(parseVideoJobResponse({ job: done, media: video, url: "https://cdn/x" }), { job: done, media: video, url: "https://cdn/x" });
+});
+
+test("parseVideoJobResponse écarte une réponse abîmée ou étrangère (page d'erreur, erreur JSON)", () => {
+  const bad = [null, "x", {}, { error: "not_found" }, { job: { ...job, status: "zzz" }, media: null, url: null }, { job: { ...job, orientation: "carre" }, media: null, url: null },
+    { job, media: "x", url: null }, { job, media: null, url: 3 }, { job: { ...job, mediaId: 4 }, media: null, url: null }, { job: { ...job, id: 7 }, media: null, url: null }];
+  for (const raw of bad) assert.equal(parseVideoJobResponse(raw), null, JSON.stringify(raw));
 });

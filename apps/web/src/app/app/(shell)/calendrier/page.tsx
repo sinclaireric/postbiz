@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { CalendarView } from '@/components/calendar/calendar-view';
 import { getT } from '@/i18n/server';
-import { aiConfigured } from '@/lib/ai/claude';
+import { aiConfigured } from '@/lib/ai/assistant';
 import { getRepositories, getSession } from '@/lib/data';
 
 export async function generateMetadata(): Promise<Metadata> {

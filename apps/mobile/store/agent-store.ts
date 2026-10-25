@@ -1,11 +1,12 @@
 import { create } from "zustand";
 
 import { demoReply } from "@/lib/agent-demo";
-import type { AgentMessage, AgentProposal, AgentThread, AgentToolName } from "@/lib/agent-protocol";
+import type { AgentMedia, AgentMessage, AgentProposal, AgentThread, AgentToolName, AgentVideoJob } from "@/lib/agent-protocol";
 import {
   agentErrorMessage,
   deleteThread,
   listThreads,
+  loadJobs,
   loadThread,
   NOT_CONFIGURED,
   agentConfigured,
@@ -22,7 +23,8 @@ import { uuidv4 } from "@/utils/uuid";
 // Conversations de l'agent. Les données sont celles du web (tables `agent_threads` et `agent_messages`, RLS) ; la réponse de l'agent vient de la route du web.
 // En mode démo (EXPO_PUBLIC_DEMO=1), la réponse est simulée et les conversations ne vivent qu'en mémoire.
 
-export type AgentRun = { text: string; tool: AgentToolName | null };
+/** `images` : les images que l'agent vient de générer (déjà dans la médiathèque) ; `jobs` : les vidéos qu'il vient de lancer. */
+export type AgentRun = { text: string; tool: AgentToolName | null; images: AgentMedia[]; jobs: string[] };
 
 type SendInput = {
   text: string;
@@ -38,6 +40,8 @@ type AgentState = {
   messages: AgentMessage[];
   /** Médias cités par la conversation (pièces jointes et publications préparées), avec leurs URL signées du moment. */
   media: Record<string, MediaItem>;
+  /** Les vidéos lancées par la conversation, dans leur état du moment (elles avancent tant que leur carte les interroge). */
+  jobs: Record<string, AgentVideoJob>;
   /** Le message qui vient d'être envoyé, affiché avant que la réponse n'arrive. */
   pendingUser: AgentMessage | null;
   /** La réponse en cours d'écriture ; null quand l'agent ne travaille pas. */
@@ -52,6 +56,8 @@ type AgentState = {
   stop: () => void;
   removeThread: (id: string) => Promise<void>;
   addMedia: (items: MediaItem[]) => void;
+  /** Une vidéo a avancé (réponse de `GET /api/agent/video/<id>`) : son état est gardé, et la vidéo terminée rejoint les médias connus. */
+  applyJob: (job: AgentVideoJob) => void;
   /** Après l'enregistrement de publications dans le calendrier : leur état change dans la conversation. */
   applySaved: (messageId: string, updates: ProposalUpdate[]) => void;
   clearError: () => void;
@@ -71,7 +77,7 @@ const demoMessages = new Map<string, AgentMessage[]>();
 
 let controller: AbortController | null = null;
 
-const initial = { threads: [], threadsLoaded: false, activeId: null, messages: [], media: {}, pendingUser: null, run: null, error: null } satisfies Partial<AgentState>;
+const initial = { threads: [], threadsLoaded: false, activeId: null, messages: [], media: {}, jobs: {}, pendingUser: null, run: null, error: null } satisfies Partial<AgentState>;
 
 export const useAgentStore = create<AgentState>((set, get) => {
   /** Ajoute au dictionnaire les médias dont les messages ont besoin, relus dans la médiathèque (URL signées). */
@@ -79,7 +85,8 @@ export const useAgentStore = create<AgentState>((set, get) => {
     const org = useOrgStore.getState().current;
     if (!org || DEMO) return;
     const known = get().media;
-    const wanted = [...new Set(messages.flatMap((m) => [...m.mediaIds, ...m.proposals.flatMap((p) => p.mediaIds)]))].filter((id) => !known[id]);
+    const finished = Object.values(get().jobs).flatMap((j) => (j.mediaId ? [j.mediaId] : []));
+    const wanted = [...new Set([...messages.flatMap((m) => [...m.mediaIds, ...m.proposals.flatMap((p) => p.mediaIds)]), ...finished])].filter((id) => !known[id]);
     if (wanted.length === 0) return;
     const items = await mediaByIds(org.id, wanted).catch(() => [] as MediaItem[]);
     get().addMedia(items);
@@ -109,13 +116,14 @@ export const useAgentStore = create<AgentState>((set, get) => {
       if (!org || !user) return;
       const found = await loadThread(org.id, user.id, id).catch(() => null);
       if (!found) return set({ error: agentErrorMessage("not_found") });
-      set({ activeId: found.thread.id, messages: found.messages, error: null });
+      const jobs = await loadJobs(org.id, user.id, found.messages.flatMap((m) => m.jobIds)).catch(() => [] as AgentVideoJob[]);
+      set({ activeId: found.thread.id, messages: found.messages, jobs: Object.fromEntries(jobs.map((j) => [j.id, j])), error: null });
       await fetchMedia(found.messages);
     },
 
     newThread: () => {
       get().stop();
-      set({ activeId: null, messages: [], pendingUser: null, run: null, error: null });
+      set({ activeId: null, messages: [], jobs: {}, pendingUser: null, run: null, error: null });
     },
 
     send: async ({ text, channels, media: attached }) => {
@@ -134,8 +142,8 @@ export const useAgentStore = create<AgentState>((set, get) => {
       get().addMedia(attached);
       set({
         error: null,
-        pendingUser: { id: "pending", role: "user", text, proposals: [], mediaIds: attached.map((m) => m.id), createdAt: new Date().toISOString() },
-        run: { text: "", tool: null },
+        pendingUser: { id: "pending", role: "user", text, proposals: [], mediaIds: attached.map((m) => m.id), jobIds: [], createdAt: new Date().toISOString() },
+        run: { text: "", tool: null, images: [], jobs: [] },
       });
       const mine = (controller = new AbortController());
 
@@ -145,8 +153,8 @@ export const useAgentStore = create<AgentState>((set, get) => {
         if (mine.signal.aborted) return (finish(), false);
         const reply = demoReply(text, channels.map((c) => ({ id: c.id, name: c.name, network: c.network })), new Date(), uuidv4);
         const at = Date.now();
-        const user_: AgentMessage = { id: uuidv4(), role: "user", text, proposals: [], mediaIds: attached.map((m) => m.id), createdAt: new Date(at).toISOString() };
-        const agent_: AgentMessage = { id: uuidv4(), role: "assistant", text: reply.text, proposals: reply.proposals as AgentProposal[], mediaIds: [], createdAt: new Date(at + 1).toISOString() };
+        const user_: AgentMessage = { id: uuidv4(), role: "user", text, proposals: [], mediaIds: attached.map((m) => m.id), jobIds: [], createdAt: new Date(at).toISOString() };
+        const agent_: AgentMessage = { id: uuidv4(), role: "assistant", text: reply.text, proposals: reply.proposals as AgentProposal[], mediaIds: [], jobIds: [], createdAt: new Date(at + 1).toISOString() };
         const id = get().activeId ?? uuidv4();
         const messages = [...(demoMessages.get(id) ?? []), user_, agent_];
         demoMessages.set(id, messages);
@@ -166,8 +174,12 @@ export const useAgentStore = create<AgentState>((set, get) => {
           timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC",
         },
         (event) => {
-          if (event.type === "text") set((s) => ({ run: s.run ? { text: s.run.text + event.delta, tool: null } : s.run }));
+          if (event.type === "text") set((s) => ({ run: s.run ? { ...s.run, text: s.run.text + event.delta, tool: null } : s.run }));
           else if (event.type === "tool") set((s) => ({ run: s.run ? { ...s.run, tool: event.name } : s.run }));
+          else if (event.type === "media") set((s) => ({ run: s.run ? { ...s.run, images: [...s.run.images, ...event.media.filter((m) => !s.run!.images.some((x) => x.id === m.id))] } : s.run }));
+          else if (event.type === "job") {
+            set((s) => ({ jobs: { ...s.jobs, [event.job.id]: event.job }, run: s.run && !s.run.jobs.includes(event.job.id) ? { ...s.run, jobs: [...s.run.jobs, event.job.id] } : s.run }));
+          }
           else if (event.type === "done") {
             saved = true;
             // Le message enregistré remplace la réponse en cours d'affichage dans le même rendu : pas de doublon un instant.
@@ -208,6 +220,12 @@ export const useAgentStore = create<AgentState>((set, get) => {
     },
 
     addMedia: (items) => set((s) => ({ media: { ...s.media, ...Object.fromEntries(items.map((m) => [m.id, m])) } })),
+
+    applyJob: (job) => {
+      set((s) => ({ jobs: { ...s.jobs, [job.id]: job } }));
+      // La vidéo terminée est rangée dans la médiathèque : on la relit (avec son adresse signée) pour pouvoir la lire et la joindre.
+      if (job.mediaId && !get().media[job.mediaId]) void fetchMedia([]);
+    },
 
     applySaved: (messageId, updates) => {
       const patch = (messages: AgentMessage[]) =>

@@ -4,13 +4,13 @@ import type { AgentMessage, AgentThread } from '@/lib/agent/types';
 import { createSupabaseAnalytics } from '@/lib/analytics/supabase';
 import { GENERIC_ERROR, type FormError } from '@/lib/form-error';
 import { replyWindow, validateReply } from '@/lib/inbox/logic';
-import { displayName } from '@/lib/media/logic';
+import { displayName, safeFileName } from '@/lib/media/logic';
 import type {
   ConversationDetail, ConversationStatus, ConversationSummary, InboxRepository, MessageItem, NetworkId, NoteItem,
 } from '@/lib/inbox/types';
 import { KNOWLEDGE_LIMITS } from './types';
 import type {
-  AgentRepository, AppContext, CreatePostInput, IntegrationItem, KnowledgeInput, KnowledgeItem, KnowledgeRepository, MediaItem, MediaRepository, MemberItem, NotificationItem, OrgRole, PostItem, PostMedia, PostsRepository, Repositories, Result, WorkspaceRepository,
+  AgentRepository, AppContext, CreatePostInput, GenerationRepository, IntegrationItem, KnowledgeInput, KnowledgeItem, KnowledgeRepository, MediaItem, MediaRepository, MemberItem, NotificationItem, OrgRole, PostItem, PostMedia, PostsRepository, Repositories, Result, VideoJobRecord, WorkspaceRepository,
 } from './types';
 
 // Implémentation Supabase. Toutes les requêtes passent par la clé « anon » + la session de l'utilisateur :
@@ -312,12 +312,13 @@ export function createSupabaseRepositories(supabase: SupabaseClient, ctx: AppCon
     },
   };
 
+  const strings = (v: unknown): string[] => (Array.isArray(v) ? v.filter((m: unknown): m is string => typeof m === 'string') : []);
   const toThread = (r: Row): AgentThread => ({ id: r.id, title: r.title, updatedAt: r.updated_at });
   const toAgentMessage = (r: Row): AgentMessage => ({
     id: r.id, role: r.role === 'assistant' ? 'assistant' : 'user', text: r.content ?? '', proposals: sanitizeProposals(r.proposals),
-    mediaIds: Array.isArray(r.media_ids) ? r.media_ids.filter((m: unknown): m is string => typeof m === 'string') : [], createdAt: r.created_at,
+    mediaIds: strings(r.media_ids), jobIds: strings(r.job_ids), createdAt: r.created_at,
   });
-  const MESSAGE_COLUMNS = 'id, role, content, proposals, media_ids, created_at';
+  const MESSAGE_COLUMNS = 'id, role, content, proposals, media_ids, job_ids, created_at';
 
   const agent: AgentRepository = {
     async threads() {
@@ -348,8 +349,8 @@ export function createSupabaseRepositories(supabase: SupabaseClient, ctx: AppCon
       // Dates explicites : les deux messages sont écrits dans la même transaction, `now()` serait identique et l'ordre incertain.
       const at = Date.now();
       const { data, error } = await supabase.from('agent_messages').insert([
-        { thread_id: thread.id, org_id: ctx.org.id, role: 'user', content: user.text, proposals: [], media_ids: user.mediaIds, created_at: new Date(at).toISOString() },
-        { thread_id: thread.id, org_id: ctx.org.id, role: 'assistant', content: assistant.text, proposals: assistant.proposals, media_ids: [], created_at: new Date(at + 1).toISOString() },
+        { thread_id: thread.id, org_id: ctx.org.id, role: 'user', content: user.text, proposals: [], media_ids: user.mediaIds, job_ids: [], created_at: new Date(at).toISOString() },
+        { thread_id: thread.id, org_id: ctx.org.id, role: 'assistant', content: assistant.text, proposals: assistant.proposals, media_ids: assistant.mediaIds, job_ids: assistant.jobIds, created_at: new Date(at + 1).toISOString() },
       ]).select(MESSAGE_COLUMNS);
       const rows = [...(data ?? [])].sort((a: Row, b: Row) => String(a.created_at).localeCompare(String(b.created_at)));
       if (error || rows.length !== 2) {
@@ -377,5 +378,72 @@ export function createSupabaseRepositories(supabase: SupabaseClient, ctx: AppCon
     },
   };
 
-  return { inbox, posts, workspace, media, knowledge, agent, analytics: createSupabaseAnalytics(supabase, ctx) };
+  // ---------------------------------------------------------------- génération d'images et de vidéos (agent)
+  const JOB_COLUMNS = 'id, status, orientation, prompt, media_id, error, provider_task_id, claimed_at, created_at';
+  const toJob = (r: Row): VideoJobRecord => ({
+    id: r.id, status: r.status === 'completed' ? 'completed' : r.status === 'failed' ? 'failed' : 'pending', orientation: r.orientation === 'horizontal' ? 'horizontal' : 'vertical',
+    prompt: r.prompt, mediaId: r.media_id ?? null, error: r.error ?? null, createdAt: r.created_at, providerTaskId: r.provider_task_id, claimedAt: r.claimed_at ?? null,
+  });
+
+  const generation: GenerationRepository = {
+    async reserve(kind, limit) {
+      const { data, error } = await supabase.rpc('ai_generation_reserve', { p_org: ctx.org.id, p_kind: kind, p_limit: limit });
+      return !error && data === true;
+    },
+
+    async createMedia(input) {
+      // Même convention de chemin que les envois du navigateur : « <organisation>/<uuid>-<nom> » dans le bucket privé « media ».
+      const path = `${ctx.org.id}/${crypto.randomUUID()}-${safeFileName(input.name)}`;
+      const up = await supabase.storage.from('media').upload(path, input.bytes, { contentType: input.mimeType, upsert: false });
+      if (up.error) return null;
+      const { data, error } = await supabase.from('media').insert({
+        org_id: ctx.org.id, bucket: 'media', path, name: input.name.slice(0, 255), mime_type: input.mimeType, size_bytes: input.bytes.byteLength,
+        width: input.width, height: input.height, duration_seconds: input.durationSeconds, alt: input.alt.trim() ? input.alt.trim().slice(0, 1500) : null,
+        status: 'ready', created_by: ctx.user.id,
+      }).select(MEDIA_COLUMNS).single();
+      if (error || !data) {
+        await supabase.storage.from('media').remove([path]); // pas de fichier orphelin
+        return null;
+      }
+      return (await toMediaItems([data as Row]))[0] ?? null;
+    },
+
+    async activeJobs() {
+      const { count } = await supabase.from('ai_video_jobs').select('id', { count: 'exact', head: true }).eq('org_id', ctx.org.id).eq('created_by', ctx.user.id).in('status', ['pending', 'saving']);
+      return count ?? 0;
+    },
+
+    async createJob(input) {
+      const { data, error } = await supabase.from('ai_video_jobs').insert({
+        org_id: ctx.org.id, created_by: ctx.user.id, prompt: input.prompt, orientation: input.orientation, provider_task_id: input.providerTaskId, reference_media_ids: input.referenceMediaIds,
+      }).select(JOB_COLUMNS).single();
+      return error || !data ? null : toJob(data as Row);
+    },
+
+    async jobs(ids) {
+      const unique = [...new Set(ids)];
+      if (unique.length === 0) return [];
+      const { data } = await supabase.from('ai_video_jobs').select(JOB_COLUMNS).eq('org_id', ctx.org.id).eq('created_by', ctx.user.id).in('id', unique);
+      const byId = new Map(((data ?? []) as Row[]).map((r) => [r.id as string, toJob(r)]));
+      return ids.map((id) => byId.get(id)).filter((j): j is VideoJobRecord => !!j);
+    },
+
+    async claimJob(id, staleBefore) {
+      // Un seul UPDATE conditionnel : la base ne laisse passer qu'une des requêtes qui arrivent en même temps.
+      const { data } = await supabase.from('ai_video_jobs').update({ status: 'saving', claimed_at: new Date().toISOString() })
+        .eq('id', id).eq('org_id', ctx.org.id).eq('created_by', ctx.user.id)
+        .or(`status.eq.pending,and(status.eq.saving,claimed_at.lt.${staleBefore})`).select('id');
+      return (data?.length ?? 0) === 1;
+    },
+
+    async settleJob(id, result) {
+      const patch = result.status === 'completed' ? { status: 'completed', media_id: result.mediaId, error: null, claimed_at: null }
+        : result.status === 'failed' ? { status: 'failed', error: result.error.slice(0, 500), claimed_at: null }
+        : { status: 'pending', claimed_at: null };
+      const { data } = await supabase.from('ai_video_jobs').update(patch).eq('id', id).eq('org_id', ctx.org.id).eq('created_by', ctx.user.id).select('id');
+      return (data?.length ?? 0) === 1;
+    },
+  };
+
+  return { inbox, posts, workspace, media, knowledge, agent, generation, analytics: createSupabaseAnalytics(supabase, ctx) };
 }

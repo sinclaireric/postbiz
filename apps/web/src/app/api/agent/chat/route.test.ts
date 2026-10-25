@@ -6,7 +6,7 @@ import type { SessionState } from '@/lib/data';
 import { DEMO_CONTEXT, demoRepositories } from '@/lib/data/demo';
 
 // La route lit la session, la langue et les dépôts de données dans le contexte de la requête Next : on les remplace par ceux de la démo.
-const state = vi.hoisted(() => ({ session: null as unknown, client: null as unknown, byToken: null as unknown as (token: string) => Promise<{ session: unknown; repos: unknown }>, cookieReads: 0 }));
+const state = vi.hoisted(() => ({ session: null as unknown, client: null as unknown, images: null as unknown, videos: null as unknown, byToken: null as unknown as (token: string) => Promise<{ session: unknown; repos: unknown }>, cookieReads: 0 }));
 vi.mock('@/i18n/server', () => ({
   getT: async () => ((key: string, params?: Record<string, unknown>) => (params ? `${key} ${JSON.stringify(params)}` : key)),
   getLocale: async () => 'fr',
@@ -18,6 +18,7 @@ vi.mock('@/lib/data', async () => ({
   getSessionForToken: (token: string) => state.byToken(token),
 }));
 vi.mock('@/lib/agent/run', async (original) => ({ ...(await original<typeof import('@/lib/agent/run')>()), sdkAgentClient: () => state.client }));
+vi.mock('@/lib/agent/generate', async (original) => ({ ...(await original<typeof import('@/lib/agent/generate')>()), sdkImageProvider: () => state.images, evolinkVideoProvider: () => state.videos }));
 
 const { POST } = await import('./route');
 
@@ -39,6 +40,9 @@ beforeEach(() => {
   state.cookieReads = 0;
   state.byToken = async () => ({ session: { status: 'anonymous' }, repos: null });
   delete process.env.OPENAI_API_KEY;
+  delete process.env.EVOLINK_API_KEY;
+  delete process.env.AGENT_IMAGES_PER_DAY;
+  delete process.env.AGENT_VIDEOS_PER_DAY;
 });
 
 describe('POST /api/agent/chat : accès et requête', () => {
@@ -202,5 +206,111 @@ describe('POST /api/agent/chat : vrai agent (client simulé)', () => {
     expect(JSON.parse(text.trim())).toEqual({ type: 'error', code: 'failed' });
     expect(text).not.toMatch(/sk-ant|exploded/);
     expect((await demoRepositories.agent.threads()).length).toBe(before);
+  });
+});
+
+describe('POST /api/agent/chat : génération d’images et de vidéos', () => {
+  const stream = (replies: unknown[]) => {
+    const calls: { tools: { name: string }[]; instructions: string; input: unknown[] }[] = [];
+    state.client = {
+      async stream(params, onText) {
+        calls.push(structuredClone(params) as never);
+        const next = replies.shift() as { output: { type: string; content?: { type: string; text?: string }[] }[] };
+        for (const item of next.output) if (item.type === 'message') for (const part of item.content!) if (part.type === 'output_text') onText(part.text!);
+        return next as never;
+      },
+    } satisfies AgentClient;
+    return calls;
+  };
+  const jpeg = { bytes: new Uint8Array([1, 2, 3]), mimeType: 'image/jpeg', width: 1024, height: 1024 };
+
+  beforeEach(() => {
+    process.env.OPENAI_API_KEY = 'test-key-not-used';
+    state.session = ready({ mode: 'supabase' });
+    state.images = { generate: vi.fn(async () => jpeg) };
+    state.videos = { start: vi.fn(async () => 'task-route'), check: vi.fn(async () => ({ state: 'pending' })) };
+  });
+
+  it('propose la génération d’images avec la clé de l’agent, et celle des vidéos seulement avec une clé Evolink', async () => {
+    let calls = stream([{ status: 'completed', usage, output: [say('Bonjour !')] }]);
+    await events(await post({ message: 'Salut', channelIds: ['i2'] }));
+    expect(calls[0]!.tools.map((t) => t.name)).toEqual(['propose_posts', 'list_posts', 'list_media', 'generate_image']);
+
+    process.env.EVOLINK_API_KEY = 'cle-evolink';
+    calls = stream([{ status: 'completed', usage, output: [say('Bonjour !')] }]);
+    await events(await post({ message: 'Salut', channelIds: ['i2'] }));
+    expect(calls[0]!.tools.map((t) => t.name)).toEqual(['propose_posts', 'list_posts', 'list_media', 'generate_image', 'generate_video', 'video_status']);
+  });
+
+  it('un plafond journalier à 0 retire l’outil correspondant', async () => {
+    process.env.EVOLINK_API_KEY = 'cle-evolink';
+    process.env.AGENT_IMAGES_PER_DAY = '0';
+    process.env.AGENT_VIDEOS_PER_DAY = '0';
+    const calls = stream([{ status: 'completed', usage, output: [say('Bonjour !')] }]);
+    await events(await post({ message: 'Salut', channelIds: ['i2'] }));
+    expect(calls[0]!.tools.map((t) => t.name)).toEqual(['propose_posts', 'list_posts', 'list_media']);
+    expect(calls[0]!.instructions).not.toContain('generate_image');
+  });
+
+  it('génère une image, la range dans la médiathèque, la joint à la publication et garde le tout dans la conversation', async () => {
+    stream([
+      { status: 'completed', usage, output: [say('Je crée l’image.'), use('g1', 'generate_image', { prompt: 'Un atelier de menuiserie au lever du jour', size: 'landscape', alt: 'Un atelier' })] },
+      { status: 'completed', usage, output: [use('p1', 'propose_posts', { posts: [{ channel_id: 'i1', text: 'Notre atelier au lever du jour', media_ids: ['__GENERATED__'] }] })] },
+    ]);
+    // L'identifiant de l'image n'existe qu'une fois générée : le modèle simulé le lit dans le résultat de l'outil.
+    const original = state.client as AgentClient;
+    state.client = {
+      async stream(params, onText, signal) {
+        const outputs = (params.input as { type?: string; output?: string }[]).filter((i) => i.type === 'function_call_output');
+        if (outputs.length > 0) {
+          const id = (JSON.parse(outputs[0]!.output!) as { media_id: string }).media_id;
+          return { status: 'completed', usage, output: [use('p1', 'propose_posts', { posts: [{ channel_id: 'i1', text: 'Notre atelier au lever du jour', media_ids: [id] }] })] } as never;
+        }
+        return original.stream(params, onText, signal);
+      },
+    } satisfies AgentClient;
+
+    const list = await events(await post({ message: 'Un post Instagram avec une image de notre atelier', channelIds: ['i1'], timeZone: 'Europe/Paris' }));
+    expect(list.map((e) => e.type)).toEqual(['text', 'tool', 'media', 'tool', 'proposals', 'done']);
+    const media = list.find((e) => e.type === 'media') as Extract<AgentEvent, { type: 'media' }>;
+    expect(media.media[0]).toMatchObject({ kind: 'image', name: 'ai-image-un-atelier-de-menuiserie-au-lever-du.jpg', alt: 'Un atelier' });
+    const done = list.at(-1) as Extract<AgentEvent, { type: 'done' }>;
+    expect(done.assistant.mediaIds).toEqual([media.media[0]!.id]);
+    expect(done.assistant.proposals[0]!.mediaIds).toEqual([media.media[0]!.id]);
+    expect(done.assistant.jobIds).toEqual([]);
+    expect((state.images as { generate: ReturnType<typeof vi.fn> }).generate).toHaveBeenCalledWith('Un atelier de menuiserie au lever du jour', 'landscape', expect.anything());
+    expect((await demoRepositories.media.byIds([media.media[0]!.id]))[0]).toMatchObject({ width: 1024, height: 1024, kind: 'image', mimeType: 'image/jpeg' });
+    const saved = (await demoRepositories.agent.thread(done.thread.id))!.messages[1]!;
+    expect(saved.mediaIds).toEqual([media.media[0]!.id]);
+  });
+
+  it('lance une vidéo : la tâche est annoncée, gardée avec le message, et la route d’interrogation la retrouve', async () => {
+    process.env.EVOLINK_API_KEY = 'cle-evolink';
+    stream([
+      { status: 'completed', usage, output: [use('v1', 'generate_video', { prompt: 'Un rabot sur du chêne', orientation: 'vertical' })] },
+      { status: 'completed', usage, output: [say('La vidéo est lancée, elle prend quelques minutes.')] },
+    ]);
+    const list = await events(await post({ message: 'Une vidéo de l’atelier', channelIds: ['i1'] }));
+    expect(list.map((e) => e.type)).toEqual(['tool', 'job', 'text', 'done']);
+    const job = (list.find((e) => e.type === 'job') as Extract<AgentEvent, { type: 'job' }>).job;
+    expect(job).toMatchObject({ status: 'pending', orientation: 'vertical', prompt: 'Un rabot sur du chêne' });
+    const done = list.at(-1) as Extract<AgentEvent, { type: 'done' }>;
+    expect(done.assistant.jobIds).toEqual([job.id]);
+    expect((await demoRepositories.generation.jobs([job.id]))[0]).toMatchObject({ providerTaskId: 'task-route' });
+    expect((state.videos as { start: ReturnType<typeof vi.fn> }).start).toHaveBeenCalledWith({ prompt: 'Un rabot sur du chêne', orientation: 'vertical', imageUrls: [] }, expect.anything());
+  });
+
+  it('un plafond journalier atteint est rapporté au modèle, qui le dit à l’utilisateur', async () => {
+    process.env.AGENT_IMAGES_PER_DAY = '1';
+    // Le journal des générations de la démo est partagé par tout le fichier : on repart d'un jour vierge.
+    (globalThis as unknown as { __postbizDemo: { generations: unknown[] } }).__postbizDemo.generations = [];
+    const calls = stream([
+      { status: 'completed', usage, output: [use('a', 'generate_image', { prompt: 'Un phare' }), use('b', 'generate_image', { prompt: 'Un autre phare' })] },
+      { status: 'completed', usage, output: [say('Une seule image aujourd’hui.')] },
+    ]);
+    const list = await events(await post({ message: 'Deux images de phares', channelIds: ['i1'] }));
+    const done = list.at(-1) as Extract<AgentEvent, { type: 'done' }>;
+    expect(done.assistant.mediaIds).toHaveLength(1);
+    expect(JSON.stringify(calls[1]!.input)).toContain('limit of 1 generated pictures per day');
   });
 });

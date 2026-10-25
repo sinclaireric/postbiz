@@ -669,7 +669,10 @@
       "tool": {
         "list_posts": "正在查看日历……",
         "list_media": "正在媒体库中搜索……",
-        "propose_posts": "正在准备帖子……"
+        "propose_posts": "正在准备帖子……",
+        "generate_image": "正在生成图片…",
+        "generate_video": "正在启动视频…",
+        "video_status": "正在检查视频…"
       },
       "proposals": {
         "fallback": "这是我准备的内容。请检查每条帖子,必要时修改,然后存为草稿或安排发布。"
@@ -707,7 +710,28 @@
         "intro": "这是我为你的渠道准备的内容。",
         "skipped": "我没有为 {networks} 准备任何内容:该网络需要图片或视频(请添加),或尚不支持在那里发布。",
         "noPosts": "已勾选的渠道在未来 30 天内没有安排。",
-        "upcoming": "未来 30 天的安排如下:"
+        "upcoming": "未来 30 天的安排如下:",
+        "imageDone": "我已生成图片并保存到你的媒体库。演示模式下,图片由一幅绘图代替。",
+        "videoStarted": "我已开始生成视频,进度显示在下方。演示模式下几秒钟即可完成。",
+        "generationFailed": "无法生成。可能已达到每日上限。"
+      },
+      "generated": {
+        "label": "已生成的图片",
+        "open": "查看图片“{name}”"
+      },
+      "video": {
+        "label": "视频生成",
+        "pending": "正在生成视频…",
+        "hint": "这需要几分钟。你可以保持此页面打开,也可以稍后再来:视频会保存在你的媒体库中。",
+        "ready": "视频已就绪",
+        "failed": "无法生成视频。",
+        "reason": "原因:{reason}",
+        "removed": "此视频已从媒体库中删除。",
+        "use": "用此视频准备一篇帖子",
+        "usePrompt": "请用这个视频准备一篇帖子。",
+        "demo": "演示模式:不会播放真实视频。",
+        "vertical": "竖屏 9:16",
+        "horizontal": "横屏 16:9"
       }
     },
     "demoStrip": "演示模式:示例数据,不会向社交网络发送任何内容。",
@@ -1087,8 +1111,8 @@
       "source": "来源",
       "replace": "替换我的文本",
       "append": "追加到末尾",
-      "unavailable": "此服务器未启用 AI 助手:请在配置中设置 ANTHROPIC_API_KEY。",
-      "privacy": "你的文本和知识库将发送给 Anthropic(Claude)以生成建议。",
+      "unavailable": "此服务器未启用 AI 助手:请在配置中设置 OPENAI_API_KEY。",
+      "privacy": "你的文本和知识库将发送给 OpenAI(GPT-4.1)以生成建议。",
       "review": "发布前请务必检查建议:助手可能出错。",
       "errors": {
         "disabled": "AI 助手不可用(缺少 API 密钥或密钥被拒绝)。",

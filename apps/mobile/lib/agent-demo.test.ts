@@ -51,3 +51,16 @@ test("consulter le calendrier, saluer, ne rien cocher : du texte, pas de publica
 test("une demande d'écriture qui parle de calendrier reste une demande d'écriture", () => {
   assert.ok(demoReply("Annonce l’atelier dans le calendrier", channels, now, id).proposals.length > 0);
 });
+
+test("une demande d'image ou de vidéo : la démonstration dit qu'elle ne génère rien, sans inventer de média", () => {
+  for (const message of ["Génère une image d’un atelier de menuiserie", "Crée une vidéo des coulisses", "Make a picture of a lighthouse"]) {
+    const r = demoReply(message, channels, now, id);
+    assert.deepEqual(r.proposals, [], message);
+    assert.match(r.text, /ne génère ni image ni vidéo/, message);
+  }
+});
+
+test("une demande de publication qui parle d'image reste une demande de publication", () => {
+  const r = demoReply("Crée un post avec une image de notre atelier", channels, now, id);
+  assert.ok(r.proposals.length > 0);
+});

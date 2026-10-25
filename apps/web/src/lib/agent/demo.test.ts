@@ -1,8 +1,10 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import type { T } from '@/i18n/types';
-import type { IntegrationItem, MediaItem, PostItem } from '@/lib/data/types';
+import type { GenerationRepository, IntegrationItem, MediaItem, PostItem } from '@/lib/data/types';
+import { demoRepositories } from '@/lib/data/demo';
 import { countLength } from '@/lib/text/length';
-import { demoHashtags, demoSubject, demoText, runDemoTurn, type DemoTurnDeps } from './demo';
+import { demoFetch, demoHashtags, demoMessage, demoImageProvider, demoPrompt, demoSubject, demoText, demoVideoProvider, DEMO_VIDEO_MS, runDemoTurn, type DemoTurnDeps } from './demo';
+import { createGenerationTools, advanceVideoJob } from './generation';
 import type { AgentEvent } from './types';
 
 const t = ((key: string, params?: Record<string, unknown>) => (params ? `${key} ${JSON.stringify(params)}` : key)) as unknown as T;
@@ -136,5 +138,81 @@ describe('runDemoTurn : consulter le calendrier', () => {
   it('une demande d’écriture qui parle de calendrier reste une demande d’écriture', async () => {
     const { deps } = setup();
     expect((await runDemoTurn(deps, 'Annonce l’atelier dans le calendrier')).proposals.length).toBeGreaterThan(0);
+  });
+});
+
+
+describe('démo : pièces jointes', () => {
+  it('la note des pièces jointes (destinée au vrai agent) ne finit pas dans le texte des publications', async () => {
+    const { deps } = setup();
+    const note = '\n\n[Attached media: use these ids in media_ids]\n- id: m1 | image | "m1" | 1080x1350';
+    const r = await runDemoTurn(deps, `Annonce l’atelier de samedi${note}`, [library[1]!]);
+    expect(r.proposals.map((p) => p.text)).toEqual(expect.arrayContaining(['Atelier de samedi']));
+    expect(JSON.stringify(r.proposals)).not.toContain('Attached media');
+    expect(demoMessage(`Bonjour${note}`)).toBe('Bonjour');
+    expect(demoMessage('Bonjour')).toBe('Bonjour');
+  });
+});
+
+describe('démo : génération d’images et de vidéos', () => {
+  const generation = () => createGenerationTools({
+    repos: { generation: demoRepositories.generation, media: demoRepositories.media }, images: demoImageProvider(), videos: demoVideoProvider(), limits: { imagesPerDay: 100, videosPerDay: 100 }, fetcher: demoFetch,
+  });
+
+  it('retire le début de la demande pour ne garder que la description', () => {
+    expect(demoPrompt('Génère une image d’un atelier de menuiserie')).toBe('Un atelier de menuiserie');
+    expect(demoPrompt('Crée une vidéo de la livraison du canapé')).toBe('La livraison du canapé');
+    expect(demoPrompt('Generate a picture of a lighthouse at dawn')).toBe('A lighthouse at dawn');
+    expect(demoPrompt('Fais une photo')).toBe('Fais une photo');
+  });
+
+  it('« génère une image » : l’image arrive dans la médiathèque, sans publication quand on n’en demande pas', async () => {
+    const before = (await demoRepositories.media.list({ pageSize: 100 })).total;
+    const { deps, events } = setup({ generation: generation() });
+    const r = await runDemoTurn(deps, 'Génère une image d’un atelier de menuiserie');
+    expect(r.images).toHaveLength(1);
+    expect(r.proposals).toEqual([]);
+    expect(r.text).toBe('app.agent.demo.imageDone');
+    expect(events.map((e) => e.type)).toEqual(['tool', 'media', ...events.slice(2).map(() => 'text' as const)]);
+    expect(events[0]).toEqual({ type: 'tool', name: 'generate_image' });
+    const after = await demoRepositories.media.list({ pageSize: 100 });
+    expect(after.total).toBe(before + 1);
+    expect(after.items.find((m) => m.id === r.images[0]!.id)).toMatchObject({ kind: 'image', width: 1024, height: 1024, mimeType: 'image/jpeg' });
+  });
+
+  it('« crée un post avec une image » : l’image générée est jointe aux publications qui l’exigent', async () => {
+    const { deps } = setup({ generation: generation(), channels: [channel('ig', 'instagram', 'maison.lune'), channel('fb', 'facebook', 'Maison Lune')] });
+    const r = await runDemoTurn(deps, 'Crée un post avec une image d’un tabouret en noyer');
+    expect(r.images).toHaveLength(1);
+    expect(r.proposals.length).toBe(2);
+    const ig = r.proposals.find((p) => p.networkId === 'instagram')!;
+    expect(ig.mediaIds).toEqual([r.images[0]!.id]);
+    expect(r.text).toContain('app.agent.demo.imageDone');
+    expect(r.text).toContain('app.agent.demo.intro');
+  });
+
+  it('« génère une vidéo » : une tâche est lancée, et elle aboutit après quelques secondes', async () => {
+    const { deps, events } = setup({ generation: generation() });
+    const r = await runDemoTurn(deps, 'Génère une vidéo des coulisses de l’atelier');
+    expect(r.jobs).toHaveLength(1);
+    expect(r.jobs[0]).toMatchObject({ status: 'pending', orientation: 'vertical', prompt: 'Coulisses de l’atelier' });
+    expect(r.text).toBe('app.agent.demo.videoStarted');
+    expect(events.find((e) => e.type === 'job')).toMatchObject({ job: { id: r.jobs[0]!.id } });
+
+    const gen = { repos: { generation: demoRepositories.generation as GenerationRepository, media: demoRepositories.media }, images: null, videos: demoVideoProvider(), limits: { imagesPerDay: 1, videosPerDay: 1 }, fetcher: demoFetch };
+    expect(await advanceVideoJob({ ...gen, now: () => Date.now() }, r.jobs[0]!.id)).toMatchObject({ ok: true, job: { status: 'pending' } });
+    vi.useFakeTimers({ toFake: ['Date'], now: Date.now() + DEMO_VIDEO_MS + 1_000 });
+    const done = await advanceVideoJob({ ...gen, now: () => Date.now() }, r.jobs[0]!.id);
+    vi.useRealTimers();
+    expect(done).toMatchObject({ ok: true, job: { status: 'completed' }, item: { kind: 'video', width: 720, height: 1280, durationSeconds: 8 } });
+  });
+
+  it('sans outils de génération, ou sans le mot « image » / « vidéo » après un verbe, rien n’est généré', async () => {
+    const a = await runDemoTurn(setup().deps, 'Génère une image d’un atelier');
+    expect(a.images).toEqual([]);
+    const { deps } = setup({ generation: generation() });
+    const b = await runDemoTurn(deps, 'Annonce l’atelier de samedi');
+    expect(b.images).toEqual([]);
+    expect(b.jobs).toEqual([]);
   });
 });

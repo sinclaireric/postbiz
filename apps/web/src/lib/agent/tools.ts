@@ -1,5 +1,6 @@
 import type { IntegrationItem, MediaItem, Repositories } from '@/lib/data/types';
 import { networkName } from '@/lib/networks';
+import type { GenerationTools } from './generation';
 import type { AgentToolbox } from './run';
 import { utcToLocal } from './time';
 
@@ -11,10 +12,11 @@ const clip = (s: string, n: number) => (s.length > n ? `${s.slice(0, n)}…` : s
 const shiftDay = (day: string, days: number) => new Date(Date.parse(`${day}T00:00:00Z`) + days * 86_400_000).toISOString().slice(0, 10);
 
 /**
- * Les outils de lecture de l'agent, au-dessus des dépôts de données de l'utilisateur connecté. Rien n'est écrit ici, et rien ne passe
+ * Les outils de l'agent, au-dessus des dépôts de données de l'utilisateur connecté. Les outils de lecture n'écrivent rien ; la génération (images, vidéos),
+ * si le serveur la propose, range ses fichiers dans la médiathèque. Rien ne passe
  * par une autre voie que ces dépôts : la RLS de la base reste la seule autorité sur ce que l'agent voit.
  */
-export function createToolbox(repos: Pick<Repositories, 'posts' | 'media'>, integrations: readonly IntegrationItem[], timeZone: string, now: Date): AgentToolbox {
+export function createToolbox(repos: Pick<Repositories, 'posts' | 'media'>, integrations: readonly IntegrationItem[], timeZone: string, now: Date, generation?: GenerationTools): AgentToolbox {
   const channelName = new Map(integrations.map((i) => [i.id, `${networkName(i.networkId)} "${i.name}"`]));
   const today = utcToLocal(now, timeZone).slice(0, 10);
 
@@ -46,5 +48,7 @@ export function createToolbox(repos: Pick<Repositories, 'posts' | 'media'>, inte
     },
 
     mediaByIds: (ids: string[]): Promise<MediaItem[]> => repos.media.byIds(ids),
+
+    generation,
   };
 }

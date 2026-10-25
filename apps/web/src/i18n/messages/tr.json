@@ -717,7 +717,10 @@
       "tool": {
         "list_posts": "Takvime bakıyor…",
         "list_media": "Medya kitaplığında arıyor…",
-        "propose_posts": "Gönderileri hazırlıyor…"
+        "propose_posts": "Gönderileri hazırlıyor…",
+        "generate_image": "Görsel oluşturuluyor…",
+        "generate_video": "Video başlatılıyor…",
+        "video_status": "Video kontrol ediliyor…"
       },
       "proposals": {
         "fallback": "İşte hazırladıklarım. Her gönderiyi gözden geçirin, gerekirse düzenleyin, sonra taslak olarak kaydedin ya da zamanlayın."
@@ -755,7 +758,28 @@
         "intro": "İşte kanallarınız için hazırladıklarım.",
         "skipped": "{networks} için bir şey hazırlamadım: ağ bir görsel ya da video istiyor (bir tane ekleyin) ya da orada yayın henüz kullanılamıyor.",
         "noPosts": "İşaretli kanallarda önümüzdeki 30 gün için zamanlanmış bir şey yok.",
-        "upcoming": "Önümüzdeki 30 gün için planlananlar:"
+        "upcoming": "Önümüzdeki 30 gün için planlananlar:",
+        "imageDone": "Görseli oluşturdum ve medya kitaplığınıza kaydettim. Demo modunda görselin yerini bir çizim alır.",
+        "videoStarted": "Videoyu başlattım; ilerleme aşağıda görünüyor. Demo modunda birkaç saniyede biter.",
+        "generationFailed": "Oluşturamadım. Günlük sınıra ulaşılmış olabilir."
+      },
+      "generated": {
+        "label": "Oluşturulan görseller",
+        "open": "“{name}” görselini göster"
+      },
+      "video": {
+        "label": "Video oluşturma",
+        "pending": "Video oluşturuluyor…",
+        "hint": "Birkaç dakika sürer. Bu sayfayı açık bırakabilir veya daha sonra dönebilirsiniz: video medya kitaplığınızda olacak.",
+        "ready": "Video hazır",
+        "failed": "Video oluşturulamadı.",
+        "reason": "Neden: {reason}",
+        "removed": "Bu video medya kitaplığından kaldırıldı.",
+        "use": "Bu videoyla bir gönderi hazırla",
+        "usePrompt": "Bu videoyla bir gönderi hazırla.",
+        "demo": "Demo modu: gerçek bir video oynatılmaz.",
+        "vertical": "Dikey 9:16",
+        "horizontal": "Yatay 16:9"
       }
     },
     "demoStrip": "Demo modu: örnek veriler, sosyal ağlara hiçbir şey gönderilmez.",
@@ -1138,8 +1162,8 @@
       "source": "Kaynak",
       "replace": "Metnimi değiştir",
       "append": "Sonuna ekle",
-      "unavailable": "Yapay zekâ asistanı bu sunucuda etkin değil: yapılandırmada ANTHROPIC_API_KEY değerini girin.",
-      "privacy": "Metniniz ve bilgi tabanınız, önerileri oluşturmak için Anthropic’e (Claude) gönderilir.",
+      "unavailable": "Yapay zekâ asistanı bu sunucuda etkin değil: yapılandırmada OPENAI_API_KEY değerini girin.",
+      "privacy": "Metniniz ve bilgi tabanınız, önerileri oluşturmak için OpenAI’a (GPT-4.1) gönderilir.",
       "review": "Yayınlamadan önce her öneriyi mutlaka okuyun: asistan yanılabilir.",
       "errors": {
         "disabled": "Yapay zekâ asistanı kullanılamıyor (API anahtarı eksik veya reddedildi).",

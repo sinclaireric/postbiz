@@ -1,4 +1,4 @@
-import type { AgentMessage, AgentProposal, AgentProposalStatus, AgentThread } from '@/lib/agent/types';
+import type { AgentMessage, AgentProposal, AgentProposalStatus, AgentThread, AgentVideoJob, VideoOrientation } from '@/lib/agent/types';
 import type { AnalyticsRepository } from '@/lib/analytics/types';
 import type { FormError } from '@/lib/form-error';
 import type { MediaKind } from '@/lib/media/rules';
@@ -187,7 +187,8 @@ export interface AgentExchangeInput {
   threadId: string | null;
   title: string;
   user: { text: string; mediaIds: string[] };
-  assistant: { text: string; proposals: AgentProposal[] };
+  /** `mediaIds` : images générées dans ce message ; `jobIds` : vidéos lancées. */
+  assistant: { text: string; proposals: AgentProposal[]; mediaIds: string[]; jobIds: string[] };
 }
 
 export interface AgentExchange {
@@ -208,8 +209,46 @@ export interface AgentRepository {
   removeThread(id: string): Promise<Result>;
 }
 
+/** Un fichier produit par l'agent, à ranger dans la médiathèque de l'organisation. */
+export interface GeneratedMediaInput {
+  name: string;
+  mimeType: string;
+  bytes: Uint8Array;
+  width: number | null;
+  height: number | null;
+  durationSeconds: number | null;
+  /** Texte alternatif proposé par l'agent (vide : aucun). */
+  alt: string;
+}
+
+/** Une tâche de génération vidéo telle que la garde la base : l'état public, plus ce dont l'application a besoin pour la faire avancer. */
+export interface VideoJobRecord extends AgentVideoJob {
+  /** Identifiant de la tâche chez le fournisseur. Ne quitte jamais le serveur. */
+  providerTaskId: string;
+  /** Une requête est en train d'enregistrer la vidéo terminée (date de sa prise en charge), sinon null. */
+  claimedAt: string | null;
+}
+
+/** Génération d'images et de vidéos par l'agent : plafonds, médiathèque et tâches. Toutes les opérations sont celles de l'utilisateur connecté (RLS). */
+export interface GenerationRepository {
+  /** Réserve une génération du jour pour l'organisation, de façon atomique : faux quand le plafond de `limit` sur 24 h est atteint. */
+  reserve(kind: 'image' | 'video', limit: number): Promise<boolean>;
+  /** Range un fichier généré dans la médiathèque ; null si l'envoi ou l'enregistrement a échoué (rien n'est gardé). */
+  createMedia(input: GeneratedMediaInput): Promise<MediaItem | null>;
+  /** Nombre de vidéos de l'utilisateur encore en cours. */
+  activeJobs(): Promise<number>;
+  createJob(input: { prompt: string; orientation: VideoOrientation; providerTaskId: string; referenceMediaIds: string[] }): Promise<VideoJobRecord | null>;
+  /** Les tâches demandées (les siennes seulement), dans l'ordre des identifiants ; les autres sont ignorées. */
+  jobs(ids: string[]): Promise<VideoJobRecord[]>;
+  /** Prend en charge l'enregistrement d'une vidéo terminée : vrai pour une seule requête. Une prise en charge plus ancienne que `staleBefore` (ISO) est reprise. */
+  claimJob(id: string, staleBefore: string): Promise<boolean>;
+  /** Termine ou relâche une tâche (`pending` : la prise en charge est abandonnée, une prochaine requête réessaiera). */
+  settleJob(id: string, result: { status: 'pending' } | { status: 'completed'; mediaId: string } | { status: 'failed'; error: string }): Promise<boolean>;
+}
+
 export interface Repositories {
   agent: AgentRepository;
+  generation: GenerationRepository;
   analytics: AnalyticsRepository;
   media: MediaRepository;
   knowledge: KnowledgeRepository;

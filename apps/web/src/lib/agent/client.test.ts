@@ -5,7 +5,7 @@ import type { AgentChatRequest, AgentEvent } from './types';
 
 const req: AgentChatRequest = { threadId: null, message: 'Bonjour', channelIds: [], mediaIds: [], timeZone: 'UTC' };
 const thread = { id: 't1', title: 'Bonjour', updatedAt: '2026-10-27T10:00:00Z' };
-const msg = (role: 'user' | 'assistant', text: string) => ({ id: role, role, text, proposals: [], mediaIds: [], createdAt: '2026-10-27T10:00:00Z' });
+const msg = (role: 'user' | 'assistant', text: string) => ({ id: role, role, text, proposals: [], mediaIds: [], jobIds: [], createdAt: '2026-10-27T10:00:00Z' });
 
 /** Une réponse HTTP dont le corps arrive par morceaux, comme la route d'API le fait. */
 const response = (chunks: string[], init: ResponseInit = {}) => {

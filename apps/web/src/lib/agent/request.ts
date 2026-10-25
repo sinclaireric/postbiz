@@ -8,6 +8,12 @@ import { AGENT_LIMITS, type AgentChatRequest, type AgentEvent } from './types';
  */
 export const agentLimiter = createLimiter(20, 10 * 60_000);
 
+/**
+ * Interrogations d'une vidéo en cours : le navigateur et le mobile le font toutes les dix secondes ; chaque interrogation peut appeler le fournisseur.
+ * 40 par minute laissent la place à quelques vidéos et conversations ouvertes en même temps.
+ */
+export const videoPollLimiter = createLimiter(40, 60_000);
+
 const ID = /^[\w-]{1,64}$/;
 
 const ids = (value: unknown, max: number): string[] | null => {
@@ -34,7 +40,7 @@ export function parseChatRequest(raw: unknown): AgentChatRequest | null {
 /** Un événement par ligne : le format de la réponse en flux de la route d'API. */
 export const encodeEvent = (event: AgentEvent): string => `${JSON.stringify(event)}\n`;
 
-const TYPES = new Set<AgentEvent['type']>(['text', 'tool', 'proposals', 'done', 'error']);
+const TYPES = new Set<AgentEvent['type']>(['text', 'tool', 'proposals', 'media', 'job', 'done', 'error']);
 
 /** Lit une ligne de la réponse ; null si ce n'est pas un événement (une ligne abîmée n'arrête pas la lecture). */
 export function parseEventLine(line: string): AgentEvent | null {

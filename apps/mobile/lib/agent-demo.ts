@@ -15,6 +15,8 @@ const LEADING = /^(annonce|annoncer|publie|publier|poste|poster|[ée]cris|r[ée]
 const LIST_INTENT = /\b(pr[ée]vu|programm\w*|planifi\w*|planning|calendrier|venir|scheduled|upcoming|calendar)\b/i;
 const WRITE_VERB = /\b(annonce\w*|publie\w*|poste\w*|[ée]cris|r[ée]dige\w*|pr[ée]pare\w*|cr[ée]e\w*|write|post|announce|publish|draft|create|prepare)\b/i;
 const TOMORROW = /\b(demain|tomorrow)\b/i;
+/** Une demande de génération d'image ou de vidéo : en démonstration, rien n'est généré (aucun fournisseur n'est appelé et la démo n'a pas de médiathèque). */
+const GENERATE_INTENT = /\b(g[ée]n[èe]re\w*|cr[ée]e\w*|fais|fabrique\w*|dessine\w*|generate|create|make|draw)\b[^.!?]{0,60}\b(image|photo|visuel|illustration|vid[ée]o|clip|reel|picture|visual)s?\b/i;
 /** Réseaux qui exigent une image ou une vidéo (la démo n'en a pas à joindre) ou sur lesquels l'application ne publie pas encore. */
 const NEEDS_MEDIA = ["instagram", "instagram-business", "tiktok", "youtube"];
 
@@ -45,6 +47,9 @@ export interface DemoReply {
 export function demoReply(message: string, channels: DemoChannel[], now: Date, newId: () => string): DemoReply {
   if (LIST_INTENT.test(message) && !WRITE_VERB.test(message)) {
     return { text: "En démonstration, je ne consulte pas le calendrier. Demandez-moi plutôt de préparer une publication, par exemple « Annonce l’atelier ouvert samedi ».", proposals: [] };
+  }
+  if (GENERATE_INTENT.test(message) && !/\b(post|publication|publie\w*|poste\w*|annonce\w*)\b/i.test(message)) {
+    return { text: "En démonstration, je ne génère ni image ni vidéo : aucun service n’est appelé. Avec le serveur Postbiz, je génère l’image (ou la vidéo, qui prend quelques minutes) et je la range dans votre médiathèque.", proposals: [] };
   }
   if (message.trim().length < 6) {
     return { text: "Je suis l’agent de démonstration. Décrivez une publication (par exemple « Annonce l’atelier ouvert samedi ») et je la prépare pour les canaux cochés.", proposals: [] };

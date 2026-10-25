@@ -36,6 +36,7 @@ describe('règles de l’agent : le mobile et le web s’accordent', () => {
         }
       }
       expect(cases).toBeGreaterThan(500);
-    });
+      // Plusieurs milliers de cas par réseau : sur une machine chargée, 5 s (le délai par défaut) ne suffisent pas.
+    }, 60_000);
   }
 });

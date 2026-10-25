@@ -5,8 +5,9 @@ import type { IntegrationItem, MediaItem } from '@/lib/data/types';
 import { agentConfigured, agentModel, DEFAULT_AGENT_MODEL } from './config';
 import { toAgentMedia } from './media';
 import { mediaIdsOf, parseProposeInput } from './proposal';
-import { AGENT_RULES, AGENT_TOOLS_DEFS, sessionBlock, type ModelTurn } from './prompt';
-import { AGENT_LIMITS, AGENT_TOOLS, type AgentErrorCode, type AgentEvent, type AgentMedia, type AgentProposal, type AgentToolName } from './types';
+import type { GenerationTools } from './generation';
+import { agentRules, agentToolDefs, sessionBlock, type AgentFeatures, type ModelTurn } from './prompt';
+import { AGENT_LIMITS, AGENT_TOOLS, type AgentErrorCode, type AgentEvent, type AgentMedia, type AgentProposal, type AgentToolName, type AgentVideoJob } from './types';
 
 type Input = OpenAI.Responses.ResponseInputItem;
 type Output = OpenAI.Responses.ResponseOutputItem;
@@ -52,6 +53,8 @@ export interface AgentToolbox {
   /** Médias de la bibliothèque (18 au plus), déjà mis en forme pour le modèle. */
   listMedia(args: { search?: string }): Promise<{ items: MediaItem[]; text: unknown }>;
   mediaByIds(ids: string[]): Promise<MediaItem[]>;
+  /** Génération d'images et de vidéos : absente quand le serveur ne les propose pas. */
+  generation?: GenerationTools;
 }
 
 export interface AgentTurnDeps {
@@ -74,6 +77,8 @@ export interface AgentTurnDeps {
   signal?: AbortSignal;
   /** Identifiant de l'utilisateur, déjà haché : transmis à OpenAI pour repérer un abus sans lui donner l'identité de la personne. */
   safetyId?: string;
+  /** Ce que l'agent peut générer sur ce serveur (voir `agentRules`). Sans cela, l'agent ne propose ni image ni vidéo. */
+  features?: AgentFeatures;
   /** Identifiant de l'organisation, déjà haché : regroupe les demandes qui partagent le même début (règles, base de connaissance) pour le cache de prompt. */
   cacheKey?: string;
 }
@@ -89,16 +94,24 @@ export interface AgentUsage {
 export interface AgentTurnResult {
   text: string;
   proposals: AgentProposal[];
+  /** Médias des publications préparées. */
   media: AgentMedia[];
+  /** Images générées pendant ce tour : elles sont déjà dans la médiathèque. */
+  images: AgentMedia[];
+  /** Vidéos lancées pendant ce tour. */
+  jobs: AgentVideoJob[];
   usage: AgentUsage;
 }
 
 /** Règles, puis base de connaissance : le début identique d'une demande à l'autre, que le cache de prompt réutilise. La date et les canaux viennent après. */
-export function instructionsFor(knowledge: KnowledgeEntry[]): string {
+export function instructionsFor(knowledge: KnowledgeEntry[], features?: AgentFeatures): string {
+  const rules = agentRules(features);
   const block = knowledgeBlock(knowledge);
-  return block ? `${AGENT_RULES}\n\n${block}` : AGENT_RULES;
+  return block ? `${rules}\n\n${block}` : rules;
 }
 
+type ImageOutcome = Awaited<ReturnType<GenerationTools['generateImage']>>;
+const imageSize = (v: unknown): 'square' | 'landscape' | 'portrait' => (v === 'landscape' || v === 'portrait' ? v : 'square');
 const isTool = (name: string): name is AgentToolName => (AGENT_TOOLS as readonly string[]).includes(name);
 const text = (v: unknown, max: number): string | undefined => (typeof v === 'string' && v.trim() ? v.trim().slice(0, max) : undefined);
 
@@ -122,7 +135,12 @@ export async function runAgentTurn(deps: AgentTurnDeps, userContent: string): Pr
   const model = deps.model ?? agentModel();
   const known = new Map<string, MediaItem>((deps.attached ?? []).map((m) => [m.id, m]));
   const usage: AgentUsage = { calls: 0, inputTokens: 0, outputTokens: 0, cachedTokens: 0 };
-  const instructions = instructionsFor(deps.knowledge);
+  const features: AgentFeatures = {
+    image: Boolean(deps.features?.image && deps.tools.generation),
+    video: Boolean(deps.features?.video && deps.tools.generation),
+  };
+  const instructions = instructionsFor(deps.knowledge, features);
+  const toolDefs = agentToolDefs(features);
   const context = sessionBlock({ orgName: deps.orgName, language: deps.language, timeZone: deps.timeZone, now, channels: deps.channels });
   // La date et les canaux viennent juste avant la demande, après l'historique : le début de la requête reste identique d'un message à l'autre.
   const input: Input[] = [...deps.history.map((t) => ({ role: t.role, content: t.content })), { role: 'developer', content: context }, { role: 'user', content: userContent }];
@@ -130,13 +148,15 @@ export async function runAgentTurn(deps: AgentTurnDeps, userContent: string): Pr
   let reply = '';
   let proposals: AgentProposal[] = [];
   let proposalMedia: AgentMedia[] = [];
+  const images: AgentMedia[] = [];
+  const jobs: AgentVideoJob[] = [];
 
   for (let turn = 0; turn < AGENT_LIMITS.toolTurns; turn++) {
     deps.signal?.throwIfAborted();
     let turnText = '';
     const response = await deps.client.stream(
       {
-        model, instructions, input, tools: AGENT_TOOLS_DEFS, reasoning: { effort: 'low' }, max_output_tokens: MAX_OUTPUT_TOKENS,
+        model, instructions, input, tools: toolDefs, reasoning: { effort: 'low' }, max_output_tokens: MAX_OUTPUT_TOKENS,
         // Rien n'est gardé chez OpenAI : l'historique est rejoué par l'application, le raisonnement chiffré compris (voir `input.push` plus bas).
         store: false, safety_identifier: deps.safetyId, prompt_cache_key: deps.cacheKey,
       },
@@ -166,6 +186,15 @@ export async function runAgentTurn(deps: AgentTurnDeps, userContent: string): Pr
     input.push(...(response.output as Input[]));
     const results: Input[] = [];
     let delivered = false;
+    // Les images d'une même réponse se génèrent en même temps : chacune dure plusieurs dizaines de secondes, une après l'autre elles dépasseraient la durée de la réponse.
+    const pendingImages = new Map<string, Promise<ImageOutcome>>();
+    for (const call of calls) {
+      if (call.name !== 'generate_image' || !features.image || pendingImages.size + images.length >= AGENT_LIMITS.imagesPerMessage) continue;
+      const args = parseArguments(call.arguments);
+      const prompt = args && text(args.prompt, AGENT_LIMITS.generationPrompt);
+      if (!args || !prompt) continue;
+      pendingImages.set(call.call_id, deps.tools.generation!.generateImage({ prompt, size: imageSize(args.size), alt: text(args.alt, 1_500) }).catch((): ImageOutcome => ({ ok: false, error: 'The picture could not be generated. Tell the user to try again later.' })));
+    }
     for (const call of calls) {
       const output = (value: unknown) => results.push({ type: 'function_call_output', call_id: call.call_id, output: typeof value === 'string' ? value : JSON.stringify(value) });
       if (!isTool(call.name)) {
@@ -185,6 +214,61 @@ export async function runAgentTurn(deps: AgentTurnDeps, userContent: string): Pr
         const { items, text: data } = await deps.tools.listMedia({ search: text(args.search, 80) });
         for (const m of items) known.set(m.id, m);
         output(data);
+      } else if (call.name === 'generate_image') {
+        if (!features.image) {
+          output('Picture generation is not available. Tell the user.');
+          continue;
+        }
+        const started = pendingImages.get(call.call_id);
+        if (!started) {
+          output(text(args.prompt, AGENT_LIMITS.generationPrompt) ? `Only ${AGENT_LIMITS.imagesPerMessage} pictures can be generated per request. Tell the user to ask for more in a new message.` : 'The description of the picture is missing. Call the tool again with a prompt.');
+          continue;
+        }
+        const result = await started;
+        if (!result.ok) {
+          output({ error: result.error });
+          continue;
+        }
+        known.set(result.item.id, result.item);
+        const shown = toAgentMedia(result.item);
+        images.push(shown);
+        deps.emit({ type: 'media', media: [shown] });
+        output({ media_id: result.item.id, name: result.item.name, width: result.item.width, height: result.item.height, note: 'Saved in the media library. Use media_id in propose_posts to attach it.' });
+      } else if (call.name === 'generate_video') {
+        const prompt = text(args.prompt, AGENT_LIMITS.generationPrompt);
+        if (!features.video) output('Video generation is not available. Tell the user.');
+        else if (!prompt) output('The description of the video is missing. Call the tool again with a prompt.');
+        else if (jobs.length >= AGENT_LIMITS.videosPerMessage) output(`Only ${AGENT_LIMITS.videosPerMessage} video can be started per request. Tell the user to ask for another in a new message.`);
+        else {
+          const refs = Array.isArray(args.reference_media_ids) ? args.reference_media_ids.filter((x): x is string => typeof x === 'string').slice(0, AGENT_LIMITS.videoReferences) : [];
+          const result = await deps.tools.generation!.startVideo({ prompt, orientation: args.orientation === 'horizontal' ? 'horizontal' : 'vertical', referenceIds: refs });
+          if (!result.ok) output({ error: result.error });
+          else {
+            jobs.push(result.job);
+            deps.emit({ type: 'job', job: result.job });
+            output({ job_id: result.job.id, status: 'pending', note: 'The video takes several minutes. Tell the user, in one sentence, that the app shows its progress under your message and that they can ask you to prepare a post once it is ready. Do not call video_status now.' });
+          }
+        }
+      } else if (call.name === 'video_status') {
+        const jobId = text(args.job_id, 64);
+        if (!features.video || !jobId) {
+          output('Video generation is not available, or job_id is missing.');
+          continue;
+        }
+        const result = await deps.tools.generation!.videoStatus(jobId);
+        if (!result.ok) {
+          output({ error: result.error });
+          continue;
+        }
+        deps.emit({ type: 'job', job: result.job });
+        if (result.item) {
+          known.set(result.item.id, result.item);
+          deps.emit({ type: 'media', media: [toAgentMedia(result.item)] });
+        }
+        output({
+          job_id: result.job.id, status: result.job.status, ...(result.job.mediaId ? { media_id: result.job.mediaId } : {}), ...(result.job.error ? { error: result.job.error } : {}),
+          note: result.job.status === 'pending' ? 'Still being generated. Tell the user it is not ready yet; do not call video_status again in this request.' : result.job.status === 'completed' ? 'Ready and saved in the media library: media_id can be attached to posts.' : 'Failed. Tell the user.',
+        });
       } else {
         const wanted = mediaIdsOf(args).filter((id) => !known.has(id));
         if (wanted.length > 0) for (const m of await deps.tools.mediaByIds(wanted)) known.set(m.id, m);
@@ -204,9 +288,9 @@ export async function runAgentTurn(deps: AgentTurnDeps, userContent: string): Pr
     input.push(...results);
   }
 
-  if (!reply && proposals.length === 0) throw new AgentEmptyError();
+  if (!reply && proposals.length === 0 && images.length === 0 && jobs.length === 0) throw new AgentEmptyError();
   if (proposals.length > 0) deps.emit({ type: 'proposals', proposals, media: proposalMedia });
-  return { text: reply, proposals, media: proposalMedia, usage };
+  return { text: reply, proposals, media: proposalMedia, images, jobs, usage };
 }
 
 /** Traduit une erreur du SDK ou de la boucle en code destiné à l'utilisateur ; le détail reste dans les journaux, sans aucun contenu de publication. */

@@ -2,6 +2,7 @@ import { fetch as streamingFetch } from "expo/fetch";
 
 import {
   createEventParser,
+  parseVideoJobResponse,
   sanitizeProposals,
   type AgentChatRequest,
   type AgentErrorCode,
@@ -10,6 +11,8 @@ import {
   type AgentProposal,
   type AgentProposalStatus,
   type AgentThread,
+  type AgentVideoJob,
+  type VideoJobResponse,
 } from "@/lib/agent-protocol";
 import { supabase } from "@/lib/supabase";
 import type { ChannelNetwork } from "@/types";
@@ -36,6 +39,9 @@ export const NETWORK_LIMITS: Partial<Record<ChannelNetwork, number>> = {
 export const MAX_MESSAGE_LENGTH = 2_000;
 export const MAX_MEDIA_PER_MESSAGE = 6;
 export const MAX_CHANNELS = 12;
+
+/** Une vidéo en cours est interrogée toutes les dix secondes (la route est limitée à 40 interrogations par minute et par personne). */
+export const VIDEO_POLL_MS = 10_000;
 
 const ERRORS: Record<AgentErrorCode, string> = {
   disabled: "L’agent n’est pas disponible : le service d’IA n’est pas configuré sur le serveur.",
@@ -98,13 +104,15 @@ export async function streamAgentChat(req: AgentChatRequest, onEvent: (event: Ag
 
 type Row = Record<string, any>;
 
+const strings = (v: unknown): string[] => (Array.isArray(v) ? v.filter((m: unknown): m is string => typeof m === "string") : []);
 const toThread = (r: Row): AgentThread => ({ id: r.id, title: r.title, updatedAt: r.updated_at });
 const toMessage = (r: Row): AgentMessage => ({
   id: r.id,
   role: r.role === "assistant" ? "assistant" : "user",
   text: r.content ?? "",
   proposals: sanitizeProposals(r.proposals),
-  mediaIds: Array.isArray(r.media_ids) ? r.media_ids.filter((m: unknown): m is string => typeof m === "string") : [],
+  mediaIds: strings(r.media_ids),
+  jobIds: strings(r.job_ids),
   createdAt: r.created_at,
 });
 
@@ -125,7 +133,7 @@ export async function loadThread(orgId: string, userId: string, id: string): Pro
   if (!row) return null;
   const { data } = await supabase
     .from("agent_messages")
-    .select("id, role, content, proposals, media_ids, created_at")
+    .select("id, role, content, proposals, media_ids, job_ids, created_at")
     .eq("thread_id", id)
     .order("created_at", { ascending: true })
     .limit(400);
@@ -150,4 +158,47 @@ export async function markProposals(orgId: string, messageId: string, updates: P
   });
   const { error } = await supabase.from("agent_messages").update({ proposals: next }).eq("id", messageId).eq("org_id", orgId);
   return !error;
+}
+
+const toJob = (r: Row): AgentVideoJob => ({
+  id: r.id,
+  // « saving » (une requête enregistre la vidéo terminée) est, pour l'utilisateur, une vidéo encore en cours.
+  status: r.status === "completed" ? "completed" : r.status === "failed" ? "failed" : "pending",
+  orientation: r.orientation === "horizontal" ? "horizontal" : "vertical",
+  prompt: r.prompt ?? "",
+  mediaId: r.media_id ?? null,
+  error: r.error ?? null,
+  createdAt: r.created_at,
+});
+
+/** Les vidéos lancées par une conversation, dans leur état du moment (tâches privées à leur auteur : la RLS ne rend que les siennes). */
+export async function loadJobs(orgId: string, userId: string, ids: string[]): Promise<AgentVideoJob[]> {
+  const unique = [...new Set(ids)];
+  if (unique.length === 0) return [];
+  const { data } = await supabase
+    .from("ai_video_jobs")
+    .select("id, status, orientation, prompt, media_id, error, created_at")
+    .eq("org_id", orgId)
+    .eq("created_by", userId)
+    .in("id", unique);
+  const byId = new Map(((data ?? []) as Row[]).map((r) => [r.id as string, toJob(r)]));
+  return ids.map((id) => byId.get(id)).filter((j): j is AgentVideoJob => !!j);
+}
+
+/**
+ * Interroge une vidéo en cours, ce qui la fait avancer côté serveur : une vidéo prête y est rangée dans la médiathèque. Null en cas d'erreur réseau,
+ * de session expirée ou de réponse inattendue : l'appelant réessaiera à la prochaine interrogation.
+ */
+export async function fetchVideoJob(id: string, signal?: AbortSignal): Promise<VideoJobResponse | null> {
+  if (!agentConfigured()) return null;
+  try {
+    const { data } = await supabase.auth.getSession();
+    const token = data.session?.access_token;
+    if (!token) return null;
+    const res = await fetch(`${WEB_URL}/api/agent/video/${encodeURIComponent(id)}`, { headers: { Authorization: `Bearer ${token}` }, signal });
+    if (!res.ok) return null;
+    return parseVideoJobResponse(await res.json());
+  } catch {
+    return null;
+  }
 }

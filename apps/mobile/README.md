@@ -59,7 +59,11 @@ médiathèque, préparation de publications) et **mêmes conversations** : un fi
 - Le protocole (`lib/agent-protocol.ts`) et le décompte des caractères (`lib/text-length.ts`) sont des miroirs de ceux du web : `apps/web/src/lib/agent/mobile-protocol.test.ts`
   fait tourner les deux versions sur les mêmes entrées et échoue si elles divergent.
 - La fonction Edge `agent-compose` (formulaire en un coup, modèle Claude) n'est plus appelée par l'application.
-- Mode démo (`EXPO_PUBLIC_DEMO=1`) : réponses simulées, rien n'est écrit dans un calendrier.
+- **Images et vidéos générées** (comme sur le web) : l'agent peut générer une image (`chatgpt-image-latest`), rangée dans la médiathèque et affichée sous sa réponse, et lancer une vidéo
+  (Seedance par Evolink, clé `EVOLINK_API_KEY` côté serveur). Une vidéo prend plusieurs minutes : sa carte interroge `GET {EXPO_PUBLIC_WEB_URL}/api/agent/video/<id>` toutes les 10 s
+  (avec le jeton Supabase) jusqu'à ce qu'elle soit rangée dans la médiathèque, puis propose de la voir (lecteur du système, aucune dépendance native ajoutée) et d'en préparer une publication.
+  Les tâches sont lues dans `ai_video_jobs` (privées à leur auteur, RLS). **Jamais essayé sur un téléphone.**
+- Mode démo (`EXPO_PUBLIC_DEMO=1`) : réponses simulées, rien n'est écrit dans un calendrier ; une demande d'image ou de vidéo reçoit une réponse qui dit que rien n'est généré en démonstration.
 
 ### Notifications push et appareil réel
 

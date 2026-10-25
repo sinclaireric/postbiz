@@ -1,9 +1,10 @@
 import OpenAI from 'openai';
 import { describe, expect, it } from 'vitest';
 import type { IntegrationItem, MediaItem } from '@/lib/data/types';
-import { AGENT_RULES } from './prompt';
+import { agentRules } from './prompt';
 import { agentErrorCode, AgentEmptyError, AgentRefusedError, DEFAULT_AGENT_MODEL, agentConfigured, agentModel, instructionsFor, runAgentTurn, type AgentClient, type AgentResponse, type AgentToolbox, type AgentTurnDeps } from './run';
-import { AGENT_LIMITS, type AgentEvent } from './types';
+import type { GenerationTools } from './generation';
+import { AGENT_LIMITS, type AgentEvent, type AgentVideoJob } from './types';
 
 type Params = Parameters<AgentClient['stream']>[0];
 
@@ -115,7 +116,7 @@ describe('runAgentTurn : une demande simple', () => {
   });
 
   it('sans base de connaissance, les instructions sont les seules règles', () => {
-    expect(instructionsFor([])).toBe(AGENT_RULES);
+    expect(instructionsFor([])).toBe(agentRules());
     expect(instructionsFor([{ title: 'Ton', content: 'Tutoiement.' }])).toContain('<knowledge_base>');
   });
 
@@ -247,5 +248,198 @@ describe('agentErrorCode', () => {
 
   it('une interruption voulue n’est pas journalisée comme une panne', () => {
     expect(agentErrorCode(new OpenAI.APIUserAbortError())).toBe('failed');
+  });
+});
+
+describe('runAgentTurn : génération d’images et de vidéos', () => {
+  const generated = (id: string): MediaItem => ({ ...image(id), name: `ai-image-${id}.jpg`, width: 1024, height: 1024 });
+  const job = (id = 'job1'): AgentVideoJob => ({ id, status: 'pending', orientation: 'vertical', prompt: 'Un rabot', mediaId: null, error: null, createdAt: '2026-10-27T10:00:00Z' });
+
+  /** Des outils de génération scriptés : chaque appel est consigné, chaque image porte un identifiant en séquence. */
+  function generation(over: Partial<GenerationTools> = {}) {
+    const log: { image: unknown[]; video: unknown[]; status: string[] } = { image: [], video: [], status: [] };
+    let n = 0;
+    const gen: GenerationTools = {
+      generateImage: async (args) => (log.image.push(args), { ok: true, item: generated(`g${++n}`) }),
+      startVideo: async (args) => (log.video.push(args), { ok: true, job: job() }),
+      videoStatus: async (id) => (log.status.push(id), { ok: true, job: { ...job(id), status: 'completed', mediaId: 'v1' }, item: { ...image('v1'), kind: 'video', url: 'https://cdn.test/v1.mp4' } }),
+      ...over,
+    };
+    return { gen, log };
+  }
+  const withGeneration = (g: GenerationTools, features = { image: true, video: true }) => ({ tools: tools({ generation: g }), features });
+  const outputs = (call: Params) => (call.input as { type?: string; output?: string }[]).filter((i) => i.type === 'function_call_output').map((i) => JSON.parse(i.output!) as Record<string, unknown>);
+  const toolNames = (call: Params) => (call.tools as { name: string }[]).map((t) => t.name);
+
+  it('propose les outils de génération (et leurs règles) seulement quand le serveur les offre', async () => {
+    const { gen } = generation();
+    const off = setup([reply([say('Bonjour')])], { tools: tools({ generation: gen }), features: { image: false, video: false } });
+    await runAgentTurn(off.deps, 'Salut');
+    expect(toolNames(off.calls[0]!)).toEqual(['propose_posts', 'list_posts', 'list_media']);
+    expect(off.calls[0]!.instructions).not.toContain('generate_image');
+
+    const none = setup([reply([say('Bonjour')])], { features: { image: true, video: true } });
+    await runAgentTurn(none.deps, 'Salut');
+    expect(toolNames(none.calls[0]!)).toEqual(['propose_posts', 'list_posts', 'list_media']); // pas d'outils de génération dans la boîte à outils
+
+    const images = setup([reply([say('Bonjour')])], withGeneration(gen, { image: true, video: false }));
+    await runAgentTurn(images.deps, 'Salut');
+    expect(toolNames(images.calls[0]!)).toEqual(['propose_posts', 'list_posts', 'list_media', 'generate_image']);
+    expect(images.calls[0]!.instructions).toContain('generate_image');
+    expect(images.calls[0]!.instructions).not.toContain('generate_video');
+
+    const both = setup([reply([say('Bonjour')])], withGeneration(gen));
+    await runAgentTurn(both.deps, 'Salut');
+    expect(toolNames(both.calls[0]!)).toEqual(['propose_posts', 'list_posts', 'list_media', 'generate_image', 'generate_video', 'video_status']);
+    expect(both.calls[0]!.instructions).toContain('generate_video');
+  });
+
+  it('génère une image, puis la joint à la publication préparée dans le même message', async () => {
+    const { gen, log } = generation();
+    const { deps, events, calls } = setup([
+      reply([say('Je crée l’image.'), call('c1', 'generate_image', { prompt: 'Un atelier de menuiserie', size: 'landscape', alt: 'Un atelier' })]),
+      reply([call('c2', 'propose_posts', { posts: [{ channel_id: 'fb', text: 'Atelier ouvert samedi !', media_ids: ['g1'] }] })]),
+    ], withGeneration(gen));
+    const result = await runAgentTurn(deps, 'Annonce l’atelier avec une image');
+
+    expect(log.image).toEqual([{ prompt: 'Un atelier de menuiserie', size: 'landscape', alt: 'Un atelier' }]);
+    expect(calls).toHaveLength(2);
+    expect(outputs(calls[1]!)[0]).toMatchObject({ media_id: 'g1', width: 1024, height: 1024 });
+    expect(result.images.map((m) => m.id)).toEqual(['g1']);
+    expect(result.proposals[0]!.mediaIds).toEqual(['g1']);
+    expect(result.media.map((m) => m.id)).toEqual(['g1']);
+    expect(events.map((e) => e.type)).toEqual(['text', 'tool', 'media', 'tool', 'proposals']);
+    expect(events.find((e) => e.type === 'media')).toMatchObject({ media: [{ id: 'g1', kind: 'image' }] });
+  });
+
+  it('une taille inconnue devient carrée ; l’outil ne reçoit que les champs attendus', async () => {
+    const { gen, log } = generation();
+    const { deps } = setup([reply([call('c1', 'generate_image', { prompt: 'Un phare', size: 'enorme', evil: 'x' })]), reply([say('Voilà.')])], withGeneration(gen));
+    await runAgentTurn(deps, 'Une image d’un phare');
+    expect(log.image).toEqual([{ prompt: 'Un phare', size: 'square', alt: undefined }]);
+  });
+
+  it('plusieurs images demandées en même temps sont générées en parallèle', async () => {
+    let running = 0;
+    let peak = 0;
+    const { gen } = generation({
+      generateImage: async () => { peak = Math.max(peak, ++running); await new Promise((r) => setTimeout(r, 10)); running--; return { ok: true, item: generated(`g${peak}-${Math.random()}`) }; },
+    });
+    const { deps } = setup([reply([call('a', 'generate_image', { prompt: 'Un' }), call('b', 'generate_image', { prompt: 'Deux' }), call('c', 'generate_image', { prompt: 'Trois' })]), reply([say('Voici.')])], withGeneration(gen));
+    const result = await runAgentTurn(deps, 'Trois images');
+    expect(peak).toBe(3);
+    expect(result.images).toHaveLength(3);
+  });
+
+  it(`au plus ${AGENT_LIMITS.imagesPerMessage} images par demande : les suivantes ne partent pas, le modèle est prévenu`, async () => {
+    const { gen, log } = generation();
+    const four = Array.from({ length: 4 }, (_, i) => call(`c${i}`, 'generate_image', { prompt: `Image ${i}` }));
+    const { deps, calls } = setup([reply(four), reply([say('Trois images sont prêtes.')])], withGeneration(gen));
+    const result = await runAgentTurn(deps, 'Quatre images');
+    expect(log.image).toHaveLength(AGENT_LIMITS.imagesPerMessage);
+    expect(result.images).toHaveLength(AGENT_LIMITS.imagesPerMessage);
+    expect(JSON.stringify(calls[1]!.input)).toContain(`Only ${AGENT_LIMITS.imagesPerMessage} pictures can be generated per request`);
+  });
+
+  it('un échec de génération est rendu au modèle, qui l’explique ; rien n’est joint', async () => {
+    const { gen } = generation({ generateImage: async () => ({ ok: false, error: 'The image provider refused this description (content policy).' }) });
+    const { deps, calls } = setup([reply([call('c1', 'generate_image', { prompt: 'Interdit' })]), reply([say('Cette image n’est pas possible.')])], withGeneration(gen));
+    const result = await runAgentTurn(deps, 'Une image');
+    expect(outputs(calls[1]!)[0]).toEqual({ error: 'The image provider refused this description (content policy).' });
+    expect(result.text).toBe('Cette image n’est pas possible.');
+    expect(result.images).toEqual([]);
+  });
+
+  it('une génération qui lève une exception ne casse pas la conversation', async () => {
+    const { gen } = generation({ generateImage: async () => { throw new Error('boum'); } });
+    const { deps, calls } = setup([reply([call('c1', 'generate_image', { prompt: 'Un phare' })]), reply([say('Désolé.')])], withGeneration(gen));
+    const result = await runAgentTurn(deps, 'Une image');
+    expect(outputs(calls[1]!)[0]).toMatchObject({ error: expect.stringMatching(/could not be generated/) });
+    expect(result.text).toBe('Désolé.');
+  });
+
+  it('sans description, l’outil n’est pas appelé', async () => {
+    const { gen, log } = generation();
+    const { deps, calls } = setup([reply([call('c1', 'generate_image', { prompt: '  ' })]), reply([say('Que voulez-vous voir ?')])], withGeneration(gen));
+    await runAgentTurn(deps, 'Une image');
+    expect(log.image).toEqual([]);
+    expect(JSON.stringify(calls[1]!.input)).toContain('description of the picture is missing');
+  });
+
+  it('lance une vidéo : la tâche est annoncée au navigateur, le modèle sait qu’elle prend des minutes', async () => {
+    const { gen, log } = generation();
+    const { deps, events, calls } = setup([
+      reply([call('c1', 'generate_video', { prompt: 'Un rabot sur du chêne', orientation: 'horizontal', reference_media_ids: ['m1', 4, 'm2'] })]),
+      reply([say('Votre vidéo est en préparation, quelques minutes.')]),
+    ], withGeneration(gen));
+    const result = await runAgentTurn(deps, 'Une vidéo de l’atelier');
+
+    expect(log.video).toEqual([{ prompt: 'Un rabot sur du chêne', orientation: 'horizontal', referenceIds: ['m1', 'm2'] }]);
+    expect(result.jobs.map((j) => j.id)).toEqual(['job1']);
+    expect(events.filter((e) => e.type === 'job')).toEqual([{ type: 'job', job: job() }]);
+    expect(outputs(calls[1]!)[0]).toMatchObject({ job_id: 'job1', status: 'pending', note: expect.stringContaining('several minutes') });
+    expect(result.text).toBe('Votre vidéo est en préparation, quelques minutes.');
+  });
+
+  it('une orientation inconnue devient verticale ; une seule vidéo par demande', async () => {
+    const { gen, log } = generation();
+    const { deps, calls } = setup([reply([call('a', 'generate_video', { prompt: 'Un' }), call('b', 'generate_video', { prompt: 'Deux' })]), reply([say('Une vidéo est lancée.')])], withGeneration(gen));
+    const result = await runAgentTurn(deps, 'Deux vidéos');
+    expect(log.video).toEqual([{ prompt: 'Un', orientation: 'vertical', referenceIds: [] }]);
+    expect(result.jobs).toHaveLength(1);
+    expect(JSON.stringify(calls[1]!.input)).toContain('Only 1 video can be started per request');
+  });
+
+  it('une vidéo refusée (plafond, fournisseur) est expliquée par le modèle', async () => {
+    const { gen } = generation({ startVideo: async () => ({ ok: false, error: 'This organization reached its limit of 5 generated videos per day.' }) });
+    const { deps, calls } = setup([reply([call('c1', 'generate_video', { prompt: 'Un rabot' })]), reply([say('Limite atteinte.')])], withGeneration(gen));
+    const result = await runAgentTurn(deps, 'Une vidéo');
+    expect(outputs(calls[1]!)[0]).toMatchObject({ error: expect.stringContaining('limit of 5') });
+    expect(result.jobs).toEqual([]);
+  });
+
+  it('la vidéo n’est pas proposée quand le serveur ne l’offre pas : l’appel reçoit une réponse claire', async () => {
+    const { gen, log } = generation();
+    const { deps, calls } = setup([reply([call('c1', 'generate_video', { prompt: 'Un rabot' })]), reply([say('Pas de vidéo ici.')])], withGeneration(gen, { image: true, video: false }));
+    await runAgentTurn(deps, 'Une vidéo');
+    expect(log.video).toEqual([]);
+    expect(JSON.stringify(calls[1]!.input)).toContain('Video generation is not available');
+  });
+
+  it('video_status : une vidéo prête devient un média utilisable dans les publications du même message', async () => {
+    const { gen, log } = generation();
+    const { deps, events } = setup([
+      reply([call('c1', 'video_status', { job_id: 'job1' })]),
+      reply([call('c2', 'propose_posts', { posts: [{ channel_id: 'ig', text: 'Coulisses !', media_ids: ['v1'] }] })]),
+    ], withGeneration(gen));
+    const result = await runAgentTurn(deps, 'Ma vidéo est prête ? Prépare le post');
+    expect(log.status).toEqual(['job1']);
+    expect(result.proposals[0]!.mediaIds).toEqual(['v1']);
+    expect(events.filter((e) => e.type === 'job' || e.type === 'media').map((e) => e.type)).toEqual(['job', 'media']);
+  });
+
+  it('video_status : encore en cours, ou en échec', async () => {
+    const pending = generation({ videoStatus: async (id) => ({ ok: true, job: job(id), item: null }) });
+    const a = setup([reply([call('c1', 'video_status', { job_id: 'job1' })]), reply([say('Pas encore prête.')])], withGeneration(pending.gen));
+    await runAgentTurn(a.deps, 'Prête ?');
+    expect(outputs(a.calls[1]!)[0]).toMatchObject({ status: 'pending', note: expect.stringContaining('do not call video_status again') });
+
+    const failed = generation({ videoStatus: async (id) => ({ ok: true, job: { ...job(id), status: 'failed', error: 'Rejected' }, item: null }) });
+    const b = setup([reply([call('c1', 'video_status', { job_id: 'job1' })]), reply([say('Elle a échoué.')])], withGeneration(failed.gen));
+    await runAgentTurn(b.deps, 'Prête ?');
+    expect(outputs(b.calls[1]!)[0]).toMatchObject({ status: 'failed', error: 'Rejected' });
+
+    const missing = generation({ videoStatus: async () => ({ ok: false, error: 'Video job not found.' }) });
+    const c = setup([reply([call('c1', 'video_status', { job_id: 'autre' })]), reply([say('Introuvable.')])], withGeneration(missing.gen));
+    await runAgentTurn(c.deps, 'Prête ?');
+    expect(outputs(c.calls[1]!)[0]).toEqual({ error: 'Video job not found.' });
+  });
+
+  it('une réponse faite seulement d’images générées n’est pas « vide »', async () => {
+    const { gen } = generation();
+    const { deps } = setup([reply([call('c1', 'generate_image', { prompt: 'Un phare' })]), reply([])], withGeneration(gen));
+    const result = await runAgentTurn(deps, 'Un phare');
+    expect(result.text).toBe('');
+    expect(result.images).toHaveLength(1);
   });
 });

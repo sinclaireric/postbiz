@@ -15,6 +15,12 @@ export const AGENT_LIMITS = {
   toolTurns: 4,
   proposalsPerCall: 8,
   threadTitle: 80,
+  /** Génération : chaque image ou vidéo est facturée par le fournisseur, donc plafonnée par message (et par jour, voir `config.ts`). */
+  imagesPerMessage: 3,
+  videosPerMessage: 1,
+  generationPrompt: 2_000,
+  /** Images de la médiathèque que l'on peut donner à Seedance comme référence (comme dans Postiz). */
+  videoReferences: 3,
 } as const;
 
 /** `pending` : à relire ; `draft` : enregistrée en brouillon ; `scheduled` : programmée. */
@@ -39,8 +45,27 @@ export interface AgentMessage {
   role: 'user' | 'assistant';
   text: string;
   proposals: AgentProposal[];
-  /** Médias de la bibliothèque joints au message de l'utilisateur. */
+  /** Message de l'utilisateur : médias de la bibliothèque joints. Message de l'agent : images qu'il a générées. */
   mediaIds: string[];
+  /** Vidéos que l'agent a lancées dans ce message (leur état se lit dans `ai_video_jobs`, il change après coup). */
+  jobIds: string[];
+  createdAt: string;
+}
+
+/** `pending` : en cours chez le fournisseur ; `completed` : enregistrée dans la médiathèque ; `failed` : abandonnée (`error` en donne la raison). */
+export type AgentJobStatus = 'pending' | 'completed' | 'failed';
+export type VideoOrientation = 'vertical' | 'horizontal';
+
+/** Une vidéo en cours de génération (Seedance) : elle prend plusieurs minutes, bien plus qu'une réponse de l'agent. */
+export interface AgentVideoJob {
+  id: string;
+  status: AgentJobStatus;
+  orientation: VideoOrientation;
+  prompt: string;
+  /** La vidéo, une fois terminée. */
+  mediaId: string | null;
+  /** Raison de l'échec, déjà lisible (jamais une réponse brute du fournisseur). */
+  error: string | null;
   createdAt: string;
 }
 
@@ -61,6 +86,14 @@ export interface AgentMedia {
   durationSeconds: number | null;
 }
 
+/** Ce que renvoie `GET /api/agent/video/<id>` : l'état de la vidéo, et, une fois prête, son média et une adresse signée pour la lire. */
+export interface VideoJobResponse {
+  job: AgentVideoJob;
+  media: AgentMedia | null;
+  /** Adresse signée et temporaire de la vidéo (le bucket est privé). */
+  url: string | null;
+}
+
 export type AgentErrorCode = 'disabled' | 'forbidden' | 'invalid' | 'rate_limited' | 'refused' | 'empty' | 'failed' | 'not_found';
 
 /** Ce que la route d'API renvoie au navigateur, un objet JSON par ligne. */
@@ -69,10 +102,14 @@ export type AgentEvent =
   /** L'agent consulte quelque chose (publications, médias) ou prépare des publications : le navigateur affiche « … en cours ». */
   | { type: 'tool'; name: AgentToolName }
   | { type: 'proposals'; proposals: AgentProposal[]; media: AgentMedia[] }
+  /** Images que l'agent vient de générer : déjà dans la médiathèque. */
+  | { type: 'media'; media: AgentMedia[] }
+  /** Une vidéo vient d'être lancée (ou son état a changé) : le navigateur suit sa progression. */
+  | { type: 'job'; job: AgentVideoJob }
   | { type: 'done'; thread: AgentThread; user: AgentMessage; assistant: AgentMessage }
   | { type: 'error'; code: AgentErrorCode };
 
-export const AGENT_TOOLS = ['list_posts', 'list_media', 'propose_posts'] as const;
+export const AGENT_TOOLS = ['list_posts', 'list_media', 'propose_posts', 'generate_image', 'generate_video', 'video_status'] as const;
 export type AgentToolName = (typeof AGENT_TOOLS)[number];
 
 /** Corps de la requête envoyée à la route d'API (donnée non fiable : relue par `parseChatRequest`). */

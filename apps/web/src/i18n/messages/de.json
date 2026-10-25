@@ -729,7 +729,10 @@
       "tool": {
         "list_posts": "Prüft den Kalender …",
         "list_media": "Durchsucht die Medienbibliothek …",
-        "propose_posts": "Bereitet die Beiträge vor …"
+        "propose_posts": "Bereitet die Beiträge vor …",
+        "generate_image": "Bild wird erstellt …",
+        "generate_video": "Video wird gestartet …",
+        "video_status": "Video wird geprüft …"
       },
       "proposals": {
         "fallback": "Das habe ich vorbereitet. Prüfen Sie jeden Beitrag, bearbeiten Sie ihn bei Bedarf und speichern Sie ihn als Entwurf oder planen Sie ihn ein."
@@ -767,7 +770,28 @@
         "intro": "Das habe ich für Ihre Kanäle vorbereitet.",
         "skipped": "Für {networks} habe ich nichts vorbereitet: Das Netzwerk verlangt ein Bild oder Video (hängen Sie eines an), oder Veröffentlichen ist dort noch nicht verfügbar.",
         "noPosts": "In den nächsten 30 Tagen ist auf den angehakten Kanälen nichts geplant.",
-        "upcoming": "Das ist in den nächsten 30 Tagen geplant:"
+        "upcoming": "Das ist in den nächsten 30 Tagen geplant:",
+        "imageDone": "Ich habe das Bild erstellt und in Ihrer Mediathek abgelegt. Im Demomodus ersetzt eine Zeichnung das Bild.",
+        "videoStarted": "Ich habe das Video gestartet; der Fortschritt wird unten angezeigt. Im Demomodus ist es in wenigen Sekunden fertig.",
+        "generationFailed": "Ich konnte es nicht erstellen. Möglicherweise ist das Tageslimit erreicht."
+      },
+      "generated": {
+        "label": "Erstellte Bilder",
+        "open": "Bild „{name}“ ansehen"
+      },
+      "video": {
+        "label": "Videoerstellung",
+        "pending": "Video wird erstellt …",
+        "hint": "Das dauert einige Minuten. Sie können diese Seite geöffnet lassen oder später wiederkommen: Das Video liegt dann in Ihrer Mediathek.",
+        "ready": "Video fertig",
+        "failed": "Das Video konnte nicht erstellt werden.",
+        "reason": "Grund: {reason}",
+        "removed": "Dieses Video wurde aus der Mediathek entfernt.",
+        "use": "Beitrag mit diesem Video vorbereiten",
+        "usePrompt": "Bereite einen Beitrag mit diesem Video vor.",
+        "demo": "Demomodus: Es wird kein echtes Video abgespielt.",
+        "vertical": "Hochformat 9:16",
+        "horizontal": "Querformat 16:9"
       }
     },
     "demoStrip": "Demomodus: Beispieldaten, es wird nichts an die Netzwerke gesendet.",
@@ -1150,8 +1174,8 @@
       "source": "Quelle",
       "replace": "Meinen Text ersetzen",
       "append": "Am Ende anfügen",
-      "unavailable": "Der KI-Assistent ist auf diesem Server nicht aktiviert: Tragen Sie ANTHROPIC_API_KEY in der Konfiguration ein.",
-      "privacy": "Ihr Text und Ihre Wissensdatenbank werden an Anthropic (Claude) gesendet, um die Vorschläge zu erstellen.",
+      "unavailable": "Der KI-Assistent ist auf diesem Server nicht aktiviert: Tragen Sie OPENAI_API_KEY in der Konfiguration ein.",
+      "privacy": "Ihr Text und Ihre Wissensdatenbank werden an OpenAI (GPT-4.1) gesendet, um die Vorschläge zu erstellen.",
       "review": "Prüfen Sie jeden Vorschlag vor dem Veröffentlichen: Der Assistent kann sich irren.",
       "errors": {
         "disabled": "Der KI-Assistent ist nicht verfügbar (API-Schlüssel fehlt oder wurde abgelehnt).",

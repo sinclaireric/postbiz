@@ -7,7 +7,7 @@ import type {
   ConversationDetail, ConversationStatus, ConversationSummary, InboxRepository, MessageItem, NetworkId, NoteItem,
 } from '@/lib/inbox/types';
 import type {
-  AgentRepository, AppContext, CreatePostInput, IntegrationItem, KnowledgeInput, KnowledgeItem, KnowledgeRepository, MediaItem, MediaRepository, MemberItem, NotificationItem, PostItem, PostsRepository, Repositories, Result, WorkspaceRepository,
+  AgentRepository, AppContext, CreatePostInput, GenerationRepository, IntegrationItem, KnowledgeInput, KnowledgeItem, KnowledgeRepository, MediaItem, MediaRepository, MemberItem, NotificationItem, PostItem, PostsRepository, Repositories, Result, VideoJobRecord, WorkspaceRepository,
 } from './types';
 
 // Mode démo : données d'exemple en mémoire, partagées par tous les visiteurs du serveur de développement.
@@ -35,6 +35,10 @@ interface Store {
   media: MediaItem[];
   /** Conversations de l'agent (la plus récente en dernier). */
   agentThreads: { thread: AgentThread; messages: AgentMessage[] }[];
+  /** Vidéos « générées » de la démo : aucun fournisseur n'est appelé, la tâche se termine seule après quelques secondes. */
+  videoJobs: VideoJobRecord[];
+  /** Générations lancées depuis l'ouverture de la démo (pour le plafond journalier). */
+  generations: { kind: 'image' | 'video'; at: number }[];
   orgName: string;
   seq: number;
 }
@@ -158,7 +162,7 @@ function seed(): Store {
   });
 
   return {
-    conversations, integrations, media: library, agentThreads: [], orgName: DEMO_CONTEXT.org.name, seq,
+    conversations, integrations, media: library, agentThreads: [], videoJobs: [], generations: [], orgName: DEMO_CONTEXT.org.name, seq,
     notifications: [
       { id: 'nt1', type: 'post_error', title: 'Canal à reconnecter', body: 'Le jeton d’accès a expiré : reconnectez le canal.', createdAt: ago(3 * H), read: false, href: '/app/calendrier' },
       { id: 'nt2', type: 'message_failed', title: 'Réponse non envoyée', body: 'La fenêtre de 24 h est dépassée : Meta n’autorise plus de réponse à cette conversation.', createdAt: ago(26 * H), read: true, href: '/app/inbox?c=c5' },
@@ -347,8 +351,8 @@ const agent: AgentRepository = {
       entry = { thread: { id: id('a'), title, updatedAt: new Date(now).toISOString() }, messages: [] };
       threads.push(entry);
     }
-    const userMessage: AgentMessage = { id: id('am'), role: 'user', text: user.text, proposals: [], mediaIds: user.mediaIds, createdAt: new Date(now).toISOString() };
-    const assistantMessage: AgentMessage = { id: id('am'), role: 'assistant', text: assistant.text, proposals: structuredClone(assistant.proposals), mediaIds: [], createdAt: new Date(now + 1).toISOString() };
+    const userMessage: AgentMessage = { id: id('am'), role: 'user', text: user.text, proposals: [], mediaIds: user.mediaIds, jobIds: [], createdAt: new Date(now).toISOString() };
+    const assistantMessage: AgentMessage = { id: id('am'), role: 'assistant', text: assistant.text, proposals: structuredClone(assistant.proposals), mediaIds: assistant.mediaIds, jobIds: assistant.jobIds, createdAt: new Date(now + 1).toISOString() };
     entry.messages.push(userMessage, assistantMessage);
     entry.thread.updatedAt = assistantMessage.createdAt;
     return structuredClone({ thread: entry.thread, user: userMessage, assistant: assistantMessage });
@@ -366,6 +370,59 @@ const agent: AgentRepository = {
     const s = store();
     s.agentThreads = (s.agentThreads ?? []).filter((t) => t.thread.id !== threadId);
     return { ok: true };
+  },
+};
+
+/** Générations de la démo : la médiathèque en mémoire reçoit un visuel dessiné (le même que les médias d'exemple) ; aucun fichier n'est envoyé nulle part. */
+const generation: GenerationRepository = {
+  async reserve(kind, limit) {
+    const s = store();
+    const since = Date.now() - 86_400_000;
+    if (s.generations.filter((g) => g.kind === kind && g.at > since).length >= limit) return false;
+    s.generations.push({ kind, at: Date.now() });
+    return true;
+  },
+  async createMedia(input) {
+    const s = store();
+    const shapes = ['moon', 'wave', 'arch', 'sun', 'dots', 'tri'] as const;
+    const palette = [['#c6f432', '#6fae1f'], ['#ffb86b', '#e1306c'], ['#8fb8ff', '#3b5bdb'], ['#d4a5ff', '#7048e8'], ['#f9d976', '#f39f86']] as const;
+    const n = [...input.name].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7);
+    const [a, b] = palette[n % palette.length]!;
+    const src = art(a, b, shapes[n % shapes.length]!);
+    const kind = input.mimeType.startsWith('video/') ? 'video' : 'image';
+    const item: MediaItem = {
+      id: id('m'), path: `demo/${input.name}`, name: input.name, mimeType: input.mimeType, kind, sizeBytes: input.bytes.byteLength, width: input.width, height: input.height,
+      durationSeconds: input.durationSeconds, alt: input.alt, createdAt: new Date().toISOString(), url: kind === 'image' ? src : null, thumbUrl: src,
+    };
+    s.media.unshift(item);
+    return { ...item };
+  },
+  async activeJobs() {
+    return store().videoJobs.filter((j) => j.status === 'pending').length;
+  },
+  async createJob(input) {
+    const job: VideoJobRecord = { id: id('vj'), status: 'pending', orientation: input.orientation, prompt: input.prompt, mediaId: null, error: null, createdAt: new Date().toISOString(), providerTaskId: input.providerTaskId, claimedAt: null };
+    store().videoJobs.push(job);
+    return { ...job };
+  },
+  async jobs(ids) {
+    const byId = new Map(store().videoJobs.map((j) => [j.id, j]));
+    return ids.map((i) => byId.get(i)).filter((j): j is VideoJobRecord => !!j).map((j) => ({ ...j }));
+  },
+  async claimJob(jobId) {
+    const job = store().videoJobs.find((j) => j.id === jobId);
+    if (!job || job.status !== 'pending' || job.claimedAt) return false;
+    job.claimedAt = new Date().toISOString();
+    return true;
+  },
+  async settleJob(jobId, result) {
+    const job = store().videoJobs.find((j) => j.id === jobId);
+    if (!job) return false;
+    job.claimedAt = null;
+    job.status = result.status;
+    if (result.status === 'completed') Object.assign(job, { mediaId: result.mediaId, error: null });
+    if (result.status === 'failed') job.error = result.error;
+    return true;
   },
 };
 
@@ -390,5 +447,5 @@ const analytics: AnalyticsRepository = {
   },
 };
 
-export const demoRepositories: Repositories = { inbox, posts, workspace, media, knowledge, analytics, agent };
+export const demoRepositories: Repositories = { inbox, posts, workspace, media, knowledge, analytics, agent, generation };
 export const demoOrgName = () => store().orgName;

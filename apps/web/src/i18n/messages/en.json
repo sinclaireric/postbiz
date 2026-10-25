@@ -622,7 +622,8 @@
         "li1": "Supabase Inc. — database, authentication and file storage.",
         "li2": "Vercel Inc. — hosting of the website and the app.",
         "li3": "Email delivery provider — sign-in messages and notifications.",
-        "li4": "Anthropic — AI assistant, only when you use it: the text entered in the assistant is sent to it to produce the answer.",
+        "li4": "OpenAI — AI assistant, agent and picture generation, only when you use them: the text you enter, your knowledge base and, for the agent, your connected channels’ names and recent posts are sent to it to produce the answer; pictures are generated from the description the agent writes.",
+        "li5": "Evolink (Seedance) — video generation, only when you ask the agent for a video: the description of the video and, if you choose reference pictures, temporary links to those pictures are sent to it.",
         "p1": "The social networks you connect are separate data controllers, governed by their own policies. Some processors are located outside the European Union, notably in the United States: transfers then rely on the mechanisms provided for by the GDPR (adequacy decision or standard contractual clauses)."
       },
       "s8": {
@@ -1239,7 +1240,10 @@
       "tool": {
         "list_posts": "Checking the calendar…",
         "list_media": "Searching the media library…",
-        "propose_posts": "Preparing the posts…"
+        "propose_posts": "Preparing the posts…",
+        "generate_image": "Generating the picture…",
+        "generate_video": "Starting the video…",
+        "video_status": "Checking the video…"
       },
       "proposals": {
         "fallback": "Here is what I prepared. Review each post, edit it if needed, then save it as a draft or schedule it."
@@ -1277,7 +1281,28 @@
         "intro": "Here is what I prepared for your channels.",
         "skipped": "I prepared nothing for {networks}: the network requires a picture or a video (attach one), or publishing is not available there yet.",
         "noPosts": "Nothing is scheduled in the next 30 days on the ticked channels.",
-        "upcoming": "Here is what is planned in the next 30 days:"
+        "upcoming": "Here is what is planned in the next 30 days:",
+        "imageDone": "I generated the picture and saved it in your media library. In demo mode, a drawing stands in for the picture.",
+        "videoStarted": "I started the video; its progress is shown below. In demo mode it finishes in a few seconds.",
+        "generationFailed": "I could not generate it. The daily limit may be reached."
+      },
+      "generated": {
+        "label": "Generated pictures",
+        "open": "View the picture “{name}”"
+      },
+      "video": {
+        "label": "Video generation",
+        "pending": "Video being generated…",
+        "hint": "This takes a few minutes. You can leave this page open or come back later: the video will be in your media library.",
+        "ready": "Video ready",
+        "failed": "The video could not be generated.",
+        "reason": "Reason: {reason}",
+        "removed": "This video was removed from the media library.",
+        "use": "Prepare a post with this video",
+        "usePrompt": "Prepare a post with this video.",
+        "demo": "Demo mode: no real video is played.",
+        "vertical": "Vertical 9:16",
+        "horizontal": "Horizontal 16:9"
       }
     },
     "demoStrip": "Demo mode: sample data, nothing is sent to the networks.",
@@ -1719,8 +1744,8 @@
       "source": "Source",
       "replace": "Replace my text",
       "append": "Add after my text",
-      "unavailable": "The AI assistant is not enabled on this server: set ANTHROPIC_API_KEY in the configuration.",
-      "privacy": "Your text and knowledge base are sent to Anthropic (Claude) to generate suggestions.",
+      "unavailable": "The AI assistant is not enabled on this server: set OPENAI_API_KEY in the configuration.",
+      "privacy": "Your text and knowledge base are sent to OpenAI (GPT-4.1) to generate suggestions.",
       "review": "Always review a suggestion before publishing: the assistant can be wrong.",
       "errors": {
         "disabled": "The AI assistant is unavailable (missing or rejected API key).",

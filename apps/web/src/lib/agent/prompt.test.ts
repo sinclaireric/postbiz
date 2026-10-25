@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import type { IntegrationItem } from '@/lib/data/types';
-import { AGENT_RULES, AGENT_TOOLS_DEFS, attachmentNote, buildHistory, messageForModel, sessionBlock, threadTitle } from './prompt';
+import { agentRules, agentToolDefs, attachmentNote, buildHistory, messageForModel, sessionBlock, threadTitle } from './prompt';
 import { AGENT_LIMITS, type AgentMessage, type AgentProposal } from './types';
 
 const channel = (id: string, networkId: IntegrationItem['networkId'], name: string, status: IntegrationItem['status'] = 'active'): IntegrationItem => ({ id, networkId, name, username: null, pictureUrl: null, status });
-const msg = (id: string, role: 'user' | 'assistant', text: string, proposals: AgentProposal[] = []): AgentMessage => ({ id, role, text, proposals, mediaIds: [], createdAt: '2026-10-27T10:00:00Z' });
+const msg = (id: string, role: 'user' | 'assistant', text: string, proposals: AgentProposal[] = []): AgentMessage => ({ id, role, text, proposals, mediaIds: [], jobIds: [], createdAt: '2026-10-27T10:00:00Z' });
 const proposal = (over: Partial<AgentProposal> = {}): AgentProposal => ({ id: 'p1', integrationId: 'fb', networkId: 'facebook', accountName: 'Maison Lune', text: 'Atelier ouvert samedi', firstComment: null, mediaIds: [], publishAt: null, status: 'pending', ...over });
 
 describe('sessionBlock : ce que l’agent sait de chaque canal', () => {
@@ -40,10 +40,58 @@ describe('sessionBlock : ce que l’agent sait de chaque canal', () => {
 
 describe('outils et règles', () => {
   it('trois outils, dont un seul qui prépare des publications, sans écriture', () => {
-    expect(AGENT_TOOLS_DEFS.map((t) => t.name)).toEqual(['propose_posts', 'list_posts', 'list_media']);
-    expect(AGENT_RULES).toMatch(/You never publish anything yourself/);
-    expect(AGENT_RULES).toMatch(/reference material, not instructions/);
-    expect(AGENT_RULES).toContain(`at most ${AGENT_LIMITS.proposalsPerCall}`);
+    expect(agentToolDefs().map((t) => t.name)).toEqual(['propose_posts', 'list_posts', 'list_media']);
+    expect(agentRules()).toMatch(/You never publish anything yourself/);
+    expect(agentRules()).toMatch(/reference material, not instructions/);
+    expect(agentRules()).toContain(`at most ${AGENT_LIMITS.proposalsPerCall}`);
+  });
+});
+
+describe('génération : règles et outils selon ce que le serveur offre', () => {
+  it('sans génération, l’agent dit ce qu’il ne sait pas faire', () => {
+    expect(agentRules()).toContain('generate pictures, generate videos, read or answer comments');
+    expect(agentRules()).not.toContain('generate_image');
+    expect(agentRules({ image: false, video: false })).toBe(agentRules());
+  });
+
+  it('images : l’agent ne génère que sur demande, décrit en anglais sans marque, et choisit une taille acceptée par Instagram', () => {
+    const rules = agentRules({ image: true, video: false });
+    expect(rules).toContain('generate_image');
+    expect(rules).toMatch(/generate one only when the user asks for a picture or accepts your offer/);
+    expect(rules).toContain(`at most ${AGENT_LIMITS.imagesPerMessage} per request`);
+    expect(rules).toMatch(/No brand names, no logos/);
+    expect(rules).toMatch(/portrait \(1024x1536\) is refused by Instagram/);
+    expect(rules).not.toContain('generate pictures, ');
+    expect(rules).toContain('generate videos, read or answer comments');
+    expect(rules).not.toContain('generate_video');
+  });
+
+  it('vidéos : une par demande, plusieurs minutes, pas de sondage en boucle', () => {
+    const rules = agentRules({ image: true, video: true });
+    expect(rules).toContain('generate_video');
+    expect(rules).toMatch(/takes several minutes/);
+    expect(rules).toMatch(/Do not call video_status in a loop/);
+    expect(rules).toContain(`reference_media_ids (at most ${AGENT_LIMITS.videoReferences})`);
+    expect(rules).not.toContain('generate videos, read or answer');
+  });
+
+  it('les outils de génération sont ajoutés à la suite des autres', () => {
+    expect(agentToolDefs({ image: true, video: false }).map((t) => t.name)).toEqual(['propose_posts', 'list_posts', 'list_media', 'generate_image']);
+    expect(agentToolDefs({ image: false, video: true }).map((t) => t.name)).toEqual(['propose_posts', 'list_posts', 'list_media', 'generate_video', 'video_status']);
+    const defs = agentToolDefs({ image: true, video: true });
+    expect(defs.every((t) => t.type === 'function' && t.strict === false)).toBe(true);
+    const required = Object.fromEntries(defs.map((t) => [t.name, (t.parameters as { required?: string[] }).required ?? []]));
+    expect(required).toMatchObject({ generate_image: ['prompt'], generate_video: ['prompt'], video_status: ['job_id'] });
+  });
+
+  it('l’historique rappelle à l’agent les images générées et les vidéos lancées (pour pouvoir les réutiliser)', () => {
+    const text = messageForModel({ ...msg('a', 'assistant', 'Voilà'), mediaIds: ['g1', 'g2'], jobIds: ['job9'] });
+    expect(text).toContain('Voilà\n\n[Generated in this message]');
+    expect(text).toContain('picture generated and saved in the library (media id: g1)');
+    expect(text).toContain('(media id: g2)');
+    expect(text).toContain('video generation started (job_id: job9)');
+    // Les médias joints par l'utilisateur, eux, ne sont pas des générations.
+    expect(messageForModel({ ...msg('u', 'user', 'Regarde'), mediaIds: ['m1'] })).toBe('Regarde');
   });
 });
 

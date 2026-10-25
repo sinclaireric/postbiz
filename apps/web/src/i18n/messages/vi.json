@@ -717,7 +717,10 @@
       "tool": {
         "list_posts": "Đang xem lịch…",
         "list_media": "Đang tìm trong thư viện phương tiện…",
-        "propose_posts": "Đang soạn các bài đăng…"
+        "propose_posts": "Đang soạn các bài đăng…",
+        "generate_image": "Đang tạo hình ảnh…",
+        "generate_video": "Đang bắt đầu video…",
+        "video_status": "Đang kiểm tra video…"
       },
       "proposals": {
         "fallback": "Đây là những gì tôi đã soạn. Hãy xem lại từng bài, chỉnh sửa nếu cần, rồi lưu thành bản nháp hoặc lên lịch."
@@ -755,7 +758,28 @@
         "intro": "Đây là những gì tôi đã soạn cho các kênh của bạn.",
         "skipped": "Tôi chưa soạn gì cho {networks}: mạng này yêu cầu ảnh hoặc video (hãy đính kèm), hoặc chưa hỗ trợ đăng ở đó.",
         "noPosts": "Không có gì được lên lịch trong 30 ngày tới trên các kênh đã chọn.",
-        "upcoming": "Đây là những gì được lên kế hoạch trong 30 ngày tới:"
+        "upcoming": "Đây là những gì được lên kế hoạch trong 30 ngày tới:",
+        "imageDone": "Tôi đã tạo hình ảnh và lưu vào thư viện phương tiện của bạn. Ở chế độ demo, một bản vẽ thay cho hình ảnh.",
+        "videoStarted": "Tôi đã bắt đầu tạo video; tiến độ hiển thị bên dưới. Ở chế độ demo, video hoàn tất sau vài giây.",
+        "generationFailed": "Tôi không thể tạo được. Có thể đã đạt giới hạn trong ngày."
+      },
+      "generated": {
+        "label": "Hình ảnh đã tạo",
+        "open": "Xem hình ảnh “{name}”"
+      },
+      "video": {
+        "label": "Tạo video",
+        "pending": "Đang tạo video…",
+        "hint": "Việc này mất vài phút. Bạn có thể để trang này mở hoặc quay lại sau: video sẽ nằm trong thư viện phương tiện của bạn.",
+        "ready": "Video đã sẵn sàng",
+        "failed": "Không thể tạo video.",
+        "reason": "Lý do: {reason}",
+        "removed": "Video này đã bị xóa khỏi thư viện phương tiện.",
+        "use": "Chuẩn bị bài đăng với video này",
+        "usePrompt": "Hãy chuẩn bị một bài đăng với video này.",
+        "demo": "Chế độ demo: không phát video thật.",
+        "vertical": "Dọc 9:16",
+        "horizontal": "Ngang 16:9"
       }
     },
     "demoStrip": "Chế độ demo: dữ liệu mẫu, không có gì được gửi đến mạng xã hội.",
@@ -1135,8 +1159,8 @@
       "source": "Nguồn",
       "replace": "Thay văn bản của tôi",
       "append": "Thêm vào cuối",
-      "unavailable": "Trợ lý AI chưa được bật trên máy chủ này: hãy đặt ANTHROPIC_API_KEY trong cấu hình.",
-      "privacy": "Văn bản và cơ sở kiến thức của bạn được gửi đến Anthropic (Claude) để tạo gợi ý.",
+      "unavailable": "Trợ lý AI chưa được bật trên máy chủ này: hãy đặt OPENAI_API_KEY trong cấu hình.",
+      "privacy": "Văn bản và cơ sở kiến thức của bạn được gửi đến OpenAI (GPT-4.1) để tạo gợi ý.",
       "review": "Luôn đọc lại gợi ý trước khi đăng: trợ lý có thể nhầm.",
       "errors": {
         "disabled": "Trợ lý AI không khả dụng (thiếu hoặc bị từ chối khóa API).",

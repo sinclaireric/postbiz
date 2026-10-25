@@ -4,7 +4,9 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { ActivityIndicator, Alert, Keyboard, KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, TextInput, View, type ScrollViewInstance } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { GeneratedImages } from "@/components/agent/generated-images";
 import { ProposalSet } from "@/components/agent/proposal-set";
+import { VideoJobCard } from "@/components/agent/video-job-card";
 import { HeaderActions } from "@/components/home/header-actions";
 import { MediaPickerSheet } from "@/components/media/media-picker-sheet";
 import { MediaThumb } from "@/components/media/media-thumb";
@@ -33,6 +35,9 @@ const WORKING: Record<AgentToolName, string> = {
   list_posts: "Consulte le calendrier…",
   list_media: "Cherche dans la bibliothèque de médias…",
   propose_posts: "Prépare les publications…",
+  generate_image: "Génère l’image…",
+  generate_video: "Lance la vidéo…",
+  video_status: "Vérifie la vidéo…",
 };
 
 const FALLBACK = "Voici ce que j’ai préparé. Relisez chaque publication, modifiez-la au besoin, puis enregistrez-la en brouillon ou programmez-la.";
@@ -67,7 +72,8 @@ export default function AgentScreen() {
   const all = useChannelsStore((s) => s.channels);
   const channels = useMemo(() => all.filter((c) => (c.status ?? "active") === "active" && NETWORK_LIMITS[c.network]), [all]);
 
-  const { messages, pendingUser, run, error, threads, activeId } = useAgentStore();
+  const { messages, pendingUser, run, error, threads, activeId, jobs } = useAgentStore();
+  const media = useAgentStore((s) => s.media);
 
   const [selected, setSelected] = useState<string[]>(() => channels.map((c) => c.id));
   const touched = useRef(false);
@@ -120,6 +126,13 @@ export default function AgentScreen() {
       setDraft(text);
       setAttached(sentMedia);
     }
+  };
+
+  // « Préparer une publication avec cette vidéo » : la vidéo rejoint les pièces jointes et le champ propose la demande ; l'utilisateur l'envoie quand il veut.
+  const attachVideo = (video: MediaItem) => {
+    haptic.tap();
+    setAttached((cur) => (cur.some((m) => m.id === video.id) ? cur : [...cur, video].slice(0, MAX_MEDIA_PER_MESSAGE)));
+    setDraft((d) => d || "Prépare une publication avec cette vidéo.");
   };
 
   const confirmDelete = (id: string, title: string) =>
@@ -203,6 +216,8 @@ export default function AgentScreen() {
                   <AgentAvatar />
                   <View className="min-w-0 flex-1">
                     <Text className="font-jakarta text-[14.5px] leading-[21px] text-ink">{m.text || (m.proposals.length > 0 ? FALLBACK : "")}</Text>
+                    <GeneratedImages items={m.mediaIds.flatMap((id) => (media[id] ? [media[id]!] : []))} />
+                    {m.jobIds.map((id) => (jobs[id] ? <VideoJobCard key={id} job={jobs[id]!} canWrite={canWrite} onUse={attachVideo} /> : null))}
                     {m.proposals.length > 0 ? <ProposalSet message={m} canWrite={canWrite} /> : null}
                   </View>
                 </View>
@@ -214,6 +229,8 @@ export default function AgentScreen() {
               <AgentAvatar />
               <View className="min-w-0 flex-1 gap-1.5">
                 {run.text ? <Text className="font-jakarta text-[14.5px] leading-[21px] text-ink">{run.text}</Text> : null}
+                <GeneratedImages items={run.images} />
+                {run.jobs.map((id) => (jobs[id] ? <VideoJobCard key={id} job={jobs[id]!} canWrite={canWrite} onUse={attachVideo} /> : null))}
                 <View className="flex-row items-center gap-2">
                   <ActivityIndicator size="small" color="#6B6A64" />
                   <Text className="font-jakarta text-[12.5px] text-ink-soft">{run.tool ? WORKING[run.tool] : "L’agent réfléchit…"}</Text>

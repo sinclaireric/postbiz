@@ -12,20 +12,26 @@ import type { MessageKey } from '@/i18n/types';
 import { streamChat } from '@/lib/agent/client';
 import { toAgentMedia } from '@/lib/agent/media';
 import type { LoadedThread } from '@/lib/agent/load';
-import { AGENT_LIMITS, type AgentErrorCode, type AgentMedia, type AgentMessage, type AgentThread, type AgentToolName } from '@/lib/agent/types';
-import type { AgentProposalUpdate, IntegrationItem, MediaItem } from '@/lib/data/types';
+import { AGENT_LIMITS, type AgentErrorCode, type AgentMedia, type AgentMessage, type AgentThread, type AgentToolName, type VideoJobResponse } from '@/lib/agent/types';
+import type { AgentProposalUpdate, IntegrationItem } from '@/lib/data/types';
 import { networkName } from '@/lib/networks';
 import { NETWORK_RULES } from '@/lib/posts/logic';
+import { GeneratedImages } from './generated-images';
 import { ProposalSet } from './proposal-card';
+import { VideoJobCard, type VideoJobState } from './video-job-card';
 
 const ERROR_KEY: Record<AgentErrorCode, MessageKey> = {
   disabled: 'app.agent.errors.disabled', forbidden: 'app.agent.errors.forbidden', invalid: 'app.agent.errors.invalid', rate_limited: 'app.agent.errors.rate_limited',
   refused: 'app.agent.errors.refused', empty: 'app.agent.errors.empty', failed: 'app.agent.errors.failed', not_found: 'app.agent.errors.notFound',
 };
-const TOOL_KEY: Record<AgentToolName, MessageKey> = { list_posts: 'app.agent.tool.list_posts', list_media: 'app.agent.tool.list_media', propose_posts: 'app.agent.tool.propose_posts' };
+const TOOL_KEY: Record<AgentToolName, MessageKey> = {
+  list_posts: 'app.agent.tool.list_posts', list_media: 'app.agent.tool.list_media', propose_posts: 'app.agent.tool.propose_posts',
+  generate_image: 'app.agent.tool.generate_image', generate_video: 'app.agent.tool.generate_video', video_status: 'app.agent.tool.video_status',
+};
 const SUGGESTIONS: MessageKey[] = ['app.agent.suggestions.one', 'app.agent.suggestions.two', 'app.agent.suggestions.three', 'app.agent.suggestions.four'];
 
 const index = (items: AgentMedia[]) => new Map(items.map((m) => [m.id, m]));
+const jobStates = (jobs: LoadedThread['jobs'], media: AgentMedia[]) => new Map(jobs.map((job): [string, VideoJobState] => [job.id, { job, media: media.find((m) => m.id === job.mediaId) ?? null, url: null }]));
 const storageKey = (orgId: string) => `postbiz.agent.channels.${orgId}`;
 
 /** Un canal que l'agent peut utiliser : actif, et sur un réseau que l'application sait traiter. */
@@ -77,12 +83,13 @@ export function AgentView({ integrations, threads: initialThreads, initial, canW
   const [media, setMedia] = useState<Map<string, AgentMedia>>(() => index(initial?.media ?? []));
   const [selected, setSelected] = useState<string[]>(() => integrations.filter(usable).map((c) => c.id));
   const [draft, setDraft] = useState('');
-  const [attached, setAttached] = useState<MediaItem[]>([]);
+  const [attached, setAttached] = useState<AgentMedia[]>([]);
+  const [jobs, setJobs] = useState<Map<string, VideoJobState>>(() => jobStates(initial?.jobs ?? [], initial?.media ?? []));
   const [pickerOpen, setPickerOpen] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const [pendingUser, setPendingUser] = useState<AgentMessage | null>(null);
-  const [run, setRun] = useState<{ text: string; tool: AgentToolName | null } | null>(null);
+  const [run, setRun] = useState<{ text: string; tool: AgentToolName | null; images: AgentMedia[]; jobs: string[] } | null>(null);
   const [error, setError] = useState<AgentErrorCode | null>(null);
   const abort = useRef<AbortController | null>(null);
   const scroller = useRef<HTMLDivElement>(null);
@@ -127,6 +134,7 @@ export function AgentView({ integrations, threads: initialThreads, initial, canW
     setActiveId(null);
     setMessages([]);
     setMedia(new Map());
+    setJobs(new Map());
     setRun(null);
     setPendingUser(null);
     setError(null);
@@ -145,6 +153,7 @@ export function AgentView({ integrations, threads: initialThreads, initial, canW
     setActiveId(loaded.thread.id);
     setMessages(loaded.messages);
     setMedia(index(loaded.media));
+    setJobs(jobStates(loaded.jobs, loaded.media));
     setHistoryOpen(false);
     window.history.replaceState(null, '', `/app/agent?c=${loaded.thread.id}`);
   };
@@ -163,9 +172,9 @@ export function AgentView({ integrations, threads: initialThreads, initial, canW
     setError(null);
     setDraft('');
     setAttached([]);
-    addMedia(sent.map(toAgentMedia));
-    setPendingUser({ id: 'pending', role: 'user', text, proposals: [], mediaIds: sent.map((m) => m.id), createdAt: new Date().toISOString() });
-    setRun({ text: '', tool: null });
+    addMedia(sent);
+    setPendingUser({ id: 'pending', role: 'user', text, proposals: [], mediaIds: sent.map((m) => m.id), jobIds: [], createdAt: new Date().toISOString() });
+    setRun({ text: '', tool: null, images: [], jobs: [] });
     const controller = new AbortController();
     abort.current = controller;
     let failed: AgentErrorCode | null = null;
@@ -173,9 +182,16 @@ export function AgentView({ integrations, threads: initialThreads, initial, canW
     await streamChat(
       { threadId: activeId, message: text, channelIds: channels.map((c) => c.id), mediaIds: sent.map((m) => m.id), timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone },
       (event) => {
-        if (event.type === 'text') setRun((r) => (r ? { text: r.text + event.delta, tool: null } : r));
+        if (event.type === 'text') setRun((r) => (r ? { ...r, text: r.text + event.delta, tool: null } : r));
         else if (event.type === 'tool') setRun((r) => (r ? { ...r, tool: event.name } : r));
         else if (event.type === 'proposals') addMedia(event.media);
+        else if (event.type === 'media') {
+          addMedia(event.media);
+          setRun((r) => (r ? { ...r, images: [...r.images, ...event.media.filter((m) => !r.images.some((x) => x.id === m.id))] } : r));
+        } else if (event.type === 'job') {
+          setJobs((cur) => new Map(cur).set(event.job.id, { media: null, url: null, ...cur.get(event.job.id), job: event.job }));
+          setRun((r) => (r && !r.jobs.includes(event.job.id) ? { ...r, jobs: [...r.jobs, event.job.id] } : r));
+        }
         else if (event.type === 'done') {
           setMessages((cur) => [...cur, event.user, event.assistant]);
           setThreads((cur) => [event.thread, ...cur.filter((x) => x.id !== event.thread.id)]);
@@ -201,6 +217,19 @@ export function AgentView({ integrations, threads: initialThreads, initial, canW
   };
 
   const addMedia = (items: AgentMedia[]) => setMedia((cur) => new Map([...cur, ...items.map((m): [string, AgentMedia] => [m.id, m])]));
+
+  // Une vidéo avance (ou se termine) : son état est gardé ici, et la vidéo terminée rejoint les médias connus de la conversation.
+  const onJob = (response: VideoJobResponse) => {
+    setJobs((cur) => new Map(cur).set(response.job.id, { job: response.job, media: response.media, url: response.url }));
+    if (response.media) addMedia([response.media]);
+  };
+
+  // « Préparer une publication avec cette vidéo » : la vidéo rejoint les pièces jointes et le champ propose la demande ; l'utilisateur l'envoie quand il veut.
+  const attachVideo = (video: AgentMedia, url: string | null) => {
+    setAttached((cur) => (cur.some((m) => m.id === video.id) ? cur : [...cur, { ...video, url: url ?? video.url }].slice(0, AGENT_LIMITS.mediaPerMessage)));
+    setDraft((d) => d || t('app.agent.video.usePrompt'));
+    input.current?.focus();
+  };
 
   const onSaved = (messageId: string, updates: AgentProposalUpdate[]) =>
     setMessages((cur) => cur.map((m) => (m.id !== messageId ? m : { ...m, proposals: m.proposals.map((p) => { const u = updates.find((x) => x.id === p.id); return u ? { ...p, ...u } : p; }) })));
@@ -310,6 +339,8 @@ export function AgentView({ integrations, threads: initialThreads, initial, canW
                     <AgentAvatar />
                     <div className="min-w-0 flex-1">
                       <p className="break-words whitespace-pre-wrap text-[14.5px] leading-relaxed">{m.text || (m.proposals.length > 0 ? t('app.agent.proposals.fallback') : '')}</p>
+                      <GeneratedImages items={m.mediaIds.flatMap((id) => (media.has(id) ? [media.get(id)!] : []))} />
+                      {m.jobIds.map((id) => jobs.has(id) && <VideoJobCard key={id} state={jobs.get(id)!} demo={demo} canWrite={canWrite} onUpdate={onJob} onUse={attachVideo} />)}
                       {m.proposals.length > 0 && activeId && <ProposalSet threadId={activeId} message={m} channels={integrations} media={media} canWrite={canWrite} onSaved={onSaved} onMedia={addMedia} picker={{ orgId, userId, demo }} />}
                     </div>
                   </div>
@@ -321,6 +352,8 @@ export function AgentView({ integrations, threads: initialThreads, initial, canW
                 <AgentAvatar />
                 <div className="min-w-0 flex-1">
                   {run.text && <p className="break-words whitespace-pre-wrap text-[14.5px] leading-relaxed">{run.text}</p>}
+                  <GeneratedImages items={run.images} />
+                  {run.jobs.map((id) => jobs.has(id) && <VideoJobCard key={id} state={jobs.get(id)!} demo={demo} canWrite={canWrite} onUpdate={onJob} onUse={attachVideo} />)}
                   <p role="status" className="mt-1 flex items-center gap-2 text-xs text-muted">
                     <span className="flex gap-1" aria-hidden="true">{[0, 1, 2].map((i) => <span key={i} className="h-1.5 w-1.5 animate-pulse rounded-full bg-muted" style={{ animationDelay: `${i * 160}ms` }} />)}</span>
                     {run.tool ? t(TOOL_KEY[run.tool]) : t('app.agent.thinking')}
@@ -392,7 +425,7 @@ export function AgentView({ integrations, threads: initialThreads, initial, canW
         <MediaPicker
           onClose={() => setPickerOpen(false)} orgId={orgId} userId={userId} canWrite={canWrite} demo={demo}
           slots={AGENT_LIMITS.mediaPerMessage - attached.length} excludeIds={attached.map((m) => m.id)}
-          onConfirm={(items) => setAttached((cur) => [...cur, ...items.filter((m) => !cur.some((c) => c.id === m.id))].slice(0, AGENT_LIMITS.mediaPerMessage))}
+          onConfirm={(items) => setAttached((cur) => [...cur, ...items.filter((m) => !cur.some((c) => c.id === m.id)).map(toAgentMedia)].slice(0, AGENT_LIMITS.mediaPerMessage))}
         />
       )}
     </div>

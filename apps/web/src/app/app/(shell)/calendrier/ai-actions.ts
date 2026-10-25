@@ -2,12 +2,13 @@
 
 import { getLocale } from '@/i18n/server';
 import { LOCALE_META } from '@/i18n/config';
-import { aiConfigured, runAssist } from '@/lib/ai/claude';
+import { aiConfigured, runAssist } from '@/lib/ai/assistant';
 import { languageName } from '@/lib/ai/prompt';
 import { assistLimiter, ideasLimiter } from '@/lib/ai/rate-limit';
 import { parseAiRequest } from '@/lib/ai/request';
 import type { AiRequest, AiResult } from '@/lib/ai/types';
 import { getRepositories, getSession } from '@/lib/data';
+import { digest } from '@/lib/digest';
 
 const usesKnowledge = (req: AiRequest) => (req.mode === 'ideas' ? req.knowledge : req.useKnowledge);
 
@@ -28,5 +29,5 @@ export async function assistAction(raw: unknown): Promise<AiResult> {
   const repos = await getRepositories(ctx);
   const entries = usesKnowledge(req) ? (await repos.knowledge.list()).map(({ title, content }) => ({ title, content })) : [];
   const language = languageName(LOCALE_META[await getLocale()].tag);
-  return runAssist(req, { entries, orgName: ctx.org.name, language });
+  return runAssist(req, { entries, orgName: ctx.org.name, language, safetyId: await digest(ctx.user.id) });
 }

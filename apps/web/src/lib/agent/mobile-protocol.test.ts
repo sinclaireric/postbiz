@@ -1,16 +1,17 @@
 import { describe, expect, it } from 'vitest';
-import { createEventParser as mobileParser, sanitizeProposals as mobileSanitize } from '../../../../mobile/lib/agent-protocol';
+import { createEventParser as mobileParser, parseVideoJobResponse as mobileParseJob, sanitizeProposals as mobileSanitize } from '../../../../mobile/lib/agent-protocol';
 import { countLength as mobileCount } from '../../../../mobile/lib/text-length';
 import { countLength } from '@/lib/text/length';
 import { sanitizeProposals } from './proposal';
 import { createEventParser, encodeEvent } from './request';
+import { parseVideoJobResponse } from './video-client';
 import type { AgentEvent } from './types';
 
 // L'application mobile ne partage pas de code avec le web (deux projets, deux gestionnaires de paquets) : elle garde un miroir du protocole de l'agent et du
 // calcul des longueurs. Ces tests font tourner le web et le miroir sur les mêmes entrées : si l'un change sans l'autre, ils échouent ici.
 
 const thread = { id: 't1', title: 'Annonce', updatedAt: '2026-10-27T10:00:00Z' };
-const msg = (role: 'user' | 'assistant', text: string) => ({ id: role, role, text, proposals: [], mediaIds: [], createdAt: '2026-10-27T10:00:00Z' });
+const msg = (role: 'user' | 'assistant', text: string) => ({ id: role, role, text, proposals: [], mediaIds: [], jobIds: [], createdAt: '2026-10-27T10:00:00Z' });
 const proposal = { id: 'p1', integrationId: 'i1', networkId: 'linkedin' as const, accountName: 'Camille', text: 'Texte', firstComment: null, mediaIds: ['m1'], publishAt: null, status: 'pending' as const };
 
 const events: AgentEvent[] = [
@@ -18,6 +19,11 @@ const events: AgentEvent[] = [
   { type: 'tool', name: 'list_posts' },
   { type: 'tool', name: 'list_media' },
   { type: 'tool', name: 'propose_posts' },
+  { type: 'tool', name: 'generate_image' },
+  { type: 'tool', name: 'generate_video' },
+  { type: 'tool', name: 'video_status' },
+  { type: 'media', media: [{ id: 'g1', kind: 'image', name: 'ai-image-phare.jpg', alt: 'Un phare', url: 'https://cdn.test/g1.jpg', thumbUrl: null, durationSeconds: null }] },
+  { type: 'job', job: { id: 'j1', status: 'pending', orientation: 'vertical', prompt: 'Un phare', mediaId: null, error: null, createdAt: '2026-10-27T10:00:00Z' } },
   { type: 'proposals', proposals: [proposal], media: [{ id: 'm1', kind: 'image', name: 'a.jpg', alt: '', url: null, thumbUrl: null, durationSeconds: null }] },
   { type: 'done', thread, user: msg('user', 'Salut'), assistant: msg('assistant', 'Oui') },
   ...(['disabled', 'forbidden', 'invalid', 'rate_limited', 'refused', 'empty', 'failed', 'not_found'] as const).map((code): AgentEvent => ({ type: 'error', code })),
@@ -61,5 +67,19 @@ describe('publications gardées dans un message : le mobile les relit comme le w
   ];
   it.each(inputs.map((input, i) => [i, input] as const))('cas %i', (_, input) => {
     expect(mobileSanitize(input)).toEqual(sanitizeProposals(input));
+  });
+});
+
+describe('vidéo en cours : le mobile lit la réponse de la route comme le web', () => {
+  const job = { id: 'j1', status: 'pending', orientation: 'vertical', prompt: 'x', mediaId: null, error: null, createdAt: '2026-10-27T10:00:00Z' };
+  const media = { id: 'm1', kind: 'video', name: 'v.mp4', alt: '', url: null, thumbUrl: null, durationSeconds: 8 };
+  const inputs: unknown[] = [
+    { job, media: null, url: null }, { job: { ...job, status: 'completed', mediaId: 'm1' }, media, url: 'https://cdn.test/v.mp4' }, { job: { ...job, status: 'failed', error: 'Rejected' }, media: null, url: null },
+    null, 'x', {}, { error: 'not_found' }, { job: { ...job, status: 'zzz' }, media: null, url: null }, { job: { ...job, orientation: 'carre' }, media: null, url: null },
+    { job, media: 'x', url: null }, { job, media: null, url: 3 }, { job: { ...job, mediaId: 4 }, media: null, url: null }, { job: { ...job, id: 7 }, media: null, url: null },
+    { job, media: { ...media, kind: 'audio' }, url: null }, { job, media: { ...media, alt: 4, durationSeconds: 'huit' }, url: null },
+  ];
+  it.each(inputs.map((input, i) => [i, input] as const))('cas %i', (_, input) => {
+    expect(mobileParseJob(input)).toEqual(parseVideoJobResponse(input));
   });
 });

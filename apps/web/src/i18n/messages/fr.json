@@ -622,7 +622,8 @@
         "li1": "Supabase Inc. — base de données, authentification et stockage des fichiers.",
         "li2": "Vercel Inc. — hébergement du site et de l’application.",
         "li3": "Prestataire d’envoi d’e-mails — messages de connexion et notifications.",
-        "li4": "Anthropic — assistant IA, uniquement quand vous l’utilisez : le texte saisi dans l’assistant lui est transmis pour produire la réponse.",
+        "li4": "OpenAI — assistant IA, agent et génération d’images, uniquement quand vous les utilisez : le texte saisi, la base de connaissance et, pour l’agent, le nom de vos canaux connectés et vos publications récentes lui sont transmis pour produire la réponse ; les images sont générées d’après la description que rédige l’agent.",
+        "li5": "Evolink (Seedance) — génération de vidéos, uniquement quand vous demandez une vidéo à l’agent : la description de la vidéo et, si vous choisissez des images de référence, des liens temporaires vers ces images lui sont transmis.",
         "p1": "Les réseaux sociaux que vous connectez sont des responsables de traitement distincts, régis par leurs propres politiques. Certains sous-traitants sont situés hors de l’Union européenne, notamment aux États-Unis : les transferts reposent alors sur les mécanismes prévus par le RGPD (décision d’adéquation ou clauses contractuelles types)."
       },
       "s8": {
@@ -1257,7 +1258,10 @@
       "tool": {
         "list_posts": "Consulte le calendrier…",
         "list_media": "Cherche dans la bibliothèque de médias…",
-        "propose_posts": "Prépare les publications…"
+        "propose_posts": "Prépare les publications…",
+        "generate_image": "Génération de l’image…",
+        "generate_video": "Lancement de la vidéo…",
+        "video_status": "Vérification de la vidéo…"
       },
       "proposals": {
         "fallback": "Voici ce que j’ai préparé. Relisez chaque publication, modifiez-la au besoin, puis enregistrez-la en brouillon ou programmez-la."
@@ -1295,7 +1299,28 @@
         "intro": "Voici ce que j’ai préparé pour vos canaux.",
         "skipped": "Je n’ai rien préparé pour {networks} : le réseau exige une image ou une vidéo (joignez-en une), ou la publication n’y est pas encore disponible.",
         "noPosts": "Rien n’est programmé dans les 30 prochains jours sur les canaux cochés.",
-        "upcoming": "Voici ce qui est prévu dans les 30 prochains jours :"
+        "upcoming": "Voici ce qui est prévu dans les 30 prochains jours :",
+        "imageDone": "J’ai généré l’image et je l’ai rangée dans votre médiathèque. En mode démo, un dessin tient lieu d’image.",
+        "videoStarted": "J’ai lancé la vidéo ; sa progression s’affiche ci-dessous. En mode démo, elle se termine en quelques secondes.",
+        "generationFailed": "Je n’ai pas pu la générer. La limite du jour est peut-être atteinte."
+      },
+      "generated": {
+        "label": "Images générées",
+        "open": "Voir l’image « {name} »"
+      },
+      "video": {
+        "label": "Génération de vidéo",
+        "pending": "Vidéo en cours de génération…",
+        "hint": "Cela prend quelques minutes. Vous pouvez laisser cette page ouverte ou revenir plus tard : la vidéo sera dans votre médiathèque.",
+        "ready": "Vidéo prête",
+        "failed": "La vidéo n’a pas pu être générée.",
+        "reason": "Raison : {reason}",
+        "removed": "Cette vidéo a été supprimée de la médiathèque.",
+        "use": "Préparer une publication avec cette vidéo",
+        "usePrompt": "Prépare une publication avec cette vidéo.",
+        "demo": "Mode démo : aucune vraie vidéo n’est lue.",
+        "vertical": "Verticale 9:16",
+        "horizontal": "Horizontale 16:9"
       }
     },
     "demoStrip": "Mode démo : données d’exemple, rien n’est envoyé aux réseaux.",
@@ -1737,8 +1762,8 @@
       "source": "Source",
       "replace": "Remplacer mon texte",
       "append": "Ajouter à la suite",
-      "unavailable": "L’assistant IA n’est pas activé sur ce serveur : renseignez ANTHROPIC_API_KEY dans la configuration.",
-      "privacy": "Le texte et la base de connaissance sont envoyés à Anthropic (Claude) pour générer les propositions.",
+      "unavailable": "L’assistant IA n’est pas activé sur ce serveur : renseignez OPENAI_API_KEY dans la configuration.",
+      "privacy": "Le texte et la base de connaissance sont envoyés à OpenAI (GPT-4.1) pour générer les propositions.",
       "review": "Relisez toujours une proposition avant de publier : l’assistant peut se tromper.",
       "errors": {
         "disabled": "L’assistant IA n’est pas disponible (clé d’API absente ou refusée).",

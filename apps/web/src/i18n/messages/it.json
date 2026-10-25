@@ -723,7 +723,10 @@
       "tool": {
         "list_posts": "Consulto il calendario…",
         "list_media": "Cerco nella libreria dei media…",
-        "propose_posts": "Preparo i post…"
+        "propose_posts": "Preparo i post…",
+        "generate_image": "Generazione dell’immagine…",
+        "generate_video": "Avvio del video…",
+        "video_status": "Verifica del video…"
       },
       "proposals": {
         "fallback": "Ecco cosa ho preparato. Rileggi ogni post, modificalo se serve, poi salvalo come bozza o programmalo."
@@ -761,7 +764,28 @@
         "intro": "Ecco cosa ho preparato per i tuoi canali.",
         "skipped": "Non ho preparato nulla per {networks}: il network richiede un’immagine o un video (allegane uno), oppure la pubblicazione non è ancora disponibile.",
         "noPosts": "Non c’è nulla di programmato nei prossimi 30 giorni sui canali selezionati.",
-        "upcoming": "Ecco cosa è previsto nei prossimi 30 giorni:"
+        "upcoming": "Ecco cosa è previsto nei prossimi 30 giorni:",
+        "imageDone": "Ho generato l’immagine e l’ho salvata nella tua libreria multimediale. In modalità demo un disegno sostituisce l’immagine.",
+        "videoStarted": "Ho avviato il video; l’avanzamento è mostrato qui sotto. In modalità demo termina in pochi secondi.",
+        "generationFailed": "Non sono riuscito a generarlo. Forse il limite giornaliero è stato raggiunto."
+      },
+      "generated": {
+        "label": "Immagini generate",
+        "open": "Vedi l’immagine «{name}»"
+      },
+      "video": {
+        "label": "Generazione del video",
+        "pending": "Video in fase di generazione…",
+        "hint": "Servono alcuni minuti. Puoi lasciare aperta questa pagina o tornare più tardi: il video sarà nella tua libreria multimediale.",
+        "ready": "Video pronto",
+        "failed": "Non è stato possibile generare il video.",
+        "reason": "Motivo: {reason}",
+        "removed": "Questo video è stato eliminato dalla libreria multimediale.",
+        "use": "Prepara un post con questo video",
+        "usePrompt": "Prepara un post con questo video.",
+        "demo": "Modalità demo: nessun video reale viene riprodotto.",
+        "vertical": "Verticale 9:16",
+        "horizontal": "Orizzontale 16:9"
       }
     },
     "demoStrip": "Modalità demo: dati di esempio, non viene inviato nulla ai social.",
@@ -1144,8 +1168,8 @@
       "source": "Fonte",
       "replace": "Sostituisci il mio testo",
       "append": "Aggiungi di seguito",
-      "unavailable": "L’assistente IA non è attivo su questo server: imposta ANTHROPIC_API_KEY nella configurazione.",
-      "privacy": "Il tuo testo e la tua base di conoscenza vengono inviati ad Anthropic (Claude) per generare le proposte.",
+      "unavailable": "L’assistente IA non è attivo su questo server: imposta OPENAI_API_KEY nella configurazione.",
+      "privacy": "Il tuo testo e la tua base di conoscenza vengono inviati a OpenAI (GPT-4.1) per generare le proposte.",
       "review": "Rileggi sempre una proposta prima di pubblicare: l’assistente può sbagliare.",
       "errors": {
         "disabled": "L’assistente IA non è disponibile (chiave API mancante o rifiutata).",

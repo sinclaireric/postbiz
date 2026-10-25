@@ -5,10 +5,13 @@ import { runDemoTurn } from '@/lib/agent/demo';
 import { attachmentNote, buildHistory, threadTitle } from '@/lib/agent/prompt';
 import { agentLimiter, encodeEvent, parseChatRequest } from '@/lib/agent/request';
 import { agentConfigured } from '@/lib/agent/config';
+import { createGenerationTools } from '@/lib/agent/generation';
 import { agentErrorCode, runAgentTurn, sdkAgentClient, type AgentTurnResult } from '@/lib/agent/run';
 import { createToolbox } from '@/lib/agent/tools';
 import type { AgentErrorCode, AgentEvent } from '@/lib/agent/types';
 import { bearerToken, getRepositories, getSession, getSessionForToken } from '@/lib/data';
+import { digest } from '@/lib/digest';
+import { generationSetup } from '@/lib/agent/setup';
 
 export const dynamic = 'force-dynamic';
 /**
@@ -18,12 +21,6 @@ export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
 
 const MAX_BODY = 20_000;
-
-/** Empreinte courte d'un identifiant : OpenAI reçoit de quoi repérer un abus ou regrouper des demandes, jamais l'identité de la personne. */
-async function digest(value: string): Promise<string> {
-  const bytes = new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(`postbiz:${value}`)));
-  return [...bytes.slice(0, 16)].map((b) => b.toString(16).padStart(2, '0')).join('');
-}
 const HEADERS = { 'Content-Type': 'application/x-ndjson; charset=utf-8', 'Cache-Control': 'no-store, no-transform', 'X-Accel-Buffering': 'no' };
 
 /** Même format que la réponse en flux, pour que le navigateur lise un seul format : une ligne d'erreur. */
@@ -70,6 +67,7 @@ export async function POST(request: Request): Promise<Response> {
   const t = await getT();
   const language = languageName(LOCALE_META[await getLocale()].tag);
   const now = new Date();
+  const startedAt = Date.now();
   const abort = new AbortController();
   request.signal.addEventListener('abort', () => abort.abort());
   const encoder = new TextEncoder();
@@ -90,16 +88,20 @@ export async function POST(request: Request): Promise<Response> {
         const title = req.message || attached[0]?.name || '…';
         const userContent = `${req.message}${attachmentNote(attached)}`.trim();
         let result: AgentTurnResult;
+        // La réponse est coupée par la plateforme au bout de `maxDuration` : une image n'est pas lancée si elle risque de ne pas finir avant.
+        const { features, deps: generation } = generationSetup({ demo, repos, signal: abort.signal, deadline: startedAt + maxDuration * 1_000 });
+        const tools = createGenerationTools(generation);
         if (demo) {
           result = await runDemoTurn({
             t, channels, library: (await repos.media.list({ page: 1, pageSize: 40 })).items, posts: await repos.posts.list(),
             timeZone: req.timeZone, now, emit, newId: () => crypto.randomUUID(),
+            generation: tools,
           }, userContent, attached);
         } else {
           result = await runAgentTurn({
             client: sdkAgentClient(), channels, knowledge: knowledge.map(({ title, content }) => ({ title, content })), orgName: ctx.org.name,
             language, timeZone: req.timeZone, now, history: buildHistory(existing?.messages ?? []),
-            tools: createToolbox(repos, integrations, req.timeZone, now), emit, attached, signal: abort.signal,
+            tools: createToolbox(repos, integrations, req.timeZone, now, tools), features, emit, attached, signal: abort.signal,
             safetyId: await digest(ctx.user.id), cacheKey: await digest(ctx.org.id),
           }, userContent);
           // Seulement des nombres : aucun contenu de publication ni de conversation dans les journaux.
@@ -108,7 +110,8 @@ export async function POST(request: Request): Promise<Response> {
 
         const saved = await repos.agent.saveExchange({
           threadId: req.threadId, title: threadTitle(title),
-          user: { text: req.message, mediaIds: req.mediaIds }, assistant: { text: result.text, proposals: result.proposals },
+          user: { text: req.message, mediaIds: req.mediaIds },
+          assistant: { text: result.text, proposals: result.proposals, mediaIds: result.images.map((m) => m.id), jobIds: result.jobs.map((j) => j.id) },
         });
         emit(saved ? { type: 'done', ...saved } : { type: 'error', code: 'failed' });
       } catch (error) {
