@@ -7,6 +7,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { FlatList, KeyboardAvoidingView, Platform, Pressable, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { SuggestButton, SuggestFeedback, useReplySuggestion } from "@/components/inbox/reply-suggestion";
 import { ChannelAvatar } from "@/components/ui/channel-avatar";
 import { haptic } from "@/lib/haptics";
 import { Appear, EmptyState, IconCircle, PageHeader } from "@/components/ui/kit";
@@ -58,6 +59,8 @@ export default function ConversationScreen() {
   const [draft, setDraft] = useState("");
   const [sending, setSending] = useState(false);
   const listRef = useRef<FlatList<MessageItem>>(null);
+  const suggest = useReplySuggestion({ conversation, messages, draft, setDraft });
+  const { settle } = suggest;
 
   useEffect(() => {
     if (!id) return;
@@ -92,8 +95,9 @@ export default function ConversationScreen() {
       return;
     }
     haptic.success();
+    settle(draft); // la réponse partait peut-être d'une suggestion : on note si elle est partie telle quelle ou modifiée (sans attendre, sans gêner l'envoi)
     setDraft("");
-  }, [id, draft, canSend]);
+  }, [id, draft, canSend, settle]);
 
   const toggleClosed = useCallback(async () => {
     if (!id) return;
@@ -157,6 +161,7 @@ export default function ConversationScreen() {
 
         {canWrite ? (
           <View className="gap-1 px-4 pb-2 pt-2">
+            <SuggestButton suggest={suggest} disabled={expired || sending} />
             {draft.length > MAX_REPLY_LENGTH - 200 ? (
               <Text className={`text-right font-jakarta text-[10px] ${draft.length > MAX_REPLY_LENGTH ? "text-text-critical" : "text-ink-muted"}`}>
                 {draft.length}/{MAX_REPLY_LENGTH}
@@ -176,6 +181,7 @@ export default function ConversationScreen() {
                 <Ionicons name="arrow-up" size={24} color={canSend ? "#141414" : "#9A9890"} />
               </Pressable>
             </View>
+            <SuggestFeedback suggest={suggest} />
           </View>
         ) : (
           <Text className="px-4 pb-3 pt-2 text-center font-jakarta text-[12px] text-ink-soft">Votre rôle (lecteur) ne permet pas de répondre.</Text>

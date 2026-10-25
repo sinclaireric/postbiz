@@ -63,6 +63,9 @@ médiathèque, base de connaissance, préparation de publications) et **mêmes c
   (Seedance par Evolink, clé `EVOLINK_API_KEY` côté serveur). Une vidéo prend plusieurs minutes : sa carte interroge `GET {EXPO_PUBLIC_WEB_URL}/api/agent/video/<id>` toutes les 10 s
   (avec le jeton Supabase) jusqu'à ce qu'elle soit rangée dans la médiathèque, puis propose de la voir (lecteur du système, aucune dépendance native ajoutée) et d'en préparer une publication.
   Les tâches sont lues dans `ai_video_jobs` (privées à leur auteur, RLS). **Jamais essayé sur un téléphone.**
+- **Suggérer une réponse** (inbox, écran d'une conversation) : comme sur le site, `lib/suggest.ts` appelle `POST {EXPO_PUBLIC_WEB_URL}/api/inbox/suggest` avec le jeton Supabase ; le brouillon, tiré de la base de connaissance,
+  est mis dans le champ de réponse, jamais envoyé seul, et à l'envoi `ai_reply_suggestions.outcome` passe à `sent` ou `edited` (RLS : l'auteur ne modifie que cette colonne ; un échec n'empêche pas l'envoi).
+  `lib/suggest-protocol.ts` est un miroir du web, testé par `npm test`. Mode démo : suggestion simulée, sans requête. **Jamais essayé contre le vrai serveur ni sur un téléphone.**
 - Mode démo (`EXPO_PUBLIC_DEMO=1`) : réponses simulées, rien n'est écrit dans un calendrier ; une demande d'image ou de vidéo reçoit une réponse qui dit que rien n'est généré en démonstration.
 
 ### Notifications push et appareil réel
