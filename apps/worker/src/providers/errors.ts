@@ -6,6 +6,17 @@ export class PublishRejectedError extends Error {
   }
 }
 
+/**
+ * Le quota du réseau est épuisé pour aujourd'hui : rien n'a été publié (refus sûr), et on sait quand il se renouvelle. Le moteur reporte alors
+ * la publication à `retryAt` au lieu de la laisser en erreur.
+ */
+export class QuotaExceededError extends PublishRejectedError {
+  constructor(message: string, public retryAt: Date, status?: number) {
+    super(message, status);
+    this.name = 'QuotaExceededError';
+  }
+}
+
 /** L'accès au compte est expiré ou révoqué : il faut reconnecter le canal. */
 export class ReconnectRequiredError extends Error {
   constructor(message = 'L’accès au compte a expiré : reconnectez le canal.') {

@@ -30,7 +30,7 @@ export const MEDIA_RULES: Record<NetworkId, MediaRule> = {
   linkedin: { publishable: false, images: true, videos: true, maxItems: 9, maxVideos: 1, mixing: false },
   linkedin_page: { publishable: false, images: true, videos: true, maxItems: 9, maxVideos: 1, mixing: false },
   tiktok: { publishable: false, images: false, videos: true, maxItems: 1, maxVideos: 1, mixing: false },
-  youtube: { publishable: false, images: false, videos: true, maxItems: 1, maxVideos: 1, mixing: false },
+  youtube: { publishable: true, images: false, videos: true, maxItems: 1, maxVideos: 1, mixing: false },
 };
 
 /** Au plus ce nombre de médias, tous réseaux confondus (la base en refuse davantage). */

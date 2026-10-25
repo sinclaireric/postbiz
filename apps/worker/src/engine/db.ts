@@ -24,6 +24,8 @@ export interface WorkerPost {
   /** Identifiant de la publication chez le réseau, une fois publiée. */
   releaseId: string | null;
   firstComment: string | null;
+  /** Nombre de fois où la publication a été réclamée par le worker (1 à la première tentative). */
+  attempts: number;
 }
 
 export interface WorkerMessage {
@@ -56,6 +58,8 @@ export interface WorkerDb {
   resolveMedia(orgId: string, raw: unknown[]): Promise<ResolvedMedia[]>;
   markPublished(postId: string, r: { releaseId: string; releaseUrl: string | null }): Promise<void>;
   markPostFailed(postId: string, state: 'error' | 'unknown', message: string): Promise<void>;
+  /** Remet une publication en file pour `at` (refus sûr, par exemple quota épuisé) : elle repartira toute seule. */
+  reschedulePost(postId: string, at: Date, message: string): Promise<void>;
   completeFirstComment(postId: string, commentId: string): Promise<void>;
   failFirstComment(postId: string, state: 'failed' | 'unknown', message: string): Promise<void>;
 
@@ -101,7 +105,7 @@ export function createSupabaseWorkerDb(supabase: SupabaseClient, decrypt: (enc: 
     async getChildren(postId) {
       const { data, error } = await supabase.from('posts').select('id, org_id, integration_id, content, media, settings, created_by').eq('parent_post_id', postId).is('deleted_at', null).order('position', { ascending: true });
       check(error, 'lecture du fil');
-      return (data ?? []).map((p: Row) => ({ id: p.id, orgId: p.org_id, integrationId: p.integration_id, content: p.content, media: p.media ?? [], settings: p.settings ?? {}, createdBy: p.created_by, releaseId: null, firstComment: null }));
+      return (data ?? []).map((p: Row) => ({ id: p.id, orgId: p.org_id, integrationId: p.integration_id, content: p.content, media: p.media ?? [], settings: p.settings ?? {}, createdBy: p.created_by, releaseId: null, firstComment: null, attempts: 0 }));
     },
 
     async resolveMedia(orgId, raw) {
@@ -131,6 +135,12 @@ export function createSupabaseWorkerDb(supabase: SupabaseClient, decrypt: (enc: 
     async markPostFailed(postId, state, message) {
       const { error } = await supabase.from('posts').update({ state, error: message.slice(0, 1000), locked_until: null }).eq('id', postId).eq('state', 'publishing');
       check(error, 'enregistrement de l’échec');
+    },
+
+    async reschedulePost(postId, at, message) {
+      // Condition sur l'état : on ne remet en file qu'un post réellement « en cours » (jamais un post modifié ou balayé entre-temps).
+      const { error } = await supabase.from('posts').update({ state: 'queued', publish_at: at.toISOString(), error: message.slice(0, 1000), locked_until: null }).eq('id', postId).eq('state', 'publishing');
+      check(error, 'report de la publication');
     },
 
     async completeFirstComment(postId, commentId) {

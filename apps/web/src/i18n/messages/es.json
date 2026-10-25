@@ -1303,6 +1303,8 @@
       "etat_invalide": "La conexión ha caducado o ya no es válida. Vuelve a iniciarla desde esta página.",
       "echange": "La red ha rechazado la conexión. Inténtalo de nuevo; si se repite, revisa la configuración de la aplicación de la red.",
       "profil": "Conexión aceptada, pero no se pudo leer el perfil de la cuenta. Inténtalo de nuevo en un momento.",
+      "api_desactivee": "Conexión aceptada, pero la API de YouTube no está activada en el proyecto de Google Cloud de la aplicación. Activa «YouTube Data API v3» en ese proyecto y vuelve a intentarlo.",
+      "autorisation_incomplete": "Se desmarcó uno de los permisos solicitados en Google. Vuelve a iniciar la conexión dejando todas las casillas marcadas.",
       "aucun_compte": "No se encontró ninguna cuenta utilizable (en Meta: una Página autorizada o una cuenta profesional de Instagram vinculada a una Página).",
       "selection_vide": "Selecciona al menos una cuenta que conectar.",
       "expire": "Esta selección ha caducado. Vuelve a iniciar la conexión.",

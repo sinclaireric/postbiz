@@ -46,7 +46,7 @@ export interface FlowDeps {
 
 export type ErrorCode =
   | 'reseau_inconnu' | 'non_configure' | 'non_autorise' | 'refuse' | 'etat_invalide' | 'echange' | 'profil' | 'aucun_compte'
-  | 'selection_vide' | 'expire' | 'erreur';
+  | 'selection_vide' | 'expire' | 'erreur' | 'api_desactivee' | 'autorisation_incomplete';
 
 /**
  * Textes de repli en français, utilisés par la logique et les tests. L’affichage passe par les messages
@@ -64,10 +64,13 @@ export const ERROR_MESSAGES: Record<ErrorCode, string> = {
   selection_vide: 'Sélectionnez au moins un compte à connecter.',
   expire: 'Cette sélection a expiré. Relancez la connexion.',
   erreur: 'La connexion a échoué. Réessayez dans un instant.',
+  api_desactivee: 'Connexion acceptée, mais l’API YouTube n’est pas activée dans le projet Google Cloud de l’application. Activez « YouTube Data API v3 » dans ce projet, puis réessayez.',
+  autorisation_incomplete: 'Une des autorisations demandées a été décochée chez Google. Relancez la connexion en laissant toutes les cases cochées.',
 };
 
 const ERROR_FROM_OAUTH: Record<OAuthError['code'], ErrorCode> = {
   denied: 'refuse', invalid_state: 'etat_invalide', exchange: 'echange', profile: 'profil', no_account: 'aucun_compte', config: 'non_configure',
+  api_disabled: 'api_desactivee', scope_missing: 'autorisation_incomplete',
 };
 
 const STATE_TTL_MS = 10 * 60_000;

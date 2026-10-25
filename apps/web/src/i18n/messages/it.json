@@ -1306,6 +1306,8 @@
       "etat_invalide": "Il collegamento è scaduto o non è più valido. Riavvialo da questa pagina.",
       "echange": "Il social ha rifiutato il collegamento. Riprova; se si ripete, verifica la configurazione dell’app del social.",
       "profil": "Collegamento accettato, ma non è stato possibile leggere il profilo dell’account. Riprova tra un istante.",
+      "api_desactivee": "Connessione accettata, ma l’API di YouTube non è attivata nel progetto Google Cloud dell’applicazione. Attiva «YouTube Data API v3» in quel progetto e riprova.",
+      "autorisation_incomplete": "Una delle autorizzazioni richieste è stata deselezionata su Google. Riavvia la connessione lasciando tutte le caselle selezionate.",
       "aucun_compte": "Nessun account utilizzabile trovato (per Meta: una Pagina autorizzata o un account Instagram professionale collegato a una Pagina).",
       "selection_vide": "Seleziona almeno un account da collegare.",
       "expire": "Questa selezione è scaduta. Riavvia il collegamento.",

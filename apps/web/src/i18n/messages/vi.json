@@ -1295,6 +1295,8 @@
       "etat_invalide": "Phiên kết nối đã hết hạn hoặc không còn hợp lệ. Hãy bắt đầu lại từ trang này.",
       "echange": "Mạng xã hội đã từ chối kết nối. Hãy thử lại; nếu vẫn lặp lại, hãy kiểm tra cấu hình ứng dụng của mạng xã hội.",
       "profil": "Kết nối đã được chấp nhận nhưng không đọc được hồ sơ tài khoản. Vui lòng thử lại sau giây lát.",
+      "api_desactivee": "Kết nối đã được chấp nhận, nhưng API YouTube chưa được bật trong dự án Google Cloud của ứng dụng. Hãy bật “YouTube Data API v3” trong dự án đó rồi thử lại.",
+      "autorisation_incomplete": "Một trong các quyền được yêu cầu đã bị bỏ chọn trên Google. Hãy bắt đầu lại kết nối và giữ tất cả các ô được chọn.",
       "aucun_compte": "Không tìm thấy tài khoản có thể sử dụng (với Meta: một Trang đã được cấp quyền hoặc một tài khoản Instagram chuyên nghiệp được liên kết với một Trang).",
       "selection_vide": "Hãy chọn ít nhất một tài khoản để kết nối.",
       "expire": "Lựa chọn này đã hết hạn. Hãy bắt đầu lại việc kết nối.",

@@ -212,12 +212,16 @@ describe('registre', () => {
     expect(reg('linkedin_page')).not.toBeNull();
     expect(reg('instagram_standalone')).toBeNull(); // simple point d'entrée de connexion : le canal enregistré est « instagram »
   });
-  it('YouTube et TikTok : jetons rafraîchissables, publication refusée avec un message clair', async () => {
-    const reg = createRegistry({ dryRun: false });
-    for (const n of ['tiktok', 'youtube']) {
-      expect(reg(n)!.refreshToken).toBeTypeOf('function');
-      await expect(reg(n)!.publish(input())).rejects.toMatchObject({ name: 'PublishRejectedError', message: expect.stringContaining('pas encore disponible') });
-    }
+  it('TikTok : jeton rafraîchissable, publication refusée avec un message clair', async () => {
+    const p = createRegistry({ dryRun: false })('tiktok')!;
+    expect(p.refreshToken).toBeTypeOf('function');
+    await expect(p.publish(input())).rejects.toMatchObject({ name: 'PublishRejectedError', message: expect.stringContaining('pas encore disponible') });
+  });
+  it('YouTube : jeton rafraîchissable, publie des vidéos ; sans vidéo, la publication est refusée avec un message clair', async () => {
+    const p = createRegistry({ dryRun: false })('youtube')!;
+    expect(p.refreshToken).toBeTypeOf('function');
+    expect(p.supportsMedia).toBe(true);
+    await expect(p.publish(input())).rejects.toMatchObject({ name: 'PublishRejectedError', message: expect.stringContaining('exige une vidéo') });
   });
 
   it('Instagram (Instagram Login) : le jeton est prolongé avec les clés de l’application Instagram, le jeton lui-même servant de « refresh token »', async () => {

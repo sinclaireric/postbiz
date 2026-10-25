@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { processPost } from '../src/engine/posts.ts';
-import { OutcomeUnknownError, PublishRejectedError, ReconnectRequiredError } from '../src/providers/errors.ts';
+import { OutcomeUnknownError, PublishRejectedError, QuotaExceededError, ReconnectRequiredError } from '../src/providers/errors.ts';
 import type { SocialProvider } from '../src/providers/types.ts';
 import { fakeDb, integration, post } from './fakes.ts';
 
@@ -26,6 +26,30 @@ describe('processPost', () => {
     expect(out.result).toBe('error');
     expect(db.markPostFailed).toHaveBeenCalledWith('post-1', 'error', expect.stringContaining('refusé'));
     expect(db.notify).toHaveBeenCalledWith(expect.objectContaining({ userId: 'user-1', type: 'post_error' }));
+  });
+
+  it('quota épuisé : la publication est remise en file pour le renouvellement du quota, sans erreur', async () => {
+    const db = fakeDb();
+    const at = new Date('2026-10-25T07:10:00Z');
+    const out = await processPost({ db, providers: registry(provider(async () => { throw new QuotaExceededError('Quota épuisé. Rien n’a été publié.', at, 403); })) }, post({ attempts: 1 }));
+    expect(out.result).toBe('rescheduled');
+    expect(db.reschedulePost).toHaveBeenCalledWith('post-1', at, expect.stringContaining('25/10/2026 07:10 UTC'));
+    expect(db.markPostFailed).not.toHaveBeenCalled();
+    expect(db.notify).toHaveBeenCalledWith(expect.objectContaining({ userId: 'user-1', type: 'post_rescheduled', title: 'Publication reportée', data: expect.objectContaining({ publishAt: at.toISOString() }) }));
+  });
+
+  it('quota épuisé encore à la troisième tentative : la publication reste en erreur, l’utilisateur décide', async () => {
+    const db = fakeDb();
+    const out = await processPost({ db, providers: registry(provider(async () => { throw new QuotaExceededError('Quota épuisé.', new Date(), 403); })) }, post({ attempts: 3 }));
+    expect(out.result).toBe('error');
+    expect(db.reschedulePost).not.toHaveBeenCalled();
+    expect(db.markPostFailed).toHaveBeenCalledWith('post-1', 'error', expect.stringContaining('reprogrammez'));
+  });
+
+  it('la deuxième tentative est encore reportée', async () => {
+    const db = fakeDb();
+    const out = await processPost({ db, providers: registry(provider(async () => { throw new QuotaExceededError('Quota épuisé.', new Date('2026-10-26T07:10:00Z'), 403); })) }, post({ attempts: 2 }));
+    expect(out.result).toBe('rescheduled');
   });
 
   it('un accès expiré marque le canal « à reconnecter »', async () => {

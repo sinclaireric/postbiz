@@ -67,7 +67,7 @@ export interface OAuthFamily {
 export class OAuthError extends Error {
   constructor(
     message: string,
-    public code: 'denied' | 'invalid_state' | 'exchange' | 'profile' | 'no_account' | 'config' = 'exchange'
+    public code: 'denied' | 'invalid_state' | 'exchange' | 'profile' | 'no_account' | 'config' | 'api_disabled' | 'scope_missing' = 'exchange'
   ) {
     super(message);
     this.name = 'OAuthError';

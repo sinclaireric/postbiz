@@ -1904,6 +1904,8 @@
       "etat_invalide": "La connexion a expiré ou n’est plus valide. Relancez-la depuis cette page.",
       "echange": "Le réseau a refusé la connexion. Réessayez ; si cela se reproduit, vérifiez la configuration de l’application du réseau.",
       "profil": "Connexion acceptée, mais le profil du compte n’a pas pu être lu. Réessayez dans un instant.",
+      "api_desactivee": "Connexion acceptée, mais l’API YouTube n’est pas activée dans le projet Google Cloud de l’application. Activez « YouTube Data API v3 » dans ce projet, puis réessayez.",
+      "autorisation_incomplete": "Une des autorisations demandées a été décochée chez Google. Relancez la connexion en laissant toutes les cases cochées.",
       "aucun_compte": "Aucun compte utilisable n’a été trouvé (pour Meta : Page autorisée, ou compte Instagram professionnel lié à une Page).",
       "selection_vide": "Sélectionnez au moins un compte à connecter.",
       "expire": "Cette sélection a expiré. Relancez la connexion.",

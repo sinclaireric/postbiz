@@ -1312,6 +1312,8 @@
       "etat_invalide": "Die Verbindung ist abgelaufen oder nicht mehr gültig. Starten Sie sie auf dieser Seite neu.",
       "echange": "Das Netzwerk hat die Verbindung abgelehnt. Versuchen Sie es erneut; falls es wieder passiert, prüfen Sie die Konfiguration der App des Netzwerks.",
       "profil": "Verbindung akzeptiert, aber das Kontoprofil konnte nicht gelesen werden. Bitte versuchen Sie es gleich noch einmal.",
+      "api_desactivee": "Verbindung akzeptiert, aber die YouTube-API ist im Google-Cloud-Projekt der Anwendung nicht aktiviert. Aktivieren Sie „YouTube Data API v3“ in diesem Projekt und versuchen Sie es erneut.",
+      "autorisation_incomplete": "Eine der angeforderten Berechtigungen wurde bei Google abgewählt. Starten Sie die Verbindung neu und lassen Sie alle Kästchen angekreuzt.",
       "aucun_compte": "Es wurde kein verwendbares Konto gefunden (bei Meta: eine autorisierte Seite oder ein mit einer Seite verknüpftes professionelles Instagram-Konto).",
       "selection_vide": "Wählen Sie mindestens ein Konto zum Verbinden aus.",
       "expire": "Diese Auswahl ist abgelaufen. Starten Sie die Verbindung neu.",

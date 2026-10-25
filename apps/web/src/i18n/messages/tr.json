@@ -1300,6 +1300,8 @@
       "etat_invalide": "Bağlantı süresi doldu veya artık geçerli değil. Bu sayfadan yeniden başlatın.",
       "echange": "Sosyal ağ bağlantıyı reddetti. Tekrar deneyin; sorun sürerse sosyal ağ uygulamasının yapılandırmasını kontrol edin.",
       "profil": "Bağlantı kabul edildi ancak hesap profili okunamadı. Birazdan tekrar deneyin.",
+      "api_desactivee": "Bağlantı kabul edildi ancak YouTube API’si uygulamanın Google Cloud projesinde etkin değil. Bu projede “YouTube Data API v3”ü etkinleştirin ve tekrar deneyin.",
+      "autorisation_incomplete": "İstenen izinlerden biri Google’da işaretten çıkarıldı. Bağlantıyı yeniden başlatın ve tüm kutuları işaretli bırakın.",
       "aucun_compte": "Kullanılabilir hesap bulunamadı (Meta için: yetkilendirilmiş bir Sayfa veya bir Sayfaya bağlı profesyonel bir Instagram hesabı).",
       "selection_vide": "Bağlanacak en az bir hesap seçin.",
       "expire": "Bu seçimin süresi doldu. Bağlantıyı yeniden başlatın.",

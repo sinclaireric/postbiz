@@ -1247,6 +1247,8 @@
       "etat_invalide": "连接已过期或不再有效。请从此页面重新开始。",
       "echange": "社交网络拒绝了此次连接。请重试;如果再次出现,请检查该社交网络的应用配置。",
       "profil": "连接已被接受,但无法读取账号资料。请稍后重试。",
+      "api_desactivee": "连接已被接受，但应用的 Google Cloud 项目中未启用 YouTube API。请在该项目中启用“YouTube Data API v3”，然后重试。",
+      "autorisation_incomplete": "在 Google 上取消勾选了所请求的某项权限。请重新发起连接，并保持所有复选框处于勾选状态。",
       "aucun_compte": "未找到可用账号(Meta 方面:需要一个已授权的主页,或关联到主页的 Instagram 专业账号)。",
       "selection_vide": "请至少选择一个要连接的账号。",
       "expire": "此次选择已过期,请重新开始连接。",

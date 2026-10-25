@@ -27,11 +27,17 @@ describe('règles de médias par réseau', () => {
     expect(keys(validateMedia('facebook', img(11)))).toEqual(['mediaTooMany']);
   });
 
-  it('TikTok et YouTube : une vidéo, pas d’image', () => {
-    for (const n of ['tiktok', 'youtube'] as const) {
-      expect(keys(validateMedia(n, vid(1)))).toEqual(['mediaNotYet']); // pas encore publiable
-      expect(keys(validateMedia(n, img(1)))).toEqual(['mediaNotYet', 'mediaNoImages']);
-    }
+  it('TikTok : une vidéo, pas d’image, mais pas encore publiable', () => {
+    expect(keys(validateMedia('tiktok', vid(1)))).toEqual(['mediaNotYet']);
+    expect(keys(validateMedia('tiktok', img(1)))).toEqual(['mediaNotYet', 'mediaNoImages']);
+  });
+
+  it('YouTube : une seule vidéo, rien d’autre', () => {
+    expect(MEDIA_RULES.youtube.publishable).toBe(true);
+    expect(validateMedia('youtube', vid(1))).toEqual([]);
+    expect(keys(validateMedia('youtube', img(1)))).toEqual(['mediaNoImages']);
+    expect(keys(validateMedia('youtube', vid(2)))).toEqual(['mediaTooMany']);
+    expect(keys(validateMedia('youtube', [...vid(1), ...img(1)]))).toEqual(['mediaNoImages', 'mediaTooMany']);
   });
 
   it('les réseaux dont le worker ne publie pas encore de médias refusent la programmation avec un message clair', () => {

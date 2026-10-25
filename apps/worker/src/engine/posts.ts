@@ -1,12 +1,13 @@
-import { OutcomeUnknownError, PublishRejectedError, ReconnectRequiredError } from '../providers/errors.ts';
+import { OutcomeUnknownError, PublishRejectedError, QuotaExceededError, ReconnectRequiredError } from '../providers/errors.ts';
 import type { ProviderRegistry } from '../providers/registry.ts';
 import type { ResolvedMedia } from '../providers/types.ts';
 import type { WorkerDb, WorkerPost } from './db.ts';
 import { MediaUnavailableError } from './media.ts';
+import { MAX_QUOTA_TRIES, formatUtc } from './quota.ts';
 
 export interface PostOutcome {
   postId: string;
-  result: 'published' | 'error' | 'unknown';
+  result: 'published' | 'error' | 'unknown' | 'rescheduled';
   message?: string;
 }
 
@@ -69,6 +70,14 @@ export async function processPost(deps: { db: WorkerDb; providers: ProviderRegis
       if (e instanceof ReconnectRequiredError) {
         await db.markIntegrationRefreshNeeded(integration.id);
         return await fail('error', e.message, 'Canal à reconnecter');
+      }
+      if (e instanceof QuotaExceededError) {
+        // Quota épuisé : rien n'est parti, donc on peut remettre en file pour le renouvellement du quota sans risque de doublon, quelques fois seulement.
+        if (post.attempts >= MAX_QUOTA_TRIES) return await fail('error', `${e.message} Plusieurs tentatives ont échoué : reprogrammez la publication.`, 'Publication refusée');
+        const message = `${e.message} Reprogrammée automatiquement pour le ${formatUtc(e.retryAt)}.`;
+        await db.reschedulePost(post.id, e.retryAt, message);
+        await db.notify({ userId: post.createdBy, orgId: post.orgId, type: 'post_rescheduled', title: 'Publication reportée', body: message, data: { postId: post.id, publishAt: e.retryAt.toISOString() } }).catch(() => {});
+        return { postId: post.id, result: 'rescheduled', message };
       }
       if (e instanceof PublishRejectedError) return await fail('error', e.message, 'Publication refusée');
       if (e instanceof OutcomeUnknownError) return await fail('unknown', e.message, 'Vérifiez votre publication');

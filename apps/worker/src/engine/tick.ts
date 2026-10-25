@@ -39,7 +39,7 @@ export async function tick(
 
   const toWorkerPost = (p: Row): WorkerPost => ({
     id: p.id, orgId: p.org_id, integrationId: p.integration_id, content: p.content, media: p.media ?? [], settings: p.settings ?? {}, createdBy: p.created_by,
-    releaseId: p.release_id ?? null, firstComment: p.first_comment ?? null,
+    releaseId: p.release_id ?? null, firstComment: p.first_comment ?? null, attempts: Number(p.attempts ?? 1),
   });
   const claimedPosts: WorkerPost[] = ((posts ?? []) as Row[]).map(toWorkerPost);
   const claimedComments: WorkerPost[] = ((comments ?? []) as Row[]).map(toWorkerPost);

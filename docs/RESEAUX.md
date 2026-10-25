@@ -78,7 +78,19 @@ Pour tous les réseaux : prévoyez d'abord un domaine, les pages `/cgu`, `/confi
 5. **Connexion dans Postbiz** : OAuth 2.0 avec PKCE, scopes `youtube.upload`, `youtube.force-ssl` et `yt-analytics.readonly` (statistiques de la chaîne), `access_type=offline` + `prompt=consent`. Le jeton d'accès dure 1 h et
    est rafraîchi par le worker. ⚠️ Tant que l'écran de consentement est en mode **« Test »**, Google fait expirer le refresh token au bout de **7 jours** : le canal passera alors
    à « À reconnecter ». Passez en production (et obtenez la vérification) avant d'inviter de vrais utilisateurs.
-   La publication YouTube n'est pas écrite (l'envoi de vidéos n'est pas branché) : le canal se connecte et garde un jeton valide.
+6. **Publication d'une vidéo** (`apps/worker/src/providers/youtube.ts`, ⚠️ non validée en réel) : envoi « résumable » de `videos.insert`. Le worker ouvre une session (titre, description, visibilité),
+   puis envoie le fichier par morceaux de 8 Mio, relus par plage d'octets (`Range`) dans le stockage privé à partir de l'URL signée : la mémoire reste bornée, quelle que soit la taille de la vidéo.
+   - **Visibilité : privée par défaut.** `YOUTUBE_PRIVACY=unlisted` ou `public` (variable du worker) la change ; à ne faire qu'**après l'audit de l'API** : tant que le projet Google n'est pas audité,
+     YouTube verrouille de toute façon en privé les vidéos envoyées par l'API (projets créés après le 28 juillet 2020), sans recours possible pour ces vidéos.
+   - **Titre** : la première ligne non vide du texte (100 caractères au plus), à défaut le nom du fichier. **Description** : tout le texte, coupé à 5 000 **octets**. `<` et `>` sont retirés (YouTube les refuse).
+     Une seule vidéo par publication, rien d'autre (ni image, ni deuxième vidéo) ; catégorie « People & Blogs », « non destinée aux enfants » déclarée.
+   - **Sûreté** : tant que le dernier octet n'est pas arrivé, YouTube ne crée rien : une coupure avant la fin est un refus sûr (reprogrammer). Sur le dernier morceau, si la réponse se perd, le worker interroge d'abord la
+     session (elle répond avec la vidéo si elle existe) ; sans réponse, l'issue est « inconnue » et n'est jamais rejouée (vérifier dans YouTube Studio).
+   - **Quota** : 10 000 points par jour pour tout le projet Google (tous les clients ensemble), gratuit. Un envoi de vidéo coûte cher (1 600 points est le chiffre souvent cité, à vérifier dans la console Google Cloud, page « Quotas ») :
+     quelques vidéos par jour au plus tant que le quota n'a pas été étendu. Quota épuisé → rien n'a été publié, donc le worker **reporte tout seul la publication au renouvellement du quota** (minuit, heure du Pacifique, plus 10 minutes ; 7 h ou 8 h UTC
+     selon la saison), prévient l'auteur (« Publication reportée ») et réessaie, trois tentatives au plus (`apps/worker/src/engine/quota.ts`) ; ensuite la publication reste en erreur et l'utilisateur décide. Pour l'étendre et lever le verrouillage en privé : formulaire
+     « YouTube API Services – Audit and Quota Extension Form » (gratuit), qui exige une démonstration complète de l'envoi jusqu'à la vidéo en ligne.
+   Pas encore : miniature, premier commentaire, Shorts dédiés, publication programmée par YouTube (Postbiz envoie la vidéo à l'heure dite).
 
 ## TikTok
 
@@ -146,7 +158,7 @@ Le code est dans `apps/worker/src/engine/metrics.ts` (planification) et `apps/wo
 - Reconnecter un compte existant met à jour le canal (jeton, nom, photo) et le réactive ; ses réglages sont conservés.
 - Déconnecter : le jeton est révoqué chez X, LinkedIn, Google et TikTok, la Page Meta est désabonnée des webhooks (sauf si un autre canal — Facebook/Instagram — utilise la même Page) ; si le réseau
   ne répond pas, la déconnexion locale a lieu quand même et l'interface demande de retirer Postbiz des applications autorisées du compte.
-- Non écrit : Pages LinkedIn, comptes Instagram connectés par « Instagram Login » (sans Page Facebook), réception des rappels de désautorisation de Meta, publication Instagram / TikTok / YouTube.
+- Non écrit : Pages LinkedIn, comptes Instagram connectés par « Instagram Login » (sans Page Facebook), réception des rappels de désautorisation de Meta, publication TikTok (YouTube : écrite, non validée en réel).
 
 ## Tester sans OAuth
 
@@ -177,7 +189,8 @@ La base refuse un média d'une autre organisation, et un fichier hors du dossier
 | Instagram (Page ou Instagram Login) | oui, ⚠️ non validée en réel | 1 image (JPEG), 1 vidéo (Reel) ou un carrousel de 10 images et vidéos ; légende 2200 caractères |
 | Facebook (Page) | oui, ⚠️ non validée en réel | 10 photos, ou une vidéo (pas les deux) |
 | X, LinkedIn, Page LinkedIn | pas encore | la programmation est refusée avec un message clair |
-| TikTok, YouTube | pas encore | idem (vidéo exigée) |
+| YouTube | oui (vidéo, **privée** par défaut), ⚠️ non validée en réel | une seule vidéo, rien d'autre ; titre 100 caractères, description 5 000 octets |
+| TikTok | pas encore | la programmation est refusée avec un message clair (vidéo exigée) |
 
 **Instagram, étape par étape.** Un conteneur par média (`/{ig}/media` avec `image_url` ou `video_url`), attente de `FINISHED` (jusqu'à 60 s pour une image, 5 min pour une vidéo), conteneur de carrousel si besoin,
 puis `media_publish`. Tant que `media_publish` n'a pas eu lieu rien n'est visible : une panne avant est un refus sûr (on peut reprogrammer) ; une panne pendant `media_publish` est une issue incertaine, jamais rejouée.

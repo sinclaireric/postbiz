@@ -27,7 +27,7 @@ export const NETWORKS: SiteNetwork[] = [
   { id: 'x', color: '#111110', publish: 'beta', dm: 'soon', comments: 'soon' },
   { id: 'linkedin', color: '#0a66c2', publish: 'beta', dm: 'none', comments: 'soon' },
   { id: 'tiktok', color: '#fe2c55', publish: 'soon', dm: 'soon', comments: 'soon' },
-  { id: 'youtube', color: '#ff0000', publish: 'soon', dm: 'none', comments: 'beta' },
+  { id: 'youtube', color: '#ff0000', publish: 'beta', dm: 'none', comments: 'beta' },
 ];
 
 /**

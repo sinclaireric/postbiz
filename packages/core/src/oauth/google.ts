@@ -20,6 +20,25 @@ async function token(ctx: OAuthContext, form: Record<string, string>): Promise<T
   return toTokens(res.json, ctx.now());
 }
 
+/**
+ * Pourquoi YouTube refuse-t-il de lire la chaîne ? La cause est dite à l'utilisateur et écrite dans le journal avec le code HTTP et la « raison » de Google
+ * (jamais le corps de la réponse ni un jeton). Les deux causes courantes : l'API « YouTube Data API v3 » n'est pas activée dans le projet Google Cloud,
+ * ou l'utilisateur a décoché une autorisation sur l'écran de Google (il peut les décocher une à une).
+ */
+export function channelReadFailure(status: number, json: any): OAuthError {
+  const err = json?.error ?? {};
+  const reason = String(err.errors?.[0]?.reason ?? '').slice(0, 60);
+  const text = `${err.message ?? ''} ${reason}`.toLowerCase();
+  const detail = `${status}${reason ? `, ${reason}` : ''}`;
+  if (reason === 'accessNotConfigured' || /has not been used in project|is disabled/.test(text)) {
+    return new OAuthError(`L’API YouTube Data v3 n’est pas activée dans le projet Google Cloud de l’application (${detail}).`, 'api_disabled');
+  }
+  if (/insufficientpermissions|insufficient authentication scopes|access_token_scope_insufficient/.test(text)) {
+    return new OAuthError(`Une autorisation YouTube demandée n’a pas été accordée (${detail}).`, 'scope_missing');
+  }
+  return new OAuthError(`YouTube a refusé la lecture de la chaîne (${detail}).`, 'profile');
+}
+
 export const googleFamily: OAuthFamily = {
   id: 'google',
   networks: ['youtube'],
@@ -50,7 +69,7 @@ export const googleFamily: OAuthFamily = {
     const res = await requestJson(ctx, CHANNELS, { headers: { Authorization: `Bearer ${tokens.accessToken}` } }).catch((e: Error) => {
       throw new OAuthError(`Chaîne YouTube illisible : ${e.message}`, 'profile');
     });
-    if (!res.ok) throw new OAuthError('YouTube a refusé la lecture de la chaîne (API non activée ou autorisation insuffisante).', 'profile');
+    if (!res.ok) throw channelReadFailure(res.status, res.json);
     const c = res.json?.items?.[0];
     if (!c?.id) throw new OAuthError('Ce compte Google n’a aucune chaîne YouTube.', 'no_account');
     const s = c.snippet ?? {};

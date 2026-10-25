@@ -1297,6 +1297,8 @@
       "etat_invalide": "A conexão expirou ou não é mais válida. Reinicie-a a partir desta página.",
       "echange": "A rede recusou a conexão. Tente novamente; se acontecer de novo, verifique a configuração do aplicativo da rede.",
       "profil": "Conexão aceita, mas não foi possível ler o perfil da conta. Tente novamente em instantes.",
+      "api_desactivee": "Conexão aceita, mas a API do YouTube não está ativada no projeto do Google Cloud do aplicativo. Ative “YouTube Data API v3” nesse projeto e tente novamente.",
+      "autorisation_incomplete": "Uma das permissões solicitadas foi desmarcada no Google. Reinicie a conexão deixando todas as caixas marcadas.",
       "aucun_compte": "Nenhuma conta utilizável foi encontrada (na Meta: uma Página autorizada ou uma conta profissional do Instagram vinculada a uma Página).",
       "selection_vide": "Selecione pelo menos uma conta para conectar.",
       "expire": "Esta seleção expirou. Reinicie a conexão.",

@@ -1886,6 +1886,8 @@
       "etat_invalide": "The connection expired or is no longer valid. Start it again from this page.",
       "echange": "The network refused the connection. Try again; if it happens again, check the configuration of the network’s app.",
       "profil": "Connection accepted, but the account profile could not be read. Please try again in a moment.",
+      "api_desactivee": "Connection accepted, but the YouTube API is not enabled in the application’s Google Cloud project. Enable “YouTube Data API v3” in that project, then try again.",
+      "autorisation_incomplete": "One of the requested permissions was unticked at Google. Start the connection again and leave every box ticked.",
       "aucun_compte": "No usable account was found (for Meta: an authorized Page, or a professional Instagram account linked to a Page).",
       "selection_vide": "Select at least one account to connect.",
       "expire": "This selection has expired. Start the connection again.",

@@ -288,6 +288,36 @@ describe('Google / YouTube', () => {
     const none = fakeNet({ '/youtube/v3/channels': { body: { items: [] } } });
     await expect(g.listChannels(none.ctx, { network: 'youtube', tokens })).rejects.toMatchObject({ code: 'no_account' });
   });
+  describe('quand YouTube refuse de lire la chaîne', () => {
+    const tokens = { accessToken: 'AT-SECRET', refreshToken: 'RT-SECRET', expiresAt: NOW };
+    const refuse = (status: number, error: unknown) => g.listChannels(fakeNet({ '/youtube/v3/channels': { status, body: { error } } }).ctx, { network: 'youtube', tokens });
+
+    it('API non activée dans le projet Google Cloud : cause « api_disabled », avec le code et la raison dans le message', async () => {
+      const e = await refuse(403, { code: 403, message: 'YouTube Data API v3 has not been used in project 123 before or it is disabled.', errors: [{ reason: 'accessNotConfigured' }], status: 'PERMISSION_DENIED' }).catch((x) => x);
+      expect(e).toMatchObject({ name: 'OAuthError', code: 'api_disabled' });
+      expect(e.message).toContain('403, accessNotConfigured');
+    });
+
+    it('autorisation décochée : cause « scope_missing »', async () => {
+      const e = await refuse(403, { code: 403, message: 'Request had insufficient authentication scopes.', errors: [{ reason: 'insufficientPermissions' }] }).catch((x) => x);
+      expect(e).toMatchObject({ code: 'scope_missing' });
+      expect(e.message).toContain('insufficientPermissions');
+    });
+
+    it('autre refus : « profile » générique, qui garde le code HTTP et la raison, jamais un jeton ni le corps brut', async () => {
+      const e = await refuse(400, { message: 'Bad request with AT-SECRET inside', errors: [{ reason: 'badRequest' }] }).catch((x) => x);
+      expect(e).toMatchObject({ code: 'profile' });
+      expect(e.message).toContain('400, badRequest');
+      expect(e.message).not.toContain('AT-SECRET');
+      expect(e.message).not.toContain('Bad request');
+    });
+
+    it('une réponse sans détail reste un « profile »', async () => {
+      const e = await g.listChannels(fakeNet({ '/youtube/v3/channels': { status: 502, body: {} } }).ctx, { network: 'youtube', tokens }).catch((x) => x);
+      expect(e).toMatchObject({ code: 'profile' });
+      expect(e.message).toContain('502');
+    });
+  });
   it('révoque le refresh token', async () => {
     const { ctx, calls } = fakeNet({ '/revoke': {} });
     await g.onDisconnect!(ctx, { network: 'youtube', internalId: 'UC1', settings: {}, accessToken: 'AT', refreshToken: 'RT', sharesPageWithOtherChannel: false });
