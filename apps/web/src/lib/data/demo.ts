@@ -618,6 +618,9 @@ const agent: AgentRepository = {
 
 /** Générations de la démo : la médiathèque en mémoire reçoit un visuel dessiné (le même que les médias d'exemple) ; aucun fichier n'est envoyé nulle part. */
 const generation: GenerationRepository = {
+  async reserveText() {
+    return true;
+  },
   async reserve(kind, limit) {
     const s = store();
     const since = Date.now() - 86_400_000;
@@ -723,6 +726,3 @@ export const demoRepositoriesFor = (orgId: string): Repositories => ({
   inbox: bound(inbox, orgId), posts: bound(posts, orgId), workspace: bound(workspace, orgId), media: bound(media, orgId), knowledge: bound(knowledge, orgId),
   analytics: bound(analytics, orgId), agent: bound(agent, orgId), generation: bound(generation, orgId), suggestions: bound(suggestions, orgId),
 });
-  async reserveText() {
-    return true;
-  },
