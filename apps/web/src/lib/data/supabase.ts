@@ -8,6 +8,7 @@ import { replyWindow, validateReply } from '@/lib/inbox/logic';
 import { displayName, safeFileName } from '@/lib/media/logic';
 import { supportNotificationHref } from '@/lib/support/logic';
 import { workspaceError } from '@/lib/workspaces';
+import { isMissingFunction } from '@/lib/billing/rpc';
 import type {
   ConversationDetail, ConversationStatus, ConversationSummary, InboxRepository, MessageItem, NetworkId, NoteItem,
 } from '@/lib/inbox/types';
@@ -576,12 +577,19 @@ export function createSupabaseRepositories(supabase: SupabaseClient, ctx: AppCon
     async reserve(kind, limit) {
       // Limite mensuelle de l'offre d'abord, puis plafond journalier anti-abus (`ai_media_reserve`).
       const { data, error } = await supabase.rpc('ai_media_reserve', { p_org: ctx.org.id, p_kind: kind, p_daily_limit: limit });
+      if (isMissingFunction(error)) {
+        // Migration de facturation pas encore appliquée : seul le plafond journalier d'avant existe.
+        const legacy = await supabase.rpc('ai_generation_reserve', { p_org: ctx.org.id, p_kind: kind, p_limit: limit });
+        return !legacy.error && legacy.data === true;
+      }
       if (error) return false;
       return data === 'ok' ? true : data === 'monthly' ? 'monthly' : false;
     },
 
     async reserveText(feature) {
       const { data, error } = await supabase.rpc('ai_text_reserve', { p_org: ctx.org.id, p_feature: feature });
+      // Sans la migration de facturation, il n'y a pas de quota à appliquer (bêta gratuite) : on laisse passer plutôt que de tout refuser.
+      if (isMissingFunction(error)) return true;
       return !error && data === true;
     },
 
