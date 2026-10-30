@@ -13,17 +13,23 @@ export function emulatePgvector(sql: string): string {
   return sql.replace(/create extension if not exists vector[^;]*;/gi, '').replace(/extensions\.vector(\(\d+\))?/g, 'real[]');
 }
 
-/** Base vierge : prélude Supabase puis toutes les migrations du dépôt, dans l'ordre. */
-export async function createDb(): Promise<Db> {
+/** Applique une migration du dépôt (par son nom de fichier) à une base existante. */
+export async function applyMigration(db: Db, file: string): Promise<void> {
+  try {
+    await db.exec(emulatePgvector(readFileSync(join(migrationsDir, file), 'utf8')));
+  } catch (e) {
+    throw new Error(`Migration ${file} : ${(e as Error).message}`);
+  }
+}
+
+/** Base vierge : prélude Supabase puis toutes les migrations du dépôt, dans l'ordre (ou seulement celles qui précèdent `before`, pour tester une reprise de données). */
+export async function createDb(opts: { before?: string } = {}): Promise<Db> {
   const db = new PGlite();
   await db.exec(readFileSync(join(here, 'prelude.sql'), 'utf8'));
   const files = readdirSync(migrationsDir).filter((f) => f.endsWith('.sql')).sort();
   for (const f of files) {
-    try {
-      await db.exec(emulatePgvector(readFileSync(join(migrationsDir, f), 'utf8')));
-    } catch (e) {
-      throw new Error(`Migration ${f} : ${(e as Error).message}`);
-    }
+    if (opts.before && f >= opts.before) break;
+    await applyMigration(db, f);
   }
   return db;
 }

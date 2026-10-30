@@ -52,7 +52,7 @@ L'état est dans `user_suspensions` (aucun droit pour les clients). Pour suspend
 
 La table `subscriptions` (une ligne par organisation) est nouvelle : **la facturation n'est pas encore branchée**, rien ne l'alimente à part l'essai automatique.
 
-- **Essai automatique** : chaque nouvelle organisation démarre un essai de **14 jours sur l'offre Pro** (trigger `start_trial`). Pour changer la durée ou l'offre, modifier cette fonction dans une nouvelle migration. Rien dans l'application ne limite encore les fonctionnalités selon l'offre ou la fin d'essai.
+- **Essai automatique** : le premier espace de travail d'une personne démarre un essai de **14 jours sur l'offre Pro** (trigger `start_trial`). Les espaces qu'elle crée ensuite **reprennent la même date de fin** : pas de nouvel essai (voir `docs/WORKSPACES.md`). Pour changer la durée ou l'offre, modifier cette fonction dans une nouvelle migration. Rien dans l'application ne limite encore les fonctionnalités selon l'offre ou la fin d'essai.
 - **Organisations existantes** (créées pendant la bêta gratuite) : pas d'abonnement, comptées à part sous « Sans abonnement ». On ne leur invente pas d'essai.
 - **Statuts** : `trialing`, `active`, `past_due`, `canceled` (ceux de Stripe, pour que le futur webhook les recopie). L'espace propriétaire en déduit une phase : `trialing` (essai en cours), `trial_expired` (essai terminé sans abonnement), `paying`, `past_due`, `canceled`, `none`.
 - **MRR** : calculé par le site avec les tarifs publiés (`apps/web/src/lib/pricing.ts`) à partir de l'offre et du rythme de facturation des abonnements `active`. Un paiement en retard n'est pas compté tant qu'il n'est pas régularisé. Avec la remise annuelle de 20 %, un abonnement annuel vaut son prix mensuel remisé.

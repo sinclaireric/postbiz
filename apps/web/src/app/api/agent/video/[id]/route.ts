@@ -4,6 +4,7 @@ import { videoPollLimiter } from '@/lib/agent/request';
 import { generationSetup } from '@/lib/agent/setup';
 import type { AgentErrorCode, VideoJobResponse } from '@/lib/agent/types';
 import { bearerToken, getRepositories, getSession, getSessionForToken } from '@/lib/data';
+import { WORKSPACE_HEADER } from '@/lib/workspaces';
 
 export const dynamic = 'force-dynamic';
 /** Enregistrer une vidéo terminée (téléchargement, puis envoi dans le stockage) peut durer un moment : 60 secondes, le plafond de tous les forfaits Vercel. */
@@ -18,7 +19,7 @@ const failure = (error: AgentErrorCode, status: number) => new Response(JSON.str
  */
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }): Promise<Response> {
   const token = bearerToken(request.headers.get('authorization'));
-  const auth = token ? await getSessionForToken(token) : null;
+  const auth = token ? await getSessionForToken(token, request.headers.get(WORKSPACE_HEADER)) : null;
   const session = auth ? auth.session : await getSession();
   if (session.status !== 'ready' || session.ctx.org.role === 'viewer') return failure('forbidden', session.status === 'ready' ? 403 : 401);
   const { ctx } = session;

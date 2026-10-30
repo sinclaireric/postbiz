@@ -66,7 +66,7 @@ describe('base de connaissance : limites', () => {
   });
 
   it('plafonne à 100 fiches par organisation, sans gêner les autres', async () => {
-    const [{ n }] = await q<{ n: number }>(db, `select count(*)::int as n from public.knowledge_items where org_id = $1`, [w.orgA]);
+    const { n } = (await q<{ n: number }>(db, `select count(*)::int as n from public.knowledge_items where org_id = $1`, [w.orgA]))[0]!;
     await q(db, `insert into public.knowledge_items (org_id, title, content, created_by)
                  select $1, 'Fiche ' || g, 'Contenu', $2 from generate_series(1, $3) g`, [w.orgA, w.alice, 100 - n]);
     await expect(asUser(db, w.alice, () => insert(w.orgA, w.alice))).rejects.toThrow(/knowledge_items_limit/);

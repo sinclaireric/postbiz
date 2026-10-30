@@ -145,7 +145,7 @@ describe('suivi de la collecte', () => {
     expect(s).toMatchObject({ status: 'ok', attempts: 0, error: null, locked_until: null });
     expect(s.backfilled_at).not.toBeNull();
     expect(s.last_success_at).not.toBeNull();
-    const [{ hours }] = await q<{ hours: number }>(db, `select extract(epoch from (next_attempt_at - now())) / 3600 as hours from public.channel_metrics_sync where integration_id = $1`, [fb]);
+    const { hours } = (await q<{ hours: number }>(db, `select extract(epoch from (next_attempt_at - now())) / 3600 as hours from public.channel_metrics_sync where integration_id = $1`, [fb]))[0]!;
     expect(Number(hours)).toBeGreaterThan(5.9);
     expect(Number(hours)).toBeLessThan(6.1);
     // pas encore due : n'est pas réclamée

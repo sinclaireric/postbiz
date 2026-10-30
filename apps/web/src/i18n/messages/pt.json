@@ -1279,18 +1279,111 @@
       "noPreview": "Prévia indisponível"
     },
     "settings": {
-      "orgTitle": "Organização",
-      "orgName": "Nome da organização",
+      "orgTitle": "Espaço de trabalho",
+      "orgName": "Nome do espaço de trabalho",
       "orgSaved": "Nome salvo.",
       "save": "Salvar",
       "saving": "Salvando…",
       "teamTitle": "Equipe ({count})",
       "you": "(você)",
-      "inviteSoon": "O convite de novos membros chega em breve.",
       "accountTitle": "Minha conta",
       "deleteAccount": "Para excluir sua conta e seus dados, siga <link>o procedimento de exclusão</link>.",
-      "errRename": "Somente um administrador pode renomear a organização.",
+      "errRename": "Só um administrador pode renomear o espaço de trabalho.",
       "errNameLength": "O nome deve ter entre 2 e 120 caracteres."
+    },
+    "workspace": {
+      "menu": {
+        "label": "Mudar de espaço de trabalho",
+        "title": "Espaços de trabalho",
+        "create": "Novo espaço de trabalho",
+        "manage": "Gerir os meus espaços",
+        "invitations": "Convites pendentes"
+      },
+      "list": {
+        "title": "Os meus espaços de trabalho",
+        "hint": "Cada espaço tem os seus próprios canais, publicações, mensagens, multimédia e conhecimentos. Mude de um para outro quando quiser.",
+        "current": "Atual",
+        "open": "Abrir"
+      },
+      "create": {
+        "title": "Criar um espaço de trabalho",
+        "intro": "Será o administrador. Pode criar no máximo {max}.",
+        "name": "Nome do espaço de trabalho",
+        "placeholder": "Ex. Loja, Agência, Cliente Silva",
+        "copyMembers": "Incluir os membros de «{name}» com as suas funções",
+        "submit": "Criar o espaço",
+        "creating": "A criar…"
+      },
+      "cancel": "Cancelar",
+      "roleHelp": {
+        "admin": "Gere o espaço, os canais e a equipa.",
+        "member": "Agenda, publica e responde às mensagens.",
+        "viewer": "Consulta sem alterar nada."
+      },
+      "team": {
+        "soleAdmin": "Único administrador do espaço: nomeie primeiro outro.",
+        "roleOf": "Função de {name}",
+        "remove": "Remover",
+        "leave": "Sair",
+        "confirmRemove": "Remover {name} deste espaço? Perderá o acesso.",
+        "confirmLeave": "Sair deste espaço? Perderá o acesso, a menos que seja convidado novamente.",
+        "adminsOnly": "Só os administradores gerem a equipa e os convites.",
+        "pending": "Convites pendentes ({count})",
+        "expires": "expira a {date}",
+        "revoke": "Revogar"
+      },
+      "invite": {
+        "title": "Convidar alguém",
+        "intro": "Indique o endereço de e-mail e escolha a função. Obtém uma ligação de convite para enviar você mesmo.",
+        "email": "Endereço de e-mail",
+        "role": "Função",
+        "submit": "Criar a ligação de convite",
+        "creating": "A criar…",
+        "ready": "Ligação de convite para {email}",
+        "link": "Ligação de convite",
+        "copy": "Copiar a ligação",
+        "copied": "Ligação copiada",
+        "note": "Envie-a a essa pessoa: só é mostrada uma vez, só serve uma vez e expira em {days} dias.",
+        "pageTitle": "Convite",
+        "body": "{inviter} convida-o a juntar-se a este espaço de trabalho com a função «{role}».",
+        "bodyAnon": "Foi convidado a juntar-se a este espaço de trabalho com a função «{role}».",
+        "alreadyMember": "Já é membro deste espaço.",
+        "accept": "Juntar-me ao espaço",
+        "open": "Abrir o espaço",
+        "later": "Mais tarde",
+        "invalidTitle": "Convite não encontrado",
+        "invalidBody": "Esta ligação expirou, já foi usada ou foi substituída. Peça um novo convite a um administrador do espaço.",
+        "back": "Voltar ao meu espaço"
+      },
+      "received": {
+        "title": "Convites recebidos",
+        "item": "{inviter} convida-o a juntar-se a «{space}» com a função «{role}».",
+        "itemAnon": "Foi convidado a juntar-se a «{space}» com a função «{role}».",
+        "accept": "Aceitar",
+        "decline": "Recusar"
+      },
+      "delete": {
+        "title": "Eliminar este espaço de trabalho",
+        "open": "Eliminar este espaço…",
+        "warn": "«{name}» será eliminado definitivamente, com os seus canais, publicações, mensagens, multimédia, conhecimentos e conversas do agente. Todos os membros perderão o acesso. Esta ação é irreversível.",
+        "prereq": "Antes de eliminar, desligue todos os canais e retire as publicações agendadas.",
+        "confirm": "Para confirmar, escreva o nome do espaço: {name}",
+        "submit": "Eliminar definitivamente",
+        "deleting": "A eliminar…"
+      },
+      "errors": {
+        "notAdmin": "Só os administradores de um espaço de trabalho podem criar outro.",
+        "limit": "Atingiu o limite de {max} espaços de trabalho criados.",
+        "forbidden": "Não tem permissão para fazer isto neste espaço.",
+        "lastAdmin": "Um espaço tem de manter pelo menos um administrador. Nomeie primeiro outro.",
+        "alreadyMember": "Esta pessoa já é membro do espaço.",
+        "invitationLimit": "Já tem {max} convites pendentes: revogue alguns antes de criar mais.",
+        "invitationInvalid": "Este convite expirou ou já não é válido.",
+        "hasChannels": "Desligue primeiro todos os canais deste espaço.",
+        "hasQueuedPosts": "Elimine ou desagende primeiro as publicações em fila deste espaço.",
+        "lastWorkspace": "Este é o seu único espaço de trabalho: crie primeiro outro.",
+        "nameMismatch": "O nome escrito não corresponde ao do espaço."
+      }
     },
     "channelsPage": {
       "intro": "As contas de redes sociais conectadas à sua organização.",

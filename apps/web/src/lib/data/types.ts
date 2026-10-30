@@ -8,10 +8,20 @@ import type { InboxRepository } from '@/lib/inbox/types';
 
 export type OrgRole = 'admin' | 'member' | 'viewer';
 
+/** Un espace de travail (une organisation) dont la personne est membre, avec son rôle dans cet espace. */
+export interface WorkspaceSummary {
+  id: string;
+  name: string;
+  role: OrgRole;
+}
+
 export interface AppContext {
   mode: 'demo' | 'supabase';
   user: { id: string; email: string; name: string };
+  /** L'espace de travail courant : celui que la personne a choisi, toujours vérifié contre ses appartenances. */
   org: { id: string; name: string; role: OrgRole };
+  /** Tous ses espaces de travail, du plus ancien au plus récent (le courant en fait partie). */
+  workspaces: WorkspaceSummary[];
 }
 
 export type PostState = 'draft' | 'queued' | 'publishing' | 'published' | 'error' | 'unknown';
@@ -67,6 +77,37 @@ export interface MemberItem {
   userId: string;
   name: string;
   role: OrgRole;
+  /** Adresse e-mail : donnée aux administrateurs de l'espace seulement. */
+  email?: string | null;
+}
+
+/** Invitation en attente dans l'espace courant (vue des administrateurs). Le lien n'est jamais relisible : seul son créateur le voit, une fois. */
+export interface InvitationItem {
+  id: string;
+  email: string;
+  role: OrgRole;
+  createdAt: string;
+  expiresAt: string;
+}
+
+/** Invitation reçue par la personne connectée (l'adresse de son compte, confirmée, figure sur l'invitation). */
+export interface ReceivedInvitation {
+  id: string;
+  orgId: string;
+  orgName: string;
+  role: OrgRole;
+  inviterName: string | null;
+  expiresAt: string;
+}
+
+/** Ce que montre la page d'un lien d'invitation. */
+export interface InvitationPreview {
+  orgId: string;
+  orgName: string;
+  role: OrgRole;
+  inviterName: string | null;
+  expiresAt: string;
+  alreadyMember: boolean;
 }
 
 export interface CreatePostInput {
@@ -103,12 +144,33 @@ export interface NotificationItem {
   href: string | null;
 }
 
+export type WorkspaceCreated = { ok: true; id: string } | { ok: false; error: FormError };
+/** Le jeton d'un lien d'invitation, rendu une seule fois à l'administrateur qui invite. */
+export type InviteResult = { ok: true; token: string } | { ok: false; error: FormError };
+export type JoinResult = { ok: true; orgId: string } | { ok: false; error: FormError };
+
 export interface WorkspaceRepository {
   integrations(): Promise<IntegrationItem[]>;
   members(): Promise<MemberItem[]>;
   renameOrganization(name: string): Promise<Result>;
   notifications(): Promise<NotificationItem[]>;
   markNotificationsRead(): Promise<Result>;
+
+  /** Crée un espace de travail dont la personne est administratrice ; `copyMembers` y reprend les membres de l'espace courant (avec leur rôle). */
+  create(name: string, copyMembers: boolean): Promise<WorkspaceCreated>;
+  /** Supprime l'espace courant (administrateurs ; refusé s'il reste des canaux ou des publications en file, ou si c'est le dernier espace de la personne). */
+  remove(): Promise<Result>;
+  setMemberRole(userId: string, role: OrgRole): Promise<Result>;
+  /** Retire un membre de l'espace courant ; avec son propre identifiant, la personne quitte l'espace. Jamais le dernier administrateur. */
+  removeMember(userId: string): Promise<Result>;
+  invitations(): Promise<InvitationItem[]>;
+  invite(email: string, role: OrgRole): Promise<InviteResult>;
+  revokeInvitation(id: string): Promise<Result>;
+  receivedInvitations(): Promise<ReceivedInvitation[]>;
+  previewInvitation(token: string): Promise<InvitationPreview | null>;
+  acceptInvitation(token: string): Promise<JoinResult>;
+  acceptReceivedInvitation(id: string): Promise<JoinResult>;
+  declineReceivedInvitation(id: string): Promise<Result>;
 }
 
 export interface MediaItem {

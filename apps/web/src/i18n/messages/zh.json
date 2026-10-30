@@ -1230,18 +1230,111 @@
       "noPreview": "无预览"
     },
     "settings": {
-      "orgTitle": "组织",
-      "orgName": "组织名称",
+      "orgTitle": "工作区",
+      "orgName": "工作区名称",
       "orgSaved": "名称已保存。",
       "save": "保存",
       "saving": "保存中…",
       "teamTitle": "团队({count})",
       "you": "(你)",
-      "inviteSoon": "邀请新成员功能即将推出。",
       "accountTitle": "我的账号",
       "deleteAccount": "要删除你的账号和数据,请按照<link>删除流程</link>操作。",
-      "errRename": "只有管理员可以重命名组织。",
+      "errRename": "只有管理员可以重命名工作区。",
       "errNameLength": "名称长度须在 2 到 120 个字符之间。"
+    },
+    "workspace": {
+      "menu": {
+        "label": "切换工作区",
+        "title": "工作区",
+        "create": "新建工作区",
+        "manage": "管理我的工作区",
+        "invitations": "待处理的邀请"
+      },
+      "list": {
+        "title": "我的工作区",
+        "hint": "每个工作区都有各自的渠道、帖子、消息、媒体和知识库。你可以随时在它们之间切换。",
+        "current": "当前",
+        "open": "打开"
+      },
+      "create": {
+        "title": "创建工作区",
+        "intro": "你将成为它的管理员。最多可创建 {max} 个。",
+        "name": "工作区名称",
+        "placeholder": "例如：门店、代理机构、客户王先生",
+        "copyMembers": "沿用“{name}”的成员及其角色",
+        "submit": "创建工作区",
+        "creating": "正在创建…"
+      },
+      "cancel": "取消",
+      "roleHelp": {
+        "admin": "管理工作区、渠道和团队。",
+        "member": "排期、发布并回复消息。",
+        "viewer": "仅可查看，不能修改。"
+      },
+      "team": {
+        "soleAdmin": "这是工作区唯一的管理员：请先指定另一位管理员。",
+        "roleOf": "{name} 的角色",
+        "remove": "移除",
+        "leave": "退出",
+        "confirmRemove": "要将 {name} 从此工作区移除吗？对方将失去访问权限。",
+        "confirmLeave": "要退出此工作区吗？除非再次被邀请，否则你将失去访问权限。",
+        "adminsOnly": "只有管理员可以管理团队和邀请。",
+        "pending": "待处理的邀请（{count}）",
+        "expires": "{date} 到期",
+        "revoke": "撤销"
+      },
+      "invite": {
+        "title": "邀请成员",
+        "intro": "输入对方的电子邮件地址并选择角色。你会得到一个邀请链接，需要自己发给对方。",
+        "email": "电子邮件地址",
+        "role": "角色",
+        "submit": "生成邀请链接",
+        "creating": "正在生成…",
+        "ready": "{email} 的邀请链接",
+        "link": "邀请链接",
+        "copy": "复制链接",
+        "copied": "链接已复制",
+        "note": "请把它发给对方：链接只显示一次，只能使用一次，{days} 天后失效。",
+        "pageTitle": "邀请",
+        "body": "{inviter} 邀请你以“{role}”身份加入此工作区。",
+        "bodyAnon": "你被邀请以“{role}”身份加入此工作区。",
+        "alreadyMember": "你已经是此工作区的成员。",
+        "accept": "加入工作区",
+        "open": "打开工作区",
+        "later": "稍后再说",
+        "invalidTitle": "未找到邀请",
+        "invalidBody": "此链接已过期、已被使用或已被替换。请向工作区管理员索取新的邀请。",
+        "back": "返回我的工作区"
+      },
+      "received": {
+        "title": "收到的邀请",
+        "item": "{inviter} 邀请你以“{role}”身份加入“{space}”。",
+        "itemAnon": "你被邀请以“{role}”身份加入“{space}”。",
+        "accept": "接受",
+        "decline": "拒绝"
+      },
+      "delete": {
+        "title": "删除此工作区",
+        "open": "删除此工作区…",
+        "warn": "“{name}”将被永久删除，包括其渠道、帖子、消息、媒体、知识库和智能体对话。所有成员都将失去访问权限。此操作无法撤销。",
+        "prereq": "删除前，请先断开所有渠道，并移除已排期的帖子。",
+        "confirm": "请输入工作区名称以确认：{name}",
+        "submit": "永久删除",
+        "deleting": "正在删除…"
+      },
+      "errors": {
+        "notAdmin": "只有工作区的管理员才能创建其他工作区。",
+        "limit": "你已达到可创建 {max} 个工作区的上限。",
+        "forbidden": "你无权在此工作区执行此操作。",
+        "lastAdmin": "工作区至少要保留一名管理员。请先指定另一位管理员。",
+        "alreadyMember": "此人已是该工作区的成员。",
+        "invitationLimit": "你已有 {max} 个待处理的邀请：请先撤销一些再创建新的。",
+        "invitationInvalid": "此邀请已过期或已失效。",
+        "hasChannels": "请先断开此工作区的所有渠道。",
+        "hasQueuedPosts": "请先删除或取消排期此工作区中排队的帖子。",
+        "lastWorkspace": "这是你唯一的工作区：请先创建另一个。",
+        "nameMismatch": "输入的名称与工作区名称不一致。"
+      }
     },
     "channelsPage": {
       "intro": "已连接到你的组织的社交账号。",

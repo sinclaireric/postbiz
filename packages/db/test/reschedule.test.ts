@@ -13,8 +13,8 @@ const claim = () => asService(db, () => q<{ id: string; attempts: number; error:
 
 describe('report d’une publication refusée pour quota (la requête du worker)', () => {
   it('remet une publication « en cours » en file pour plus tard, puis elle est réclamée de nouveau à l’heure, avec une tentative de plus', async () => {
-    const [{ id }] = await q<{ id: string }>(db,
-      `insert into public.posts (org_id, integration_id, created_by, content, state, publish_at) values ($1,$2,$3,'Vidéo','queued', now() - interval '1 minute') returning id`, [w.orgA, w.intA, w.alice]);
+    const { id } = (await q<{ id: string }>(db,
+      `insert into public.posts (org_id, integration_id, created_by, content, state, publish_at) values ($1,$2,$3,'Vidéo','queued', now() - interval '1 minute') returning id`, [w.orgA, w.intA, w.alice]))[0]!;
     expect((await claim()).map((p) => [p.id, p.attempts])).toEqual([[id, 1]]);
 
     // La requête de reschedulePost (apps/worker/src/engine/db.ts), exécutée par le service_role.
@@ -32,8 +32,8 @@ describe('report d’une publication refusée pour quota (la requête du worker)
   });
 
   it('ne touche pas une publication qui n’est plus « en cours » (supprimée ou modifiée entre-temps)', async () => {
-    const [{ id }] = await q<{ id: string }>(db,
-      `insert into public.posts (org_id, integration_id, created_by, content, state, publish_at) values ($1,$2,$3,'Autre','draft', null) returning id`, [w.orgA, w.intA, w.alice]);
+    const { id } = (await q<{ id: string }>(db,
+      `insert into public.posts (org_id, integration_id, created_by, content, state, publish_at) values ($1,$2,$3,'Autre','draft', null) returning id`, [w.orgA, w.intA, w.alice]))[0]!;
     const moved = await asService(db, () => q(db,
       `update public.posts set state = 'queued', publish_at = now() + interval '9 hours' where id = $1 and state = 'publishing' returning id`, [id]));
     expect(moved).toHaveLength(0);

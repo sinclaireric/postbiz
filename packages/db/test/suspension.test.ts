@@ -138,7 +138,7 @@ describe('le worker n’envoie plus pour un compte suspendu', () => {
   });
 
   it('les réclame de nouveau au rétablissement', async () => {
-    const [{ id }] = await q<{ id: string }>(db, `select id from public.posts where state = 'queued' and created_by = $1`, [w.carol]);
+    const { id } = (await q<{ id: string }>(db, `select id from public.posts where state = 'queued' and created_by = $1`, [w.carol]))[0]!;
     await restore(w.carol);
     expect(await claimedPosts()).toContain(id);
   });

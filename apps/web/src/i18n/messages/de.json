@@ -1294,18 +1294,111 @@
       "noPreview": "Vorschau nicht verfügbar"
     },
     "settings": {
-      "orgTitle": "Organisation",
-      "orgName": "Name der Organisation",
+      "orgTitle": "Arbeitsbereich",
+      "orgName": "Name des Arbeitsbereichs",
       "orgSaved": "Name gespeichert.",
       "save": "Speichern",
       "saving": "Wird gespeichert …",
       "teamTitle": "Team ({count})",
       "you": "(Sie)",
-      "inviteSoon": "Das Einladen neuer Mitglieder kommt bald.",
       "accountTitle": "Mein Konto",
       "deleteAccount": "Um Ihr Konto und Ihre Daten zu löschen, folgen Sie <link>dem Löschverfahren</link>.",
-      "errRename": "Nur ein Administrator kann die Organisation umbenennen.",
+      "errRename": "Nur ein Administrator kann den Arbeitsbereich umbenennen.",
       "errNameLength": "Der Name muss zwischen 2 und 120 Zeichen lang sein."
+    },
+    "workspace": {
+      "menu": {
+        "label": "Arbeitsbereich wechseln",
+        "title": "Arbeitsbereiche",
+        "create": "Neuer Arbeitsbereich",
+        "manage": "Meine Arbeitsbereiche verwalten",
+        "invitations": "Offene Einladungen"
+      },
+      "list": {
+        "title": "Meine Arbeitsbereiche",
+        "hint": "Jeder Arbeitsbereich hat eigene Kanäle, Beiträge, Nachrichten, Medien und Wissensinhalte. Wechseln Sie jederzeit zwischen ihnen.",
+        "current": "Aktuell",
+        "open": "Öffnen"
+      },
+      "create": {
+        "title": "Arbeitsbereich erstellen",
+        "intro": "Sie werden sein Administrator. Sie können höchstens {max} erstellen.",
+        "name": "Name des Arbeitsbereichs",
+        "placeholder": "Z. B. Shop, Agentur, Kunde Müller",
+        "copyMembers": "Mitglieder von „{name}“ mit ihren Rollen übernehmen",
+        "submit": "Arbeitsbereich erstellen",
+        "creating": "Wird erstellt…"
+      },
+      "cancel": "Abbrechen",
+      "roleHelp": {
+        "admin": "Verwaltet Arbeitsbereich, Kanäle und Team.",
+        "member": "Plant, veröffentlicht und beantwortet Nachrichten.",
+        "viewer": "Darf ansehen, aber nichts ändern."
+      },
+      "team": {
+        "soleAdmin": "Einziger Administrator dieses Arbeitsbereichs: Ernennen Sie zuerst einen weiteren.",
+        "roleOf": "Rolle von {name}",
+        "remove": "Entfernen",
+        "leave": "Verlassen",
+        "confirmRemove": "{name} aus diesem Arbeitsbereich entfernen? Die Person verliert den Zugriff.",
+        "confirmLeave": "Diesen Arbeitsbereich verlassen? Sie verlieren den Zugriff, bis Sie erneut eingeladen werden.",
+        "adminsOnly": "Nur Administratoren verwalten das Team und die Einladungen.",
+        "pending": "Offene Einladungen ({count})",
+        "expires": "läuft am {date} ab",
+        "revoke": "Widerrufen"
+      },
+      "invite": {
+        "title": "Jemanden einladen",
+        "intro": "Geben Sie die E-Mail-Adresse ein und wählen Sie die Rolle. Sie erhalten einen Einladungslink, den Sie selbst weitergeben.",
+        "email": "E-Mail-Adresse",
+        "role": "Rolle",
+        "submit": "Einladungslink erstellen",
+        "creating": "Wird erstellt…",
+        "ready": "Einladungslink für {email}",
+        "link": "Einladungslink",
+        "copy": "Link kopieren",
+        "copied": "Link kopiert",
+        "note": "Senden Sie ihn dieser Person: Er wird nur einmal angezeigt, gilt nur einmal und läuft in {days} Tagen ab.",
+        "pageTitle": "Einladung",
+        "body": "{inviter} lädt Sie als „{role}“ in diesen Arbeitsbereich ein.",
+        "bodyAnon": "Sie sind als „{role}“ in diesen Arbeitsbereich eingeladen.",
+        "alreadyMember": "Sie sind bereits Mitglied dieses Arbeitsbereichs.",
+        "accept": "Arbeitsbereich beitreten",
+        "open": "Arbeitsbereich öffnen",
+        "later": "Später",
+        "invalidTitle": "Einladung nicht gefunden",
+        "invalidBody": "Dieser Link ist abgelaufen, wurde bereits verwendet oder ersetzt. Bitten Sie einen Administrator des Arbeitsbereichs um eine neue Einladung.",
+        "back": "Zurück zu meinem Arbeitsbereich"
+      },
+      "received": {
+        "title": "Erhaltene Einladungen",
+        "item": "{inviter} lädt Sie als „{role}“ in „{space}“ ein.",
+        "itemAnon": "Sie sind als „{role}“ in „{space}“ eingeladen.",
+        "accept": "Annehmen",
+        "decline": "Ablehnen"
+      },
+      "delete": {
+        "title": "Diesen Arbeitsbereich löschen",
+        "open": "Diesen Arbeitsbereich löschen…",
+        "warn": "„{name}“ wird endgültig gelöscht, mit Kanälen, Beiträgen, Nachrichten, Medien, Wissensinhalten und Agent-Unterhaltungen. Alle Mitglieder verlieren den Zugriff. Das lässt sich nicht rückgängig machen.",
+        "prereq": "Trennen Sie vor dem Löschen alle Kanäle und entfernen Sie geplante Beiträge.",
+        "confirm": "Geben Sie zur Bestätigung den Namen des Arbeitsbereichs ein: {name}",
+        "submit": "Endgültig löschen",
+        "deleting": "Wird gelöscht…"
+      },
+      "errors": {
+        "notAdmin": "Nur Administratoren eines Arbeitsbereichs können einen weiteren erstellen.",
+        "limit": "Sie haben das Limit von {max} erstellten Arbeitsbereichen erreicht.",
+        "forbidden": "Das dürfen Sie in diesem Arbeitsbereich nicht tun.",
+        "lastAdmin": "Ein Arbeitsbereich braucht mindestens einen Administrator. Ernennen Sie zuerst einen weiteren.",
+        "alreadyMember": "Diese Person ist bereits Mitglied des Arbeitsbereichs.",
+        "invitationLimit": "Sie haben bereits {max} offene Einladungen: Widerrufen Sie einige, bevor Sie weitere erstellen.",
+        "invitationInvalid": "Diese Einladung ist abgelaufen oder nicht mehr gültig.",
+        "hasChannels": "Trennen Sie zuerst alle Kanäle dieses Arbeitsbereichs.",
+        "hasQueuedPosts": "Löschen oder entplanen Sie zuerst die wartenden Beiträge dieses Arbeitsbereichs.",
+        "lastWorkspace": "Das ist Ihr einziger Arbeitsbereich: Erstellen Sie zuerst einen weiteren.",
+        "nameMismatch": "Der eingegebene Name stimmt nicht mit dem Namen des Arbeitsbereichs überein."
+      }
     },
     "channelsPage": {
       "intro": "Die mit Ihrer Organisation verbundenen Social-Media-Konten.",

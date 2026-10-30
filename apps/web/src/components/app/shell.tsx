@@ -11,6 +11,7 @@ import type { NotificationItem } from '@/lib/data/types';
 import { NavIcon, type NavIconName } from './nav-icons';
 import { NotificationsMenu } from './notifications-menu';
 import { UserMenu } from './user-menu';
+import { WorkspaceSwitcher, type WorkspaceMenuProps } from './workspace-menu';
 
 interface NavItem {
   href: string;
@@ -73,9 +74,11 @@ function RailItem({ item, active, unread }: { item: NavItem; active: boolean; un
 }
 
 export function AppShell({
-  children, orgName, roleLabel, userName, userEmail, unreadMessages, notifications, signOutAction, markNotificationsRead, adminLink, demo,
+  children, orgName, workspaces, canCreateWorkspace, pendingInvitations, userName, userEmail, unreadMessages, notifications, signOutAction, markNotificationsRead, adminLink, demo,
 }: {
-  children: ReactNode; orgName: string; roleLabel: string; userName: string; userEmail: string; unreadMessages: number;
+  children: ReactNode; orgName: string; userName: string; userEmail: string; unreadMessages: number;
+  /** Les espaces de travail de la personne (l'espace courant porte `current`), et ce qu'elle peut en faire. */
+  workspaces: WorkspaceMenuProps['workspaces']; canCreateWorkspace: boolean; pendingInvitations: number;
   notifications: NotificationItem[]; signOutAction: () => Promise<void>; markNotificationsRead: () => Promise<void>;
   /** Lien vers l'espace propriétaire, présent seulement pour le propriétaire de la plateforme. */
   adminLink?: { href: string; label: string }; demo: boolean;
@@ -106,14 +109,15 @@ export function AppShell({
           </p>
         )}
         <header className="flex h-[68px] shrink-0 items-center justify-between gap-4 border-b border-line bg-surface px-5 lg:px-7">
-          <div className="flex items-center gap-3">
-            <span className="lg:hidden"><Logo href="/app/calendrier" className="!text-base" /></span>
+          <div className="flex min-w-0 items-center gap-3">
+            <span className="hidden sm:block lg:hidden"><Logo href="/app/calendrier" className="!text-base" /></span>
             <h1 className="sr-only text-[22px] font-semibold tracking-tight lg:not-sr-only">{title}</h1>
+            <WorkspaceSwitcher workspaces={workspaces} canCreate={canCreateWorkspace} invitations={pendingInvitations} />
           </div>
           <div className="flex items-center gap-1.5">
             <LanguageSwitcher />
             <NotificationsMenu notifications={notifications} markRead={markNotificationsRead} />
-            <UserMenu name={userName} email={userEmail} orgName={orgName} role={roleLabel} signOutAction={signOutAction} adminLink={adminLink} />
+            <UserMenu name={userName} email={userEmail} signOutAction={signOutAction} adminLink={adminLink} workspaces={workspaces} canCreate={canCreateWorkspace} invitations={pendingInvitations} />
           </div>
         </header>
         <div className="flex min-h-0 flex-1 flex-col bg-paper lg:overflow-y-auto">{children}</div>

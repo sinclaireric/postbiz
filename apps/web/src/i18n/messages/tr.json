@@ -1282,18 +1282,111 @@
       "noPreview": "Önizleme yok"
     },
     "settings": {
-      "orgTitle": "Kuruluş",
-      "orgName": "Kuruluş adı",
+      "orgTitle": "Çalışma alanı",
+      "orgName": "Çalışma alanı adı",
       "orgSaved": "Ad kaydedildi.",
       "save": "Kaydet",
       "saving": "Kaydediliyor…",
       "teamTitle": "Ekip ({count})",
       "you": "(siz)",
-      "inviteSoon": "Yeni üye davet etme yakında geliyor.",
       "accountTitle": "Hesabım",
       "deleteAccount": "Hesabınızı ve verilerinizi silmek için <link>silme prosedürünü</link> izleyin.",
-      "errRename": "Kuruluşu yalnızca bir yönetici yeniden adlandırabilir.",
+      "errRename": "Çalışma alanını yalnızca bir yönetici yeniden adlandırabilir.",
       "errNameLength": "Ad 2 ile 120 karakter arasında olmalıdır."
+    },
+    "workspace": {
+      "menu": {
+        "label": "Çalışma alanını değiştir",
+        "title": "Çalışma alanları",
+        "create": "Yeni çalışma alanı",
+        "manage": "Alanlarımı yönet",
+        "invitations": "Bekleyen davetler"
+      },
+      "list": {
+        "title": "Çalışma alanlarım",
+        "hint": "Her alanın kendi kanalları, paylaşımları, mesajları, medyası ve bilgisi vardır. İstediğiniz zaman aralarında geçiş yapın.",
+        "current": "Geçerli",
+        "open": "Aç"
+      },
+      "create": {
+        "title": "Çalışma alanı oluştur",
+        "intro": "Yöneticisi siz olacaksınız. En fazla {max} alan oluşturabilirsiniz.",
+        "name": "Çalışma alanı adı",
+        "placeholder": "Örn. Mağaza, Ajans, Müşteri Yılmaz",
+        "copyMembers": "“{name}” üyelerini rolleriyle birlikte al",
+        "submit": "Alanı oluştur",
+        "creating": "Oluşturuluyor…"
+      },
+      "cancel": "Vazgeç",
+      "roleHelp": {
+        "admin": "Alanı, kanalları ve ekibi yönetir.",
+        "member": "Planlar, yayımlar ve mesajları yanıtlar.",
+        "viewer": "Yalnızca görüntüler, hiçbir şeyi değiştirmez."
+      },
+      "team": {
+        "soleAdmin": "Alanın tek yöneticisi: önce başka birini atayın.",
+        "roleOf": "{name} rolü",
+        "remove": "Çıkar",
+        "leave": "Ayrıl",
+        "confirmRemove": "{name} bu alandan çıkarılsın mı? Erişimini kaybeder.",
+        "confirmLeave": "Bu alandan ayrılsın mısınız? Yeniden davet edilmedikçe erişiminiz kalmaz.",
+        "adminsOnly": "Ekibi ve davetleri yalnızca yöneticiler yönetir.",
+        "pending": "Bekleyen davetler ({count})",
+        "expires": "{date} tarihinde sona erer",
+        "revoke": "İptal et"
+      },
+      "invite": {
+        "title": "Birini davet et",
+        "intro": "E-posta adresini yazın ve rolünü seçin. Kişiye kendiniz göndereceğiniz bir davet bağlantısı alırsınız.",
+        "email": "E-posta adresi",
+        "role": "Rol",
+        "submit": "Davet bağlantısı oluştur",
+        "creating": "Oluşturuluyor…",
+        "ready": "{email} için davet bağlantısı",
+        "link": "Davet bağlantısı",
+        "copy": "Bağlantıyı kopyala",
+        "copied": "Bağlantı kopyalandı",
+        "note": "Bu kişiye gönderin: yalnızca bir kez gösterilir, bir kez kullanılır ve {days} gün sonra sona erer.",
+        "pageTitle": "Davet",
+        "body": "{inviter} sizi bu çalışma alanına “{role}” rolüyle davet ediyor.",
+        "bodyAnon": "Bu çalışma alanına “{role}” rolüyle davet edildiniz.",
+        "alreadyMember": "Bu alanın zaten üyesisiniz.",
+        "accept": "Alana katıl",
+        "open": "Alanı aç",
+        "later": "Sonra",
+        "invalidTitle": "Davet bulunamadı",
+        "invalidBody": "Bu bağlantının süresi dolmuş, kullanılmış ya da değiştirilmiş. Alanın bir yöneticisinden yeni davet isteyin.",
+        "back": "Alanıma dön"
+      },
+      "received": {
+        "title": "Alınan davetler",
+        "item": "{inviter} sizi “{space}” alanına “{role}” rolüyle davet ediyor.",
+        "itemAnon": "“{space}” alanına “{role}” rolüyle davet edildiniz.",
+        "accept": "Kabul et",
+        "decline": "Reddet"
+      },
+      "delete": {
+        "title": "Bu çalışma alanını sil",
+        "open": "Bu alanı sil…",
+        "warn": "“{name}” kanalları, paylaşımları, mesajları, medyası, bilgisi ve ajan sohbetleriyle birlikte kalıcı olarak silinecek. Tüm üyeler erişimini kaybedecek. Bu işlem geri alınamaz.",
+        "prereq": "Silmeden önce tüm kanalların bağlantısını kesin ve zamanlanmış paylaşımları kaldırın.",
+        "confirm": "Onaylamak için alanın adını yazın: {name}",
+        "submit": "Kalıcı olarak sil",
+        "deleting": "Siliniyor…"
+      },
+      "errors": {
+        "notAdmin": "Başka bir çalışma alanını yalnızca bir alanın yöneticileri oluşturabilir.",
+        "limit": "Oluşturulan {max} çalışma alanı sınırına ulaştınız.",
+        "forbidden": "Bu alanda bunu yapma yetkiniz yok.",
+        "lastAdmin": "Bir alanda en az bir yönetici kalmalıdır. Önce başka birini atayın.",
+        "alreadyMember": "Bu kişi zaten alanın üyesi.",
+        "invitationLimit": "Zaten {max} bekleyen davetiniz var: yenilerini oluşturmadan önce bazılarını iptal edin.",
+        "invitationInvalid": "Bu davetin süresi dolmuş ya da artık geçerli değil.",
+        "hasChannels": "Önce bu alanın tüm kanallarının bağlantısını kesin.",
+        "hasQueuedPosts": "Önce bu alanın sıradaki paylaşımlarını silin ya da zamanlamasını kaldırın.",
+        "lastWorkspace": "Bu tek çalışma alanınız: önce bir tane daha oluşturun.",
+        "nameMismatch": "Yazdığınız ad alanın adıyla eşleşmiyor."
+      }
     },
     "channelsPage": {
       "intro": "Kuruluşunuza bağlı sosyal ağ hesapları.",

@@ -1278,18 +1278,111 @@
       "noPreview": "Không có bản xem trước"
     },
     "settings": {
-      "orgTitle": "Tổ chức",
-      "orgName": "Tên tổ chức",
+      "orgTitle": "Không gian làm việc",
+      "orgName": "Tên không gian làm việc",
       "orgSaved": "Đã lưu tên.",
       "save": "Lưu",
       "saving": "Đang lưu…",
       "teamTitle": "Nhóm ({count})",
       "you": "(bạn)",
-      "inviteSoon": "Tính năng mời thành viên mới sắp có.",
       "accountTitle": "Tài khoản của tôi",
       "deleteAccount": "Để xóa tài khoản và dữ liệu của bạn, hãy làm theo <link>quy trình xóa</link>.",
-      "errRename": "Chỉ quản trị viên mới có thể đổi tên tổ chức.",
+      "errRename": "Chỉ quản trị viên mới có thể đổi tên không gian làm việc.",
       "errNameLength": "Tên phải có từ 2 đến 120 ký tự."
+    },
+    "workspace": {
+      "menu": {
+        "label": "Đổi không gian làm việc",
+        "title": "Không gian làm việc",
+        "create": "Không gian làm việc mới",
+        "manage": "Quản lý không gian của tôi",
+        "invitations": "Lời mời đang chờ"
+      },
+      "list": {
+        "title": "Không gian làm việc của tôi",
+        "hint": "Mỗi không gian có kênh, bài đăng, tin nhắn, phương tiện và kiến thức riêng. Bạn có thể chuyển qua lại bất cứ lúc nào.",
+        "current": "Hiện tại",
+        "open": "Mở"
+      },
+      "create": {
+        "title": "Tạo không gian làm việc",
+        "intro": "Bạn sẽ là quản trị viên. Bạn có thể tạo tối đa {max}.",
+        "name": "Tên không gian làm việc",
+        "placeholder": "VD: Cửa hàng, Agency, Khách hàng Nguyễn",
+        "copyMembers": "Đưa các thành viên của “{name}” sang với vai trò của họ",
+        "submit": "Tạo không gian",
+        "creating": "Đang tạo…"
+      },
+      "cancel": "Hủy",
+      "roleHelp": {
+        "admin": "Quản lý không gian, các kênh và nhóm.",
+        "member": "Lên lịch, đăng bài và trả lời tin nhắn.",
+        "viewer": "Chỉ xem, không thay đổi gì."
+      },
+      "team": {
+        "soleAdmin": "Quản trị viên duy nhất của không gian: hãy chỉ định người khác trước.",
+        "roleOf": "Vai trò của {name}",
+        "remove": "Xóa khỏi nhóm",
+        "leave": "Rời đi",
+        "confirmRemove": "Xóa {name} khỏi không gian này? Họ sẽ mất quyền truy cập.",
+        "confirmLeave": "Rời không gian này? Bạn sẽ mất quyền truy cập trừ khi được mời lại.",
+        "adminsOnly": "Chỉ quản trị viên mới quản lý nhóm và lời mời.",
+        "pending": "Lời mời đang chờ ({count})",
+        "expires": "hết hạn ngày {date}",
+        "revoke": "Thu hồi"
+      },
+      "invite": {
+        "title": "Mời một người",
+        "intro": "Nhập địa chỉ email và chọn vai trò. Bạn nhận được liên kết mời để tự gửi cho họ.",
+        "email": "Địa chỉ email",
+        "role": "Vai trò",
+        "submit": "Tạo liên kết mời",
+        "creating": "Đang tạo…",
+        "ready": "Liên kết mời cho {email}",
+        "link": "Liên kết mời",
+        "copy": "Sao chép liên kết",
+        "copied": "Đã sao chép liên kết",
+        "note": "Hãy gửi cho người này: liên kết chỉ hiển thị một lần, chỉ dùng được một lần và hết hạn sau {days} ngày.",
+        "pageTitle": "Lời mời",
+        "body": "{inviter} mời bạn tham gia không gian làm việc này với vai trò “{role}”.",
+        "bodyAnon": "Bạn được mời tham gia không gian làm việc này với vai trò “{role}”.",
+        "alreadyMember": "Bạn đã là thành viên của không gian này.",
+        "accept": "Tham gia không gian",
+        "open": "Mở không gian",
+        "later": "Để sau",
+        "invalidTitle": "Không tìm thấy lời mời",
+        "invalidBody": "Liên kết này đã hết hạn, đã được dùng hoặc đã bị thay thế. Hãy nhờ quản trị viên của không gian gửi lời mời mới.",
+        "back": "Quay lại không gian của tôi"
+      },
+      "received": {
+        "title": "Lời mời đã nhận",
+        "item": "{inviter} mời bạn tham gia “{space}” với vai trò “{role}”.",
+        "itemAnon": "Bạn được mời tham gia “{space}” với vai trò “{role}”.",
+        "accept": "Chấp nhận",
+        "decline": "Từ chối"
+      },
+      "delete": {
+        "title": "Xóa không gian làm việc này",
+        "open": "Xóa không gian này…",
+        "warn": "“{name}” sẽ bị xóa vĩnh viễn cùng các kênh, bài đăng, tin nhắn, phương tiện, kiến thức và cuộc trò chuyện với trợ lý. Mọi thành viên sẽ mất quyền truy cập. Không thể hoàn tác.",
+        "prereq": "Trước khi xóa, hãy ngắt kết nối mọi kênh và gỡ các bài đăng đã lên lịch.",
+        "confirm": "Để xác nhận, hãy nhập tên không gian: {name}",
+        "submit": "Xóa vĩnh viễn",
+        "deleting": "Đang xóa…"
+      },
+      "errors": {
+        "notAdmin": "Chỉ quản trị viên của một không gian làm việc mới có thể tạo không gian khác.",
+        "limit": "Bạn đã đạt giới hạn {max} không gian làm việc đã tạo.",
+        "forbidden": "Bạn không có quyền thực hiện việc này trong không gian này.",
+        "lastAdmin": "Một không gian phải còn ít nhất một quản trị viên. Hãy chỉ định người khác trước.",
+        "alreadyMember": "Người này đã là thành viên của không gian.",
+        "invitationLimit": "Bạn đã có {max} lời mời đang chờ: hãy thu hồi bớt trước khi tạo thêm.",
+        "invitationInvalid": "Lời mời này đã hết hạn hoặc không còn hiệu lực.",
+        "hasChannels": "Hãy ngắt kết nối tất cả các kênh của không gian này trước.",
+        "hasQueuedPosts": "Hãy xóa hoặc hủy lịch các bài đăng đang chờ của không gian này trước.",
+        "lastWorkspace": "Đây là không gian làm việc duy nhất của bạn: hãy tạo một không gian khác trước.",
+        "nameMismatch": "Tên đã nhập không khớp với tên không gian."
+      }
     },
     "channelsPage": {
       "intro": "Các tài khoản mạng xã hội được kết nối với tổ chức của bạn.",

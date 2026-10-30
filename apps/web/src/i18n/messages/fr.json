@@ -1883,18 +1883,111 @@
       "noPreview": "Aperçu indisponible"
     },
     "settings": {
-      "orgTitle": "Organisation",
-      "orgName": "Nom de l’organisation",
+      "orgTitle": "Espace de travail",
+      "orgName": "Nom de l’espace de travail",
       "orgSaved": "Nom enregistré.",
       "save": "Enregistrer",
       "saving": "Enregistrement…",
       "teamTitle": "Équipe ({count})",
       "you": "(vous)",
-      "inviteSoon": "L’invitation de nouveaux membres arrive bientôt.",
       "accountTitle": "Mon compte",
       "deleteAccount": "Pour supprimer votre compte et vos données, suivez <link>la procédure de suppression</link>.",
-      "errRename": "Seul un administrateur peut renommer l’organisation.",
+      "errRename": "Seul un administrateur peut renommer l’espace de travail.",
       "errNameLength": "Le nom doit faire entre 2 et 120 caractères."
+    },
+    "workspace": {
+      "menu": {
+        "label": "Changer d’espace de travail",
+        "title": "Espaces de travail",
+        "create": "Nouvel espace de travail",
+        "manage": "Gérer mes espaces",
+        "invitations": "Invitations en attente"
+      },
+      "list": {
+        "title": "Mes espaces de travail",
+        "hint": "Chaque espace a ses propres canaux, publications, messages, médias et connaissances. Passez de l’un à l’autre quand vous voulez.",
+        "current": "Actuel",
+        "open": "Ouvrir"
+      },
+      "create": {
+        "title": "Créer un espace de travail",
+        "intro": "Vous en serez l’administrateur. Vous pouvez en créer {max} au plus.",
+        "name": "Nom de l’espace de travail",
+        "placeholder": "Ex. Boutique, Agence, Client Dupont",
+        "copyMembers": "Reprendre les membres de « {name} » avec leur rôle",
+        "submit": "Créer l’espace",
+        "creating": "Création…"
+      },
+      "cancel": "Annuler",
+      "roleHelp": {
+        "admin": "Gère l’espace, les canaux et l’équipe.",
+        "member": "Planifie, publie et répond aux messages.",
+        "viewer": "Consulte sans rien modifier."
+      },
+      "team": {
+        "soleAdmin": "Seul administrateur de l’espace : nommez-en un autre d’abord.",
+        "roleOf": "Rôle de {name}",
+        "remove": "Retirer",
+        "leave": "Quitter",
+        "confirmRemove": "Retirer {name} de cet espace ? Cette personne n’y aura plus accès.",
+        "confirmLeave": "Quitter cet espace ? Vous n’y aurez plus accès, sauf nouvelle invitation.",
+        "adminsOnly": "Seuls les administrateurs gèrent l’équipe et les invitations.",
+        "pending": "Invitations en attente ({count})",
+        "expires": "expire le {date}",
+        "revoke": "Révoquer"
+      },
+      "invite": {
+        "title": "Inviter quelqu’un",
+        "intro": "Saisissez son adresse e-mail et choisissez son rôle. Vous obtenez un lien d’invitation à lui envoyer vous-même.",
+        "email": "Adresse e-mail",
+        "role": "Rôle",
+        "submit": "Créer le lien d’invitation",
+        "creating": "Création…",
+        "ready": "Lien d’invitation pour {email}",
+        "link": "Lien d’invitation",
+        "copy": "Copier le lien",
+        "copied": "Lien copié",
+        "note": "Envoyez-le à cette personne : il ne s’affiche qu’une fois, ne sert qu’une fois et expire dans {days} jours.",
+        "pageTitle": "Invitation",
+        "body": "{inviter} vous invite à rejoindre cet espace de travail avec le rôle « {role} ».",
+        "bodyAnon": "Vous êtes invité à rejoindre cet espace de travail avec le rôle « {role} ».",
+        "alreadyMember": "Vous êtes déjà membre de cet espace.",
+        "accept": "Rejoindre l’espace",
+        "open": "Ouvrir l’espace",
+        "later": "Plus tard",
+        "invalidTitle": "Invitation introuvable",
+        "invalidBody": "Ce lien a expiré, a déjà servi ou a été remplacé. Demandez une nouvelle invitation à un administrateur de l’espace.",
+        "back": "Retour à mon espace"
+      },
+      "received": {
+        "title": "Invitations reçues",
+        "item": "{inviter} vous invite à rejoindre « {space} » avec le rôle « {role} ».",
+        "itemAnon": "Vous êtes invité à rejoindre « {space} » avec le rôle « {role} ».",
+        "accept": "Accepter",
+        "decline": "Refuser"
+      },
+      "delete": {
+        "title": "Supprimer cet espace de travail",
+        "open": "Supprimer cet espace…",
+        "warn": "« {name} » sera supprimé définitivement, avec ses canaux, publications, messages, médias, connaissances et conversations de l’agent. Tous ses membres en perdront l’accès. Cette action est irréversible.",
+        "prereq": "Avant de supprimer, déconnectez tous les canaux et retirez les publications programmées.",
+        "confirm": "Pour confirmer, saisissez le nom de l’espace : {name}",
+        "submit": "Supprimer définitivement",
+        "deleting": "Suppression…"
+      },
+      "errors": {
+        "notAdmin": "Seuls les administrateurs d’un espace de travail peuvent en créer un autre.",
+        "limit": "Vous avez atteint la limite de {max} espaces de travail créés.",
+        "forbidden": "Vous n’avez pas le droit de faire cela dans cet espace.",
+        "lastAdmin": "Un espace doit garder au moins un administrateur. Nommez-en d’abord un autre.",
+        "alreadyMember": "Cette personne est déjà membre de l’espace.",
+        "invitationLimit": "Vous avez déjà {max} invitations en attente : révoquez-en avant d’en créer d’autres.",
+        "invitationInvalid": "Cette invitation a expiré ou n’est plus valide.",
+        "hasChannels": "Déconnectez d’abord tous les canaux de cet espace.",
+        "hasQueuedPosts": "Supprimez ou déprogrammez d’abord les publications en file de cet espace.",
+        "lastWorkspace": "C’est votre seul espace de travail : créez-en un autre d’abord.",
+        "nameMismatch": "Le nom saisi ne correspond pas à celui de l’espace."
+      }
     },
     "channelsPage": {
       "intro": "Les comptes de réseaux sociaux connectés à votre organisation.",

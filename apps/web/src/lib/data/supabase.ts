@@ -6,12 +6,13 @@ import type { KnowledgeHit } from '@/lib/kb/types';
 import { GENERIC_ERROR, type FormError } from '@/lib/form-error';
 import { replyWindow, validateReply } from '@/lib/inbox/logic';
 import { displayName, safeFileName } from '@/lib/media/logic';
+import { workspaceError } from '@/lib/workspaces';
 import type {
   ConversationDetail, ConversationStatus, ConversationSummary, InboxRepository, MessageItem, NetworkId, NoteItem,
 } from '@/lib/inbox/types';
 import { KNOWLEDGE_LIMITS } from './types';
 import type {
-  AgentRepository, AppContext, CreatePostInput, GenerationRepository, IntegrationItem, KnowledgeInput, KnowledgeItem, KnowledgeRepository, MediaItem, MediaRepository, MemberItem, NotificationItem, OrgRole, PostItem, PostMedia, PostsRepository, Repositories, Result, SuggestionRepository, VideoJobRecord, WorkspaceRepository,
+  AgentRepository, AppContext, CreatePostInput, GenerationRepository, IntegrationItem, KnowledgeInput, KnowledgeItem, KnowledgeRepository, MediaItem, MediaRepository, InvitationItem, MemberItem, NotificationItem, OrgRole, PostItem, PostMedia, PostsRepository, ReceivedInvitation, Repositories, Result, SuggestionRepository, VideoJobRecord, WorkspaceRepository,
 } from './types';
 
 // Implémentation Supabase. Toutes les requêtes passent par la clé « anon » + la session de l'utilisateur :
@@ -249,16 +250,23 @@ export function createSupabaseRepositories(supabase: SupabaseClient, ctx: AppCon
     },
 
     async members() {
+      // `workspace_members` donne aussi les adresses, aux administrateurs seulement. Avant la migration des espaces, on retombe sur la lecture simple.
+      const listed = await supabase.rpc('workspace_members', { p_org: ctx.org.id });
+      if (!listed.error && Array.isArray(listed.data)) {
+        return (listed.data as Row[]).map((m): MemberItem => ({ userId: m.user_id, name: m.name || 'Membre', role: m.role as OrgRole, email: m.email ?? null }));
+      }
       const { data } = await supabase.from('memberships').select('user_id, role').eq('org_id', ctx.org.id).order('created_at', { ascending: true });
       const names = await profileNames(supabase, (data ?? []).map((m: Row) => m.user_id));
       return (data ?? []).map((m: Row): MemberItem => ({ userId: m.user_id, name: names.get(m.user_id) ?? 'Membre', role: m.role as OrgRole }));
     },
 
+    // Les notifications sont celles de la personne dans l'espace courant (et celles qui ne sont rattachées à aucun espace).
     async notifications() {
       const { data } = await supabase
         .from('notifications')
         .select('id, type, title, body, data, read_at, created_at')
         .eq('user_id', ctx.user.id)
+        .or(`org_id.is.null,org_id.eq.${ctx.org.id}`)
         .order('created_at', { ascending: false })
         .limit(20);
       return (data ?? []).map((n: Row): NotificationItem => ({
@@ -268,13 +276,85 @@ export function createSupabaseRepositories(supabase: SupabaseClient, ctx: AppCon
     },
 
     async markNotificationsRead() {
-      const { error } = await supabase.from('notifications').update({ read_at: new Date().toISOString() }).eq('user_id', ctx.user.id).is('read_at', null);
+      const { error } = await supabase.from('notifications').update({ read_at: new Date().toISOString() }).eq('user_id', ctx.user.id).or(`org_id.is.null,org_id.eq.${ctx.org.id}`).is('read_at', null);
       return error ? fail(GENERIC_ERROR) : { ok: true };
     },
 
     async renameOrganization(name) {
       const { error } = await supabase.from('organizations').update({ name: name.trim() }).eq('id', ctx.org.id);
       return error ? fail({ key: 'app.settings.errRename' }) : { ok: true };
+    },
+
+    async create(name, copyMembers) {
+      const { data, error } = await supabase.rpc('create_organization', { p_name: name, p_copy_members_from: copyMembers ? ctx.org.id : null });
+      return error || typeof data !== 'string' ? { ok: false, error: workspaceError(error?.message) } : { ok: true, id: data };
+    },
+
+    async remove() {
+      const { error } = await supabase.rpc('delete_workspace', { p_org: ctx.org.id });
+      return error ? fail(workspaceError(error.message)) : { ok: true };
+    },
+
+    async setMemberRole(userId, role) {
+      const { data, error } = await supabase.from('memberships').update({ role }).eq('org_id', ctx.org.id).eq('user_id', userId).select('user_id');
+      if (error) return fail(workspaceError(error.message));
+      // La RLS ne laisse modifier que les administrateurs : aucune ligne touchée = refus.
+      return data && data.length > 0 ? { ok: true } : fail(workspaceError('forbidden'));
+    },
+
+    async removeMember(userId) {
+      const { data, error } = await supabase.from('memberships').delete().eq('org_id', ctx.org.id).eq('user_id', userId).select('user_id');
+      if (error) return fail(workspaceError(error.message));
+      return data && data.length > 0 ? { ok: true } : fail(workspaceError('forbidden'));
+    },
+
+    async invitations() {
+      const { data } = await supabase
+        .from('workspace_invitations')
+        .select('id, email, role, created_at, expires_at')
+        .eq('org_id', ctx.org.id)
+        .gt('expires_at', new Date().toISOString())
+        .order('created_at', { ascending: false });
+      return (data ?? []).map((i: Row): InvitationItem => ({ id: i.id, email: i.email, role: i.role as OrgRole, createdAt: i.created_at, expiresAt: i.expires_at }));
+    },
+
+    async invite(email, role) {
+      const { data, error } = await supabase.rpc('invite_to_workspace', { p_org: ctx.org.id, p_email: email, p_role: role });
+      return error || typeof data !== 'string' ? { ok: false, error: workspaceError(error?.message) } : { ok: true, token: data };
+    },
+
+    async revokeInvitation(id) {
+      const { error } = await supabase.from('workspace_invitations').delete().eq('id', id).eq('org_id', ctx.org.id);
+      return error ? fail(workspaceError(error.message)) : { ok: true };
+    },
+
+    async receivedInvitations() {
+      const { data, error } = await supabase.rpc('my_invitations');
+      if (error || !Array.isArray(data)) return [];
+      return (data as Row[]).map((i): ReceivedInvitation => ({ id: i.id, orgId: i.org_id, orgName: i.org_name, role: i.role as OrgRole, inviterName: i.inviter_name || null, expiresAt: i.expires_at }));
+    },
+
+    async previewInvitation(token) {
+      const { data, error } = await supabase.rpc('invitation_preview', { p_token: token });
+      const row = !error && Array.isArray(data) ? (data[0] as Row | undefined) : undefined;
+      return row
+        ? { orgId: row.org_id, orgName: row.org_name, role: row.role as OrgRole, inviterName: row.inviter_name || null, expiresAt: row.expires_at, alreadyMember: row.already_member === true }
+        : null;
+    },
+
+    async acceptInvitation(token) {
+      const { data, error } = await supabase.rpc('accept_invitation', { p_token: token });
+      return error || typeof data !== 'string' ? { ok: false, error: workspaceError(error?.message) } : { ok: true, orgId: data };
+    },
+
+    async acceptReceivedInvitation(id) {
+      const { data, error } = await supabase.rpc('accept_invitation_by_id', { p_id: id });
+      return error || typeof data !== 'string' ? { ok: false, error: workspaceError(error?.message) } : { ok: true, orgId: data };
+    },
+
+    async declineReceivedInvitation(id) {
+      const { error } = await supabase.rpc('decline_invitation', { p_id: id });
+      return error ? fail(workspaceError(error.message)) : { ok: true };
     },
   };
 

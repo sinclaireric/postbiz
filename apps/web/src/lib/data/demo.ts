@@ -1,3 +1,5 @@
+import { AsyncLocalStorage } from 'node:async_hooks';
+import { randomBytes } from 'node:crypto';
 import type { AgentMessage, AgentThread } from '@/lib/agent/types';
 import { demoDailyRows } from '@/lib/analytics/demo';
 import { chunkKnowledge } from '@/lib/kb/chunk';
@@ -7,8 +9,10 @@ import { replyWindow, validateReply } from '@/lib/inbox/logic';
 import type {
   ConversationDetail, ConversationStatus, ConversationSummary, InboxRepository, MessageItem, NetworkId, NoteItem,
 } from '@/lib/inbox/types';
+import type { FormError } from '@/lib/form-error';
+import { adminCount, canCreateWorkspace, INVITATION_DAYS, MAX_PENDING_INVITATIONS, MAX_WORKSPACES } from '@/lib/workspaces';
 import type {
-  AgentRepository, AppContext, CreatePostInput, GenerationRepository, IntegrationItem, KnowledgeInput, KnowledgeItem, KnowledgeRepository, MediaItem, MediaRepository, MemberItem, NotificationItem, PostItem, PostsRepository, Repositories, Result, SuggestionRepository, VideoJobRecord, WorkspaceRepository,
+  AgentRepository, AppContext, CreatePostInput, GenerationRepository, IntegrationItem, InvitationItem, InvitationPreview, KnowledgeInput, KnowledgeItem, KnowledgeRepository, MediaItem, MediaRepository, MemberItem, NotificationItem, OrgRole, PostItem, PostsRepository, ReceivedInvitation, Repositories, Result, SuggestionRepository, VideoJobRecord, WorkspaceRepository, WorkspaceSummary,
 } from './types';
 
 // Mode démo : données d'exemple en mémoire, partagées par tous les visiteurs du serveur de développement.
@@ -24,6 +28,7 @@ export const DEMO_CONTEXT: AppContext = {
   mode: 'demo',
   user: { id: 'demo-user', email: 'camille@maison-lune.example', name: 'Camille' },
   org: { id: 'demo-org', name: 'Maison Lune', role: 'admin' },
+  workspaces: [{ id: 'demo-org', name: 'Maison Lune', role: 'admin' }],
 };
 
 interface Store {
@@ -44,9 +49,13 @@ interface Store {
   generations: { kind: 'image' | 'video'; at: number }[];
   /** Suggestions de réponse de l'inbox (démo : texte simulé). */
   suggestions: { id: string; at: number; reply: string; outcome: 'sent' | 'edited' | null }[];
+  /** Invitations en attente dans cet espace, avec leur jeton (la démo n'a pas de base : il n'y a rien à hacher). */
+  invitations: DemoInvitation[];
   orgName: string;
   seq: number;
 }
+
+interface DemoInvitation { id: string; email: string; role: OrgRole; token: string; createdAt: string; expiresAt: string }
 
 /** Illustration d'exemple (SVG en data URI) pour la bibliothèque de la démo : aucun fichier à servir, rien à envoyer. */
 function art(a: string, b: string, shape: 'moon' | 'wave' | 'arch' | 'sun' | 'dots' | 'tri'): string {
@@ -167,16 +176,16 @@ function seed(): Store {
   });
 
   return {
-    conversations, integrations, media: library, agentThreads: [], videoJobs: [], generations: [], suggestions: [], orgName: DEMO_CONTEXT.org.name, seq,
+    conversations, integrations, media: library, agentThreads: [], videoJobs: [], generations: [], suggestions: [], invitations: [], orgName: DEMO_CONTEXT.org.name, seq,
     notifications: [
       { id: 'nt1', type: 'post_error', title: 'Canal à reconnecter', body: 'Le jeton d’accès a expiré : reconnectez le canal.', createdAt: ago(3 * H), read: false, href: '/app/calendrier' },
       { id: 'nt2', type: 'message_failed', title: 'Réponse non envoyée', body: 'La fenêtre de 24 h est dépassée : Meta n’autorise plus de réponse à cette conversation.', createdAt: ago(26 * H), read: true, href: '/app/inbox?c=c5' },
     ],
     members: [
-      { userId: 'demo-user', name: 'Camille', role: 'admin' },
-      { userId: 'u2', name: 'Hugo', role: 'member' },
-      { userId: 'u3', name: 'Nora', role: 'member' },
-      { userId: 'u4', name: 'Léo', role: 'viewer' },
+      { userId: 'demo-user', name: 'Camille', role: 'admin', email: 'camille@maison-lune.example' },
+      { userId: 'u2', name: 'Hugo', role: 'member', email: 'hugo@maison-lune.example' },
+      { userId: 'u3', name: 'Nora', role: 'member', email: 'nora@maison-lune.example' },
+      { userId: 'u4', name: 'Léo', role: 'viewer', email: 'leo@maison-lune.example' },
     ],
     posts: [
       post(1, 'facebook', 'Maison Lune', 'Nouvelle collection d’automne : les premières pièces arrivent demain 🍂', -20, 'published', null, { firstComment: 'Dites-nous en commentaire laquelle vous préférez 👇', firstCommentState: 'posted', firstCommentError: null }),
@@ -206,8 +215,63 @@ function knowledgeSeed(): KnowledgeItem[] {
   return items.map((k) => ({ ...k, chunkCount: chunkKnowledge(k.title, k.content).length, indexedAt: ago(k.id === 'k3' ? 2 * H : 8 * H), embeddedAt: null }));
 }
 
-const g = globalThis as unknown as { __postbizDemo?: Store };
-const store = (): Store => (g.__postbizDemo ??= seed());
+// ---------------------------------------------------------------- espaces de travail de la démo
+// La démo a deux espaces : « Maison Lune » (le jeu d'exemple complet, où l'on est administrateur) et « Café du Port » (vide, où l'on est membre : on y voit
+// ce que ne peut pas faire un membre). Ceux que l'on crée commencent vides. Chaque requête lit et écrit dans l'espace où elle s'exécute (AsyncLocalStorage),
+// de sorte que les dépôts ci-dessous n'ont pas à savoir qu'il y en a plusieurs.
+
+/** L'espace de travail où s'exécute la requête en cours. */
+const inSpace = new AsyncLocalStorage<string>();
+interface DemoSpace {
+  id: string;
+  role: OrgRole;
+  /** Créé par la personne (compte dans son plafond de 10) ; l'espace d'exemple « Café du Port » lui a été ouvert par quelqu'un d'autre. */
+  owned: boolean;
+  /** Les données de l'espace ; le jeu d'exemple complet (espace principal) se construit à la première lecture. */
+  store?: Store;
+}
+
+const g = globalThis as unknown as { __postbizDemo?: Store; __postbizDemoSpaces?: DemoSpace[]; __postbizDemoReceived?: DemoReceived[] };
+const MAIN_ID = DEMO_CONTEXT.org.id;
+const me = DEMO_CONTEXT.user;
+
+function emptyStore(name: string, members: MemberItem[]): Store {
+  // `Omit<…, 'seq'>` : une version plus ancienne de `Store` portait un compteur `seq` que plus rien ne lit.
+  const empty: Omit<Store, 'seq'> = {
+    notifications: [], conversations: [], integrations: [], members, posts: [], knowledge: [], knowledgeChunks: [], media: [], agentThreads: [], videoJobs: [],
+    generations: [], suggestions: [], invitations: [], orgName: name,
+  };
+  return empty as Store;
+}
+
+const spaces = (): DemoSpace[] =>
+  (g.__postbizDemoSpaces ??= [
+    { id: MAIN_ID, role: 'admin', owned: true },
+    {
+      id: 'demo-org-2', role: 'member', owned: false,
+      store: emptyStore('Café du Port', [
+        { userId: me.id, name: me.name, role: 'member', email: me.email },
+        { userId: 'u5', name: 'Hugo', role: 'admin', email: 'hugo@cafe-du-port.example' },
+        { userId: 'u6', name: 'Inès', role: 'viewer', email: 'ines@cafe-du-port.example' },
+      ]),
+    },
+  ]);
+const storeOf = (s: DemoSpace): Store => (s.id === MAIN_ID ? (g.__postbizDemo ??= seed()) : s.store!);
+const currentSpace = (): DemoSpace => spaces().find((s) => s.id === inSpace.getStore()) ?? spaces()[0]!;
+const store = (): Store => storeOf(currentSpace());
+const myRole = (): OrgRole => currentSpace().role;
+
+/** Les espaces de la démo, du plus ancien au plus récent. */
+export const demoWorkspaces = (): WorkspaceSummary[] => spaces().map((s) => ({ id: s.id, name: storeOf(s).orgName, role: s.role }));
+/** Exécute `fn` dans l'espace désigné (pour les actions qui touchent à la démo sans passer par un dépôt). */
+export const inDemoWorkspace = <T,>(orgId: string, fn: () => T): T => inSpace.run(orgId, fn);
+
+/** Invitation reçue par la personne de la démo, avec le lien de la page d'invitation (jeton fixe : la démo n'a pas d'e-mail). */
+export const DEMO_INVITATION_TOKEN = 'd3a0'.repeat(16);
+interface DemoReceived { id: string; orgName: string; role: OrgRole; inviterName: string | null; token: string; expiresAt: string }
+const received = (): DemoReceived[] =>
+  (g.__postbizDemoReceived ??= [{ id: 'inv-demo-1', orgName: 'Studio Aube', role: 'member', inviterName: 'Léa', token: DEMO_INVITATION_TOKEN, expiresAt: ahead(6 * 24 * H) }]);
+
 
 const summary = ({ messages: _m, notes: _n, ...s }: ConversationDetail): ConversationSummary => s;
 
@@ -286,13 +350,131 @@ const posts: PostsRepository = {
   },
 };
 
+const refused = (key: FormError['key']): { ok: false; error: FormError } => ({ ok: false, error: { key } });
+const FORBIDDEN = 'app.workspace.errors.forbidden' as const;
+
 const workspace: WorkspaceRepository = {
   async integrations() { return store().integrations; },
-  async members() { return store().members; },
+  async members() {
+    const isAdmin = myRole() === 'admin';
+    return store().members.map((m) => ({ ...m, email: isAdmin ? (m.email ?? null) : null }));
+  },
   async renameOrganization(name) { store().orgName = name; return { ok: true }; },
   async notifications() { return structuredClone(store().notifications); },
   async markNotificationsRead() { store().notifications.forEach((n) => { n.read = true; }); return { ok: true }; },
+
+  async create(name, copyMembers) {
+    if (!canCreateWorkspace(demoWorkspaces())) return refused('app.workspace.errors.notAdmin');
+    if (spaces().filter((s) => s.owned).length >= MAX_WORKSPACES) return { ok: false, error: { key: 'app.workspace.errors.limit', params: { max: MAX_WORKSPACES } } };
+    const source = store().members;
+    const members: MemberItem[] = [{ userId: me.id, name: me.name, role: 'admin', email: me.email }];
+    if (copyMembers && myRole() === 'admin') members.push(...source.filter((m) => m.userId !== me.id).map((m) => ({ ...m })));
+    const space: DemoSpace = { id: id('demo-org'), role: 'admin', owned: true };
+    space.store = emptyStore(name, members);
+    spaces().push(space);
+    return { ok: true, id: space.id };
+  },
+  async remove() {
+    if (myRole() !== 'admin') return refused(FORBIDDEN);
+    if (spaces().length <= 1) return refused('app.workspace.errors.lastWorkspace');
+    const s = store();
+    if (s.integrations.some((i) => i.status !== 'disabled')) return refused('app.workspace.errors.hasChannels');
+    if (s.posts.some((p) => p.state === 'queued' || p.state === 'publishing')) return refused('app.workspace.errors.hasQueuedPosts');
+    spaces().splice(spaces().indexOf(currentSpace()), 1);
+    return { ok: true };
+  },
+  async setMemberRole(userId, role) {
+    if (myRole() !== 'admin') return refused(FORBIDDEN);
+    const members = store().members;
+    const target = members.find((m) => m.userId === userId);
+    if (!target || target.role === role) return { ok: true };
+    if (target.role === 'admin' && adminCount(members) <= 1) return refused('app.workspace.errors.lastAdmin');
+    target.role = role;
+    if (userId === me.id) currentSpace().role = role;
+    return { ok: true };
+  },
+  async removeMember(userId) {
+    const self = userId === me.id;
+    if (!self && myRole() !== 'admin') return refused(FORBIDDEN);
+    const members = store().members;
+    const target = members.find((m) => m.userId === userId);
+    if (!target) return { ok: true };
+    if (target.role === 'admin' && adminCount(members) <= 1) return refused('app.workspace.errors.lastAdmin');
+    if (self && spaces().length <= 1) return refused('app.workspace.errors.lastWorkspace');
+    members.splice(members.indexOf(target), 1);
+    if (self) spaces().splice(spaces().indexOf(currentSpace()), 1);
+    return { ok: true };
+  },
+  async invitations() {
+    if (myRole() !== 'admin') return [];
+    return store().invitations.map((i): InvitationItem => ({ id: i.id, email: i.email, role: i.role, createdAt: i.createdAt, expiresAt: i.expiresAt }));
+  },
+  async invite(email, role) {
+    if (myRole() !== 'admin') return refused(FORBIDDEN);
+    const s = store();
+    if (s.members.some((m) => m.email?.toLowerCase() === email)) return refused('app.workspace.errors.alreadyMember');
+    const existing = s.invitations.find((i) => i.email === email);
+    if (!existing && s.invitations.length >= MAX_PENDING_INVITATIONS) return { ok: false, error: { key: 'app.workspace.errors.invitationLimit', params: { max: MAX_PENDING_INVITATIONS } } };
+    const token = randomBytes(32).toString('hex');
+    const createdAt = new Date().toISOString();
+    const expiresAt = new Date(Date.now() + INVITATION_DAYS * 24 * H).toISOString();
+    if (existing) Object.assign(existing, { role, token, createdAt, expiresAt });
+    else s.invitations.push({ id: id('inv'), email, role, token, createdAt, expiresAt });
+    return { ok: true, token };
+  },
+  async revokeInvitation(invitationId) {
+    if (myRole() !== 'admin') return refused(FORBIDDEN);
+    const list = store().invitations;
+    const i = list.findIndex((x) => x.id === invitationId);
+    if (i >= 0) list.splice(i, 1);
+    return { ok: true };
+  },
+  async receivedInvitations() {
+    return received().filter((i) => new Date(i.expiresAt).getTime() > Date.now()).map((i): ReceivedInvitation => ({ id: i.id, orgId: '', orgName: i.orgName, role: i.role, inviterName: i.inviterName, expiresAt: i.expiresAt }));
+  },
+  async previewInvitation(token) {
+    const incoming = received().find((i) => i.token === token && new Date(i.expiresAt).getTime() > Date.now());
+    if (incoming) return { orgId: '', orgName: incoming.orgName, role: incoming.role, inviterName: incoming.inviterName, expiresAt: incoming.expiresAt, alreadyMember: false };
+    for (const space of spaces()) {
+      const own = storeOf(space).invitations.find((i) => i.token === token && new Date(i.expiresAt).getTime() > Date.now());
+      if (own) return { orgId: space.id, orgName: storeOf(space).orgName, role: own.role, inviterName: me.name, expiresAt: own.expiresAt, alreadyMember: true } satisfies InvitationPreview;
+    }
+    return null;
+  },
+  async acceptInvitation(token) {
+    const incoming = received().find((i) => i.token === token && new Date(i.expiresAt).getTime() > Date.now());
+    if (incoming) return joinDemoWorkspace(incoming);
+    for (const space of spaces()) {
+      const list = storeOf(space).invitations;
+      const i = list.findIndex((x) => x.token === token && new Date(x.expiresAt).getTime() > Date.now());
+      if (i >= 0) { list.splice(i, 1); return { ok: true, orgId: space.id }; } // déjà membre : l'invitation est consommée, le rôle ne change pas
+    }
+    return refused('app.workspace.errors.invitationInvalid');
+  },
+  async acceptReceivedInvitation(invitationId) {
+    const incoming = received().find((i) => i.id === invitationId && new Date(i.expiresAt).getTime() > Date.now());
+    return incoming ? joinDemoWorkspace(incoming) : refused('app.workspace.errors.invitationInvalid');
+  },
+  async declineReceivedInvitation(invitationId) {
+    const list = received();
+    const i = list.findIndex((x) => x.id === invitationId);
+    if (i >= 0) list.splice(i, 1);
+    return { ok: true };
+  },
 };
+
+/** Accepter une invitation reçue : la personne rejoint l'espace (vide) avec le rôle proposé, et l'invitation disparaît. */
+function joinDemoWorkspace(invitation: DemoReceived): { ok: true; orgId: string } {
+  const space: DemoSpace = { id: id('demo-org'), role: invitation.role, owned: false };
+  space.store = emptyStore(invitation.orgName, [
+    { userId: me.id, name: me.name, role: invitation.role, email: me.email },
+    { userId: id('u'), name: invitation.inviterName ?? 'Administrateur', role: 'admin', email: null },
+  ]);
+  spaces().push(space);
+  const list = received();
+  list.splice(list.indexOf(invitation), 1);
+  return { ok: true, orgId: space.id };
+}
 
 /** Mode démo : « connecte » un canal fictif pour pouvoir parcourir l'onboarding sans OAuth. */
 export function demoConnectChannel(networkId: NetworkId, name: string): Result {
@@ -528,5 +710,16 @@ const analytics: AnalyticsRepository = {
   },
 };
 
+/** Les dépôts de la démo pour l'espace principal (utilisés tels quels par les tests). */
 export const demoRepositories: Repositories = { inbox, posts, workspace, media, knowledge, analytics, agent, generation, suggestions };
-export const demoOrgName = () => store().orgName;
+
+/** Les mêmes dépôts, liés à un espace : chaque appel s'exécute dans cet espace, quel que soit l'espace des requêtes concurrentes. */
+function bound<R extends object>(repo: R, orgId: string): R {
+  return Object.fromEntries(
+    Object.entries(repo).map(([k, v]) => [k, typeof v === 'function' ? (...args: unknown[]) => inSpace.run(orgId, () => (v as (...a: unknown[]) => unknown).apply(repo, args)) : v]),
+  ) as R;
+}
+export const demoRepositoriesFor = (orgId: string): Repositories => ({
+  inbox: bound(inbox, orgId), posts: bound(posts, orgId), workspace: bound(workspace, orgId), media: bound(media, orgId), knowledge: bound(knowledge, orgId),
+  analytics: bound(analytics, orgId), agent: bound(agent, orgId), generation: bound(generation, orgId), suggestions: bound(suggestions, orgId),
+});

@@ -10,6 +10,7 @@ import { agentErrorCode, runAgentTurn, sdkAgentClient, type AgentTurnResult } fr
 import { createToolbox } from '@/lib/agent/tools';
 import type { AgentErrorCode, AgentEvent } from '@/lib/agent/types';
 import { bearerToken, getRepositories, getSession, getSessionForToken } from '@/lib/data';
+import { WORKSPACE_HEADER } from '@/lib/workspaces';
 import { digest } from '@/lib/digest';
 import { generationSetup } from '@/lib/agent/setup';
 import { defaultEmbedder } from '@/lib/kb/embed';
@@ -37,7 +38,7 @@ const failure = (code: AgentErrorCode, status: number) => new Response(encodeEve
 export async function POST(request: Request): Promise<Response> {
   // Le navigateur s'identifie par ses cookies ; l'application mobile, par le jeton Supabase de l'utilisateur (en-tête Authorization).
   const token = bearerToken(request.headers.get('authorization'));
-  const auth = token ? await getSessionForToken(token) : null;
+  const auth = token ? await getSessionForToken(token, request.headers.get(WORKSPACE_HEADER)) : null;
   const session = auth ? auth.session : await getSession();
   if (session.status !== 'ready' || session.ctx.org.role === 'viewer') return failure('forbidden', session.status === 'ready' ? 403 : 401);
   const { ctx } = session;

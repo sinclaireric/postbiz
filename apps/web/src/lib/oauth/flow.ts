@@ -109,8 +109,9 @@ export async function startConnection(deps: FlowDeps, a: { network: string; user
 
 // ------------------------------------------------------------------------------------------------ retour du réseau
 export type CompleteResult =
-  | { kind: 'connected'; network: NetworkId; count: number; webhookWarnings: number }
-  | { kind: 'select'; pendingId: string }
+  // `orgId` : l'espace de travail où la connexion a été lancée (celui du `state`), pour que la page de retour s'ouvre dans cet espace.
+  | { kind: 'connected'; network: NetworkId; count: number; webhookWarnings: number; orgId: string }
+  | { kind: 'select'; pendingId: string; orgId: string }
   | { kind: 'error'; code: ErrorCode; network?: NetworkId };
 
 export async function completeConnection(deps: FlowDeps, a: { family: string; params: URLSearchParams; userId: string }): Promise<CompleteResult> {
@@ -153,10 +154,10 @@ export async function completeConnection(deps: FlowDeps, a: { family: string; pa
         payloadEnc: await encryptSecret(JSON.stringify(candidates), deps.encryptionKey),
         expiresAt: new Date(now(deps).getTime() + PENDING_TTL_MS),
       });
-      return { kind: 'select', pendingId };
+      return { kind: 'select', pendingId, orgId: row.orgId };
     }
     const done = await saveCandidates(deps, family, row.orgId, candidates.slice(0, 1));
-    return { kind: 'connected', network, count: done.count, webhookWarnings: done.webhookWarnings };
+    return { kind: 'connected', network, count: done.count, webhookWarnings: done.webhookWarnings, orgId: row.orgId };
   } catch (e) {
     // Détail technique dans les journaux serveur (déjà expurgé de tout jeton), code fixe pour l'utilisateur.
     deps.log?.(`OAuth ${family.id} : ${(e as Error).message}`);
@@ -220,7 +221,7 @@ export async function confirmSelection(deps: FlowDeps, a: { userId: string; pend
   try {
     const done = await saveCandidates(deps, familyForNetwork(network)!, p.row.orgId, chosen);
     await deps.store.deletePending(p.row.id);
-    return { kind: 'connected', network, count: done.count, webhookWarnings: done.webhookWarnings };
+    return { kind: 'connected', network, count: done.count, webhookWarnings: done.webhookWarnings, orgId: p.row.orgId };
   } catch (e) {
     deps.log?.(`OAuth sélection : ${(e as Error).message}`);
     return { kind: 'error', code: 'erreur', network };

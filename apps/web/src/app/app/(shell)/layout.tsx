@@ -7,6 +7,7 @@ import { getAdminAccess } from '@/lib/admin/data';
 import { getRepositories, getSession, isAccountSuspended, provisionOrganization } from '@/lib/data';
 import { getT } from '@/i18n/server';
 import { networkAvailability } from '@/lib/oauth/availability';
+import { canCreateWorkspace } from '@/lib/workspaces';
 import { networkById } from '@/lib/networks';
 import { onboardingTiles, tutorialEmbedUrl } from '@/lib/onboarding';
 import { isDemo } from '@/lib/supabase/env';
@@ -27,10 +28,11 @@ export default async function ShellLayout({ children }: { children: React.ReactN
 
   const { ctx } = session;
   const repos = await getRepositories(ctx);
-  const [conversations, notifications, integrations, admin] = await Promise.all([
+  const [conversations, notifications, integrations, invitations, admin] = await Promise.all([
     repos.inbox.listConversations(),
     repos.workspace.notifications(),
     repos.workspace.integrations(),
+    repos.workspace.receivedInvitations(),
     getAdminAccess(),
   ]);
 
@@ -43,7 +45,9 @@ export default async function ShellLayout({ children }: { children: React.ReactN
     <>
       <AppShell
         orgName={ctx.org.name}
-        roleLabel={t(`common.role.${ctx.org.role}`)}
+        workspaces={ctx.workspaces.map((w) => ({ id: w.id, name: w.name, roleLabel: t(`common.role.${w.role}`), current: w.id === ctx.org.id }))}
+        canCreateWorkspace={canCreateWorkspace(ctx.workspaces)}
+        pendingInvitations={invitations.length}
         userName={ctx.user.name}
         userEmail={ctx.user.email}
         unreadMessages={conversations.reduce((n, c) => n + c.unreadCount, 0)}

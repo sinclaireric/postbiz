@@ -148,7 +148,7 @@ describe('completeConnection — réseau à compte unique (X)', () => {
   it('connecte le canal et ne stocke que des jetons chiffrés', async () => {
     const { deps, store, calls, state } = await started();
     const r = await completeConnection(deps, { family: 'x', params: cb(state), userId: ALICE });
-    expect(r).toEqual({ kind: 'connected', network: 'x', count: 1, webhookWarnings: 0 });
+    expect(r).toEqual({ kind: 'connected', network: 'x', count: 1, webhookWarnings: 0, orgId: ORG });
     const ch = [...store.channels.values()][0]!;
     expect(ch).toMatchObject({ orgId: ORG, provider: 'x', internalId: '42', name: 'Maison Lune', username: '@maisonlune', pictureUrl: 'https://pbs/p.jpg' });
     expect(ch.accessTokenEnc).not.toContain('X-ACCESS');
@@ -264,7 +264,7 @@ describe('completeConnection — Meta (choix des comptes)', () => {
     const { deps, store, calls, done } = await metaStart('facebook');
     if (done.kind !== 'select') throw new Error();
     const r = await confirmSelection(deps, { userId: ALICE, pendingId: done.pendingId, keys: ['facebook:P2', 'facebook:INCONNU'] });
-    expect(r).toEqual({ kind: 'connected', network: 'facebook', count: 1, webhookWarnings: 0 });
+    expect(r).toEqual({ kind: 'connected', network: 'facebook', count: 1, webhookWarnings: 0, orgId: ORG });
     const ch = [...store.channels.values()];
     expect(ch).toHaveLength(1);
     expect(ch[0]).toMatchObject({ provider: 'facebook', internalId: 'P2', name: 'Page Deux', settings: { page_id: 'P2' }, tokenExpiresAt: null });
@@ -308,7 +308,7 @@ describe('completeConnection — Meta (choix des comptes)', () => {
     const { deps, store, done, logs } = await metaStart('facebook', s);
     if (done.kind !== 'select') throw new Error();
     const r = await confirmSelection(deps, { userId: ALICE, pendingId: done.pendingId, keys: ['facebook:P1'] });
-    expect(r).toEqual({ kind: 'connected', network: 'facebook', count: 1, webhookWarnings: 1 });
+    expect(r).toEqual({ kind: 'connected', network: 'facebook', count: 1, webhookWarnings: 1, orgId: ORG });
     expect(store.channels.size).toBe(1);
     expect(logs.join()).toContain('manque pages_manage_metadata');
   });
@@ -341,7 +341,7 @@ describe('completeConnection — LinkedIn : profil et Pages', () => {
   it('le profil se connecte d’un coup, avec les permissions de publication personnelle', async () => {
     const { store, done, url } = await liStart('linkedin');
     expect(new URL(url).searchParams.get('scope')).toBe('openid profile w_member_social');
-    expect(done).toEqual({ kind: 'connected', network: 'linkedin', count: 1, webhookWarnings: 0 });
+    expect(done).toEqual({ kind: 'connected', network: 'linkedin', count: 1, webhookWarnings: 0, orgId: ORG });
     expect([...store.channels.values()][0]).toMatchObject({ provider: 'linkedin', internalId: 'abc123', settings: { author_urn: 'urn:li:person:abc123' } });
   });
 
@@ -356,7 +356,7 @@ describe('completeConnection — LinkedIn : profil et Pages', () => {
     expect(JSON.stringify(view)).not.toMatch(/LI-ACCESS|li-secret/);
 
     const r = await confirmSelection(deps, { userId: ALICE, pendingId: done.pendingId, keys: ['linkedin_page:222'] });
-    expect(r).toEqual({ kind: 'connected', network: 'linkedin_page', count: 1, webhookWarnings: 0 });
+    expect(r).toEqual({ kind: 'connected', network: 'linkedin_page', count: 1, webhookWarnings: 0, orgId: ORG });
     const ch = [...store.channels.values()];
     expect(ch).toHaveLength(1);
     expect(ch[0]).toMatchObject({ provider: 'linkedin_page', internalId: '222', name: 'Atelier Lune', settings: { author_urn: 'urn:li:organization:222', kind: 'page' } });
@@ -397,7 +397,7 @@ describe('Instagram Login (standalone)', () => {
   it('connecte le compte d’un coup, enregistré comme canal « instagram », avec jeton et prolongation chiffrés', async () => {
     const { store, done, url, calls } = await igConnect();
     expect(new URL(url).searchParams.get('redirect_uri')).toBe('https://app.test/api/oauth/callback/instagram_login');
-    expect(done).toEqual({ kind: 'connected', network: 'instagram_standalone', count: 1, webhookWarnings: 0 });
+    expect(done).toEqual({ kind: 'connected', network: 'instagram_standalone', count: 1, webhookWarnings: 0, orgId: ORG });
     const [ch] = [...store.channels.values()];
     expect(ch).toMatchObject({ provider: 'instagram', internalId: '1784', name: 'Maison Lune', username: '@maison_lune', settings: { login: 'instagram', graph_host: 'graph.instagram.com' } });
     expect(await decryptSecret(ch!.accessTokenEnc, KEY)).toBe('IG-LONG');

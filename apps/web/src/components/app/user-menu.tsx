@@ -3,8 +3,9 @@
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import { useT } from '@/i18n/client';
+import { WorkspaceItems, WorkspaceLinks, type WorkspaceMenuProps } from './workspace-menu';
 
-export function UserMenu({ name, email, orgName, role, signOutAction, adminLink }: { name: string; email: string; orgName: string; role: string; signOutAction: () => Promise<void>; adminLink?: { href: string; label: string } }) {
+export function UserMenu({ name, email, signOutAction, adminLink, workspaces, canCreate, invitations }: { name: string; email: string; signOutAction: () => Promise<void>; adminLink?: { href: string; label: string } } & WorkspaceMenuProps) {
   const t = useT();
   const [open, setOpen] = useState(false);
   const box = useRef<HTMLDivElement>(null);
@@ -24,11 +25,15 @@ export function UserMenu({ name, email, orgName, role, signOutAction, adminLink 
         {(name || email).slice(0, 1).toUpperCase()}
       </button>
       {open && (
-        <div role="menu" className="absolute end-0 z-40 mt-2 w-[260px] overflow-hidden rounded-2xl border border-line bg-surface shadow-[0_20px_50px_-15px_rgba(17,17,16,0.35)]">
+        <div role="menu" className="absolute end-0 z-40 mt-2 w-[min(300px,calc(100vw-2rem))] overflow-hidden rounded-2xl border border-line bg-surface shadow-[0_20px_50px_-15px_rgba(17,17,16,0.35)]">
           <div className="border-b border-line px-4 py-3">
             <p className="truncate text-sm font-semibold">{name}</p>
             <p className="truncate text-xs text-subtle" dir="ltr">{email}</p>
-            <p className="mt-2 truncate text-xs text-muted">{orgName} · {role}</p>
+          </div>
+          <div className="border-b border-line p-1.5">
+            <p className="px-3 pt-1 pb-1.5 text-xs font-bold tracking-[0.14em] text-muted uppercase">{t('app.workspace.menu.title')}</p>
+            <WorkspaceItems workspaces={workspaces} onPick={() => setOpen(false)} />
+            <WorkspaceLinks canCreate={canCreate} invitations={invitations} onPick={() => setOpen(false)} />
           </div>
           <div className="p-1.5">
             <Link href="/app/reglages" onClick={() => setOpen(false)} className="block rounded-xl px-3 py-2 text-sm font-medium hover:bg-wash" role="menuitem">{t('app.userMenu.settings')}</Link>

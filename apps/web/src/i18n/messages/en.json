@@ -1865,18 +1865,111 @@
       "noPreview": "Preview unavailable"
     },
     "settings": {
-      "orgTitle": "Organization",
-      "orgName": "Organization name",
+      "orgTitle": "Workspace",
+      "orgName": "Workspace name",
       "orgSaved": "Name saved.",
       "save": "Save",
       "saving": "Saving…",
       "teamTitle": "Team ({count})",
       "you": "(you)",
-      "inviteSoon": "Inviting new members is coming soon.",
       "accountTitle": "My account",
       "deleteAccount": "To delete your account and your data, follow <link>the deletion procedure</link>.",
-      "errRename": "Only an administrator can rename the organization.",
+      "errRename": "Only an administrator can rename the workspace.",
       "errNameLength": "The name must be between 2 and 120 characters."
+    },
+    "workspace": {
+      "menu": {
+        "label": "Switch workspace",
+        "title": "Workspaces",
+        "create": "New workspace",
+        "manage": "Manage my workspaces",
+        "invitations": "Pending invitations"
+      },
+      "list": {
+        "title": "My workspaces",
+        "hint": "Each workspace has its own channels, posts, messages, media and knowledge. Switch between them whenever you like.",
+        "current": "Current",
+        "open": "Open"
+      },
+      "create": {
+        "title": "Create a workspace",
+        "intro": "You will be its administrator. You can create up to {max}.",
+        "name": "Workspace name",
+        "placeholder": "E.g. Shop, Agency, Client Smith",
+        "copyMembers": "Bring over the members of “{name}” with their roles",
+        "submit": "Create workspace",
+        "creating": "Creating…"
+      },
+      "cancel": "Cancel",
+      "roleHelp": {
+        "admin": "Manages the workspace, channels and team.",
+        "member": "Schedules, publishes and replies to messages.",
+        "viewer": "Can look but not change anything."
+      },
+      "team": {
+        "soleAdmin": "Only administrator of this workspace: name another one first.",
+        "roleOf": "Role of {name}",
+        "remove": "Remove",
+        "leave": "Leave",
+        "confirmRemove": "Remove {name} from this workspace? They will lose access to it.",
+        "confirmLeave": "Leave this workspace? You will lose access to it unless you are invited again.",
+        "adminsOnly": "Only administrators manage the team and invitations.",
+        "pending": "Pending invitations ({count})",
+        "expires": "expires on {date}",
+        "revoke": "Revoke"
+      },
+      "invite": {
+        "title": "Invite someone",
+        "intro": "Enter their email address and choose their role. You get an invitation link to send them yourself.",
+        "email": "Email address",
+        "role": "Role",
+        "submit": "Create invitation link",
+        "creating": "Creating…",
+        "ready": "Invitation link for {email}",
+        "link": "Invitation link",
+        "copy": "Copy link",
+        "copied": "Link copied",
+        "note": "Send it to this person: it is shown only once, works only once and expires in {days} days.",
+        "pageTitle": "Invitation",
+        "body": "{inviter} invites you to join this workspace as “{role}”.",
+        "bodyAnon": "You are invited to join this workspace as “{role}”.",
+        "alreadyMember": "You are already a member of this workspace.",
+        "accept": "Join workspace",
+        "open": "Open workspace",
+        "later": "Later",
+        "invalidTitle": "Invitation not found",
+        "invalidBody": "This link has expired, has already been used or has been replaced. Ask a workspace administrator for a new invitation.",
+        "back": "Back to my workspace"
+      },
+      "received": {
+        "title": "Invitations received",
+        "item": "{inviter} invites you to join “{space}” as “{role}”.",
+        "itemAnon": "You are invited to join “{space}” as “{role}”.",
+        "accept": "Accept",
+        "decline": "Decline"
+      },
+      "delete": {
+        "title": "Delete this workspace",
+        "open": "Delete this workspace…",
+        "warn": "“{name}” will be permanently deleted, with its channels, posts, messages, media, knowledge and agent conversations. All its members will lose access. This cannot be undone.",
+        "prereq": "Before deleting, disconnect every channel and remove scheduled posts.",
+        "confirm": "To confirm, type the workspace name: {name}",
+        "submit": "Delete permanently",
+        "deleting": "Deleting…"
+      },
+      "errors": {
+        "notAdmin": "Only administrators of a workspace can create another one.",
+        "limit": "You have reached the limit of {max} workspaces created.",
+        "forbidden": "You are not allowed to do this in this workspace.",
+        "lastAdmin": "A workspace must keep at least one administrator. Name another one first.",
+        "alreadyMember": "This person is already a member of the workspace.",
+        "invitationLimit": "You already have {max} pending invitations: revoke some before creating more.",
+        "invitationInvalid": "This invitation has expired or is no longer valid.",
+        "hasChannels": "Disconnect all channels of this workspace first.",
+        "hasQueuedPosts": "Delete or unschedule the queued posts of this workspace first.",
+        "lastWorkspace": "This is your only workspace: create another one first.",
+        "nameMismatch": "The name you typed does not match the workspace name."
+      }
     },
     "channelsPage": {
       "intro": "The social media accounts connected to your organization.",

@@ -49,7 +49,7 @@ describe('premier commentaire : ce qu’un client peut écrire', () => {
   });
 
   it('un client ne peut pas modifier l’état d’un commentaire existant', async () => {
-    const [{ id }] = await insertAs(w.alice);
+    const { id } = (await insertAs(w.alice))[0]!;
     await expect(asUser(db, w.alice, () => q(db, `update public.posts set first_comment_state = 'posted' where id = $1`, [id!]))).rejects.toThrow(/permission denied/);
     await expect(asUser(db, w.alice, () => q(db, `update public.posts set first_comment_id = 'X' where id = $1`, [id!]))).rejects.toThrow(/permission denied/);
   });
