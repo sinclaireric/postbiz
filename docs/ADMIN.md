@@ -8,8 +8,9 @@ Tableau de bord réservé au propriétaire du SaaS : `https://getpostbiz.com/adm
 | `/admin/utilisateurs` | Liste de tous les comptes : organisation, offre, statut de l'abonnement (avec la date de fin d'essai ou de renouvellement), canaux, publications, inscription, dernière connexion. Recherche et filtre par statut |
 | `/admin/utilisateurs/[id]` | Fiche d'un utilisateur (clic sur son nom dans la liste) : compte (inscription, dernière connexion, e-mail confirmé, mode de connexion), chacune de ses organisations avec son rôle, son abonnement (offre, statut, dates, identifiants Stripe), son activité (membres, publications par état, dernière publiée) et ses canaux (réseau, état, jeton valable jusqu'au). **Aucun texte de publication ni de message, aucun jeton** : seulement des métadonnées et des chiffres |
 | `/admin/abonnements` | Une ligne par organisation : propriétaire, offre, statut, membres, canaux, publications. Puces de statut avec leur effectif |
+| `/admin/support` | **Chat de support** : les conversations des utilisateurs (site et application mobile), avec les messages non lus, un filtre (toutes / non lues / ouvertes / résolues), une recherche (e-mail, nom, espace, texte d'un message), le fil, un champ de réponse et « Marquer comme résolu ». Voir « Support » plus bas |
 
-L'espace est en lecture seule, sauf la suspension d'un compte (voir plus bas) : il ne modifie ni abonnement ni organisation.
+L'espace est en lecture seule, sauf la suspension d'un compte et le chat de support (voir plus bas) : il ne modifie ni abonnement ni organisation.
 
 ## Mise en route
 
@@ -64,9 +65,32 @@ La table `subscriptions` (une ligne par organisation) est nouvelle : **la factur
    where org_id = '…';
   ```
 
+## Support
+
+Chaque utilisateur peut écrire au support depuis le site (bouton **Support** de l'en-tête, page `/app/support`) et depuis l'application mobile (Compte → **Écrire au support**). Vous répondez depuis `/admin/support` ; l'onglet **Support** du menu affiche le nombre de conversations avec des messages non lus.
+
+**Mise en route.** Appliquer `supabase/migrations/20261104000001_support_chat.sql` (après les précédentes), comme les autres migrations. Sans elle, `/admin/support` affiche un message d'installation et le reste de l'espace fonctionne.
+
+**Fonctionnement.**
+- Une conversation par utilisateur (tables `support_conversations` et `support_messages`), rattachée à l'espace de travail où il se trouvait à son dernier message. Un nouveau message d'un utilisateur rouvre une conversation résolue.
+- Ouvrir une conversation la marque comme lue. Votre réponse la marque aussi comme lue et prévient l'utilisateur : une ligne dans `notifications` (cloche du site, écran Notifications du mobile) que l'Edge Function `send-push` relaie en push (voir le README racine, « Notifications push » : elle doit être déployée et configurée pour que le push parte).
+- Vous êtes prévenu de la même façon (cloche, push si vous utilisez l'application mobile) quand une conversation passe de « lue » à « non lue », une fois par série de messages et non à chaque message. Ces notifications ne contiennent pas l'adresse de l'utilisateur.
+- Le fil de la page ouverte se rafraîchit toutes les 8 secondes, la liste toutes les 15 secondes (pas de Realtime côté propriétaire : aucune table n'est lisible directement par vous, tout passe par les fonctions `admin_support_*`).
+- Texte brut seulement : rien n'est interprété (ni HTML, ni lien cliquable, ni image), pour qu'un message malveillant ne puisse rien faire dans votre navigateur. Ctrl + Entrée envoie une réponse (4 000 caractères au plus).
+
+**Protection.**
+- Un utilisateur ne lit et n'écrit que SA conversation (RLS en lecture seule ; l'écriture passe par les fonctions `support_send` et `support_mark_read`). Les autres membres de son espace ne la voient pas.
+- Seules les fonctions `admin_support_summary`, `admin_support_conversations`, `admin_support_thread`, `admin_support_reply`, `admin_support_set_status` et `admin_support_mark_read` (qui vérifient chacune `is_platform_admin()`) lisent une autre conversation. Vous y voyez l'adresse e-mail de l'auteur ; aucun autre utilisateur ne voit jamais une adresse, et aucun jeton ni texte de publication n'apparaît.
+- Anti-spam, dans la base : 2 000 caractères par message, 5 messages par minute, 20 messages au plus sans réponse de votre part (la réponse libère l'utilisateur). Les caractères de contrôle et les marques de direction du texte (qui permettent de faire passer un texte pour un autre) sont retirés. Un compte suspendu ne peut plus écrire.
+- Pour changer ces limites : une nouvelle migration qui remplace `support_send`.
+
+**Pas encore.** Pas de pièces jointes (texte seulement), pas de plusieurs agents de support (les réponses ne gardent pas l'identité de l'administrateur qui les a écrites), pas de réponses types ni d'e-mail (seul Supabase Auth envoie des e-mails aujourd'hui).
+
+**Mode démo.** Sans Supabase, les conversations vivent en mémoire du serveur : trois conversations d'exemple côté propriétaire, et celle de l'utilisateur de démonstration (créée à son premier message) y apparaît aussi, ce qui permet de jouer les deux rôles.
+
 ## Mode démo
 
-Sans Supabase configuré (`NEXT_PUBLIC_SUPABASE_URL` vide), `/admin` s'ouvre avec des données d'exemple (`apps/web/src/lib/admin/demo.ts`), pour voir le rendu sans base.
+Sans Supabase configuré (`NEXT_PUBLIC_SUPABASE_URL` vide), `/admin` s'ouvre avec des données d'exemple (`apps/web/src/lib/admin/demo.ts`, et `apps/web/src/lib/support/demo.ts` pour le support), pour voir le rendu sans base.
 
 ## Langues
 

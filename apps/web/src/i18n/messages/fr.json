@@ -304,6 +304,59 @@
     }
   },
   "admin": {
+    "support": {
+      "title": "Support",
+      "subtitle": "Les messages que les utilisateurs envoient depuis le site et l’application mobile. Vous répondez ici : ils sont prévenus par une notification.",
+      "setup": "Le chat de support n’est pas encore installé : appliquez la migration supabase/migrations/20261104000001_support_chat.sql (éditeur SQL de Supabase ou supabase db push), puis rechargez la page.",
+      "unreadLabel": "conversations avec des messages non lus",
+      "filter": {
+        "label": "Filtrer les conversations",
+        "all": "Toutes",
+        "unread": "Non lues",
+        "open": "Ouvertes",
+        "resolved": "Résolues"
+      },
+      "searchPlaceholder": "E-mail, nom, espace ou texte d’un message",
+      "empty": "Aucune conversation pour l’instant. Elles apparaîtront ici dès qu’un utilisateur écrit au support.",
+      "col": {
+        "user": "Utilisateur",
+        "lastMessage": "Dernier message",
+        "status": "État",
+        "activity": "Activité"
+      },
+      "status": {
+        "open": "Ouverte",
+        "resolved": "Résolue"
+      },
+      "awaiting": "Attend votre réponse",
+      "unreadBadge": "Non lus : {count}",
+      "youPrefix": "Vous :",
+      "thread": {
+        "back": "Toutes les conversations",
+        "support": "Vous (support)",
+        "workspace": "Espace :",
+        "profile": "Fiche de l’utilisateur",
+        "empty": "Aucun message.",
+        "truncated": "Seuls les {count} derniers messages sont affichés.",
+        "resolvedNote": "Conversation marquée comme résolue. Un nouveau message de l’utilisateur la rouvrira."
+      },
+      "reply": {
+        "label": "Votre réponse",
+        "placeholder": "Écrivez votre réponse à l’utilisateur…",
+        "send": "Envoyer la réponse",
+        "sending": "Envoi…",
+        "hint": "L’utilisateur est prévenu par une notification (cloche du site, application mobile). Ctrl + Entrée pour envoyer.",
+        "resolve": "Marquer comme résolu",
+        "reopen": "Rouvrir"
+      },
+      "errors": {
+        "invalid_message": "Écrivez une réponse avant d’envoyer.",
+        "message_too_long": "La réponse est trop longue (4 000 caractères au plus).",
+        "failed": "L’opération a échoué. Réessayez.",
+        "not_found": "Cette conversation n’existe plus.",
+        "forbidden": "Action refusée : vous n’êtes pas connecté comme propriétaire."
+      }
+    },
     "suspend": {
       "badge": "Suspendu",
       "title": "Suspension du compte",
@@ -382,6 +435,7 @@
     "signOut": "Se déconnecter",
     "demoNotice": "Mode démo : données d’exemple, aucune base connectée.",
     "nav": {
+      "support": "Support",
       "label": "Navigation de l’administration",
       "overview": "Vue d’ensemble",
       "users": "Utilisateurs",
@@ -1216,6 +1270,32 @@
     }
   },
   "app": {
+    "support": {
+      "title": "Support",
+      "subtitle": "Une question, un problème ? Écrivez-nous ici : nous vous répondons dans cette conversation et vous êtes prévenu par une notification.",
+      "link": "Écrire au support",
+      "linkUnread": "Écrire au support — réponses non lues : {count}",
+      "empty": "Aucun message pour l’instant. Décrivez votre question ou votre problème ci-dessous.",
+      "you": "Vous",
+      "team": "Équipe Postbiz",
+      "messageLabel": "Votre message au support",
+      "placeholder": "Écrivez votre message…",
+      "send": "Envoyer",
+      "sending": "Envoi…",
+      "hint": "Entrée pour envoyer, Maj + Entrée pour aller à la ligne.",
+      "privacy": "Cette conversation est privée : seuls vous et l’équipe Postbiz la lisez. Les autres membres de votre espace de travail ne la voient pas.",
+      "resolved": "Cette conversation est marquée comme résolue. Écrivez un nouveau message pour la rouvrir.",
+      "demoNote": "Mode démo : votre message n’est transmis à personne. Pour jouer le rôle de l’équipe de support et répondre, ouvrez l’espace propriétaire.",
+      "demoLink": "Ouvrir l’espace propriétaire",
+      "loadFailed": "Impossible de recharger la conversation pour le moment. Nouvel essai en cours.",
+      "errors": {
+        "invalid_message": "Écrivez un message avant d’envoyer.",
+        "message_too_long": "Votre message est trop long ({max} caractères au plus).",
+        "rate_limited": "Vous écrivez trop vite. Patientez une minute avant d’envoyer un autre message.",
+        "too_many_unanswered": "Vous avez déjà envoyé beaucoup de messages sans réponse. Nous les lisons : merci de patienter avant d’en envoyer d’autres.",
+        "failed": "Le message n’a pas pu être envoyé. Vérifiez votre connexion et réessayez."
+      }
+    },
     "agent": {
       "channels": {
         "title": "Canaux",

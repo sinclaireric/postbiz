@@ -7,6 +7,7 @@ import { getAdminAccess } from '@/lib/admin/data';
 import { getRepositories, getSession, isAccountSuspended, provisionOrganization } from '@/lib/data';
 import { getT } from '@/i18n/server';
 import { networkAvailability } from '@/lib/oauth/availability';
+import { loadSupportUnread } from '@/lib/support/data';
 import { canCreateWorkspace } from '@/lib/workspaces';
 import { networkById } from '@/lib/networks';
 import { onboardingTiles, tutorialEmbedUrl } from '@/lib/onboarding';
@@ -28,12 +29,13 @@ export default async function ShellLayout({ children }: { children: React.ReactN
 
   const { ctx } = session;
   const repos = await getRepositories(ctx);
-  const [conversations, notifications, integrations, invitations, admin] = await Promise.all([
+  const [conversations, notifications, integrations, invitations, admin, supportUnread] = await Promise.all([
     repos.inbox.listConversations(),
     repos.workspace.notifications(),
     repos.workspace.integrations(),
     repos.workspace.receivedInvitations(),
     getAdminAccess(),
+    loadSupportUnread(ctx).catch(() => 0),
   ]);
 
   const tiles = onboardingTiles(networkAvailability(process.env, isDemo), { demo: ctx.mode === 'demo', role: ctx.org.role });
@@ -51,6 +53,7 @@ export default async function ShellLayout({ children }: { children: React.ReactN
         userName={ctx.user.name}
         userEmail={ctx.user.email}
         unreadMessages={conversations.reduce((n, c) => n + c.unreadCount, 0)}
+        support={{ unread: supportUnread, userId: ctx.user.id, realtime: ctx.mode === 'supabase' }}
         notifications={notifications}
         signOutAction={signOut}
         markNotificationsRead={markNotificationsReadAction}

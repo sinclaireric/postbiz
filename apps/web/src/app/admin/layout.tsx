@@ -6,6 +6,7 @@ import { Logo } from '@/components/logo';
 import { Badge } from '@/components/ui';
 import { getT } from '@/i18n/server';
 import { requireAdmin } from '@/lib/admin/guard';
+import { loadSupportSummary } from '@/lib/admin/support-data';
 import { isDemo } from '@/lib/supabase/env';
 
 export const metadata: Metadata = {
@@ -16,10 +17,13 @@ export const metadata: Metadata = {
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const t = await getT();
   const { email } = await requireAdmin();
+  // Messages de support non lus (pastille de l'onglet). Si la migration du chat n'est pas appliquée, l'espace s'ouvre quand même, sans pastille.
+  const support = await loadSupportSummary().catch(() => null);
   const items = [
     { href: '/admin', label: t('admin.nav.overview') },
     { href: '/admin/utilisateurs', label: t('admin.nav.users') },
     { href: '/admin/abonnements', label: t('admin.nav.subscriptions') },
+    { href: '/admin/support', label: t('admin.nav.support'), badge: support?.unread ?? 0, badgeLabel: t('admin.support.unreadLabel') },
   ];
   return (
     <div className="min-h-dvh bg-paper">

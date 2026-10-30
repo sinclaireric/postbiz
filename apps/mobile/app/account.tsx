@@ -13,6 +13,7 @@ import { showToast } from "@/components/ui/toast";
 import { getPushPermission, registerForPush, type PushStatus } from "@/lib/push";
 import { useAuthStore } from "@/store/auth-store";
 import { useOrgStore, type OrgRole } from "@/store/org-store";
+import { useSupportStore } from "@/store/support-store";
 
 const ROLE: Record<OrgRole, string> = { admin: "Administrateur", member: "Membre", viewer: "Lecteur" };
 
@@ -29,6 +30,7 @@ export default function AccountScreen() {
   const router = useRouter();
   const user = useAuthStore((s) => s.user);
   const org = useOrgStore((s) => s.current);
+  const supportUnread = useSupportStore((s) => s.unread);
   const [push, setPush] = useState<PushStatus | null>(null);
   const [pwOpen, setPwOpen] = useState(false);
   const [pw, setPw] = useState("");
@@ -78,7 +80,8 @@ export default function AccountScreen() {
           <Row icon="key-outline" label="Changer le mot de passe" onPress={() => setPwOpen(true)} />
           <Row icon="add-circle-outline" label="Ajouter un nouveau canal" onPress={() => router.push("/add-channel")} />
           <Row icon="share-social-outline" label="Canaux" onPress={() => router.push("/channels")} />
-          <Row icon="images-outline" label="Médias" onPress={() => router.push("/media")} last />
+          <Row icon="images-outline" label="Médias" onPress={() => router.push("/media")} />
+          <Row icon="help-buoy-outline" label="Écrire au support" value={supportUnread > 0 ? `${supportUnread} non lu${supportUnread > 1 ? "s" : ""}` : undefined} onPress={() => router.push("/support" as never)} last />
         </Group>
 
         <Group title="Organisation" index={1}>

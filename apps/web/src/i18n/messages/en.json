@@ -304,6 +304,59 @@
     }
   },
   "admin": {
+    "support": {
+      "title": "Support",
+      "subtitle": "Messages users send from the website and the mobile app. You reply here: they get a notification.",
+      "setup": "The support chat isn’t installed yet: apply the migration supabase/migrations/20261104000001_support_chat.sql (Supabase SQL editor or supabase db push), then reload the page.",
+      "unreadLabel": "conversations with unread messages",
+      "filter": {
+        "label": "Filter conversations",
+        "all": "All",
+        "unread": "Unread",
+        "open": "Open",
+        "resolved": "Resolved"
+      },
+      "searchPlaceholder": "Email, name, workspace or message text",
+      "empty": "No conversations yet. They will show up here as soon as a user writes to support.",
+      "col": {
+        "user": "User",
+        "lastMessage": "Last message",
+        "status": "Status",
+        "activity": "Activity"
+      },
+      "status": {
+        "open": "Open",
+        "resolved": "Resolved"
+      },
+      "awaiting": "Waiting for your reply",
+      "unreadBadge": "Unread: {count}",
+      "youPrefix": "You:",
+      "thread": {
+        "back": "All conversations",
+        "support": "You (support)",
+        "workspace": "Workspace:",
+        "profile": "User profile",
+        "empty": "No messages.",
+        "truncated": "Only the last {count} messages are shown.",
+        "resolvedNote": "Conversation marked as resolved. A new message from the user will reopen it."
+      },
+      "reply": {
+        "label": "Your reply",
+        "placeholder": "Write your reply to the user…",
+        "send": "Send reply",
+        "sending": "Sending…",
+        "hint": "The user is notified (website bell, mobile app). Ctrl + Enter to send.",
+        "resolve": "Mark as resolved",
+        "reopen": "Reopen"
+      },
+      "errors": {
+        "invalid_message": "Write a reply before sending.",
+        "message_too_long": "The reply is too long (4,000 characters at most).",
+        "failed": "The operation failed. Try again.",
+        "not_found": "This conversation no longer exists.",
+        "forbidden": "Action refused: you are not signed in as the owner."
+      }
+    },
     "suspend": {
       "badge": "Suspended",
       "title": "Account suspension",
@@ -382,6 +435,7 @@
     "signOut": "Sign out",
     "demoNotice": "Demo mode: sample data, no database connected.",
     "nav": {
+      "support": "Support",
       "label": "Administration navigation",
       "overview": "Overview",
       "users": "Users",
@@ -1198,6 +1252,32 @@
     }
   },
   "app": {
+    "support": {
+      "title": "Support",
+      "subtitle": "A question or a problem? Write to us here: we reply in this conversation and you get a notification.",
+      "link": "Write to support",
+      "linkUnread": "Write to support — unread replies: {count}",
+      "empty": "No messages yet. Describe your question or problem below.",
+      "you": "You",
+      "team": "Postbiz team",
+      "messageLabel": "Your message to support",
+      "placeholder": "Write your message…",
+      "send": "Send",
+      "sending": "Sending…",
+      "hint": "Enter to send, Shift + Enter for a new line.",
+      "privacy": "This conversation is private: only you and the Postbiz team can read it. Other members of your workspace can’t see it.",
+      "resolved": "This conversation is marked as resolved. Send a new message to reopen it.",
+      "demoNote": "Demo mode: your message goes to no one. To play the support team and reply, open the owner area.",
+      "demoLink": "Open the owner area",
+      "loadFailed": "Can’t refresh the conversation right now. Trying again.",
+      "errors": {
+        "invalid_message": "Write a message before sending.",
+        "message_too_long": "Your message is too long (up to {max} characters).",
+        "rate_limited": "You’re writing too fast. Wait a minute before sending another message.",
+        "too_many_unanswered": "You’ve already sent many messages without a reply. We read them: please wait before sending more.",
+        "failed": "The message couldn’t be sent. Check your connection and try again."
+      }
+    },
     "agent": {
       "channels": {
         "title": "Channels",

@@ -675,6 +675,32 @@
     }
   },
   "app": {
+    "support": {
+      "title": "Destek",
+      "subtitle": "Bir sorunuz ya da sorununuz mu var? Bize buradan yazın: bu konuşmada yanıt veririz ve bir bildirimle haberdar olursunuz.",
+      "link": "Destek ekibine yazın",
+      "linkUnread": "Destek ekibine yazın — okunmamış yanıtlar: {count}",
+      "empty": "Henüz mesaj yok. Sorunuzu ya da sorununuzu aşağıda anlatın.",
+      "you": "Siz",
+      "team": "Postbiz ekibi",
+      "messageLabel": "Destek ekibine mesajınız",
+      "placeholder": "Mesajınızı yazın…",
+      "send": "Gönder",
+      "sending": "Gönderiliyor…",
+      "hint": "Göndermek için Enter, yeni satır için Shift + Enter.",
+      "privacy": "Bu konuşma özeldir: yalnızca siz ve Postbiz ekibi okuyabilir. Çalışma alanınızdaki diğer üyeler görmez.",
+      "resolved": "Bu konuşma çözüldü olarak işaretlendi. Yeniden açmak için yeni bir mesaj gönderin.",
+      "demoNote": "Demo modu: mesajınız kimseye iletilmez. Destek ekibini oynayıp yanıt vermek için sahip alanını açın.",
+      "demoLink": "Sahip alanını aç",
+      "loadFailed": "Konuşma şu anda yenilenemiyor. Yeniden deneniyor.",
+      "errors": {
+        "invalid_message": "Göndermeden önce bir mesaj yazın.",
+        "message_too_long": "Mesajınız çok uzun (en fazla {max} karakter).",
+        "rate_limited": "Çok hızlı yazıyorsunuz. Başka bir mesaj göndermeden önce bir dakika bekleyin.",
+        "too_many_unanswered": "Yanıtsız çok sayıda mesaj gönderdiniz. Okuyoruz: daha fazlasını göndermeden önce lütfen bekleyin.",
+        "failed": "Mesaj gönderilemedi. Bağlantınızı kontrol edip yeniden deneyin."
+      }
+    },
     "agent": {
       "channels": {
         "title": "Kanallar",

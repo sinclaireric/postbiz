@@ -9,6 +9,7 @@ import { Pressable, SectionList, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Appear, EmptyState, PageHeader } from "@/components/ui/kit";
+import { supportRouteFor } from "@/lib/support-logic";
 import { useNotificationsStore } from "@/store/notifications-store";
 import type { NotificationItem } from "@/types";
 
@@ -21,7 +22,7 @@ const dayTitle = (iso: string) => {
 
 const iconFor = (type: string): keyof typeof Ionicons.glyphMap => {
   if (type.includes("fail") || type.includes("error")) return "alert-circle";
-  if (type.includes("message") || type.includes("conversation") || type.includes("comment")) return "chatbubble-ellipses";
+  if (type.includes("support") || type.includes("message") || type.includes("conversation") || type.includes("comment")) return "chatbubble-ellipses";
   return "checkmark-circle";
 };
 
@@ -44,7 +45,8 @@ export default function NotificationsScreen() {
   const open = (item: NotificationItem) => {
     void useNotificationsStore.getState().markAsRead(item.id);
     const conversationId = item.data.conversation_id;
-    if (typeof conversationId === "string" && conversationId) router.push(`/conversation/${conversationId}` as never);
+    if (supportRouteFor(item.type, item.data)) router.push("/support" as never);
+    else if (typeof conversationId === "string" && conversationId) router.push(`/conversation/${conversationId}` as never);
     else if (typeof item.data.post_id === "string") router.push(`/post/${item.data.post_id}` as never);
   };
 

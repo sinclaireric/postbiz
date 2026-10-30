@@ -6,6 +6,7 @@ import type { KnowledgeHit } from '@/lib/kb/types';
 import { GENERIC_ERROR, type FormError } from '@/lib/form-error';
 import { replyWindow, validateReply } from '@/lib/inbox/logic';
 import { displayName, safeFileName } from '@/lib/media/logic';
+import { supportNotificationHref } from '@/lib/support/logic';
 import { workspaceError } from '@/lib/workspaces';
 import type {
   ConversationDetail, ConversationStatus, ConversationSummary, InboxRepository, MessageItem, NetworkId, NoteItem,
@@ -271,7 +272,7 @@ export function createSupabaseRepositories(supabase: SupabaseClient, ctx: AppCon
         .limit(20);
       return (data ?? []).map((n: Row): NotificationItem => ({
         id: n.id, type: n.type, title: n.title, body: n.body ?? null, createdAt: n.created_at, read: !!n.read_at,
-        href: n.data?.conversationId ? `/app/inbox?c=${encodeURIComponent(String(n.data.conversationId))}` : n.data?.postId ? '/app/calendrier' : null,
+        href: supportNotificationHref(n.type, n.data) ?? (n.data?.conversationId ? `/app/inbox?c=${encodeURIComponent(String(n.data.conversationId))}` : n.data?.postId ? '/app/calendrier' : null),
       }));
     },
 

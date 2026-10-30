@@ -110,6 +110,7 @@ function AppNavigator() {
           <Stack.Screen name="add-channel" options={{ headerShown: false, animation: "slide_from_right" }} />
           <Stack.Screen name="account" options={{ headerShown: false, animation: "slide_from_right" }} />
           <Stack.Screen name="media" options={{ headerShown: false, animation: "slide_from_right" }} />
+          <Stack.Screen name="support" options={{ headerShown: false, animation: "slide_from_right" }} />
           <Stack.Screen name="create-post" options={{ headerShown: false, animation: "slide_from_bottom", gestureEnabled: false }} />
           <Stack.Screen name="enable-notifications" options={{ headerShown: false, presentation: "fullScreenModal", animation: "fade" }} />
         </Stack.Protected>

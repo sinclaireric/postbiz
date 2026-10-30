@@ -675,6 +675,32 @@
     }
   },
   "app": {
+    "support": {
+      "title": "Hỗ trợ",
+      "subtitle": "Bạn có câu hỏi hay gặp sự cố? Hãy viết cho chúng tôi tại đây: chúng tôi trả lời ngay trong cuộc trò chuyện này và bạn sẽ nhận được thông báo.",
+      "link": "Nhắn cho bộ phận hỗ trợ",
+      "linkUnread": "Nhắn cho bộ phận hỗ trợ — phản hồi chưa đọc: {count}",
+      "empty": "Chưa có tin nhắn nào. Hãy mô tả câu hỏi hoặc sự cố của bạn bên dưới.",
+      "you": "Bạn",
+      "team": "Đội ngũ Postbiz",
+      "messageLabel": "Tin nhắn của bạn gửi bộ phận hỗ trợ",
+      "placeholder": "Viết tin nhắn của bạn…",
+      "send": "Gửi",
+      "sending": "Đang gửi…",
+      "hint": "Nhấn Enter để gửi, Shift + Enter để xuống dòng.",
+      "privacy": "Cuộc trò chuyện này là riêng tư: chỉ bạn và đội ngũ Postbiz đọc được. Các thành viên khác trong không gian làm việc của bạn không thấy nó.",
+      "resolved": "Cuộc trò chuyện này đã được đánh dấu là đã giải quyết. Hãy gửi tin nhắn mới để mở lại.",
+      "demoNote": "Chế độ demo: tin nhắn của bạn không được gửi cho ai. Để đóng vai đội hỗ trợ và trả lời, hãy mở khu vực dành cho chủ sở hữu.",
+      "demoLink": "Mở khu vực dành cho chủ sở hữu",
+      "loadFailed": "Hiện chưa thể làm mới cuộc trò chuyện. Đang thử lại.",
+      "errors": {
+        "invalid_message": "Hãy viết tin nhắn trước khi gửi.",
+        "message_too_long": "Tin nhắn của bạn quá dài (tối đa {max} ký tự).",
+        "rate_limited": "Bạn đang viết quá nhanh. Hãy chờ một phút trước khi gửi tin nhắn khác.",
+        "too_many_unanswered": "Bạn đã gửi nhiều tin nhắn chưa có phản hồi. Chúng tôi đang đọc: vui lòng chờ trước khi gửi thêm.",
+        "failed": "Không gửi được tin nhắn. Hãy kiểm tra kết nối và thử lại."
+      }
+    },
     "agent": {
       "channels": {
         "title": "Kênh",

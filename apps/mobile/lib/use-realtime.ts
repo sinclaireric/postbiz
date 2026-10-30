@@ -6,6 +6,7 @@ import { useChannelsStore } from "@/store/channels-store";
 import { useInboxStore } from "@/store/inbox-store";
 import { useNotificationsStore } from "@/store/notifications-store";
 import { usePostsStore } from "@/store/posts-store";
+import { useSupportStore } from "@/store/support-store";
 
 const DEBOUNCE_MS = 300;
 
@@ -24,6 +25,7 @@ export function useRealtime(orgId: string, userId: string) {
 
     const refreshPosts = () => later("posts", () => void usePostsStore.getState().load(orgId));
     const refreshInbox = () => later("inbox", () => void useInboxStore.getState().refreshOpen());
+    const refreshSupport = () => later("support", () => void useSupportStore.getState().load(userId));
     const refreshNotifications = () => later("notifications", () => void useNotificationsStore.getState().load(userId));
 
     const channel = supabase
@@ -32,6 +34,9 @@ export function useRealtime(orgId: string, userId: string) {
       .on("postgres_changes", { event: "*", schema: "public", table: "conversations", filter: `org_id=eq.${orgId}` }, refreshInbox)
       .on("postgres_changes", { event: "*", schema: "public", table: "messages", filter: `org_id=eq.${orgId}` }, refreshInbox)
       .on("postgres_changes", { event: "*", schema: "public", table: "notifications", filter: `user_id=eq.${userId}` }, refreshNotifications)
+      // Chat de support : la RLS ne livre que la conversation de la personne ; aucune adresse n'y figure.
+      .on("postgres_changes", { event: "*", schema: "public", table: "support_conversations", filter: `user_id=eq.${userId}` }, refreshSupport)
+      .on("postgres_changes", { event: "*", schema: "public", table: "support_messages" }, refreshSupport)
       .subscribe();
 
     // Realtime ne rejoue pas ce qui s'est passé pendant que l'app dormait : on recharge au retour au premier plan.
@@ -41,6 +46,7 @@ export function useRealtime(orgId: string, userId: string) {
       void useChannelsStore.getState().load(orgId);
       void useInboxStore.getState().refreshOpen();
       void useNotificationsStore.getState().load(userId);
+      void useSupportStore.getState().load(userId);
     });
 
     return () => {

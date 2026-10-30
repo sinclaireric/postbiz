@@ -627,6 +627,32 @@
     }
   },
   "app": {
+    "support": {
+      "title": "支持",
+      "subtitle": "有问题或遇到困难?在这里给我们留言:我们会在这个对话里回复,并通过通知告诉你。",
+      "link": "联系支持",
+      "linkUnread": "联系支持 — 未读回复:{count}",
+      "empty": "还没有消息。请在下方描述你的问题。",
+      "you": "你",
+      "team": "Postbiz 团队",
+      "messageLabel": "发给支持团队的消息",
+      "placeholder": "输入你的消息…",
+      "send": "发送",
+      "sending": "发送中…",
+      "hint": "按 Enter 发送,Shift + Enter 换行。",
+      "privacy": "此对话是私密的:只有你和 Postbiz 团队能看到。工作区的其他成员看不到。",
+      "resolved": "此对话已标记为已解决。发送新消息即可重新打开。",
+      "demoNote": "演示模式:你的消息不会发给任何人。要扮演支持团队并回复,请打开所有者区域。",
+      "demoLink": "打开所有者区域",
+      "loadFailed": "暂时无法刷新对话,正在重试。",
+      "errors": {
+        "invalid_message": "发送前请先输入消息。",
+        "message_too_long": "消息太长(最多 {max} 个字符)。",
+        "rate_limited": "你发送得太快了。请等一分钟再发送下一条消息。",
+        "too_many_unanswered": "你已经发送了很多条尚未回复的消息。我们都会阅读:请稍等,再发送更多。",
+        "failed": "消息未能发送。请检查网络连接后重试。"
+      }
+    },
     "agent": {
       "channels": {
         "title": "渠道",

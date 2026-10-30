@@ -221,6 +221,7 @@ describe('file d’envoi des messages', () => {
 describe('temps réel', () => {
   it('les tables de l’inbox sont publiées', async () => {
     const rows = await q<{ tablename: string }>(db, `select tablename from pg_publication_tables where pubname = 'supabase_realtime'`);
-    expect(rows.map((r) => r.tablename).sort()).toEqual(['conversations', 'messages', 'notifications', 'posts']);
+    // D'autres tables (chat de support…) rejoignent la publication par leurs propres migrations : on vérifie seulement celles de l'inbox.
+    expect(rows.map((r) => r.tablename)).toEqual(expect.arrayContaining(['conversations', 'messages', 'notifications', 'posts']));
   });
 });

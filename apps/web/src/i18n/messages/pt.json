@@ -672,6 +672,32 @@
     }
   },
   "app": {
+    "support": {
+      "title": "Suporte",
+      "subtitle": "Tem uma dúvida ou um problema? Escreva para nós aqui: respondemos nesta conversa e você recebe uma notificação.",
+      "link": "Falar com o suporte",
+      "linkUnread": "Falar com o suporte — respostas não lidas: {count}",
+      "empty": "Nenhuma mensagem por enquanto. Descreva sua dúvida ou seu problema abaixo.",
+      "you": "Você",
+      "team": "Equipe Postbiz",
+      "messageLabel": "Sua mensagem para o suporte",
+      "placeholder": "Escreva sua mensagem…",
+      "send": "Enviar",
+      "sending": "Enviando…",
+      "hint": "Enter para enviar, Shift + Enter para quebrar a linha.",
+      "privacy": "Esta conversa é privada: só você e a equipe Postbiz podem lê-la. Os outros membros do seu espaço de trabalho não a veem.",
+      "resolved": "Esta conversa está marcada como resolvida. Envie uma nova mensagem para reabri-la.",
+      "demoNote": "Modo demonstração: sua mensagem não chega a ninguém. Para fazer o papel da equipe de suporte e responder, abra a área do proprietário.",
+      "demoLink": "Abrir a área do proprietário",
+      "loadFailed": "Não foi possível atualizar a conversa agora. Tentando novamente.",
+      "errors": {
+        "invalid_message": "Escreva uma mensagem antes de enviar.",
+        "message_too_long": "Sua mensagem é longa demais (no máximo {max} caracteres).",
+        "rate_limited": "Você está escrevendo rápido demais. Aguarde um minuto antes de enviar outra mensagem.",
+        "too_many_unanswered": "Você já enviou muitas mensagens sem resposta. Nós as lemos: aguarde antes de enviar outras.",
+        "failed": "Não foi possível enviar a mensagem. Verifique sua conexão e tente de novo."
+      }
+    },
     "agent": {
       "channels": {
         "title": "Canais",

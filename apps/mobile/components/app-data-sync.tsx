@@ -14,6 +14,7 @@ import { useInboxStore } from "@/store/inbox-store";
 import { useNotificationsStore } from "@/store/notifications-store";
 import { useOrgStore } from "@/store/org-store";
 import { usePostsStore } from "@/store/posts-store";
+import { useSupportStore } from "@/store/support-store";
 
 /** Monté une fois connecté et l'organisation chargée : charge les données, ouvre Realtime, enregistre le jeton push. */
 export function AppDataSync() {
@@ -31,6 +32,7 @@ export function AppDataSync() {
     void usePostsStore.getState().load(orgId);
     void useInboxStore.getState().load(orgId);
     void useNotificationsStore.getState().load(userId);
+    void useSupportStore.getState().load(userId);
     // Autorisation déjà donnée : on enregistre le jeton. Jamais demandée : écran d'explication d'abord (une seule fois),
     // plutôt que la fenêtre système sans contexte.
     void (async () => {

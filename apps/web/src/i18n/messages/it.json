@@ -681,6 +681,32 @@
     }
   },
   "app": {
+    "support": {
+      "title": "Supporto",
+      "subtitle": "Hai una domanda o un problema? Scrivici qui: rispondiamo in questa conversazione e ricevi una notifica.",
+      "link": "Scrivi al supporto",
+      "linkUnread": "Scrivi al supporto — risposte non lette: {count}",
+      "empty": "Nessun messaggio per ora. Descrivi qui sotto la tua domanda o il tuo problema.",
+      "you": "Tu",
+      "team": "Team Postbiz",
+      "messageLabel": "Il tuo messaggio al supporto",
+      "placeholder": "Scrivi il tuo messaggio…",
+      "send": "Invia",
+      "sending": "Invio…",
+      "hint": "Invio per inviare, Maiusc + Invio per andare a capo.",
+      "privacy": "Questa conversazione è privata: solo tu e il team Postbiz potete leggerla. Gli altri membri del tuo spazio di lavoro non la vedono.",
+      "resolved": "Questa conversazione è contrassegnata come risolta. Scrivi un nuovo messaggio per riaprirla.",
+      "demoNote": "Modalità demo: il tuo messaggio non arriva a nessuno. Per interpretare il team di supporto e rispondere, apri l’area del proprietario.",
+      "demoLink": "Apri l’area del proprietario",
+      "loadFailed": "Al momento non riesco ad aggiornare la conversazione. Nuovo tentativo in corso.",
+      "errors": {
+        "invalid_message": "Scrivi un messaggio prima di inviare.",
+        "message_too_long": "Il tuo messaggio è troppo lungo (massimo {max} caratteri).",
+        "rate_limited": "Stai scrivendo troppo in fretta. Aspetta un minuto prima di inviare un altro messaggio.",
+        "too_many_unanswered": "Hai già inviato molti messaggi senza risposta. Li leggiamo: aspetta prima di inviarne altri.",
+        "failed": "Impossibile inviare il messaggio. Controlla la connessione e riprova."
+      }
+    },
     "agent": {
       "channels": {
         "title": "Canali",

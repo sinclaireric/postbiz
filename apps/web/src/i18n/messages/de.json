@@ -687,6 +687,32 @@
     }
   },
   "app": {
+    "support": {
+      "title": "Support",
+      "subtitle": "Eine Frage oder ein Problem? Schreiben Sie uns hier: Wir antworten in dieser Unterhaltung, und Sie werden per Benachrichtigung informiert.",
+      "link": "Den Support kontaktieren",
+      "linkUnread": "Den Support kontaktieren – ungelesene Antworten: {count}",
+      "empty": "Noch keine Nachrichten. Beschreiben Sie unten Ihre Frage oder Ihr Problem.",
+      "you": "Sie",
+      "team": "Postbiz-Team",
+      "messageLabel": "Ihre Nachricht an den Support",
+      "placeholder": "Schreiben Sie Ihre Nachricht …",
+      "send": "Senden",
+      "sending": "Wird gesendet …",
+      "hint": "Eingabetaste zum Senden, Umschalt + Eingabetaste für einen Zeilenumbruch.",
+      "privacy": "Diese Unterhaltung ist privat: Nur Sie und das Postbiz-Team können sie lesen. Andere Mitglieder Ihres Arbeitsbereichs sehen sie nicht.",
+      "resolved": "Diese Unterhaltung ist als gelöst markiert. Senden Sie eine neue Nachricht, um sie wieder zu öffnen.",
+      "demoNote": "Demomodus: Ihre Nachricht geht an niemanden. Um das Support-Team zu spielen und zu antworten, öffnen Sie den Inhaberbereich.",
+      "demoLink": "Inhaberbereich öffnen",
+      "loadFailed": "Die Unterhaltung kann gerade nicht aktualisiert werden. Neuer Versuch läuft.",
+      "errors": {
+        "invalid_message": "Schreiben Sie eine Nachricht, bevor Sie senden.",
+        "message_too_long": "Ihre Nachricht ist zu lang (höchstens {max} Zeichen).",
+        "rate_limited": "Sie schreiben zu schnell. Warten Sie eine Minute, bevor Sie die nächste Nachricht senden.",
+        "too_many_unanswered": "Sie haben bereits viele Nachrichten ohne Antwort gesendet. Wir lesen sie: Bitte warten Sie, bevor Sie weitere senden.",
+        "failed": "Die Nachricht konnte nicht gesendet werden. Prüfen Sie Ihre Verbindung und versuchen Sie es erneut."
+      }
+    },
     "agent": {
       "channels": {
         "title": "Kanäle",

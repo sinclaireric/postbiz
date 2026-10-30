@@ -4,6 +4,7 @@ import * as Notifications from "expo-notifications";
 import { Platform } from "react-native";
 
 import { supabase } from "@/lib/supabase";
+import { supportRouteFor } from "@/lib/support-logic";
 
 // Notifications affichées aussi quand l'app est au premier plan.
 Notifications.setNotificationHandler({
@@ -74,6 +75,8 @@ export async function getPushPermission(): Promise<PushStatus> {
 
 /** Écran à ouvrir quand l'utilisateur touche une notification. La charge utile est posée par le serveur d'envoi. */
 export function routeForNotificationData(data: Record<string, unknown> | undefined): string {
+  // Réponse du support : ouvre le chat (la charge `data` porte `type: "support_reply"` et `screen: "support"`).
+  if (supportRouteFor(data?.type, data)) return "/support";
   const conversationId = data?.conversation_id;
   if (typeof conversationId === "string" && conversationId) return `/conversation/${conversationId}`;
   return "/notifications";

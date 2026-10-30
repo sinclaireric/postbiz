@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import type { ReactNode } from 'react';
 import { LanguageSwitcher } from '@/components/language-switcher';
 import { Logo, LogoMark } from '@/components/logo';
+import { SupportLink } from '@/components/support/support-link';
 import { useT } from '@/i18n/client';
 import type { MessageKey } from '@/i18n/types';
 import type { NotificationItem } from '@/lib/data/types';
@@ -47,6 +48,7 @@ const TITLES: Record<string, MessageKey> = {
   '/app/connaissances': 'app.titles.knowledge',
   '/app/canaux': 'app.titles.channels',
   '/app/reglages': 'app.titles.settings',
+  '/app/support': 'app.support.title',
 };
 
 function RailItem({ item, active, unread }: { item: NavItem; active: boolean; unread: number }) {
@@ -74,7 +76,7 @@ function RailItem({ item, active, unread }: { item: NavItem; active: boolean; un
 }
 
 export function AppShell({
-  children, orgName, workspaces, canCreateWorkspace, pendingInvitations, userName, userEmail, unreadMessages, notifications, signOutAction, markNotificationsRead, adminLink, demo,
+  children, orgName, workspaces, canCreateWorkspace, pendingInvitations, userName, userEmail, unreadMessages, notifications, signOutAction, markNotificationsRead, adminLink, demo, support,
 }: {
   children: ReactNode; orgName: string; userName: string; userEmail: string; unreadMessages: number;
   /** Les espaces de travail de la personne (l'espace courant porte `current`), et ce qu'elle peut en faire. */
@@ -82,6 +84,8 @@ export function AppShell({
   notifications: NotificationItem[]; signOutAction: () => Promise<void>; markNotificationsRead: () => Promise<void>;
   /** Lien vers l'espace propriétaire, présent seulement pour le propriétaire de la plateforme. */
   adminLink?: { href: string; label: string }; demo: boolean;
+  /** Bouton « Support » de l'en-tête : réponses non lues, et de quoi les suivre en direct. */
+  support: { unread: number; userId: string; realtime: boolean };
 }) {
   const t = useT();
   const pathname = usePathname();
@@ -116,6 +120,7 @@ export function AppShell({
           </div>
           <div className="flex items-center gap-1.5">
             <LanguageSwitcher />
+            <SupportLink unread={support.unread} userId={support.userId} realtime={support.realtime} />
             <NotificationsMenu notifications={notifications} markRead={markNotificationsRead} />
             <UserMenu name={userName} email={userEmail} signOutAction={signOutAction} adminLink={adminLink} workspaces={workspaces} canCreate={canCreateWorkspace} invitations={pendingInvitations} />
           </div>
