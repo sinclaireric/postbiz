@@ -213,8 +213,24 @@ export interface MediaRepository {
   remove(ids: string[]): Promise<MediaRemoval>;
 }
 
-/** Limites des sources : les mêmes que dans la base (migrations knowledge et knowledge_sources). */
+/**
+ * Limites des sources : les mêmes que dans la base (migrations knowledge, knowledge_sources et knowledge_plan_limits). `items` (sources en tout), `files` et `sites` sont les
+ * plafonds de la bêta gratuite et de la démonstration ; une fois la facturation active, l'offre de l'espace les remplace (`KnowledgeLimits`).
+ */
 export const KNOWLEDGE_LIMITS = { title: 120, content: 20_000, items: 100, files: 40, sites: 5, fileBytes: 10 * 1024 * 1024, sitePages: 50 } as const;
+
+/** Ce que l'espace peut garder dans sa base de connaissance : en tout, et par genre de source. */
+export interface KnowledgeLimits {
+  /** Sources en tout : fiches de texte, documents et sites. */
+  sources: number;
+  files: number;
+  sites: number;
+  /** Vrai : une offre supérieure relèverait ces plafonds (la page propose d'en changer). Faux en bêta gratuite, et pour l'offre la plus haute. */
+  upgradable: boolean;
+}
+
+/** Les plafonds de la bêta gratuite (facturation désactivée) : ceux de la base sans offre, et de la démonstration. */
+export const BETA_KNOWLEDGE_LIMITS: KnowledgeLimits = { sources: KNOWLEDGE_LIMITS.items, files: KNOWLEDGE_LIMITS.files, sites: KNOWLEDGE_LIMITS.sites, upgradable: false };
 
 export type KnowledgeKind = 'text' | 'file' | 'website';
 /** Où en est la lecture d'un fichier ou d'un site : en attente, en cours, prête (cherchable), ou en échec. Une fiche de texte est toujours prête. */
@@ -280,6 +296,8 @@ export interface KnowledgeInput {
 export interface KnowledgeRepository {
   /** Toutes les sources de l'organisation : fiches de texte, documents et sites, les plus récentes d'abord. */
   list(): Promise<KnowledgeItem[]>;
+  /** Les plafonds de l'organisation, ceux de son offre quand la facturation est active. Ne lève jamais : à défaut, ceux de la bêta (`BETA_KNOWLEDGE_LIMITS`). */
+  limits(): Promise<KnowledgeLimits>;
   /** Crée une fiche ; `id` est celui de la nouvelle fiche, pour l'indexer ensuite. */
   create(input: KnowledgeInput): Promise<Result & { id?: string }>;
   /** Modifier le titre ou le contenu supprime les passages de la fiche : elle est à réindexer. */

@@ -6,7 +6,8 @@ export const AGENT_EVENT_TYPES = ["text", "tool", "proposals", "media", "job", "
 export const AGENT_TOOLS = ["list_posts", "list_media", "propose_posts", "generate_image", "generate_video", "video_status", "search_knowledge"] as const;
 export type AgentToolName = (typeof AGENT_TOOLS)[number];
 
-export type AgentErrorCode = "disabled" | "forbidden" | "invalid" | "rate_limited" | "refused" | "empty" | "failed" | "not_found";
+/** `quota` : les actions d'IA texte incluses dans l'offre de l'espace sont toutes utilisées ce mois-ci (HTTP 402). */
+export type AgentErrorCode = "disabled" | "forbidden" | "invalid" | "rate_limited" | "refused" | "empty" | "failed" | "not_found" | "quota";
 
 /** `pending` : à relire ; `draft` : enregistrée en brouillon ; `scheduled` : programmée. */
 export type AgentProposalStatus = "pending" | "draft" | "scheduled";

@@ -11,7 +11,7 @@ import { workspaceError } from '@/lib/workspaces';
 import type {
   ConversationDetail, ConversationStatus, ConversationSummary, InboxRepository, MessageItem, NetworkId, NoteItem,
 } from '@/lib/inbox/types';
-import { KNOWLEDGE_LIMITS, textItem } from './types';
+import { BETA_KNOWLEDGE_LIMITS, KNOWLEDGE_LIMITS, textItem } from './types';
 import type {
   AgentRepository, AppContext, CreatePostInput, GenerationRepository, IntegrationItem, KnowledgeInput, KnowledgeItem, KnowledgePage, KnowledgeRepository, MediaItem, MediaRepository, InvitationItem, MemberItem, NotificationItem, OrgRole, PostItem, PostMedia, PostsRepository, ReceivedInvitation, Repositories, Result, SuggestionRepository, VideoJobRecord, WorkspaceRepository,
 } from './types';
@@ -360,6 +360,7 @@ export function createSupabaseRepositories(supabase: SupabaseClient, ctx: AppCon
   };
 
   const KNOWLEDGE_COLUMNS = 'id, title, content, updated_at, pinned, chunk_count, indexed_at, embedded_at, kind, status, url, file_path, size_bytes, error, stats, config, synced_at, run_at';
+  const KNOWLEDGE_LIST_MAX = 1_000;
   /** Le nom d'origine d'un fichier : son chemin « <organisation>/<identifiant>-<nom> » sans le dossier ni l'identifiant. */
   const fileNameOf = (path: string | null): string | null =>
     path ? path.replace(/^[^/]*\//, '').replace(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}-/i, '') : null;
@@ -379,10 +380,12 @@ export function createSupabaseRepositories(supabase: SupabaseClient, ctx: AppCon
   /** Le message d'une exception de la base (les fonctions `knowledge_*` lèvent des codes lisibles), en erreur de formulaire traduisible. */
   const sourceError = (message: string | undefined): FormError => {
     const m = message ?? '';
+    // Un refus de plafond porte le plafond de l'offre (« knowledge_files_limit:20 ») ; sans nombre, celui de la bêta.
+    const cap = (code: string, fallback: number) => Number(new RegExp(`${code}:(\\d+)`).exec(m)?.[1] ?? fallback);
     const known: [string, FormError][] = [
-      ['knowledge_items_limit', { key: 'app.knowledge.errLimit', params: { max: KNOWLEDGE_LIMITS.items } }],
-      ['knowledge_files_limit', { key: 'app.knowledgePage.errors.filesLimit', params: { max: KNOWLEDGE_LIMITS.files } }],
-      ['knowledge_sites_limit', { key: 'app.knowledgePage.errors.sitesLimit', params: { max: KNOWLEDGE_LIMITS.sites } }],
+      ['knowledge_items_limit', { key: 'app.knowledge.errLimit', params: { max: cap('knowledge_items_limit', BETA_KNOWLEDGE_LIMITS.sources) } }],
+      ['knowledge_files_limit', { key: 'app.knowledgePage.errors.filesLimit', params: { max: cap('knowledge_files_limit', BETA_KNOWLEDGE_LIMITS.files) } }],
+      ['knowledge_sites_limit', { key: 'app.knowledgePage.errors.sitesLimit', params: { max: cap('knowledge_sites_limit', BETA_KNOWLEDGE_LIMITS.sites) } }],
       ['knowledge_daily_limit', { key: 'app.knowledgePage.errors.dailyLimit' }],
       ['knowledge_duplicate', { key: 'app.knowledgePage.errors.duplicate' }],
       ['knowledge_invalid_url', { key: 'app.knowledgePage.errors.invalidUrl' }],
@@ -398,20 +401,33 @@ export function createSupabaseRepositories(supabase: SupabaseClient, ctx: AppCon
 
   const knowledge: KnowledgeRepository = {
     async list() {
+      // La base refuse les sources au-delà du plafond de l'offre : ce plafond-ci est celui d'une lecture, large pour qu'aucune offre ne soit coupée.
       const { data } = await supabase
         .from('knowledge_items')
         .select(KNOWLEDGE_COLUMNS)
         .eq('org_id', ctx.org.id)
         .order('updated_at', { ascending: false })
-        .limit(KNOWLEDGE_LIMITS.items);
+        .limit(KNOWLEDGE_LIST_MAX);
       return (data ?? []).map(toKnowledge);
+    },
+
+    async limits() {
+      const { data, error } = await supabase.rpc('knowledge_org_limits', { p_org: ctx.org.id });
+      const row = (Array.isArray(data) ? data[0] : data) as Row | null | undefined;
+      const count = (v: unknown, fallback: number) => (Number.isInteger(v) && (v as number) > 0 ? (v as number) : fallback);
+      // Une base sans la fonction (migration pas encore appliquée) a les plafonds de la bêta : c'est ce qu'elle applique.
+      if (error || !row) return { ...BETA_KNOWLEDGE_LIMITS };
+      return {
+        sources: count(row.sources, BETA_KNOWLEDGE_LIMITS.sources), files: count(row.files, BETA_KNOWLEDGE_LIMITS.files), sites: count(row.sites, BETA_KNOWLEDGE_LIMITS.sites),
+        upgradable: row.upgradable === true,
+      };
     },
 
     async create(input: KnowledgeInput) {
       const { data, error } = await supabase.from('knowledge_items').insert({
         org_id: ctx.org.id, title: input.title.trim(), content: input.content.trim(), created_by: ctx.user.id,
       }).select('id').single();
-      if (error?.message?.includes('knowledge_items_limit')) return fail({ key: 'app.knowledge.errLimit', params: { max: KNOWLEDGE_LIMITS.items } });
+      if (error?.message?.includes('knowledge_items_limit')) return fail(sourceError(error.message));
       return error || !data ? fail({ key: 'app.knowledge.errSave' }) : { ok: true, id: data.id as string };
     },
 

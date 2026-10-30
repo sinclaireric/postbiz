@@ -52,7 +52,7 @@ test("parseSuggestResponse ne prend une suggestion qu'avec un statut de réussit
 });
 
 // Les codes et statuts de apps/web/src/app/api/inbox/suggest/route.ts (STATUS ; 401 quand il n'y a pas de session).
-const ROUTE: [number, string][] = [[503, "disabled"], [403, "forbidden"], [401, "forbidden"], [400, "invalid"], [429, "rate_limited"], [422, "refused"], [502, "failed"], [404, "not_found"], [409, "window_closed"]];
+const ROUTE: [number, string][] = [[503, "disabled"], [403, "forbidden"], [401, "forbidden"], [400, "invalid"], [429, "rate_limited"], [422, "refused"], [502, "failed"], [404, "not_found"], [409, "window_closed"], [402, "quota"]];
 
 test("parseSuggestResponse rend le code d'erreur de la route, pour chaque statut qu'elle emploie", () => {
   for (const [status, error] of ROUTE) assert.deepEqual(parseSuggestResponse(status, { error }), { ok: false, error }, `${status} ${error}`);

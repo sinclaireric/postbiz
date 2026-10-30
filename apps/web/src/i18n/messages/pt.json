@@ -936,7 +936,8 @@
         "empty": "O agente não conseguiu preparar nada. Seja mais preciso ou verifique os canais marcados.",
         "failed": "O agente não conseguiu responder. A sua mensagem foi mantida: tente novamente daqui a pouco.",
         "notFound": "Esta conversa já não existe.",
-        "alreadySaved": "Esta publicação já foi salva."
+        "alreadySaved": "Esta publicação já foi salva.",
+        "quota": "Você usou todas as ações de IA incluídas no seu plano neste mês. Mude para um plano superior na página <link>Cobrança</link>."
       },
       "demo": {
         "help": "Sou o agente de demonstração. Descreva uma publicação (por exemplo «Anuncie a oficina aberta no sábado») e eu a preparo para os canais marcados; pergunte o que está agendado para consultar o calendário.",
@@ -1163,7 +1164,8 @@
           "refused": "A IA não conseguiu responder a esta mensagem. Escreva a resposta você mesmo.",
           "failed": "A sugestão falhou. Tente de novo em instantes.",
           "not_found": "Conversa não encontrada.",
-          "window_closed": "A janela de 24 horas passou: não é mais possível responder."
+          "window_closed": "A janela de 24 horas passou: não é mais possível responder.",
+          "quota": "Você usou todas as ações de IA incluídas no seu plano neste mês. Mude para um plano superior na página <link>Cobrança</link>."
         },
         "demo": {
           "found": "Olá {name}, obrigado pela sua mensagem! {answer}",
@@ -1384,7 +1386,8 @@
         "rate_limited": "Muitos pedidos seguidos. Tente novamente em alguns minutos.",
         "refused": "O assistente não conseguiu processar este pedido. Tente reformulá-lo.",
         "empty": "O assistente não encontrou nada aproveitável. Tente outro assunto.",
-        "failed": "O assistente está indisponível no momento. Tente novamente em instantes."
+        "failed": "O assistente está indisponível no momento. Tente novamente em instantes.",
+        "quota": "Você usou todas as ações de IA incluídas no seu plano neste mês. Mude para um plano superior na página <link>Cobrança</link>."
       },
       "base": {
         "intro": "Sua base de conhecimento alimenta este assistente, o agente e as sugestões de resposta da caixa de entrada. As fichas fixadas são sempre usadas; as outras são consultadas quando o seu pedido trata delas.",
@@ -1790,7 +1793,8 @@
         "fileMissing": "O arquivo não foi encontrado. Envie-o de novo.",
         "syncTooSoon": "Esta fonte acabou de ser atualizada. Tente de novo em alguns minutos.",
         "uploadFailed": "O envio falhou. Tente de novo."
-      }
+      },
+      "upgrade": "<link>Mude para um plano superior</link> para adicionar mais."
     }
   }
 }

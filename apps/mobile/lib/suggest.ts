@@ -19,6 +19,7 @@ const ERRORS: Record<SuggestErrorCode, string> = {
   failed: "La suggestion a échoué. Réessayez dans un instant.",
   not_found: "Conversation introuvable.",
   window_closed: "La fenêtre de 24 h est dépassée : il n’est plus possible de répondre.",
+  quota: "Vous avez utilisé toutes les actions d’IA incluses dans votre offre ce mois-ci. Passez à une offre supérieure depuis la page Facturation du site Postbiz.",
 };
 
 export const suggestErrorMessage = (code: SuggestErrorCode) => ERRORS[code] ?? ERRORS.failed;

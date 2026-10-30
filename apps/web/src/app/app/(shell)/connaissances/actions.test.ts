@@ -88,6 +88,28 @@ describe('saveKnowledgeAction : enregistrer et indexer une fiche', () => {
     expect(long.error).toContain('app.knowledge.errInvalid');
   });
 
+  it('une création compte les sources de l’espace contre le plafond de son offre ; une modification, non', async () => {
+    const count = (await demoRepositories.knowledge.list()).length;
+    const limits = vi.spyOn(demoRepositories.knowledge, 'limits').mockResolvedValue({ sources: count, files: 5, sites: 1, upgradable: true });
+    const refused = await saveKnowledgeAction({}, form({ title: 'Hors offre', content: 'Texte.' }));
+    expect(refused.error).toContain('app.knowledge.errLimit');
+    expect(refused.error).toContain(`"max":${count}`);
+    expect(refused.savedAt).toBeUndefined();
+    expect(await item('Hors offre')).toBeUndefined();
+
+    // Modifier une fiche existante n'ajoute rien : le plafond ne la concerne pas.
+    const existing = (await demoRepositories.knowledge.list()).find((k) => k.kind === 'text')!;
+    expect((await saveKnowledgeAction({}, form({ id: existing.id, title: existing.title, content: 'Texte revu.' }))).savedAt).toEqual(expect.any(Number));
+
+    // Une offre qui relève le plafond libère la création.
+    limits.mockResolvedValue({ sources: count + 1, files: 20, sites: 3, upgradable: true });
+    expect((await saveKnowledgeAction({}, form({ title: 'Dans l’offre', content: 'Texte.' }))).savedAt).toEqual(expect.any(Number));
+    expect(await item('Dans l’offre')).toBeDefined();
+    const full = await saveKnowledgeAction({}, form({ title: 'Une de plus', content: 'Texte.' }));
+    expect(full.error).toContain(`"max":${count + 1}`);
+    limits.mockRestore();
+  });
+
   it('un lecteur n’écrit pas ; un visiteur anonyme est renvoyé à la connexion', async () => {
     state.session = ready({ role: 'viewer' });
     expect(await saveKnowledgeAction({}, form({ title: 'Interdit', content: 'x' }))).toEqual({ error: 'app.knowledge.viewerNote' });

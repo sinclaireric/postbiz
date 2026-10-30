@@ -13,7 +13,8 @@ import { replyWindow } from './logic';
 import { fitReply, sameReply, SUGGEST_MAX_CHARS, SUGGEST_HISTORY, SUGGEST_RULES, SUGGEST_SCHEMA, suggestPrompt, type SuggestTurn } from './suggest-prompt';
 import type { ConversationDetail } from './types';
 
-export type SuggestErrorCode = 'disabled' | 'forbidden' | 'invalid' | 'rate_limited' | 'refused' | 'failed' | 'not_found' | 'window_closed';
+/** `quota` : les actions d'IA texte incluses dans l'offre de l'espace sont toutes utilisées ce mois-ci. */
+export type SuggestErrorCode = 'disabled' | 'forbidden' | 'invalid' | 'rate_limited' | 'refused' | 'failed' | 'not_found' | 'window_closed' | 'quota';
 
 /** Ce que la suggestion rend à l'écran : le brouillon, ce qui le fonde, et si une personne doit s'en charger. */
 export interface Suggestion {
@@ -30,7 +31,7 @@ export interface Suggestion {
 export type SuggestResult = { ok: true; suggestion: Suggestion } | { ok: false; error: SuggestErrorCode };
 
 export interface SuggestDeps {
-  repos: Pick<Repositories, 'inbox' | 'knowledge' | 'suggestions'>;
+  repos: Pick<Repositories, 'inbox' | 'knowledge' | 'suggestions' | 'generation'>;
   orgName: string;
   userId: string;
   embedder: Embedder | null;
@@ -108,6 +109,8 @@ export async function suggestForConversation(deps: SuggestDeps, conversationId: 
   const turns = turnsOf(conversation);
   if (!turns.some((t) => t.role === 'customer')) return { ok: false, error: 'invalid' };
   if ((await repos.suggestions.countToday()) >= deps.dailyLimit) return { ok: false, error: 'rate_limited' };
+  // Le quota d'IA texte de l'offre : une suggestion compte pour une action, avant toute recherche et tout appel au fournisseur (jamais refusée en démonstration).
+  if (!(await repos.generation.reserveText('suggestion'))) return { ok: false, error: 'quota' };
 
   const split = splitKnowledge(await repos.knowledge.list());
   const found = await retrieve({ knowledge: repos.knowledge, embedder: deps.demo ? null : deps.embedder }, suggestQuery(turns), { exclude: split.inPrompt.map((i) => i.id), signal: deps.signal }).catch(() => NOTHING);

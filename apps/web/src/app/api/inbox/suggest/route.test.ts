@@ -162,6 +162,39 @@ describe('POST /api/inbox/suggest : vraie IA (client simulé)', () => {
   });
 });
 
+describe('POST /api/inbox/suggest : quota d’IA de l’offre', () => {
+  it('quota épuisé : 402 et le code « quota », sans appeler l’IA ; la réservation est une action « suggestion »', async () => {
+    state.session = ready({ mode: 'supabase' });
+    model({ reply: 'Bonjour !', grounded: false, needs_human: false });
+    const reserve = vi.spyOn(demoRepositories.generation, 'reserveText').mockResolvedValue(false);
+    const res = await post({ conversationId: 'c1' });
+    expect(res.status).toBe(402);
+    expect(await res.json()).toEqual({ error: 'quota' });
+    expect(reserve).toHaveBeenCalledExactlyOnceWith('suggestion');
+    expect(state.prompts).toHaveLength(0);
+    reserve.mockRestore();
+  });
+
+  it('avec de la marge dans l’offre, la suggestion se fait et compte pour une action', async () => {
+    state.session = ready({ mode: 'supabase' });
+    model({ reply: 'Bonjour !', grounded: false, needs_human: false });
+    const reserve = vi.spyOn(demoRepositories.generation, 'reserveText').mockResolvedValue(true);
+    expect((await post({ conversationId: 'c1' })).status).toBe(200);
+    expect(reserve).toHaveBeenCalledTimes(1);
+    reserve.mockRestore();
+  });
+
+  it('un corps invalide ou un plafond atteint ne consomme pas le quota', async () => {
+    const reserve = vi.spyOn(demoRepositories.generation, 'reserveText');
+    await post({});
+    state.session = ready({ id: 'u-quota-plafond' });
+    process.env.SUGGESTIONS_PER_DAY = '0';
+    await post({ conversationId: 'c1' });
+    expect(reserve).not.toHaveBeenCalled();
+    reserve.mockRestore();
+  });
+});
+
 describe('POST /api/inbox/suggest : application mobile (jeton Supabase)', () => {
   it('identifie l’utilisateur par son jeton, sans lire les cookies', async () => {
     state.byToken = async () => ({ session: ready({ id: 'mobile-1' }), repos: demoRepositories });

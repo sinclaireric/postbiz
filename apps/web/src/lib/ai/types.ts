@@ -35,7 +35,8 @@ export interface AiIdea {
   source: { title: string; url: string } | null;
 }
 
-export type AiErrorCode = 'disabled' | 'forbidden' | 'invalid' | 'rate_limited' | 'refused' | 'empty' | 'failed';
+/** `quota` : les actions d'IA texte incluses dans l'offre de l'espace sont toutes utilisées ce mois-ci. */
+export type AiErrorCode = 'disabled' | 'forbidden' | 'invalid' | 'rate_limited' | 'refused' | 'empty' | 'failed' | 'quota';
 
 export type AiResult =
   | { ok: true; mode: 'write' | 'improve'; proposals: AiProposal[]; consulted?: string[] }

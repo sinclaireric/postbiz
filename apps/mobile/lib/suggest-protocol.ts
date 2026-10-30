@@ -3,7 +3,7 @@
 // envoie et reçoit : types de apps/web/src/lib/inbox/suggest.ts, route apps/web/src/app/api/inbox/suggest/route.ts, comparaison `sameReply` de
 // apps/web/src/lib/inbox/suggest-prompt.ts. Il est testé par lib/suggest-protocol.test.ts ; l'appel avec la session de l'utilisateur est dans lib/suggest.ts.
 
-export const SUGGEST_ERROR_CODES = ["disabled", "forbidden", "invalid", "rate_limited", "refused", "failed", "not_found", "window_closed"] as const;
+export const SUGGEST_ERROR_CODES = ["disabled", "forbidden", "invalid", "rate_limited", "refused", "failed", "not_found", "window_closed", "quota"] as const;
 export type SuggestErrorCode = (typeof SUGGEST_ERROR_CODES)[number];
 
 /** Ce que la suggestion rend à l'écran : le brouillon, ce qui le fonde, et si une personne doit s'en charger. */
@@ -42,7 +42,7 @@ function readSuggestion(v: unknown): Suggestion | null {
 
 /**
  * Lit la réponse de `POST /api/inbox/suggest` (donnée non fiable : une page d'erreur, ou une réponse abîmée, donne `failed`, jamais une exception).
- * Une suggestion n'est prise qu'avec un statut 2xx ; sinon c'est le code d'erreur de la route (`{ error }`, avec le statut 503, 403 ou 401 sans session, 400, 429, 422, 502, 404 ou 409).
+ * Une suggestion n'est prise qu'avec un statut 2xx ; sinon c'est le code d'erreur de la route (`{ error }`, avec le statut 503, 403 ou 401 sans session, 400, 429, 422, 502, 404, 409 ou 402 quand le quota d'IA de l'offre est utilisé).
  * Un code inconnu, ou absent, devient `failed`, comme sur le web : le statut seul n'est pas fiable (un serveur intermédiaire peut renvoyer 429 ou 503 sans venir de la route).
  */
 export function parseSuggestResponse(status: number, raw: unknown): SuggestResult {

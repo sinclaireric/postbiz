@@ -52,6 +52,7 @@ const ERRORS: Record<AgentErrorCode, string> = {
   empty: "L’agent n’a rien pu préparer. Précisez votre demande ou vérifiez les canaux cochés.",
   failed: "L’agent n’a pas pu répondre. Votre message est conservé : réessayez dans un instant.",
   not_found: "Cette conversation n’existe plus.",
+  quota: "Vous avez utilisé toutes les actions d’IA incluses dans votre offre ce mois-ci. Passez à une offre supérieure depuis la page Facturation du site Postbiz.",
 };
 
 export const agentErrorMessage = (code: AgentErrorCode) => ERRORS[code] ?? ERRORS.failed;

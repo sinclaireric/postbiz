@@ -945,7 +945,8 @@
         "empty": "L’agente non ha potuto preparare nulla. Sii più preciso o controlla i canali selezionati.",
         "failed": "L’agente non ha potuto rispondere. Il tuo messaggio è conservato: riprova tra un attimo.",
         "notFound": "Questa conversazione non esiste più.",
-        "alreadySaved": "Questo post è già stato salvato."
+        "alreadySaved": "Questo post è già stato salvato.",
+        "quota": "Hai usato tutte le azioni IA incluse nel tuo piano questo mese. Passa a un piano superiore dalla pagina <link>Fatturazione</link>."
       },
       "demo": {
         "help": "Sono l’agente demo. Descrivi un post (per esempio «Annuncia il laboratorio aperto sabato») e lo preparo per i canali selezionati; chiedi cosa è programmato per consultare il calendario.",
@@ -1172,7 +1173,8 @@
           "refused": "L’IA non ha potuto rispondere a questo messaggio. Scrivi tu la risposta.",
           "failed": "Il suggerimento non è riuscito. Riprova tra un istante.",
           "not_found": "Conversazione non trovata.",
-          "window_closed": "La finestra di 24 ore è trascorsa: non è più possibile rispondere."
+          "window_closed": "La finestra di 24 ore è trascorsa: non è più possibile rispondere.",
+          "quota": "Hai usato tutte le azioni IA incluse nel tuo piano questo mese. Passa a un piano superiore dalla pagina <link>Fatturazione</link>."
         },
         "demo": {
           "found": "Ciao {name}, grazie per il tuo messaggio! {answer}",
@@ -1393,7 +1395,8 @@
         "rate_limited": "Troppe richieste di seguito. Riprova tra qualche minuto.",
         "refused": "L’assistente non ha potuto elaborare questa richiesta. Prova a riformularla.",
         "empty": "L’assistente non ha trovato nulla di utilizzabile. Prova con un altro argomento.",
-        "failed": "L’assistente è momentaneamente non disponibile. Riprova tra un istante."
+        "failed": "L’assistente è momentaneamente non disponibile. Riprova tra un istante.",
+        "quota": "Hai usato tutte le azioni IA incluse nel tuo piano questo mese. Passa a un piano superiore dalla pagina <link>Fatturazione</link>."
       },
       "base": {
         "intro": "La tua base di conoscenza alimenta questo assistente, l’agente e i suggerimenti di risposta della posta. Le schede fissate sono sempre usate; le altre vengono consultate quando la tua richiesta le riguarda.",
@@ -1799,7 +1802,8 @@
         "fileMissing": "Il file non è stato trovato. Invialo di nuovo.",
         "syncTooSoon": "Questa fonte è stata aggiornata poco fa. Riprova tra qualche minuto.",
         "uploadFailed": "Il caricamento non è riuscito. Riprova."
-      }
+      },
+      "upgrade": "<link>Passa a un piano superiore</link> per aggiungerne altri."
     }
   }
 }

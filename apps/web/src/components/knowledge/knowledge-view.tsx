@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState, type KeyboardEvent } from 'react';
 import { useT } from '@/i18n/client';
-import { KNOWLEDGE_LIMITS, type KnowledgeItem } from '@/lib/data/types';
+import type { KnowledgeItem, KnowledgeLimits } from '@/lib/data/types';
 import { DocumentsPanel } from './documents-panel';
 import { TestBox } from './test-box';
 import { TextPanel } from './text-panel';
@@ -20,7 +20,7 @@ const POLL_FOR_MS = 15 * 60_000;
  * La base de connaissance : ce que l'IA sait de l'activité, pour l'agent, le composeur et l'inbox. Trois sortes de sources en trois onglets : des fiches de texte (dont
  * les épinglées sont envoyées en entier), des documents et des sites web (lus par le worker, consultés par recherche quand la question s'y rapporte).
  */
-export function KnowledgeView({ items, canWrite, embeddings, demo, orgId }: { items: KnowledgeItem[]; canWrite: boolean; embeddings: boolean; demo: boolean; orgId: string }) {
+export function KnowledgeView({ items, limits, canWrite, embeddings, demo, orgId }: { items: KnowledgeItem[]; limits: KnowledgeLimits; canWrite: boolean; embeddings: boolean; demo: boolean; orgId: string }) {
   const t = useT();
   const router = useRouter();
   const [tab, setTab] = useState<Tab>('text');
@@ -73,12 +73,12 @@ export function KnowledgeView({ items, canWrite, embeddings, demo, orgId }: { it
             ))}
           </div>
         </div>
-        <p className="-mt-2 text-end text-xs text-subtle">{t('app.knowledgePage.sourcesCount', { count: items.length, max: KNOWLEDGE_LIMITS.items })}</p>
+        <p className="-mt-2 text-end text-xs text-subtle">{t('app.knowledgePage.sourcesCount', { count: items.length, max: limits.sources })}</p>
 
         <div role="tabpanel" id={`kb-panel-${tab}`} aria-labelledby={`kb-tab-${tab}`}>
-          {tab === 'text' && <TextPanel items={text} all={items} canWrite={canWrite} embeddings={embeddings} />}
-          {tab === 'documents' && <DocumentsPanel items={files} total={items.length} canWrite={canWrite} demo={demo} orgId={orgId} embeddings={embeddings} />}
-          {tab === 'websites' && <WebsitesPanel items={sites} total={items.length} canWrite={canWrite} demo={demo} embeddings={embeddings} />}
+          {tab === 'text' && <TextPanel items={text} all={items} limits={limits} canWrite={canWrite} embeddings={embeddings} />}
+          {tab === 'documents' && <DocumentsPanel items={files} total={items.length} limits={limits} canWrite={canWrite} demo={demo} orgId={orgId} embeddings={embeddings} />}
+          {tab === 'websites' && <WebsitesPanel items={sites} total={items.length} limits={limits} canWrite={canWrite} demo={demo} embeddings={embeddings} />}
         </div>
 
         {items.length > 0 && <TestBox />}

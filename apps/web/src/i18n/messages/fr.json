@@ -1607,7 +1607,8 @@
         "empty": "L’agent n’a rien pu préparer. Précisez votre demande ou vérifiez les canaux cochés.",
         "failed": "L’agent n’a pas pu répondre. Votre message est conservé : réessayez dans un instant.",
         "notFound": "Cette conversation n’existe plus.",
-        "alreadySaved": "Cette publication a déjà été enregistrée."
+        "alreadySaved": "Cette publication a déjà été enregistrée.",
+        "quota": "Vous avez utilisé toutes les actions d’IA incluses dans votre offre ce mois-ci. Passez à une offre supérieure depuis la <link>page Facturation</link>."
       },
       "demo": {
         "help": "Je suis l’agent de démonstration. Décrivez une publication (par exemple « Annonce l’atelier ouvert samedi ») et je la prépare pour les canaux cochés ; demandez ce qui est programmé pour consulter le calendrier.",
@@ -1883,7 +1884,8 @@
           "refused": "L’IA n’a pas pu répondre à ce message. Écrivez la réponse vous-même.",
           "failed": "La suggestion a échoué. Réessayez dans un instant.",
           "not_found": "Conversation introuvable.",
-          "window_closed": "La fenêtre de 24 h est dépassée : il n’est plus possible de répondre."
+          "window_closed": "La fenêtre de 24 h est dépassée : il n’est plus possible de répondre.",
+          "quota": "Vous avez utilisé toutes les actions d’IA incluses dans votre offre ce mois-ci. Passez à une offre supérieure depuis la <link>page Facturation</link>."
         },
         "demo": {
           "found": "Bonjour {name}, merci pour votre message ! {answer}",
@@ -2116,7 +2118,8 @@
         "rate_limited": "Trop de demandes à la suite. Réessayez dans quelques minutes.",
         "refused": "L’assistant n’a pas pu traiter cette demande. Reformulez-la.",
         "empty": "L’assistant n’a rien trouvé d’utilisable. Essayez avec un autre sujet.",
-        "failed": "L’assistant est momentanément indisponible. Réessayez dans un instant."
+        "failed": "L’assistant est momentanément indisponible. Réessayez dans un instant.",
+        "quota": "Vous avez utilisé toutes les actions d’IA incluses dans votre offre ce mois-ci. Passez à une offre supérieure depuis la <link>page Facturation</link>."
       },
       "base": {
         "intro": "Votre base de connaissance alimente cet assistant, l’agent et les suggestions de réponse de l’inbox. Les fiches épinglées sont toujours utilisées ; les autres sont consultées quand votre demande s’y rapporte.",
@@ -2542,7 +2545,8 @@
         "fileMissing": "Le fichier est introuvable. Renvoyez-le.",
         "syncTooSoon": "Cette source vient d’être actualisée. Réessayez dans quelques minutes.",
         "uploadFailed": "L’envoi a échoué. Réessayez."
-      }
+      },
+      "upgrade": "<link>Passez à une offre supérieure</link> pour en ajouter."
     }
   }
 }

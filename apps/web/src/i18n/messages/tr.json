@@ -939,7 +939,8 @@
         "empty": "Ajan hiçbir şey hazırlayamadı. İsteğinizi netleştirin ya da işaretli kanalları kontrol edin.",
         "failed": "Ajan yanıt veremedi. Mesajınız saklandı: biraz sonra yeniden deneyin.",
         "notFound": "Bu sohbet artık yok.",
-        "alreadySaved": "Bu gönderi zaten kaydedildi."
+        "alreadySaved": "Bu gönderi zaten kaydedildi.",
+        "quota": "Bu ay planınıza dahil olan tüm yapay zekâ işlemlerini kullandınız. <link>Faturalandırma</link> sayfasından daha üst bir plana geçin."
       },
       "demo": {
         "help": "Ben demo ajanıyım. Bir gönderiyi anlatın (örneğin “Cumartesi açık atölyeyi duyur”), işaretli kanallar için hazırlarım; takvime bakmak için nelerin zamanlandığını sorun.",
@@ -1166,7 +1167,8 @@
           "refused": "Yapay zekâ bu mesajı yanıtlayamadı. Yanıtı kendiniz yazın.",
           "failed": "Öneri başarısız oldu. Birazdan yeniden deneyin.",
           "not_found": "Konuşma bulunamadı.",
-          "window_closed": "24 saatlik pencere sona erdi: artık yanıt vermek mümkün değil."
+          "window_closed": "24 saatlik pencere sona erdi: artık yanıt vermek mümkün değil.",
+          "quota": "Bu ay planınıza dahil olan tüm yapay zekâ işlemlerini kullandınız. <link>Faturalandırma</link> sayfasından daha üst bir plana geçin."
         },
         "demo": {
           "found": "Merhaba {name}, mesajınız için teşekkürler! {answer}",
@@ -1387,7 +1389,8 @@
         "rate_limited": "Art arda çok fazla istek. Birkaç dakika sonra tekrar deneyin.",
         "refused": "Asistan bu isteği işleyemedi. Farklı bir şekilde ifade etmeyi deneyin.",
         "empty": "Asistan kullanılabilir bir şey bulamadı. Başka bir konu deneyin.",
-        "failed": "Asistan geçici olarak kullanılamıyor. Birazdan tekrar deneyin."
+        "failed": "Asistan geçici olarak kullanılamıyor. Birazdan tekrar deneyin.",
+        "quota": "Bu ay planınıza dahil olan tüm yapay zekâ işlemlerini kullandınız. <link>Faturalandırma</link> sayfasından daha üst bir plana geçin."
       },
       "base": {
         "intro": "Bilgi tabanınız bu asistanı, ajanı ve gelen kutusundaki yanıt önerilerini besler. Sabitlenmiş kayıtlar her zaman kullanılır; diğerlerine isteğiniz onlarla ilgiliyse bakılır.",
@@ -1793,7 +1796,8 @@
         "fileMissing": "Dosya bulunamadı. Yeniden gönderin.",
         "syncTooSoon": "Bu kaynak az önce güncellendi. Birkaç dakika sonra yeniden deneyin.",
         "uploadFailed": "Yükleme başarısız oldu. Yeniden deneyin."
-      }
+      },
+      "upgrade": "Daha fazlasını eklemek için <link>daha üst bir plana geçin</link>."
     }
   }
 }

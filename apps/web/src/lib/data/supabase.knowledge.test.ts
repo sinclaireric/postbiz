@@ -2,7 +2,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import { describe, expect, it } from 'vitest';
 import { DEMO_CONTEXT } from './demo';
 import { createSupabaseRepositories } from './supabase';
-import { KNOWLEDGE_LIMITS } from './types';
+import { BETA_KNOWLEDGE_LIMITS } from './types';
 
 // La couche Supabase de la base de connaissance, essayée avec un faux client : ce qu'elle demande à la base, comment elle lit les lignes, et comment elle traduit les refus.
 // Les règles elles-mêmes (rôles, plafonds, file de lecture) sont dans les fonctions SQL, testées dans packages/db.
@@ -65,14 +65,14 @@ describe('knowledge.list : lire les sources de l’organisation', () => {
     { id: 'x1', title: 'Inconnue', content: null, updated_at: '2026-10-27T15:00:00Z', kind: 'inconnu', status: 'étrange', error: 42, size_bytes: null },
   ];
 
-  it('demande les sources de l’organisation, avec les colonnes des documents et des sites, les plus récentes d’abord, dans la limite des 100', async () => {
+  it('demande les sources de l’organisation, avec les colonnes des documents et des sites, les plus récentes d’abord, sans couper les offres qui gardent plus de 100 sources', async () => {
     const f = fake({ query: () => ({ data: rows }) });
     await repo(f).list();
     const { table, steps } = f.queries[0]!;
     expect(table).toBe('knowledge_items');
     expect(has(steps, 'eq', 'org_id', ORG)).toBe(true);
     expect(has(steps, 'order', 'updated_at', { ascending: false })).toBe(true);
-    expect(has(steps, 'limit', KNOWLEDGE_LIMITS.items)).toBe(true);
+    expect(has(steps, 'limit', 1_000)).toBe(true);
     const columns = String(steps.find(([m]) => m === 'select')![1][0]).split(/,\s*/);
     expect(columns).toEqual(expect.arrayContaining(['kind', 'status', 'url', 'file_path', 'size_bytes', 'error', 'stats', 'config', 'synced_at', 'run_at']));
   });
@@ -98,6 +98,51 @@ describe('knowledge.list : lire les sources de l’organisation', () => {
 
   it('une base muette donne une liste vide', async () => {
     expect(await repo(fake({ query: () => ({ data: null }) })).list()).toEqual([]);
+  });
+});
+
+describe('knowledge.limits : les plafonds de l’offre', () => {
+  it('demande knowledge_org_limits pour l’organisation et lit la ligne rendue', async () => {
+    const f = fake({ rpc: () => ({ data: [{ files: 20, sites: 3, sources: 100, chunks: 3450, upgradable: true }] }) });
+    expect(await repo(f).limits()).toEqual({ sources: 100, files: 20, sites: 3, upgradable: true });
+    expect(f.rpcs).toEqual([{ name: 'knowledge_org_limits', args: { p_org: ORG } }]);
+  });
+
+  it('lit aussi une ligne seule, et l’offre la plus haute n’est pas à relever', async () => {
+    const f = fake({ rpc: () => ({ data: { files: 80, sites: 20, sources: 150, chunks: 15000, upgradable: false } }) });
+    expect(await repo(f).limits()).toEqual({ sources: 150, files: 80, sites: 20, upgradable: false });
+  });
+
+  it('une panne, une réponse vide ou une base sans la fonction (migration pas appliquée) donnent les plafonds de la bêta', async () => {
+    for (const reply of [{ error: { message: 'function public.knowledge_org_limits(uuid) does not exist', code: '42883' } }, { data: [] }, { data: null }, { data: [null] }]) {
+      expect(await repo(fake({ rpc: () => reply })).limits(), JSON.stringify(reply)).toEqual(BETA_KNOWLEDGE_LIMITS);
+    }
+  });
+
+  it('un nombre absurde est remplacé par celui de la bêta, et « relevable » n’est vrai que s’il l’est vraiment', async () => {
+    const f = fake({ rpc: () => ({ data: [{ files: 0, sites: -2, sources: 'beaucoup', upgradable: 'oui' }] }) });
+    expect(await repo(f).limits()).toEqual({ sources: 100, files: 40, sites: 5, upgradable: false });
+    const half = fake({ rpc: () => ({ data: [{ files: 5, sites: 1, sources: 100, upgradable: true }] }) });
+    expect(await repo(half).limits()).toEqual({ sources: 100, files: 5, sites: 1, upgradable: true });
+  });
+
+  it('rend un nouvel objet à chaque fois : la bêta ne se modifie pas par mégarde', async () => {
+    const a = await repo(fake()).limits();
+    a.files = 1;
+    expect(BETA_KNOWLEDGE_LIMITS.files).toBe(40);
+    expect((await repo(fake()).limits()).files).toBe(40);
+  });
+});
+
+describe('knowledge.create : le plafond de sources', () => {
+  it('le refus du déclencheur porte le plafond de l’offre', async () => {
+    const f = fake({ query: () => ({ error: { message: 'knowledge_items_limit:150', code: '23514' } }) });
+    expect(await repo(f).create({ title: 'Une de plus', content: 'Texte.' })).toEqual({ ok: false, error: { key: 'app.knowledge.errLimit', params: { max: 150 } } });
+  });
+
+  it('sans nombre dans le message (base d’avant les offres), le plafond de la bêta', async () => {
+    const f = fake({ query: () => ({ error: { message: 'knowledge_items_limit', code: '23514' } }) });
+    expect(await repo(f).create({ title: 'Une de plus', content: 'Texte.' })).toEqual({ ok: false, error: { key: 'app.knowledge.errLimit', params: { max: 100 } } });
   });
 });
 
@@ -140,6 +185,20 @@ describe('knowledge.addFile / addWebsite / requestSync : les fonctions de la bas
     const site = { url: 'https://exemple.fr/', title: 'exemple.fr', scope: 'site' as const, autoSync: true };
     for (const result of [await r.addFile(input), await r.addWebsite(site), await r.requestSync('k1')]) {
       expect(result).toEqual({ ok: false, error: expected });
+    }
+  });
+
+  it.each([
+    ['knowledge_items_limit:150', 'app.knowledge.errLimit', 150],
+    ['knowledge_files_limit:20', 'app.knowledgePage.errors.filesLimit', 20],
+    ['knowledge_sites_limit:3', 'app.knowledgePage.errors.sitesLimit', 3],
+    ['ERREUR knowledge_files_limit:5 (23514)', 'app.knowledgePage.errors.filesLimit', 5],
+  ])('un refus de plafond cite celui de l’offre : « %s »', async (message, key, max) => {
+    const r = repo(fake({ rpc: () => ({ error: { message } }) }));
+    const input = { path: `${ORG}/${UUID}-doc.pdf`, title: 'Doc', size: 1 };
+    const site = { url: 'https://exemple.fr/', title: 'exemple.fr', scope: 'site' as const, autoSync: true };
+    for (const result of [await r.addFile(input), await r.addWebsite(site), await r.requestSync('k1')]) {
+      expect(result).toEqual({ ok: false, error: { key, params: { max } } });
     }
   });
 

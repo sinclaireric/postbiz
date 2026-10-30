@@ -939,7 +939,8 @@
         "empty": "Tác nhân không soạn được gì. Hãy nói rõ hơn hoặc kiểm tra các kênh đã chọn.",
         "failed": "Tác nhân không thể trả lời. Tin nhắn của bạn vẫn được giữ: hãy thử lại sau giây lát.",
         "notFound": "Cuộc trò chuyện này không còn tồn tại.",
-        "alreadySaved": "Bài đăng này đã được lưu."
+        "alreadySaved": "Bài đăng này đã được lưu.",
+        "quota": "Bạn đã dùng hết các tác vụ AI có trong gói của mình trong tháng này. Hãy nâng cấp gói tại trang <link>Thanh toán</link>."
       },
       "demo": {
         "help": "Tôi là tác nhân demo. Hãy mô tả một bài đăng (ví dụ “Thông báo xưởng mở cửa thứ Bảy”), tôi sẽ soạn cho các kênh đã chọn; hỏi những gì đã lên lịch để xem lịch.",
@@ -1164,7 +1165,8 @@
           "refused": "AI không thể trả lời tin nhắn này. Hãy tự viết câu trả lời.",
           "failed": "Gợi ý thất bại. Hãy thử lại sau giây lát.",
           "not_found": "Không tìm thấy cuộc trò chuyện.",
-          "window_closed": "Khung 24 giờ đã hết: không thể trả lời nữa."
+          "window_closed": "Khung 24 giờ đã hết: không thể trả lời nữa.",
+          "quota": "Bạn đã dùng hết các tác vụ AI có trong gói của mình trong tháng này. Hãy nâng cấp gói tại trang <link>Thanh toán</link>."
         },
         "demo": {
           "found": "Xin chào {name}, cảm ơn bạn đã nhắn tin! {answer}",
@@ -1384,7 +1386,8 @@
         "rate_limited": "Quá nhiều yêu cầu liên tiếp. Hãy thử lại sau vài phút.",
         "refused": "Trợ lý không xử lý được yêu cầu này. Hãy thử diễn đạt lại.",
         "empty": "Trợ lý không tìm thấy nội dung dùng được. Hãy thử chủ đề khác.",
-        "failed": "Trợ lý tạm thời không khả dụng. Hãy thử lại sau giây lát."
+        "failed": "Trợ lý tạm thời không khả dụng. Hãy thử lại sau giây lát.",
+        "quota": "Bạn đã dùng hết các tác vụ AI có trong gói của mình trong tháng này. Hãy nâng cấp gói tại trang <link>Thanh toán</link>."
       },
       "base": {
         "intro": "Cơ sở kiến thức của bạn cung cấp cho trợ lý AI này, mục Trợ lý và các gợi ý trả lời trong hộp thư. Mục đã ghim luôn được dùng; các mục khác được tra cứu khi yêu cầu của bạn liên quan.",
@@ -1788,7 +1791,8 @@
         "fileMissing": "Không tìm thấy tệp. Hãy gửi lại.",
         "syncTooSoon": "Nguồn này vừa được cập nhật. Hãy thử lại sau vài phút.",
         "uploadFailed": "Tải lên thất bại. Hãy thử lại."
-      }
+      },
+      "upgrade": "<link>Nâng cấp gói</link> để thêm nhiều hơn."
     }
   }
 }

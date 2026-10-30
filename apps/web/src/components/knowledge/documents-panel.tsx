@@ -7,19 +7,20 @@ import { registerDocumentAction } from '@/app/app/(shell)/connaissances/actions'
 import { PlusIcon } from '@/components/calendar/composer-icons';
 import { Button } from '@/components/ui';
 import { useT } from '@/i18n/client';
-import { KNOWLEDGE_LIMITS, type KnowledgeItem } from '@/lib/data/types';
+import { KNOWLEDGE_LIMITS, type KnowledgeItem, type KnowledgeLimits } from '@/lib/data/types';
 import { createClient } from '@/lib/supabase/client';
 import { uploadDocument, validateDocumentFile } from '@/lib/knowledge-upload';
+import { LimitNote } from './limit-note';
 import { SourceCard } from './source-card';
 
 /** Les documents (PDF avec texte, Word, texte, Markdown, CSV, HTML) : envoyés dans le stockage de l'organisation, lus ensuite par le worker. */
-export function DocumentsPanel({ items, total, canWrite, demo, orgId, embeddings }: { items: KnowledgeItem[]; total: number; canWrite: boolean; demo: boolean; orgId: string; embeddings: boolean }) {
+export function DocumentsPanel({ items, total, limits, canWrite, demo, orgId, embeddings }: { items: KnowledgeItem[]; total: number; limits: KnowledgeLimits; canWrite: boolean; demo: boolean; orgId: string; embeddings: boolean }) {
   const t = useT();
   const router = useRouter();
   const picker = useRef<HTMLInputElement>(null);
   const [sending, setSending] = useState<string | null>(null);
   const [problems, setProblems] = useState<string[]>([]);
-  const full = items.length >= KNOWLEDGE_LIMITS.files || total >= KNOWLEDGE_LIMITS.items;
+  const full = items.length >= limits.files || total >= limits.sources;
 
   /** Envoie un fichier ; rend le message d'erreur à montrer, ou null si tout s'est bien passé. */
   async function sendOne(file: File): Promise<string | null> {
@@ -83,7 +84,7 @@ export function DocumentsPanel({ items, total, canWrite, demo, orgId, embeddings
 
       {demo && <p className="rounded-xl bg-warn-soft px-3 py-2 text-xs font-medium text-warn">{t('app.knowledgePage.docs.demoNote')}</p>}
       {!canWrite && <p className="text-xs text-muted">{t('app.knowledge.viewerNote')}</p>}
-      {canWrite && full && <p role="status" className="rounded-xl bg-warn-soft px-3 py-2 text-xs font-medium text-warn">{total >= KNOWLEDGE_LIMITS.items ? t('app.knowledge.errLimit', { max: KNOWLEDGE_LIMITS.items }) : t('app.knowledgePage.errors.filesLimit', { max: KNOWLEDGE_LIMITS.files })}</p>}
+      {canWrite && full && <LimitNote message={total >= limits.sources ? t('app.knowledge.errLimit', { max: limits.sources }) : t('app.knowledgePage.errors.filesLimit', { max: limits.files })} upgradable={limits.upgradable} />}
       {sending && <p role="status" className="rounded-xl bg-wash px-3 py-2 text-sm text-muted">{t('app.knowledgePage.docs.uploading', { name: sending })}</p>}
       {problems.length > 0 && (
         <ul role="alert" className="grid grid-cols-1 gap-1 rounded-xl bg-danger-soft px-3 py-2 text-sm font-medium text-danger">{problems.map((p) => <li key={p}>{p}</li>)}</ul>

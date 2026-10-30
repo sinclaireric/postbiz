@@ -9,12 +9,12 @@ export function normalizeKnowledge(title: unknown, content: unknown): KnowledgeI
   };
 }
 
-/** Erreur de validation d'une fiche (clé de message), ou null. `count` : nombre de fiches déjà enregistrées, pour une création. */
-export function validateKnowledge(input: KnowledgeInput, count?: number): FormError | null {
+/** Erreur de validation d'une fiche (clé de message), ou null. `count` : nombre de sources déjà enregistrées, pour une création ; `max` : le plafond de l'offre (par défaut, celui de la bêta). */
+export function validateKnowledge(input: KnowledgeInput, count?: number, max: number = KNOWLEDGE_LIMITS.items): FormError | null {
   if (!input.title || !input.content) return { key: 'app.knowledge.errInvalid', params: { title: KNOWLEDGE_LIMITS.title, content: KNOWLEDGE_LIMITS.content } };
   if ([...input.title].length > KNOWLEDGE_LIMITS.title || [...input.content].length > KNOWLEDGE_LIMITS.content) {
     return { key: 'app.knowledge.errInvalid', params: { title: KNOWLEDGE_LIMITS.title, content: KNOWLEDGE_LIMITS.content } };
   }
-  if (count !== undefined && count >= KNOWLEDGE_LIMITS.items) return { key: 'app.knowledge.errLimit', params: { max: KNOWLEDGE_LIMITS.items } };
+  if (count !== undefined && count >= max) return { key: 'app.knowledge.errLimit', params: { max } };
   return null;
 }

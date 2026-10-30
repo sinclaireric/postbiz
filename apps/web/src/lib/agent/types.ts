@@ -96,7 +96,8 @@ export interface VideoJobResponse {
   url: string | null;
 }
 
-export type AgentErrorCode = 'disabled' | 'forbidden' | 'invalid' | 'rate_limited' | 'refused' | 'empty' | 'failed' | 'not_found';
+/** `quota` : les actions d'IA texte incluses dans l'offre de l'espace sont toutes utilisées ce mois-ci. */
+export type AgentErrorCode = 'disabled' | 'forbidden' | 'invalid' | 'rate_limited' | 'refused' | 'empty' | 'failed' | 'not_found' | 'quota';
 
 /** Ce que la route d'API renvoie au navigateur, un objet JSON par ligne. */
 export type AgentEvent =

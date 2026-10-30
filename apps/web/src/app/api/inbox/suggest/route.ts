@@ -15,7 +15,7 @@ const HEADERS = { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Cont
 const MAX_BODY = 2_000;
 const ID = /^[\w-]{1,64}$/;
 
-const STATUS: Record<SuggestErrorCode, number> = { disabled: 503, forbidden: 403, invalid: 400, rate_limited: 429, refused: 422, failed: 502, not_found: 404, window_closed: 409 };
+const STATUS: Record<SuggestErrorCode, number> = { disabled: 503, forbidden: 403, invalid: 400, rate_limited: 429, refused: 422, failed: 502, not_found: 404, window_closed: 409, quota: 402 };
 const failure = (error: SuggestErrorCode, status: number = STATUS[error]) => new Response(JSON.stringify({ error }), { status, headers: HEADERS });
 
 /**

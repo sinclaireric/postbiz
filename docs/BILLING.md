@@ -36,7 +36,13 @@ Offres **Gratuit / Standard (19 $) / Team (39 $) / Agence (79 $)**, par espace d
 
 ## Quotas appliqués (valeurs : table `plan_limits`, miroir `lib/billing/plans.ts`, test de concordance)
 
-Canaux (`connect_integration`), images/vidéos IA (`ai_media_reserve`), stockage de médias (déclencheur sur `media`). **À brancher par les sessions concernées** : IA texte (`repos.generation.reserveText`), membres (`org_plan_limit(org,'members')` dans les invitations), connaissances (`knowledge_files|sites`), historique d'analyses (`analytics_days`).
+Canaux (`connect_integration`), images/vidéos IA (`ai_media_reserve`), stockage de médias (déclencheur sur `media`).
+
+IA texte : `repos.generation.reserveText` est appelée avant chaque action de l'assistant du calendrier (`'assistant'`), de la suggestion de l'inbox (`'suggestion'`) et de l'agent (`'agent'`), sur le site et dans l'application mobile. Quota épuisé : code `quota`, HTTP 402, message qui renvoie vers la page Facturation. Si la base ne répond pas, l'action est refusée (la réservation échoue fermée).
+
+Connaissances : `knowledge_org_limits(org)` (migration `20261106000001`) lit `knowledge_files` et `knowledge_sites` et en déduit les plafonds globaux qui permettent de les utiliser : sources en tout (au moins 100, ou documents + sites + 50) et passages (au moins 3 000, ou 150 par document ou site). Facturation désactivée : les plafonds de sécurité d'avant (40 documents, 5 sites, 100 sources, 3 000 passages). Les refus citent le plafond (`knowledge_files_limit:20`), et la page Connaissances propose de changer d'offre quand une offre supérieure les relèverait (`upgradable`).
+
+**À brancher par les sessions concernées** : membres (`org_plan_limit(org,'members')` dans les invitations), historique d'analyses (`analytics_days`).
 
 ## Réel / simulé
 

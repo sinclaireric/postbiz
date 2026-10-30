@@ -211,6 +211,73 @@ describe('POST /api/agent/chat : vrai agent (client simulé)', () => {
   });
 });
 
+describe('POST /api/agent/chat : quota d’IA de l’offre', () => {
+  /** Un faux modèle qui rend les réponses données, dans l'ordre, et diffuse leur texte comme le vrai client. */
+  const run = (replies: unknown[] = [{ status: 'completed', usage, output: [say('Bonjour !')] }]) => {
+    const calls: unknown[] = [];
+    state.client = {
+      async stream(params, onText) {
+        calls.push(structuredClone(params));
+        const next = replies.shift() as { output: { type: string; content?: { type: string; text?: string }[] }[] };
+        for (const item of next.output) if (item.type === 'message') for (const part of item.content!) if (part.type === 'output_text') onText(part.text!);
+        return next as never;
+      },
+    } satisfies AgentClient;
+    return calls;
+  };
+
+  beforeEach(() => {
+    process.env.OPENAI_API_KEY = 'test-key-not-used';
+    state.session = ready({ mode: 'supabase' });
+  });
+
+  it('quota épuisé : 402 et une ligne d’erreur « quota », sans appeler le modèle ni enregistrer d’échange ; la réservation est une action « agent »', async () => {
+    const calls = run();
+    const reserve = vi.spyOn(demoRepositories.generation, 'reserveText').mockResolvedValue(false);
+    const before = (await demoRepositories.agent.threads()).length;
+    const res = await post({ message: 'Annonce l’atelier de samedi', channelIds: ['i2'] });
+    expect(res.status).toBe(402);
+    expect(await events(res)).toEqual([{ type: 'error', code: 'quota' }]);
+    expect(reserve).toHaveBeenCalledExactlyOnceWith('agent');
+    reserve.mockRestore();
+    expect(calls).toHaveLength(0);
+    expect((await demoRepositories.agent.threads()).length).toBe(before);
+  });
+
+  it('un message compte pour une seule action, même quand l’agent appelle le modèle plusieurs fois', async () => {
+    const calls = run([
+      { status: 'completed', usage, output: [use('l1', 'list_posts', {})] },
+      { status: 'completed', usage, output: [say('Voilà.')] },
+    ]);
+    const reserve = vi.spyOn(demoRepositories.generation, 'reserveText').mockResolvedValue(true);
+    const list = await events(await post({ message: 'Que prévois-je cette semaine ?' }));
+    expect(list.at(-1)?.type).toBe('done');
+    expect(calls.length).toBeGreaterThan(1);
+    expect(reserve).toHaveBeenCalledExactlyOnceWith('agent');
+    reserve.mockRestore();
+  });
+
+  it('une demande refusée plus tôt (corps invalide, conversation inconnue, limite de rythme) ne consomme aucune action', async () => {
+    run();
+    const reserve = vi.spyOn(demoRepositories.generation, 'reserveText');
+    await post('pas du json');
+    await post({ message: 'Salut', threadId: 'fantome' });
+    state.session = ready({ mode: 'supabase', role: 'viewer' });
+    await post({ message: 'Salut tout le monde' });
+    expect(reserve).not.toHaveBeenCalled();
+    reserve.mockRestore();
+  });
+
+  it('en démonstration, la réponse est simulée : la réservation passe, le dépôt de la démo ne refuse jamais', async () => {
+    state.session = ready({ mode: 'demo' });
+    const reserve = vi.spyOn(demoRepositories.generation, 'reserveText');
+    const list = await events(await post({ message: 'Annonce l’atelier de samedi', channelIds: ['i2'] }));
+    expect(list.at(-1)?.type).toBe('done');
+    expect(reserve).toHaveBeenCalledExactlyOnceWith('agent');
+    reserve.mockRestore();
+  });
+});
+
 describe('POST /api/agent/chat : génération d’images et de vidéos', () => {
   const stream = (replies: unknown[]) => {
     const calls: { tools: { name: string }[]; instructions: string; input: unknown[] }[] = [];

@@ -20,6 +20,6 @@ export default async function KnowledgePage() {
   if (session.status !== 'ready') redirect('/login');
   const { ctx } = session;
   const repos = await getRepositories(ctx);
-  const items = await repos.knowledge.list();
-  return <KnowledgeView items={items} canWrite={ctx.org.role !== 'viewer'} embeddings={ctx.mode !== 'demo' && embeddingsConfigured()} demo={ctx.mode === 'demo'} orgId={ctx.org.id} />;
+  const [items, limits] = await Promise.all([repos.knowledge.list(), repos.knowledge.limits()]);
+  return <KnowledgeView items={items} limits={limits} canWrite={ctx.org.role !== 'viewer'} embeddings={ctx.mode !== 'demo' && embeddingsConfigured()} demo={ctx.mode === 'demo'} orgId={ctx.org.id} />;
 }

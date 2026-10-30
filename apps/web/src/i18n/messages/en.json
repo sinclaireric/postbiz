@@ -1589,7 +1589,8 @@
         "empty": "The agent could not prepare anything. Be more specific, or check the ticked channels.",
         "failed": "The agent could not answer. Your message is kept: try again in a moment.",
         "notFound": "This conversation no longer exists.",
-        "alreadySaved": "This post has already been saved."
+        "alreadySaved": "This post has already been saved.",
+        "quota": "You have used all the AI actions included in your plan this month. Upgrade your plan from the <link>Billing page</link>."
       },
       "demo": {
         "help": "I’m the demo agent. Describe a post (for example “Announce the workshop open on Saturday”) and I prepare it for the ticked channels; ask what is scheduled to look at the calendar.",
@@ -1865,7 +1866,8 @@
           "refused": "The AI could not answer this message. Write the reply yourself.",
           "failed": "The suggestion failed. Try again in a moment.",
           "not_found": "Conversation not found.",
-          "window_closed": "The 24-hour window has passed: replies are no longer possible."
+          "window_closed": "The 24-hour window has passed: replies are no longer possible.",
+          "quota": "You have used all the AI actions included in your plan this month. Upgrade your plan from the <link>Billing page</link>."
         },
         "demo": {
           "found": "Hello {name}, thanks for your message! {answer}",
@@ -2098,7 +2100,8 @@
         "rate_limited": "Too many requests in a row. Try again in a few minutes.",
         "refused": "The assistant could not process this request. Try rephrasing it.",
         "empty": "The assistant found nothing usable. Try another topic.",
-        "failed": "The assistant is temporarily unavailable. Try again in a moment."
+        "failed": "The assistant is temporarily unavailable. Try again in a moment.",
+        "quota": "You have used all the AI actions included in your plan this month. Upgrade your plan from the <link>Billing page</link>."
       },
       "base": {
         "intro": "Your knowledge base feeds this assistant, the agent and the reply suggestions in the inbox. Pinned entries are always used; the others are looked up when your request is about them.",
@@ -2524,7 +2527,8 @@
         "fileMissing": "The file could not be found. Send it again.",
         "syncTooSoon": "This source was refreshed a moment ago. Try again in a few minutes.",
         "uploadFailed": "The upload failed. Try again."
-      }
+      },
+      "upgrade": "<link>Upgrade your plan</link> to add more."
     }
   }
 }

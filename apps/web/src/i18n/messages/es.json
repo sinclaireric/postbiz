@@ -942,7 +942,8 @@
         "empty": "El agente no pudo preparar nada. Sé más preciso o revisa los canales marcados.",
         "failed": "El agente no pudo responder. Tu mensaje se conserva: inténtalo de nuevo en un momento.",
         "notFound": "Esta conversación ya no existe.",
-        "alreadySaved": "Esta publicación ya se ha guardado."
+        "alreadySaved": "Esta publicación ya se ha guardado.",
+        "quota": "Has usado todas las acciones de IA incluidas en tu plan este mes. Cambia a un plan superior desde la página de <link>Facturación</link>."
       },
       "demo": {
         "help": "Soy el agente de demostración. Describe una publicación (por ejemplo «Anuncia el taller abierto el sábado») y la preparo para los canales marcados; pregunta qué hay programado para consultar el calendario.",
@@ -1169,7 +1170,8 @@
           "refused": "La IA no ha podido responder a este mensaje. Escribe la respuesta tú mismo.",
           "failed": "La sugerencia ha fallado. Vuelve a intentarlo en un momento.",
           "not_found": "Conversación no encontrada.",
-          "window_closed": "La ventana de 24 h ha pasado: ya no es posible responder."
+          "window_closed": "La ventana de 24 h ha pasado: ya no es posible responder.",
+          "quota": "Has usado todas las acciones de IA incluidas en tu plan este mes. Cambia a un plan superior desde la página de <link>Facturación</link>."
         },
         "demo": {
           "found": "Hola {name}, ¡gracias por tu mensaje! {answer}",
@@ -1390,7 +1392,8 @@
         "rate_limited": "Demasiadas solicitudes seguidas. Inténtalo de nuevo en unos minutos.",
         "refused": "El asistente no pudo procesar esta solicitud. Prueba a reformularla.",
         "empty": "El asistente no encontró nada utilizable. Prueba con otro tema.",
-        "failed": "El asistente no está disponible por el momento. Inténtalo de nuevo en un instante."
+        "failed": "El asistente no está disponible por el momento. Inténtalo de nuevo en un instante.",
+        "quota": "Has usado todas las acciones de IA incluidas en tu plan este mes. Cambia a un plan superior desde la página de <link>Facturación</link>."
       },
       "base": {
         "intro": "Tu base de conocimiento alimenta a este asistente, al agente y a las sugerencias de respuesta de la bandeja. Las fichas fijadas se usan siempre; las demás se consultan cuando tu petición trata de ellas.",
@@ -1796,7 +1799,8 @@
         "fileMissing": "No se encontró el archivo. Vuelve a enviarlo.",
         "syncTooSoon": "Esta fuente se acaba de actualizar. Inténtalo de nuevo dentro de unos minutos.",
         "uploadFailed": "Falló el envío. Inténtalo de nuevo."
-      }
+      },
+      "upgrade": "<link>Cambia a un plan superior</link> para añadir más."
     }
   }
 }

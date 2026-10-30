@@ -20,4 +20,11 @@ describe('fiches de la base de connaissance', () => {
     expect(validateKnowledge({ title: 'x', content: 'x' }, 99)).toBeNull();
     expect(validateKnowledge({ title: 'x', content: 'x' }, 100)).toEqual({ key: 'app.knowledge.errLimit', params: { max: 100 } });
   });
+
+  it('suit le plafond de l’offre quand on le donne, et le dit', () => {
+    expect(validateKnowledge({ title: 'x', content: 'x' }, 149, 150)).toBeNull();
+    expect(validateKnowledge({ title: 'x', content: 'x' }, 150, 150)).toEqual({ key: 'app.knowledge.errLimit', params: { max: 150 } });
+    expect(validateKnowledge({ title: 'x', content: 'x' }, 100, 150)).toBeNull();
+    expect(validateKnowledge({ title: '', content: 'x' }, 150, 150)?.key).toBe('app.knowledge.errInvalid');
+  });
 });

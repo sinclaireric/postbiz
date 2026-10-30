@@ -951,7 +951,8 @@
         "empty": "Der Agent konnte nichts vorbereiten. Präzisieren Sie Ihre Anfrage oder prüfen Sie die angehakten Kanäle.",
         "failed": "Der Agent konnte nicht antworten. Ihre Nachricht bleibt erhalten: Versuchen Sie es gleich noch einmal.",
         "notFound": "Diese Unterhaltung existiert nicht mehr.",
-        "alreadySaved": "Dieser Beitrag wurde bereits gespeichert."
+        "alreadySaved": "Dieser Beitrag wurde bereits gespeichert.",
+        "quota": "Sie haben alle KI-Aktionen Ihres Tarifs für diesen Monat verbraucht. Wechseln Sie auf der Seite <link>Abrechnung</link> zu einem höheren Tarif."
       },
       "demo": {
         "help": "Ich bin der Demo-Agent. Beschreiben Sie einen Beitrag (zum Beispiel „Kündige die offene Werkstatt am Samstag an“), und ich bereite ihn für die angehakten Kanäle vor; fragen Sie, was geplant ist, um den Kalender abzufragen.",
@@ -1178,7 +1179,8 @@
           "refused": "Die KI konnte diese Nachricht nicht beantworten. Schreiben Sie die Antwort selbst.",
           "failed": "Der Vorschlag ist fehlgeschlagen. Versuchen Sie es gleich noch einmal.",
           "not_found": "Unterhaltung nicht gefunden.",
-          "window_closed": "Das 24-Stunden-Fenster ist abgelaufen: Antworten sind nicht mehr möglich."
+          "window_closed": "Das 24-Stunden-Fenster ist abgelaufen: Antworten sind nicht mehr möglich.",
+          "quota": "Sie haben alle KI-Aktionen Ihres Tarifs für diesen Monat verbraucht. Wechseln Sie auf der Seite <link>Abrechnung</link> zu einem höheren Tarif."
         },
         "demo": {
           "found": "Hallo {name}, danke für Ihre Nachricht! {answer}",
@@ -1399,7 +1401,8 @@
         "rate_limited": "Zu viele Anfragen hintereinander. Versuchen Sie es in einigen Minuten erneut.",
         "refused": "Der Assistent konnte diese Anfrage nicht verarbeiten. Formulieren Sie sie um.",
         "empty": "Der Assistent hat nichts Brauchbares gefunden. Versuchen Sie ein anderes Thema.",
-        "failed": "Der Assistent ist vorübergehend nicht verfügbar. Versuchen Sie es gleich noch einmal."
+        "failed": "Der Assistent ist vorübergehend nicht verfügbar. Versuchen Sie es gleich noch einmal.",
+        "quota": "Sie haben alle KI-Aktionen Ihres Tarifs für diesen Monat verbraucht. Wechseln Sie auf der Seite <link>Abrechnung</link> zu einem höheren Tarif."
       },
       "base": {
         "intro": "Ihre Wissensdatenbank speist diesen Assistenten, den Agenten und die Antwortvorschläge in der Inbox. Angeheftete Einträge werden immer verwendet; die anderen werden nachgeschlagen, wenn Ihre Anfrage dazu passt.",
@@ -1805,7 +1808,8 @@
         "fileMissing": "Die Datei wurde nicht gefunden. Senden Sie sie erneut.",
         "syncTooSoon": "Diese Quelle wurde gerade erst aktualisiert. Versuchen Sie es in einigen Minuten erneut.",
         "uploadFailed": "Das Hochladen ist fehlgeschlagen. Versuchen Sie es erneut."
-      }
+      },
+      "upgrade": "<link>Wechseln Sie zu einem höheren Tarif</link>, um mehr hinzuzufügen."
     }
   }
 }

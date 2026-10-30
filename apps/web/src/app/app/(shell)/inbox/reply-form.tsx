@@ -2,6 +2,7 @@
 
 import { useActionState, useEffect, useRef, useState } from 'react';
 import { useFormStatus } from 'react-dom';
+import { BillingText } from '@/components/billing-text';
 import { SparklesIcon } from '@/components/calendar/composer-icons';
 import { Button } from '@/components/ui';
 import { useT } from '@/i18n/client';
@@ -13,6 +14,7 @@ import { addNoteAction, sendReplyAction, type ReplyState } from './actions';
 const SUGGEST_ERROR: Record<SuggestErrorCode, MessageKey> = {
   disabled: 'app.inbox.suggest.errors.disabled', forbidden: 'app.inbox.suggest.errors.forbidden', invalid: 'app.inbox.suggest.errors.invalid', rate_limited: 'app.inbox.suggest.errors.rate_limited',
   refused: 'app.inbox.suggest.errors.refused', failed: 'app.inbox.suggest.errors.failed', not_found: 'app.inbox.suggest.errors.not_found', window_closed: 'app.inbox.suggest.errors.window_closed',
+  quota: 'app.inbox.suggest.errors.quota',
 };
 
 type SuggestState = { status: 'idle' } | { status: 'loading' } | { status: 'done'; suggestion: Suggestion } | { status: 'error'; code: SuggestErrorCode };
@@ -91,7 +93,7 @@ export function ReplyForm({ conversationId, disabled, disabledReason, placeholde
             {suggest.suggestion.sources.length > 0 && <p className="text-subtle">{t('app.inbox.suggest.sources', { titles: suggest.suggestion.sources.join(', ') })}</p>}
           </div>
         )}
-        {suggest.status === 'error' && <p role="alert" className="mt-2 text-xs font-medium text-danger">{t(SUGGEST_ERROR[suggest.code])}</p>}
+        {suggest.status === 'error' && <p role="alert" className="mt-2 text-xs font-medium text-danger"><BillingText k={SUGGEST_ERROR[suggest.code]} /></p>}
       </div>
       <div className="mt-2 flex items-center justify-between gap-3">
         <p className="text-xs text-subtle">{t('app.inbox.shortcut')}</p>

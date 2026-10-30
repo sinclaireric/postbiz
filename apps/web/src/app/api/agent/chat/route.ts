@@ -65,6 +65,8 @@ export async function POST(request: Request): Promise<Response> {
   ]);
   if (req.threadId && !existing) return failure('not_found', 404);
   if (attached.length !== req.mediaIds.length) return failure('invalid', 400);
+  // Le quota d'IA texte de l'offre : un message à l'agent compte pour une action (même s'il appelle le modèle plusieurs fois), avant d'ouvrir le flux (jamais refusé en démonstration).
+  if (!(await repos.generation.reserveText('agent'))) return failure('quota', 402);
 
   const channels = integrations.filter((i) => req.channelIds.includes(i.id));
   // La langue et les textes se lisent dans les cookies de la requête : avant d'ouvrir le flux, pas pendant.

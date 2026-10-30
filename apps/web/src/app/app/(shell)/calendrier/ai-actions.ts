@@ -30,6 +30,8 @@ export async function assistAction(raw: unknown): Promise<AiResult> {
   if (!(req.mode === 'ideas' ? ideasLimiter : assistLimiter).take(ctx.user.id)) return { ok: false, error: 'rate_limited' };
 
   const repos = await getRepositories(ctx);
+  // Le quota d'IA texte de l'offre : une demande compte pour une action, avant toute recherche dans la base et tout appel au fournisseur (jamais refusée en démonstration).
+  if (!(await repos.generation.reserveText('assistant'))) return { ok: false, error: 'quota' };
   // Les fiches épinglées partent en entier (instructions mises en cache) ; les autres ne sont consultées que si la demande s'y rapporte.
   const split = splitKnowledge(usesKnowledge(req) ? await repos.knowledge.list() : []);
   const entries = split.inPrompt.map(({ title, content }) => ({ title, content }));

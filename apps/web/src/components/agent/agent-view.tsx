@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { deleteThreadAction, loadThreadAction } from '@/app/app/(shell)/agent/actions';
+import { BillingText } from '@/components/billing-text';
 import { ChannelAvatar } from '@/components/calendar/channel-avatar';
 import { ImageIcon, PlusIcon, SparklesIcon, TrashIcon } from '@/components/calendar/composer-icons';
 import { MediaPicker } from '@/components/media/media-picker';
@@ -22,7 +23,7 @@ import { VideoJobCard, type VideoJobState } from './video-job-card';
 
 const ERROR_KEY: Record<AgentErrorCode, MessageKey> = {
   disabled: 'app.agent.errors.disabled', forbidden: 'app.agent.errors.forbidden', invalid: 'app.agent.errors.invalid', rate_limited: 'app.agent.errors.rate_limited',
-  refused: 'app.agent.errors.refused', empty: 'app.agent.errors.empty', failed: 'app.agent.errors.failed', not_found: 'app.agent.errors.notFound',
+  refused: 'app.agent.errors.refused', empty: 'app.agent.errors.empty', failed: 'app.agent.errors.failed', not_found: 'app.agent.errors.notFound', quota: 'app.agent.errors.quota',
 };
 const TOOL_KEY: Record<AgentToolName, MessageKey> = {
   list_posts: 'app.agent.tool.list_posts', list_media: 'app.agent.tool.list_media', propose_posts: 'app.agent.tool.propose_posts',
@@ -372,7 +373,7 @@ export function AgentView({ integrations, threads: initialThreads, initial, canW
             {!canWrite && <p className="mb-2 text-sm text-muted">{t('app.agent.composer.viewer')}</p>}
             {canWrite && !aiEnabled && <p role="status" className="mb-2 rounded-xl bg-wash px-3.5 py-2.5 text-sm text-muted">{t('app.agent.composer.disabled')}</p>}
             {noChannel && <p role="status" className="mb-2 text-sm font-medium text-warn">{t('app.agent.composer.noChannel')}</p>}
-            {error && <p role="alert" className="mb-2 rounded-xl bg-danger-soft px-3.5 py-2.5 text-sm font-medium text-danger">{t(ERROR_KEY[error])}</p>}
+            {error && <p role="alert" className="mb-2 rounded-xl bg-danger-soft px-3.5 py-2.5 text-sm font-medium text-danger"><BillingText k={ERROR_KEY[error]} /></p>}
             {attached.length > 0 && (
               <ul className="mb-2 flex flex-wrap gap-2" aria-label={t('app.agent.composer.attached')}>
                 {attached.map((m) => (

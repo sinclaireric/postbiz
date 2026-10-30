@@ -53,7 +53,9 @@ export async function saveKnowledgeAction(_: KnowledgeFormState, formData: FormD
   const id = String(formData.get('id') ?? '');
   const input = normalizeKnowledge(formData.get('title'), formData.get('content'));
   const repos = await getRepositories(ctx);
-  const invalid = validateKnowledge(input, id ? undefined : (await repos.knowledge.list()).length);
+  // Une création compte les sources de l'espace (fiches, documents et sites) contre le plafond de son offre ; une modification, non.
+  const room = id ? undefined : await Promise.all([repos.knowledge.list(), repos.knowledge.limits()]);
+  const invalid = validateKnowledge(input, room?.[0].length, room?.[1].sources);
   if (invalid) return { error: errorText(t, invalid) };
 
   const res = id ? await repos.knowledge.update(id, input) : await repos.knowledge.create(input);

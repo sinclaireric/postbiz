@@ -7,7 +7,8 @@ import { addWebsiteAction, type KnowledgeFormState } from '@/app/app/(shell)/con
 import { PlusIcon } from '@/components/calendar/composer-icons';
 import { Button } from '@/components/ui';
 import { useT } from '@/i18n/client';
-import { KNOWLEDGE_LIMITS, type KnowledgeItem } from '@/lib/data/types';
+import { KNOWLEDGE_LIMITS, type KnowledgeItem, type KnowledgeLimits } from '@/lib/data/types';
+import { LimitNote } from './limit-note';
 import { SourceCard } from './source-card';
 
 const initial: KnowledgeFormState = {};
@@ -19,12 +20,12 @@ function AddButton({ disabled }: { disabled: boolean }) {
 }
 
 /** Les sites web : une page, ou tout le site (50 pages au plus), lus par le worker avec les égards d'un robot poli, et relus chaque semaine. */
-export function WebsitesPanel({ items, total, canWrite, demo, embeddings }: { items: KnowledgeItem[]; total: number; canWrite: boolean; demo: boolean; embeddings: boolean }) {
+export function WebsitesPanel({ items, total, limits, canWrite, demo, embeddings }: { items: KnowledgeItem[]; total: number; limits: KnowledgeLimits; canWrite: boolean; demo: boolean; embeddings: boolean }) {
   const t = useT();
   const router = useRouter();
   const form = useRef<HTMLFormElement>(null);
   const [state, action] = useActionState(addWebsiteAction, initial);
-  const full = items.length >= KNOWLEDGE_LIMITS.sites || total >= KNOWLEDGE_LIMITS.items;
+  const full = items.length >= limits.sites || total >= limits.sources;
 
   // Le site est enregistré : le formulaire se vide, la liste se rafraîchit (et se met à jour d'elle-même tant qu'une lecture est en cours).
   useEffect(() => {
@@ -58,7 +59,7 @@ export function WebsitesPanel({ items, total, canWrite, demo, embeddings }: { it
           </fieldset>
           <label className="flex items-center gap-2 text-sm"><input type="checkbox" name="autoSync" defaultChecked disabled={full} className="size-4 accent-ink" />{t('app.knowledgePage.sites.autoSync')}</label>
           {state.error && <p role="alert" className="rounded-xl bg-danger-soft px-3 py-2 text-sm font-medium text-danger">{state.error}</p>}
-          {full && <p role="status" className="rounded-xl bg-warn-soft px-3 py-2 text-xs font-medium text-warn">{total >= KNOWLEDGE_LIMITS.items ? t('app.knowledge.errLimit', { max: KNOWLEDGE_LIMITS.items }) : t('app.knowledgePage.errors.sitesLimit', { max: KNOWLEDGE_LIMITS.sites })}</p>}
+          {full && <LimitNote message={total >= limits.sources ? t('app.knowledge.errLimit', { max: limits.sources }) : t('app.knowledgePage.errors.sitesLimit', { max: limits.sites })} upgradable={limits.upgradable} />}
           <div className="flex"><AddButton disabled={full} /></div>
         </form>
       ) : (

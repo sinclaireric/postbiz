@@ -2,6 +2,7 @@
 
 import { useState, useTransition, type ReactNode } from 'react';
 import { assistAction } from '@/app/app/(shell)/calendrier/ai-actions';
+import { BillingText } from '@/components/billing-text';
 import { Button } from '@/components/ui';
 import { useT } from '@/i18n/client';
 import { AI_ACTIONS, AI_LENGTHS, AI_TONES, type AiAction, type AiErrorCode, type AiIdea, type AiLength, type AiProposal, type AiRequest, type AiResult, type AiTone } from '@/lib/ai/types';
@@ -32,7 +33,7 @@ const ACTION_LABEL: Record<AiAction, MessageKey> = {
 };
 const ERROR_LABEL: Record<AiErrorCode, MessageKey> = {
   disabled: 'app.ai.errors.disabled', forbidden: 'app.ai.errors.forbidden', invalid: 'app.ai.errors.invalid', rate_limited: 'app.ai.errors.rate_limited',
-  refused: 'app.ai.errors.refused', empty: 'app.ai.errors.empty', failed: 'app.ai.errors.failed',
+  refused: 'app.ai.errors.refused', empty: 'app.ai.errors.empty', failed: 'app.ai.errors.failed', quota: 'app.ai.errors.quota',
 };
 
 export type ApplyMode = 'replace' | 'append';
@@ -167,7 +168,7 @@ export function AiPanel({ enabled, canWrite, content, networkIds, knowledge, tab
       );
     }
     if (!result) return null;
-    if (!result.ok) return <p role="alert" className="rounded-2xl bg-danger-soft px-4 py-3 text-sm font-medium text-danger">{t(ERROR_LABEL[result.error])}</p>;
+    if (!result.ok) return <p role="alert" className="rounded-2xl bg-danger-soft px-4 py-3 text-sm font-medium text-danger"><BillingText k={ERROR_LABEL[result.error]} /></p>;
     return (
       <div className="grid gap-2.5" aria-live="polite">
         <ul className="grid gap-2.5">

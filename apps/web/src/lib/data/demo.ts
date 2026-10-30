@@ -15,7 +15,7 @@ import { adminCount, canCreateWorkspace, INVITATION_DAYS, MAX_PENDING_INVITATION
 import type {
   AgentRepository, AppContext, CreatePostInput, GenerationRepository, IntegrationItem, InvitationItem, InvitationPreview, KnowledgeInput, KnowledgeItem, KnowledgePage, KnowledgeRepository, MediaItem, MediaRepository, MemberItem, NotificationItem, OrgRole, PostItem, PostsRepository, ReceivedInvitation, Repositories, Result, SuggestionRepository, VideoJobRecord, WorkspaceRepository, WorkspaceSummary,
 } from './types';
-import { KNOWLEDGE_LIMITS, textItem } from './types';
+import { BETA_KNOWLEDGE_LIMITS, KNOWLEDGE_LIMITS, textItem } from './types';
 import { demoFetch, demoSourceStore, type DemoChunk } from './demo-sources';
 
 // Mode démo : données d'exemple en mémoire, partagées par tous les visiteurs du serveur de développement.
@@ -591,6 +591,10 @@ const knowledge: KnowledgeRepository = {
     const s = store();
     await Promise.all(s.knowledge.filter((k) => k.kind === 'website' && (k.status === 'pending' || k.status === 'processing')).map(advance));
     return [...s.knowledge].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt)).map((k) => ({ ...k, stats: { ...k.stats } }));
+  },
+  /** La démonstration n'a pas d'offre : les plafonds de la bêta gratuite. */
+  async limits() {
+    return { ...BETA_KNOWLEDGE_LIMITS };
   },
   async create(input: KnowledgeInput) {
     const item = textItem({ id: id('k'), title: input.title.trim(), content: input.content.trim(), updatedAt: new Date().toISOString() });

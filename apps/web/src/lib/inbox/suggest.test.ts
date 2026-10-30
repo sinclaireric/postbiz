@@ -24,16 +24,19 @@ const item = (id: string, over: Partial<KnowledgeItem> = {}): KnowledgeItem => t
 });
 const hit = (over: Partial<KnowledgeHit> = {}): KnowledgeHit => ({ chunkId: 'h1', itemId: 'k3', title: 'Questions fréquentes', content: 'Atelier ouvert au public le samedi de 10 h à 17 h.', heading: 'Horaires', similarity: 0.5, termHits: 2, score: 0.03, ...over });
 
-function setup(over: { conversation?: ConversationDetail | null; items?: KnowledgeItem[]; hits?: KnowledgeHit[]; logFails?: boolean; today?: number } = {}) {
+function setup(over: { conversation?: ConversationDetail | null; items?: KnowledgeItem[]; hits?: KnowledgeHit[]; logFails?: boolean; today?: number; quota?: boolean } = {}) {
   const queries: KnowledgeSearchQuery[] = [];
+  /** Les actions d'IA texte réservées auprès de l'offre ; `quota` : l'offre n'en permet plus. */
+  const reserved: string[] = [];
   const logged: Parameters<Repositories['suggestions']['log']>[0][] = [];
   const conv = over.conversation === undefined ? conversation() : over.conversation;
   const repos = {
     inbox: { getConversation: async () => conv },
     knowledge: { list: async () => over.items ?? [item('k1', { title: 'Ton de la marque', content: 'Nous tutoyons nos clients.' }), item('k3', { pinned: false, title: 'Questions fréquentes' })], search: async (q: KnowledgeSearchQuery) => (queries.push(q), over.hits ?? [hit()]) },
     suggestions: { countToday: async () => over.today ?? 0, log: async (i: Parameters<Repositories['suggestions']['log']>[0]) => (logged.push(i), over.logFails ? null : 'sg-1'), reply: async () => null, settle: async () => undefined },
+    generation: { reserveText: async (feature: string) => (reserved.push(feature), over.quota !== true) },
   } as unknown as SuggestDeps['repos'];
-  return { repos, queries, logged };
+  return { repos, queries, logged, reserved };
 }
 
 const answer = (value: unknown, over: Partial<AiResponse> = {}) => ({ status: 'completed', output: [{ type: 'message', id: 'm', role: 'assistant', status: 'completed', content: [{ type: 'output_text', text: JSON.stringify(value), annotations: [] }] }], usage: { input_tokens: 1200, output_tokens: 80 }, ...over }) as unknown as AiResponse;
@@ -199,6 +202,49 @@ describe('suggestForConversation : avec l’IA', () => {
     const r = await suggestForConversation(deps(s, { client: fakeClient(answer({ ...good, grounded: false })).client }), 'c1');
     expect(r).toMatchObject({ ok: true, suggestion: { sources: [] } });
     log.mockRestore();
+  });
+});
+
+describe('suggestForConversation : quota d’IA de l’offre', () => {
+  const good = { reply: 'Bonjour Camille !', grounded: true, needs_human: false };
+
+  it('une suggestion compte pour une action « suggestion », réservée avant la recherche dans la base et avant l’appel au fournisseur', async () => {
+    const s = setup();
+    const order: string[] = [];
+    (s.repos.generation as { reserveText: (f: string) => Promise<boolean> }).reserveText = async (f) => (order.push(`réserve:${f}`), true);
+    (s.repos.knowledge as { list: () => Promise<KnowledgeItem[]> }).list = async () => (order.push('base'), []);
+    const { client } = fakeClient(answer(good));
+    const create = client.create.bind(client);
+    client.create = async (params) => (order.push('modèle'), create(params));
+    expect((await suggestForConversation(deps(s, { client }), 'c1')).ok).toBe(true);
+    expect(order).toEqual(['réserve:suggestion', 'base', 'modèle']);
+  });
+
+  it('quota épuisé : le code « quota », ni recherche, ni appel au fournisseur, ni suggestion gardée', async () => {
+    const s = setup({ quota: true });
+    const { client, calls } = fakeClient(answer(good));
+    expect(await suggestForConversation(deps(s, { client }), 'c1')).toEqual({ ok: false, error: 'quota' });
+    expect(calls).toHaveLength(0);
+    expect(s.queries).toHaveLength(0);
+    expect(s.logged).toHaveLength(0);
+    expect(s.reserved).toEqual(['suggestion']);
+  });
+
+  it('une demande refusée plus tôt (conversation inconnue, fenêtre close, rien à répondre, plafond du jour) ne consomme aucune action', async () => {
+    const closed = conversation({ replyWindowExpiresAt: '2026-10-26T09:00:00Z' });
+    const empty = conversation({ messages: [msg('m1', 'out', 'Bonjour', '2026-10-27T09:00:00Z')] });
+    for (const s of [setup({ conversation: null }), setup({ conversation: closed }), setup({ conversation: empty }), setup({ today: 200 })]) {
+      const r = await suggestForConversation(deps(s, { client: fakeClient().client }), 'c1');
+      expect(r.ok).toBe(false);
+      expect(s.reserved).toEqual([]);
+    }
+  });
+
+  it('en mode démo, aucune IA n’est appelée et la réservation passe (le dépôt de la démo ne refuse jamais)', async () => {
+    const s = setup();
+    const r = await suggestForConversation(deps(s, { embedder: null, demo: { t } }), 'c1');
+    expect(r.ok).toBe(true);
+    expect(s.reserved).toEqual(['suggestion']);
   });
 });
 

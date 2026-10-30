@@ -9,8 +9,9 @@ import { Badge, Button } from '@/components/ui';
 import { useT } from '@/i18n/client';
 import { formatNumber } from '@/i18n/format';
 import { KNOWLEDGE_BUDGET } from '@/lib/ai/prompt';
-import { KNOWLEDGE_LIMITS, type KnowledgeItem } from '@/lib/data/types';
+import { KNOWLEDGE_LIMITS, type KnowledgeItem, type KnowledgeLimits } from '@/lib/data/types';
 import { splitKnowledge } from '@/lib/kb/split';
+import { LimitNote } from './limit-note';
 
 const initial: KnowledgeFormState = {};
 
@@ -45,8 +46,8 @@ function IndexBadge({ item, embeddings }: { item: KnowledgeItem; embeddings: boo
   return <Badge tone="ok">{t('app.knowledgePage.state.indexed')}</Badge>;
 }
 
-/** Les fiches de texte : ton de la marque, offres, questions fréquentes. `all` : toutes les sources de la base (documents et sites comptent dans les 100). */
-export function TextPanel({ items, all, canWrite, embeddings }: { items: KnowledgeItem[]; all: KnowledgeItem[]; canWrite: boolean; embeddings: boolean }) {
+/** Les fiches de texte : ton de la marque, offres, questions fréquentes. `all` : toutes les sources de la base (documents et sites comptent dans le plafond de l'offre). */
+export function TextPanel({ items, all, limits, canWrite, embeddings }: { items: KnowledgeItem[]; all: KnowledgeItem[]; limits: KnowledgeLimits; canWrite: boolean; embeddings: boolean }) {
   const t = useT();
   const router = useRouter();
   const [editing, setEditing] = useState<KnowledgeItem | 'new' | null>(null);
@@ -71,7 +72,7 @@ export function TextPanel({ items, all, canWrite, embeddings }: { items: Knowled
     void reindexMissingAction().then((done) => { if (done > 0) router.refresh(); }).catch(() => undefined);
   }, [canWrite, missing, router]);
 
-  const full = all.length >= KNOWLEDGE_LIMITS.items;
+  const full = all.length >= limits.sources;
   const share = Math.min(100, Math.round((split.pinnedChars / KNOWLEDGE_BUDGET) * 100));
 
   return (
@@ -118,6 +119,7 @@ export function TextPanel({ items, all, canWrite, embeddings }: { items: Knowled
           </Button>
         </div>
       )}
+      {canWrite && full && !editing && <LimitNote message={t('app.knowledge.errLimit', { max: limits.sources })} upgradable={limits.upgradable} />}
 
       {items.length === 0 && !editing ? (
         <p className="rounded-2xl bg-wash px-4 py-6 text-center text-sm text-muted">{t('app.knowledgePage.empty')}</p>
