@@ -2,6 +2,7 @@ import OpenAI from 'openai';
 import { describe, expect, it, vi } from 'vitest';
 import type { T } from '@/i18n/types';
 import type { AiClient, AiResponse } from '@/lib/ai/assistant';
+import { textItem } from '@/lib/data/types';
 import type { KnowledgeItem, Repositories } from '@/lib/data/types';
 import type { KnowledgeHit, KnowledgeSearchQuery } from '@/lib/kb/types';
 import { bestSentences, settleSuggestion, suggestForConversation, suggestQuery, turnsOf, type SuggestDeps } from './suggest';
@@ -18,7 +19,7 @@ const conversation = (over: Partial<ConversationDetail> = {}): ConversationDetai
   messages: [msg('m1', 'in', 'Bonjour, vous êtes ouverts le dimanche ?', '2026-10-27T09:00:00Z')],
   notes: [{ id: 'n1', authorName: 'Hugo', body: 'Cliente difficile : NOTE INTERNE SECRÈTE', createdAt: '2026-10-27T09:30:00Z' }], ...over,
 });
-const item = (id: string, over: Partial<KnowledgeItem> = {}): KnowledgeItem => ({
+const item = (id: string, over: Partial<KnowledgeItem> = {}): KnowledgeItem => textItem({
   id, title: `Fiche ${id}`, content: `Contenu de la fiche ${id}.`, updatedAt: '2026-10-27T10:00:00Z', pinned: true, chunkCount: 1, indexedAt: '2026-10-27T10:00:00Z', embeddedAt: null, ...over,
 });
 const hit = (over: Partial<KnowledgeHit> = {}): KnowledgeHit => ({ chunkId: 'h1', itemId: 'k3', title: 'Questions fréquentes', content: 'Atelier ouvert au public le samedi de 10 h à 17 h.', heading: 'Horaires', similarity: 0.5, termHits: 2, score: 0.03, ...over });

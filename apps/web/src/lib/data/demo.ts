@@ -2,6 +2,7 @@ import { AsyncLocalStorage } from 'node:async_hooks';
 import { randomBytes } from 'node:crypto';
 import type { AgentMessage, AgentThread } from '@/lib/agent/types';
 import { demoDailyRows } from '@/lib/analytics/demo';
+import { fileExtension, SOURCE_LIMITS, titleFromFileName } from '@postbiz/kb';
 import { chunkKnowledge } from '@/lib/kb/chunk';
 import { queueCounts } from '@/lib/analytics/logic';
 import type { AnalyticsRepository } from '@/lib/analytics/types';
@@ -12,8 +13,10 @@ import type {
 import type { FormError } from '@/lib/form-error';
 import { adminCount, canCreateWorkspace, INVITATION_DAYS, MAX_PENDING_INVITATIONS, MAX_WORKSPACES } from '@/lib/workspaces';
 import type {
-  AgentRepository, AppContext, CreatePostInput, GenerationRepository, IntegrationItem, InvitationItem, InvitationPreview, KnowledgeInput, KnowledgeItem, KnowledgeRepository, MediaItem, MediaRepository, MemberItem, NotificationItem, OrgRole, PostItem, PostsRepository, ReceivedInvitation, Repositories, Result, SuggestionRepository, VideoJobRecord, WorkspaceRepository, WorkspaceSummary,
+  AgentRepository, AppContext, CreatePostInput, GenerationRepository, IntegrationItem, InvitationItem, InvitationPreview, KnowledgeInput, KnowledgeItem, KnowledgePage, KnowledgeRepository, MediaItem, MediaRepository, MemberItem, NotificationItem, OrgRole, PostItem, PostsRepository, ReceivedInvitation, Repositories, Result, SuggestionRepository, VideoJobRecord, WorkspaceRepository, WorkspaceSummary,
 } from './types';
+import { KNOWLEDGE_LIMITS, textItem } from './types';
+import { demoFetch, demoSourceStore, type DemoChunk } from './demo-sources';
 
 // Mode démo : données d'exemple en mémoire, partagées par tous les visiteurs du serveur de développement.
 // Les horaires sont calculés à partir du démarrage pour que les fenêtres de 24 h soient réalistes.
@@ -39,7 +42,11 @@ interface Store {
   posts: PostItem[];
   knowledge: KnowledgeItem[];
   /** Passages de la recherche (sans vecteur : la démo ne fait aucun appel à l'IA, elle cherche par les mots). */
-  knowledgeChunks: { itemId: string; ord: number; content: string; heading: string | null }[];
+  knowledgeChunks: DemoChunk[];
+  /** Les fichiers envoyés en démonstration, gardés pour pouvoir les relire (« Réessayer »). */
+  knowledgeFiles?: Map<string, { name: string; bytes: Uint8Array }>;
+  /** Les lectures de sites en cours (simulées) : leur début, et la lecture quand elle a eu lieu. */
+  knowledgeRuns?: Map<string, { startedAt: number; promise?: Promise<void> }>;
   media: MediaItem[];
   /** Conversations de l'agent (la plus récente en dernier). */
   agentThreads: { thread: AgentThread; messages: AgentMessage[] }[];
@@ -52,7 +59,6 @@ interface Store {
   /** Invitations en attente dans cet espace, avec leur jeton (la démo n'a pas de base : il n'y a rien à hacher). */
   invitations: DemoInvitation[];
   orgName: string;
-  seq: number;
 }
 
 interface DemoInvitation { id: string; email: string; role: OrgRole; token: string; createdAt: string; expiresAt: string }
@@ -71,8 +77,10 @@ function art(a: string, b: string, shape: 'moon' | 'wave' | 'arch' | 'sun' | 'do
   return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
 }
 
-let seq = 100;
-const id = (p: string) => `${p}-${++seq}`;
+/** Les identifiants de la démonstration viennent d'un compteur partagé par tout le processus : le serveur a sa propre copie de ce module pour chaque route et chaque action (une route
+ * d'envoi et une action ne se verraient pas), mais un seul `globalThis`. Sans cela, deux fiches créées de part et d'autre auraient le même identifiant. */
+const counter = globalThis as unknown as { __postbizDemoSeq?: number };
+const id = (p: string) => `${p}-${(counter.__postbizDemoSeq = (counter.__postbizDemoSeq ?? 100) + 1)}`;
 
 const msg = (direction: 'in' | 'out', body: string, createdAt: string, extra: Partial<MessageItem> = {}): MessageItem => ({
   id: id('m'), direction, body, attachments: [], sentByName: direction === 'out' ? 'Camille' : null,
@@ -176,7 +184,7 @@ function seed(): Store {
   });
 
   return {
-    conversations, integrations, media: library, agentThreads: [], videoJobs: [], generations: [], suggestions: [], invitations: [], orgName: DEMO_CONTEXT.org.name, seq,
+    conversations, integrations, media: library, agentThreads: [], videoJobs: [], generations: [], suggestions: [], invitations: [], orgName: DEMO_CONTEXT.org.name,
     notifications: [
       { id: 'nt1', type: 'post_error', title: 'Canal à reconnecter', body: 'Le jeton d’accès a expiré : reconnectez le canal.', createdAt: ago(3 * H), read: false, href: '/app/calendrier' },
       { id: 'nt2', type: 'message_failed', title: 'Réponse non envoyée', body: 'La fenêtre de 24 h est dépassée : Meta n’autorise plus de réponse à cette conversation.', createdAt: ago(26 * H), read: true, href: '/app/inbox?c=c5' },
@@ -201,18 +209,18 @@ function seed(): Store {
     ],
     // La fiche des questions fréquentes n'est pas épinglée : l'IA ne la lit que si la question s'y rapporte (c'est ce que montre « Tester une question »).
     knowledge: knowledgeSeed(),
-    knowledgeChunks: knowledgeSeed().flatMap((k) => chunkKnowledge(k.title, k.content).map((c, ord) => ({ itemId: k.id, ord, content: c.content, heading: c.heading }))),
+    knowledgeChunks: knowledgeSeed().flatMap((k) => chunkKnowledge(k.title, k.content).map((c, ord) => ({ itemId: k.id, ord, content: c.content, heading: c.heading, meta: c.heading ? { heading: c.heading } : {}, embedded: false }))),
   };
 }
 
 /** Les fiches de la démo, déjà indexées (par les mots). */
 function knowledgeSeed(): KnowledgeItem[] {
-  const items: Omit<KnowledgeItem, 'chunkCount' | 'indexedAt' | 'embeddedAt'>[] = [
+  const items: { id: string; pinned: boolean; title: string; updatedAt: string; content: string }[] = [
     { id: 'k1', pinned: true, title: 'Ton de la marque', updatedAt: ago(30 * H), content: 'Maison Lune est un atelier de mobilier en bois massif, à Lyon. Nous tutoyons nos clients, avec un ton chaleureux et simple. Jamais de jargon ni de promesses exagérées. Nous parlons de matière, de geste et de durée.' },
     { id: 'k2', pinned: true, title: 'Offres en cours', updatedAt: ago(8 * H), content: 'Livraison offerte dès 60 € d’achat en France. -10 % sur la collection d’automne jusqu’à dimanche. Reprise gratuite de l’ancien meuble pour tout achat d’une table.' },
     { id: 'k3', pinned: false, title: 'Questions fréquentes', updatedAt: ago(2 * H), content: 'Délai de fabrication : 3 à 4 semaines. Livraison en France et en Belgique, 5 à 7 jours ouvrés après la fabrication. Finitions : huile naturelle ou cire. Garantie 5 ans. Atelier ouvert au public le samedi de 10 h à 17 h.' },
   ];
-  return items.map((k) => ({ ...k, chunkCount: chunkKnowledge(k.title, k.content).length, indexedAt: ago(k.id === 'k3' ? 2 * H : 8 * H), embeddedAt: null }));
+  return items.map((k) => textItem({ ...k, chunkCount: chunkKnowledge(k.title, k.content).length, indexedAt: ago(k.id === 'k3' ? 2 * H : 8 * H), embeddedAt: null }));
 }
 
 // ---------------------------------------------------------------- espaces de travail de la démo
@@ -512,12 +520,80 @@ const wordsOf = (text: string) => [...new Set(text.toLowerCase().split(/[^\p{L}\
 /** Deux mots se correspondent s'ils sont égaux ou, à partir de cinq lettres, s'ils commencent pareil (« livrez » et « livraison ») : la démo n'a ni vecteurs ni radicaux, ce rapprochement lui en tient lieu. */
 const sameWord = (a: string, b: string) => a === b || (a.length >= 5 && b.length >= 5 && a.slice(0, 4) === b.slice(0, 4));
 
+/** Une lecture de site simulée dure quelques secondes : en attente, puis en cours, puis terminée (le site d'exemple est lu à ce moment-là). */
+const SITE_PENDING_MS = 1_500;
+const SITE_PROCESSING_MS = 4_000;
+
+const sourceStore = () => demoSourceStore(() => store().knowledgeChunks, (next) => { store().knowledgeChunks = next; });
+const nowIso = () => new Date().toISOString();
+
+/** Range le résultat d'une lecture dans la fiche : prête, ou en échec (prête avec l'erreur si elle gardait des passages d'une lecture précédente). */
+function settle(item: KnowledgeItem, outcome: { result: { preview: string; chunks: number; stats: KnowledgeItem['stats'] } } | { code: string; stats?: KnowledgeItem['stats'] }) {
+  const now = nowIso();
+  if ('result' in outcome) {
+    const week = 7 * 24 * H;
+    Object.assign(item, {
+      status: 'ready', error: null, content: outcome.result.preview || item.content, stats: outcome.result.stats, chunkCount: outcome.result.chunks, indexedAt: now, embeddedAt: null,
+      syncedAt: now, updatedAt: now, runAt: item.kind === 'website' && item.autoSync ? new Date(Date.now() + week).toISOString() : null,
+    });
+  } else {
+    Object.assign(item, { status: item.chunkCount > 0 ? 'ready' : 'failed', error: outcome.code, stats: outcome.stats ?? item.stats, runAt: null, updatedAt: now });
+  }
+}
+
+async function readDemoFile(item: KnowledgeItem, file: { name: string; bytes: Uint8Array }): Promise<void> {
+  const { ingestFile, SourceFailure } = await import('@postbiz/kb/ingest');
+  try {
+    const result = await ingestFile({ embedder: null, store: sourceStore() }, { id: item.id, title: item.title, name: file.name, bytes: file.bytes });
+    settle(item, { result });
+  } catch (error) {
+    settle(item, { code: error instanceof SourceFailure ? error.code : 'internal', stats: error instanceof SourceFailure ? error.stats : undefined });
+  }
+}
+
+async function readDemoSite(item: KnowledgeItem): Promise<void> {
+  const { syncWebsite, SourceFailure } = await import('@postbiz/kb/ingest');
+  try {
+    const result = await syncWebsite(
+      { embedder: null, store: sourceStore(), userAgent: 'PostbizBot/1.0 (démo)', fetch: demoFetch(), sleep: async () => undefined, delayMs: 0 },
+      { id: item.id, title: item.title, url: item.url ?? '', scope: item.scope ?? 'site' },
+    );
+    settle(item, { result });
+  } catch (error) {
+    settle(item, { code: error instanceof SourceFailure ? error.code : 'internal', stats: error instanceof SourceFailure ? error.stats : undefined });
+  }
+}
+
+/** Fait avancer la lecture simulée d'un site selon le temps écoulé ; à la fin du délai, le site d'exemple est lu. */
+async function advance(item: KnowledgeItem): Promise<void> {
+  const s = store();
+  const run = (s.knowledgeRuns ??= new Map()).get(item.id);
+  if (!run) return;
+  const elapsed = Date.now() - run.startedAt;
+  if (elapsed < SITE_PENDING_MS) item.status = 'pending';
+  else if (elapsed < SITE_PROCESSING_MS) item.status = 'processing';
+  else {
+    run.promise ??= readDemoSite(item).finally(() => s.knowledgeRuns?.delete(item.id));
+    await run.promise;
+  }
+}
+
+const sourceLimit = (kind: 'file' | 'website'): Result | null => {
+  const items = store().knowledge;
+  if (items.length >= KNOWLEDGE_LIMITS.items) return { ok: false, error: { key: 'app.knowledge.errLimit', params: { max: KNOWLEDGE_LIMITS.items } } };
+  if (kind === 'file' && items.filter((k) => k.kind === 'file').length >= KNOWLEDGE_LIMITS.files) return { ok: false, error: { key: 'app.knowledgePage.errors.filesLimit', params: { max: KNOWLEDGE_LIMITS.files } } };
+  if (kind === 'website' && items.filter((k) => k.kind === 'website').length >= KNOWLEDGE_LIMITS.sites) return { ok: false, error: { key: 'app.knowledgePage.errors.sitesLimit', params: { max: KNOWLEDGE_LIMITS.sites } } };
+  return null;
+};
+
 const knowledge: KnowledgeRepository = {
   async list() {
-    return [...store().knowledge].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt)).map((k) => ({ ...k }));
+    const s = store();
+    await Promise.all(s.knowledge.filter((k) => k.kind === 'website' && (k.status === 'pending' || k.status === 'processing')).map(advance));
+    return [...s.knowledge].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt)).map((k) => ({ ...k, stats: { ...k.stats } }));
   },
   async create(input: KnowledgeInput) {
-    const item: KnowledgeItem = { id: id('k'), title: input.title.trim(), content: input.content.trim(), updatedAt: new Date().toISOString(), pinned: true, chunkCount: 0, indexedAt: null, embeddedAt: null };
+    const item = textItem({ id: id('k'), title: input.title.trim(), content: input.content.trim(), updatedAt: new Date().toISOString() });
     store().knowledge.push(item);
     return { ok: true, id: item.id };
   },
@@ -526,17 +602,21 @@ const knowledge: KnowledgeRepository = {
     const item = s.knowledge.find((k) => k.id === itemId);
     if (!item) return { ok: false, error: { key: 'app.knowledge.errSave' } };
     const changed = item.title !== input.title.trim() || item.content !== input.content.trim();
-    Object.assign(item, { title: input.title.trim(), content: input.content.trim(), updatedAt: new Date().toISOString() });
-    // Comme la base : un titre ou un contenu modifié supprime les passages, la fiche est à réindexer.
-    if (changed) {
-      s.knowledgeChunks = s.knowledgeChunks.filter((c) => c.itemId !== itemId);
-      Object.assign(item, { chunkCount: 0, indexedAt: null, embeddedAt: null });
+    Object.assign(item, { title: input.title.trim(), updatedAt: new Date().toISOString() });
+    // Un document ou un site garde son aperçu et ses passages (son titre seul se change) ; une fiche de texte, comme la base :
+    // un titre ou un contenu modifié supprime les passages, la fiche est à réindexer.
+    if (item.kind === 'text') {
+      item.content = input.content.trim();
+      if (changed) {
+        s.knowledgeChunks = s.knowledgeChunks.filter((c) => c.itemId !== itemId);
+        Object.assign(item, { chunkCount: 0, indexedAt: null, embeddedAt: null });
+      }
     }
     return { ok: true };
   },
   async setPinned(itemId, pinned) {
     const item = store().knowledge.find((k) => k.id === itemId);
-    if (!item) return { ok: false, error: { key: 'app.knowledge.errSave' } };
+    if (!item || (item.kind !== 'text' && pinned)) return { ok: false, error: { key: 'app.knowledge.errSave' } };
     item.pinned = pinned;
     return { ok: true };
   },
@@ -544,14 +624,16 @@ const knowledge: KnowledgeRepository = {
     const s = store();
     s.knowledge = s.knowledge.filter((k) => k.id !== itemId);
     s.knowledgeChunks = s.knowledgeChunks.filter((c) => c.itemId !== itemId);
+    s.knowledgeFiles?.delete(itemId);
+    s.knowledgeRuns?.delete(itemId);
     return { ok: true };
   },
   async replaceChunks(itemId, chunks) {
     const s = store();
     const item = s.knowledge.find((k) => k.id === itemId);
-    if (!item) return { ok: false, error: { key: 'app.knowledge.errIndex' } };
+    if (!item || item.kind !== 'text') return { ok: false, error: { key: 'app.knowledge.errIndex' } };
     s.knowledgeChunks = s.knowledgeChunks.filter((c) => c.itemId !== itemId);
-    chunks.forEach((c, ord) => s.knowledgeChunks.push({ itemId, ord, content: c.content, heading: c.meta.heading ?? null }));
+    chunks.forEach((c, ord) => s.knowledgeChunks.push({ itemId, ord, content: c.content, heading: c.meta.heading ?? null, meta: c.meta, embedded: c.embedding !== null }));
     Object.assign(item, { chunkCount: chunks.length, indexedAt: new Date().toISOString(), embeddedAt: chunks.length > 0 && chunks.every((c) => c.embedding) ? new Date().toISOString() : null });
     return { ok: true };
   },
@@ -572,7 +654,71 @@ const knowledge: KnowledgeRepository = {
         return n <= perItem;
       })
       .slice(0, limit)
-      .map(({ c, hits }) => ({ chunkId: `${c.itemId}:${c.ord}`, itemId: c.itemId, title: title.get(c.itemId)!, content: c.content, heading: c.heading, similarity: 0, termHits: hits, score: hits }));
+      .map(({ c, hits }) => ({
+        chunkId: `${c.itemId}:${c.ord}`, itemId: c.itemId, title: title.get(c.itemId)!, content: c.content, heading: c.heading, url: c.meta?.url ?? null, pageTitle: c.meta?.title ?? null,
+        pages: c.meta?.pages ?? null, similarity: 0, termHits: hits, score: hits,
+      }));
+  },
+  /** Un fichier envoyé : lu tout de suite, pour de vrai (même code que le worker), sans stockage. Un échec de lecture donne une source « en échec », comme en production. */
+  async addFile(input) {
+    const s = store();
+    const limit = sourceLimit('file');
+    if (limit) return limit;
+    const name = input.path.replace(/^.*\//, '');
+    if (!fileExtension(name)) return { ok: false, error: { key: 'app.knowledgePage.errors.unsupportedType' } };
+    if (!input.bytes || input.bytes.length === 0 || input.size > SOURCE_LIMITS.fileBytes || input.bytes.length > SOURCE_LIMITS.fileBytes) {
+      return { ok: false, error: { key: input.bytes && input.bytes.length > 0 ? 'app.knowledgePage.errors.fileTooLarge' : 'app.knowledgePage.errors.fileMissing', params: { max: Math.round(SOURCE_LIMITS.fileBytes / 1_048_576) } } };
+    }
+    const now = nowIso();
+    const item = textItem({
+      id: id('k'), title: input.title.trim() || titleFromFileName(name), content: '', updatedAt: now, pinned: false, kind: 'file', status: 'processing', fileName: name, sizeBytes: input.bytes.length,
+    });
+    s.knowledge.push(item);
+    (s.knowledgeFiles ??= new Map()).set(item.id, { name, bytes: input.bytes });
+    await readDemoFile(item, { name, bytes: input.bytes });
+    return { ok: true, id: item.id };
+  },
+  /** Un site : en démonstration, c'est le site d'exemple qui est lu, en quelques secondes (aucune page n'est lue sur Internet). */
+  async addWebsite(input) {
+    const s = store();
+    const limit = sourceLimit('website');
+    if (limit) return limit;
+    const same = (a: string, b: string) => a.replace(/\/+$/, '').toLowerCase() === b.replace(/\/+$/, '').toLowerCase();
+    if (s.knowledge.some((k) => k.kind === 'website' && k.url && same(k.url, input.url))) return { ok: false, error: { key: 'app.knowledgePage.errors.duplicate' } };
+    const item = textItem({
+      id: id('k'), title: input.title.trim(), content: '', updatedAt: nowIso(), pinned: false, kind: 'website', status: 'pending', url: input.url, scope: input.scope, autoSync: input.autoSync,
+      runAt: nowIso(),
+    });
+    s.knowledge.push(item);
+    (s.knowledgeRuns ??= new Map()).set(item.id, { startedAt: Date.now() });
+    return { ok: true, id: item.id };
+  },
+  async requestSync(itemId) {
+    const s = store();
+    const item = s.knowledge.find((k) => k.id === itemId);
+    if (!item || item.kind === 'text') return { ok: false, error: { key: 'app.knowledge.errSave' } };
+    if (item.status === 'pending' || item.status === 'processing') return { ok: true };
+    Object.assign(item, { status: 'pending', error: null, runAt: nowIso() });
+    if (item.kind === 'website') {
+      (s.knowledgeRuns ??= new Map()).set(item.id, { startedAt: Date.now() });
+      return { ok: true };
+    }
+    const file = s.knowledgeFiles?.get(item.id);
+    if (!file) return { ok: false, error: { key: 'app.knowledgePage.errors.fileMissing' } };
+    item.status = 'processing';
+    await readDemoFile(item, file);
+    return { ok: true };
+  },
+  async pages(itemId): Promise<KnowledgePage[]> {
+    const pages = new Map<string, KnowledgePage>();
+    for (const c of store().knowledgeChunks.filter((x) => x.itemId === itemId)) {
+      const url = c.meta?.url;
+      if (!url) continue;
+      const page = pages.get(url) ?? { url, title: c.meta.title || url, chunks: 0 };
+      page.chunks++;
+      pages.set(url, page);
+    }
+    return [...pages.values()].sort((a, b) => a.url.localeCompare(b.url));
   },
 };
 

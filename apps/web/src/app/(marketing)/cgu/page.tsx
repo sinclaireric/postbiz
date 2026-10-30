@@ -49,6 +49,7 @@ export default async function TermsPage() {
         <h2>{t('legal.terms.s6.h')}</h2>
         <p><RichText t={t} k="legal.terms.s6.p1" params={vars} tags={legalTags} /></p>
         <p><RichText t={t} k="legal.terms.s6.p2" params={vars} tags={legalTags} /></p>
+        <p><RichText t={t} k="legal.terms.s6.p3" params={vars} tags={legalTags} /></p>
       </section>
       <section>
         <h2>{t('legal.terms.s7.h')}</h2>

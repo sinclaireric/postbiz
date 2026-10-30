@@ -21,5 +21,5 @@ export default async function KnowledgePage() {
   const { ctx } = session;
   const repos = await getRepositories(ctx);
   const items = await repos.knowledge.list();
-  return <KnowledgeView items={items} canWrite={ctx.org.role !== 'viewer'} embeddings={ctx.mode !== 'demo' && embeddingsConfigured()} demo={ctx.mode === 'demo'} />;
+  return <KnowledgeView items={items} canWrite={ctx.org.role !== 'viewer'} embeddings={ctx.mode !== 'demo' && embeddingsConfigured()} demo={ctx.mode === 'demo'} orgId={ctx.org.id} />;
 }

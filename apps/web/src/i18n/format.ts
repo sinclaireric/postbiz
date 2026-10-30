@@ -6,11 +6,11 @@ const MINUTE = 60_000;
 const HOUR = 3_600_000;
 const DAY = 86_400_000;
 
-/** Ancienneté relative dans la langue : « il y a 5 min », « hier », « 12 oct. »… */
-export function formatRelative(locale: Locale, iso: string, now: Date = new Date()): string {
+/** Ancienneté relative dans la langue : « il y a 5 min », « hier », « 12 oct. »… `style` : « narrow » (« -5 min » dans certaines langues), « long » pour une phrase (« il y a 5 minutes »). */
+export function formatRelative(locale: Locale, iso: string, now: Date = new Date(), style: 'narrow' | 'short' | 'long' = 'narrow'): string {
   const then = new Date(iso);
   const diff = now.getTime() - then.getTime();
-  const rtf = new Intl.RelativeTimeFormat(tag(locale), { numeric: 'auto', style: 'narrow' });
+  const rtf = new Intl.RelativeTimeFormat(tag(locale), { numeric: 'auto', style });
   if (diff < MINUTE) return rtf.format(0, 'second');
   if (diff < HOUR) return rtf.format(-Math.floor(diff / MINUTE), 'minute');
   if (diff < DAY) return rtf.format(-Math.floor(diff / HOUR), 'hour');

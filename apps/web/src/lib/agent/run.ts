@@ -233,7 +233,15 @@ export async function runAgentTurn(deps: AgentTurnDeps, userContent: string): Pr
           searches++;
           const found = await deps.tools.searchKnowledge!(query);
           output(found.found
-            ? { passages: found.passages.map((p) => ({ source: p.title, ...(p.heading ? { section: p.heading } : {}), text: neutralize(p.content) })) }
+            ? {
+              passages: found.passages.map((p) => ({
+                source: p.title,
+                // Pour un site : la page (titre et adresse) ; pour un PDF : les pages du document. Le titre d'une page vient du site : donnée, neutralisée comme le texte.
+                ...(p.pageTitle ? { page: neutralize(p.pageTitle) } : {}), ...(p.url ? { url: p.url } : {}),
+                ...(p.pages ? { pages: p.pages[0] === p.pages[1] ? String(p.pages[0]) : `${p.pages[0]}-${p.pages[1]}` } : {}),
+                ...(p.heading ? { section: neutralize(p.heading) } : {}), text: neutralize(p.content),
+              })),
+            }
             : { passages: [], note: 'Nothing relevant in the knowledge base. Do not guess: write around it, or tell the user what is missing and ask.' });
         }
       } else if (call.name === 'generate_image') {

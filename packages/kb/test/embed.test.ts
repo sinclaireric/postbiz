@@ -1,7 +1,7 @@
 import OpenAI from 'openai';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { DEFAULT_EMBEDDING_MODEL, defaultEmbedder, embeddingModel, embeddingsConfigured, sdkEmbedder } from './embed';
-import { KB } from './types';
+import { DEFAULT_EMBEDDING_MODEL, defaultEmbedder, embeddingModel, embeddingsConfigured, sdkEmbedder } from '../src/embed.ts';
+import { KB } from '../src/constants.ts';
 
 afterEach(() => {
   delete process.env.OPENAI_EMBEDDING_MODEL;
@@ -14,7 +14,7 @@ const json = (value: unknown) => new Response(JSON.stringify(value), { headers: 
 /** Un faux serveur d'embeddings : rend un vecteur par texte (le numéro du texte comme graine), dans l'ordre inverse pour vérifier qu'on trie par `index`. */
 function server(over: { badDimensions?: boolean; shortAnswer?: boolean } = {}) {
   const calls: { model: string; input: string[]; dimensions: number; encoding_format: string }[] = [];
-  const fetcher = vi.fn(async (_url: RequestInfo | URL, init?: RequestInit) => {
+  const fetcher = vi.fn(async (_url: string | URL | Request, init?: RequestInit) => {
     const body = JSON.parse(String(init?.body)) as (typeof calls)[number];
     calls.push(body);
     const data = body.input.map((text, index) => ({ object: 'embedding', index, embedding: over.badDimensions ? [0.1, 0.2] : vector(Number(text.replace(/\D/g, '')) || 0) })).reverse();

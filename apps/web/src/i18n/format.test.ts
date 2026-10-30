@@ -17,6 +17,15 @@ describe('formatRelative', () => {
   it('« à l’instant » sous la minute', () => {
     expect(formatRelative('en', ago(10_000), NOW)).toMatch(/now|0/);
   });
+  it('une date plus récente que l’heure donnée (horloge du navigateur en retard) se lit « maintenant », jamais en négatif', () => {
+    expect(formatRelative('fr', new Date(NOW.getTime() + 40_000).toISOString(), NOW, 'long')).toBe('maintenant');
+    expect(formatRelative('en', new Date(NOW.getTime() + 40_000).toISOString(), NOW, 'long')).toBe('now');
+  });
+  it('le style long donne une phrase : « il y a 5 minutes », « 5 minutes ago »', () => {
+    expect(formatRelative('fr', ago(5 * 60_000), NOW, 'long')).toBe('il y a 5 minutes');
+    expect(formatRelative('en', ago(5 * 60_000), NOW, 'long')).toBe('5 minutes ago');
+    expect(formatRelative('fr', ago(3 * 3_600_000), NOW, 'long')).toBe('il y a 3 heures');
+  });
 });
 
 describe('formatBytes', () => {

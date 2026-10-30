@@ -732,7 +732,10 @@
     "settings": "Ayarlar",
     "welcome": "Hoş geldiniz",
     "titleTemplate": "{page} · Postbiz",
-    "knowledgeApp": "Bilgi tabanı"
+    "knowledgeApp": "Bilgi tabanı",
+    "bot": {
+      "title": "PostbizBot"
+    }
   },
   "legal": {
     "updated": "Son güncelleme: {date}",
@@ -1666,14 +1669,13 @@
     },
     "knowledgePage": {
       "intro": "Yapay zekânın işletmeniz hakkında bildikleri: marka tonu, teklifler, ürünler, sık sorulan sorular. Bunları gönderilerinizi yazmak (yapay zekâ asistanı ve ajan) ve gelen kutusunda yanıt önermek için kullanır.",
-      "privacy": "Kayıtlar Postbiz alanınızda saklanır. Yapay zekânın bunlara ihtiyacı olduğunda ilgili bölümler istekle birlikte OpenAI’a gönderilir: içlerine müşterilerin kişisel verilerini koymayın.",
+      "privacy": "Kayıtlar, belgeler ve web siteleri Postbiz alanınızda saklanır. Yapay zekânın bunlara ihtiyacı olduğunda ilgili bölümler istekle birlikte OpenAI’a gönderilir: içlerine müşterilerin kişisel verilerini koymayın.",
       "demoNote": "Demo modu: arama sözcüklerle yapılır, hiçbir yapay zekâ çağrılmaz.",
       "noEmbeddings": "Anlama göre arama bu sunucuda etkin değil (OPENAI_API_KEY yok): yapay zekâ yalnızca sözcüklerle arar.",
       "budget": "Sabitlenmiş kayıtlar: {used} / {max} karakter",
       "overBudget": "Sabitlenmiş kayıtlar bütçeyi aşıyor: en eskileri artık tam olarak gönderilmiyor, yapay zekâ gerektiğinde onlara bakıyor.",
       "list": "Kayıtlar",
       "empty": "Henüz kayıt yok. Markanızın tonuyla, tekliflerinizle ve sık sorulan sorularla başlayın.",
-      "soon": "Yakında: belge (PDF, Word) ve web sitesi içe aktarma.",
       "reindex": "Yeniden dizinle",
       "pin": {
         "on": "Her zaman kullanılır",
@@ -1703,7 +1705,94 @@
           "invalid": "Bir soru yazın.",
           "rate_limited": "Art arda çok fazla arama. Birkaç dakika sonra yeniden deneyin.",
           "failed": "Arama başarısız oldu. Birazdan yeniden deneyin."
+        },
+        "page": "sayfa {pages}"
+      },
+      "sourcesCount": "{count} / {max} kaynak",
+      "tabs": {
+        "text": "Metin",
+        "documents": "Belgeler",
+        "websites": "Web siteleri"
+      },
+      "docs": {
+        "hint": "PDF (metin içeren), Word, metin, Markdown, CSV veya HTML dosyaları, her biri en fazla {max} MB. Yapay zekâ, bir soru bunlarla ilgili olduğunda onlara başvurur.",
+        "add": "Belge ekle",
+        "uploading": "“{name}” yükleniyor…",
+        "empty": "Henüz belge yok. Kataloğunuzu, satış koşullarınızı veya bir fiyat listesini ekleyin.",
+        "demoNote": "Demo modu: dosya bu sunucuda hemen okunur, depolama ve yapay zekâ olmadan."
+      },
+      "sites": {
+        "hint": "Postbiz sitenin herkese açık sayfalarını (en fazla {max}) okur, robots.txt dosyasına uyar ve siteyi her hafta yeniden okur. Yalnızca içeriğini kullanma hakkına sahip olduğunuz siteleri ekleyin.",
+        "urlLabel": "Web sitesi adresi",
+        "urlPlaceholder": "https://www.ornek.com",
+        "scopeLabel": "Ne okunacak",
+        "scopeSite": "Sitenin tamamı (en fazla {max} sayfa)",
+        "scopePage": "Yalnızca bu sayfa",
+        "autoSync": "Siteyi her hafta yeniden oku",
+        "add": "Web sitesini ekle",
+        "adding": "Ekleniyor…",
+        "empty": "Henüz web sitesi yok.",
+        "demoNote": "Demo modu: internette hiçbir sayfa okunmaz, sizin sitenizin yerine örnek bir site kullanılır.",
+        "showPages": "Okunan sayfaları göster",
+        "hidePages": "Sayfaları gizle",
+        "pagesRead": "Okunan sayfa: {count}",
+        "pagesLoading": "Yükleniyor…",
+        "noPages": "Henüz okunan sayfa yok."
+      },
+      "sources": {
+        "status": {
+          "pending": "Bekliyor",
+          "processing": "Okunuyor…",
+          "ready": "Hazır",
+          "failed": "Başarısız"
+        },
+        "refresh": "Yenile",
+        "retry": "Yeniden dene",
+        "syncedAt": "Son okuma: {when}",
+        "weekly": "Her hafta yeniden okunur",
+        "pdfPages": "Sayfa: {count}",
+        "retrying": "Yeni deneme planlandı: {reason}",
+        "syncFailed": "Son güncelleme başarısız oldu, önceki içerik korunuyor: {reason}",
+        "stalled": "Hâlâ bekliyor: belgeleri ve siteleri Postbiz worker’ı okur, çalışıyor olması gerekir.",
+        "warnings": {
+          "truncated": "Yalnızca baştaki kısım tutuldu: bir kaynak için sayfa veya bölüm sınırına ulaşıldı.",
+          "timeLimit": "Okuma en uzun süreye ulaşınca durdu: kalanı bir sonraki yenilemede okunacak.",
+          "spa": "İçeriğini yalnızca JavaScript ile gösteren, okunmayan sayfalar: {count}",
+          "robots": "Site robotların okumamasını istediği için atlanan sayfalar (robots.txt): {count}",
+          "failed": "Okunamayan sayfalar: {count}"
+        },
+        "errors": {
+          "unsupported_type": "Bu dosya türü desteklenmiyor (PDF, Word, metin, Markdown, CSV veya HTML).",
+          "too_large": "Dosya çok büyük.",
+          "file_missing": "Dosya depolamada bulunamadı: yeniden gönderin.",
+          "corrupt": "Dosya bozuk ya da adının belirttiği türde değil.",
+          "encrypted": "Dosya parolayla korunuyor: korumayı kaldırıp yeniden gönderin.",
+          "no_text": "Okunacak metin yok. Taranmış görüntülerden oluşan bir PDF okunamaz: metin tanıma gerekir.",
+          "invalid_url": "Bu adres geçerli değil.",
+          "blocked_address": "Bu adrese herkese açık olarak erişilemiyor.",
+          "dns_failed": "Alan adı bulunamadı.",
+          "unreachable": "Site yanıt vermiyor.",
+          "timeout": "Site yanıt vermekte çok gecikti.",
+          "tls_error": "Sitenin güvenlik sertifikası geçerli değil.",
+          "http_error": "Site sayfayı vermeyi reddetti ya da veremedi.",
+          "not_html": "Bu adres bir web sayfası değil.",
+          "robots_disallowed": "Site, robotların bu sayfayı okumamasını istiyor (robots.txt).",
+          "redirect_loop": "Site döngüsel olarak yönlendiriyor.",
+          "empty_site": "Okunabilir metin yok: site içeriğini muhtemelen Postbiz’in çalıştırmadığı JavaScript ile gösteriyor.",
+          "internal": "Bir hata oluştu. Birkaç dakika sonra yeniden deneyin."
         }
+      },
+      "errors": {
+        "filesLimit": "En fazla {max} belge sınırına ulaştınız.",
+        "sitesLimit": "En fazla {max} web sitesi sınırına ulaştınız.",
+        "dailyLimit": "Bugün çok fazla belge ve web sitesi eklendi. Yarın yeniden deneyin.",
+        "duplicate": "Bu web sitesi zaten bilgi tabanınızda.",
+        "invalidUrl": "Bu adres geçerli değil ya da site herkese açık değil.",
+        "fileTooLarge": "Dosya çok büyük (en fazla {max} MB).",
+        "unsupportedType": "Bu dosya türü desteklenmiyor (PDF, Word, metin, Markdown, CSV veya HTML).",
+        "fileMissing": "Dosya bulunamadı. Yeniden gönderin.",
+        "syncTooSoon": "Bu kaynak az önce güncellendi. Birkaç dakika sonra yeniden deneyin.",
+        "uploadFailed": "Yükleme başarısız oldu. Yeniden deneyin."
       }
     }
   }

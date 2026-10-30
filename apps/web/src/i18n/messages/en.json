@@ -642,9 +642,10 @@
         "p2": "Postbiz may suspend without notice an account that threatens the security of the service or of a user’s social media account."
       },
       "s6": {
-        "h": "6. AI assistant and automatic replies",
+        "h": "6. AI assistant, knowledge base and automatic replies",
         "p1": "The AI assistant proposes drafts based on the user’s instructions. Its suggestions may contain mistakes: the user reviews them before publishing and remains responsible for them. The text entered in the assistant is sent to our AI provider to produce the answer (see the privacy policy).",
-        "p2": "Automatic replies are configured by the user, who is responsible for them."
+        "p2": "Automatic replies are configured by the user, who is responsible for them.",
+        "p3": "The user warrants that they hold the necessary rights over the documents and websites they add to their knowledge base, and that they only add websites whose content they are entitled to have read automatically. Postbiz reads only publicly accessible pages, identifies itself as <bot>PostbizBot</bot> and follows the rules of each site’s robots.txt file. The user remains responsible for the content they add and for the drafts they publish from it."
       },
       "s7": {
         "h": "7. Pricing and payment",
@@ -687,6 +688,7 @@
         "li4": "<b>Posts and media:</b> texts, images and videos that you schedule or upload to the library, and their dates.",
         "li5": "<b>AI assistant:</b> the instructions you enter in the assistant.",
         "li6": "<b>Usage:</b> technical logs needed for the security and proper operation of the service.",
+        "li7": "<b>Knowledge base:</b> the entries you write, the documents you upload (kept privately in your workspace) and the text read from the public pages of the websites you add.",
         "li8": "<b>Payment:</b> chosen plan, amounts, dates, country and status of your payments (card via Stripe, mobile money via PawaPay). We neither see nor keep your card number or your mobile wallet’s secret code.",
         "li9": "<b>Approximate country:</b> to show prices in the right currency, a visitor’s country is inferred from their IP address (header provided by the host; otherwise a geolocation service queried from our servers). This country is not stored in our database: only the one you choose yourself is remembered, in a cookie."
       },
@@ -723,7 +725,7 @@
         "li1": "Supabase Inc. — database, authentication and file storage.",
         "li2": "Vercel Inc. — hosting of the website and the app.",
         "li3": "Email delivery provider — sign-in messages and notifications.",
-        "li4": "OpenAI — AI assistant, agent, picture generation, knowledge base search and reply suggestions, only when you use them: the text you enter, your knowledge base (each entry is also turned into numerical vectors when you save it), the messages of the conversation you ask a reply for and, for the agent, your connected channels’ names and recent posts are sent to it to produce the answer; pictures are generated from the description the agent writes.",
+        "li4": "OpenAI — AI assistant, agent, picture generation, knowledge base search and reply suggestions, only when you use them: the text you enter, your knowledge base (the entries, and the text of the documents and websites you add, are also turned into numerical vectors when you save or add them), the messages of the conversation you ask a reply for and, for the agent, your connected channels’ names and recent posts are sent to it to produce the answer; pictures are generated from the description the agent writes.",
         "li5": "Evolink (Seedance) — video generation, only when you ask the agent for a video: the description of the video and, if you choose reference pictures, temporary links to those pictures are sent to it.",
         "p1": "The social networks you connect are separate data controllers, governed by their own policies. Some processors are located outside the European Union, notably in the United States: transfers then rely on the mechanisms provided for by the GDPR (adequacy decision or standard contractual clauses).",
         "li6": "Stripe Payments Europe Ltd. — card payments and subscription management.",
@@ -770,6 +772,26 @@
       "s4": {
         "h": "By e-mail",
         "p": "Write to <mail>{email}</mail> from your account’s address. We confirm the deletion by reply."
+      }
+    },
+    "bot": {
+      "title": "PostbizBot",
+      "s1": {
+        "h": "What is PostbizBot?",
+        "p": "PostbizBot is the robot Postbiz uses to read the public pages of the websites that its customers add to their knowledge base, so that the AI assistant can rely on them to write posts and replies for that customer. It reads a site only because a customer asked for it: it does not browse or index the web. What it reads is used only for that customer, and is neither sold nor published."
+      },
+      "s2": {
+        "h": "How it behaves",
+        "li1": "It identifies itself with the user agent <code>PostbizBot/1.0</code>, followed by the address of this page.",
+        "li2": "It reads only public pages, never behind a login, and stays on the site it was asked to read: up to 50 pages per site, found through the sitemap and the links of the pages.",
+        "li3": "It reads the robots.txt file of the site first and follows it, including the Crawl-delay directive (up to 10 seconds); otherwise it waits at least 0.7 second between two requests.",
+        "li4": "It does not run JavaScript, does not submit forms and does not accept cookies.",
+        "li5": "It reads a site again on its own at most once a week; its customer can also ask for a new reading, at most once every 10 minutes. Pages that have not changed are not stored again."
+      },
+      "s3": {
+        "h": "Block PostbizBot",
+        "p1": "To stop PostbizBot from reading your site, add these lines to the robots.txt file at the root of your site. It checks this file before every reading:",
+        "p2": "To block only part of the site, replace <code>/</code> with the path to exclude. For any question, or if PostbizBot causes you a problem, write to <mail>{email}</mail>."
       }
     }
   },
@@ -1364,7 +1386,10 @@
     "settings": "Settings",
     "welcome": "Welcome",
     "titleTemplate": "{page} · Postbiz",
-    "knowledgeApp": "Knowledge base"
+    "knowledgeApp": "Knowledge base",
+    "bot": {
+      "title": "PostbizBot"
+    }
   },
   "auth": {
     "email": "E-mail",
@@ -2375,14 +2400,13 @@
     },
     "knowledgePage": {
       "intro": "What the AI knows about your business: brand tone, offers, products, frequently asked questions. It uses it to write your posts (AI assistant and agent) and to suggest replies in the inbox.",
-      "privacy": "Entries are stored in your Postbiz workspace. When the AI needs them, the relevant passages are sent to OpenAI with the request: do not put customers’ personal data in them.",
+      "privacy": "Entries, documents and websites are stored in your Postbiz workspace. When the AI needs them, the relevant passages are sent to OpenAI with the request: do not put customers’ personal data in them.",
       "demoNote": "Demo mode: the search works on words and no AI is called.",
       "noEmbeddings": "Search by meaning is not active on this server (OPENAI_API_KEY is missing): the AI only searches by words.",
       "budget": "Pinned entries: {used} / {max} characters",
       "overBudget": "The pinned entries are over the budget: the oldest ones are no longer sent in full, the AI looks them up when needed.",
       "list": "Entries",
       "empty": "No entries yet. Start with your brand tone, your offers and your frequently asked questions.",
-      "soon": "Coming soon: import documents (PDF, Word) and a website.",
       "reindex": "Reindex",
       "pin": {
         "on": "Always used",
@@ -2412,7 +2436,94 @@
           "invalid": "Enter a question.",
           "rate_limited": "Too many searches in a row. Try again in a few minutes.",
           "failed": "The search failed. Try again in a moment."
+        },
+        "page": "page {pages}"
+      },
+      "sourcesCount": "{count} / {max} sources",
+      "tabs": {
+        "text": "Text",
+        "documents": "Documents",
+        "websites": "Websites"
+      },
+      "docs": {
+        "hint": "PDF (with selectable text), Word, text, Markdown, CSV or HTML files, up to {max} MB each. The AI looks them up when a question is about them.",
+        "add": "Add a document",
+        "uploading": "Uploading “{name}”…",
+        "empty": "No documents yet. Add your catalog, your terms of sale or a price list.",
+        "demoNote": "Demo mode: the file is read right away on this server, with no storage and no AI."
+      },
+      "sites": {
+        "hint": "Postbiz reads the public pages of the site (up to {max}), follows its robots.txt, and reads it again every week. Only add sites whose content you have the right to use.",
+        "urlLabel": "Website address",
+        "urlPlaceholder": "https://www.example.com",
+        "scopeLabel": "What to read",
+        "scopeSite": "The whole site (up to {max} pages)",
+        "scopePage": "This page only",
+        "autoSync": "Read the site again every week",
+        "add": "Add the website",
+        "adding": "Adding…",
+        "empty": "No websites yet.",
+        "demoNote": "Demo mode: no page is read on the Internet, a sample site stands in for yours.",
+        "showPages": "Show the pages read",
+        "hidePages": "Hide the pages",
+        "pagesRead": "Pages read: {count}",
+        "pagesLoading": "Loading…",
+        "noPages": "No pages read yet."
+      },
+      "sources": {
+        "status": {
+          "pending": "Waiting",
+          "processing": "Reading…",
+          "ready": "Ready",
+          "failed": "Failed"
+        },
+        "refresh": "Refresh",
+        "retry": "Try again",
+        "syncedAt": "Last read: {when}",
+        "weekly": "Read again every week",
+        "pdfPages": "Pages: {count}",
+        "retrying": "New attempt scheduled: {reason}",
+        "syncFailed": "The last update failed, the previous content is kept: {reason}",
+        "stalled": "Still waiting: documents and websites are read by the Postbiz worker, which must be running.",
+        "warnings": {
+          "truncated": "Only the beginning is kept: the limit of pages or passages for one source was reached.",
+          "timeLimit": "The reading stopped at the time limit: the rest will be read at the next refresh.",
+          "spa": "Pages that only show their content with JavaScript were not read: {count}",
+          "robots": "Pages skipped because the site asks robots not to read them (robots.txt): {count}",
+          "failed": "Pages that could not be read: {count}"
+        },
+        "errors": {
+          "unsupported_type": "This file type is not supported (PDF, Word, text, Markdown, CSV or HTML).",
+          "too_large": "The file is too big.",
+          "file_missing": "The file was not found in storage: send it again.",
+          "corrupt": "The file is damaged, or is not what its name says.",
+          "encrypted": "The file is protected by a password: remove the protection and send it again.",
+          "no_text": "No text to read. A PDF made of scanned images cannot be read: it would need text recognition.",
+          "invalid_url": "This address is not valid.",
+          "blocked_address": "This address is not publicly reachable.",
+          "dns_failed": "The domain name could not be found.",
+          "unreachable": "The site does not respond.",
+          "timeout": "The site took too long to answer.",
+          "tls_error": "The site’s security certificate is not valid.",
+          "http_error": "The site refused, or could not provide, the page.",
+          "not_html": "This address is not a web page.",
+          "robots_disallowed": "The site asks robots not to read this page (robots.txt).",
+          "redirect_loop": "The site redirects in a loop.",
+          "empty_site": "No readable text: the site probably shows its content with JavaScript, which Postbiz does not run.",
+          "internal": "Something went wrong. Try again in a few minutes."
         }
+      },
+      "errors": {
+        "filesLimit": "You have reached the maximum of {max} documents.",
+        "sitesLimit": "You have reached the maximum of {max} websites.",
+        "dailyLimit": "Too many documents and websites added today. Try again tomorrow.",
+        "duplicate": "This website is already in your knowledge base.",
+        "invalidUrl": "This address is not valid, or the site is not public.",
+        "fileTooLarge": "The file is too big ({max} MB at most).",
+        "unsupportedType": "This file type is not supported (PDF, Word, text, Markdown, CSV or HTML).",
+        "fileMissing": "The file could not be found. Send it again.",
+        "syncTooSoon": "This source was refreshed a moment ago. Try again in a few minutes.",
+        "uploadFailed": "The upload failed. Try again."
       }
     }
   }

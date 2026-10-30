@@ -5,7 +5,7 @@ import { CATEGORIES } from '@/lib/blog/types';
 import { NETWORKS } from '@/lib/networks';
 import { siteUrl } from '@/lib/supabase/env';
 
-const PAGES = ['/', '/produit/inbox', '/produit/planification', '/canaux', '/tarifs', '/blog', '/agent', '/mcp', '/contact', '/cgu', '/confidentialite', '/suppression-des-donnees'];
+const PAGES = ['/', '/produit/inbox', '/produit/planification', '/canaux', '/tarifs', '/blog', '/agent', '/mcp', '/contact', '/cgu', '/confidentialite', '/suppression-des-donnees', '/postbizbot'];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Une seule adresse par article et par page, quelle que soit la langue : la langue se choisit par cookie, pas par l'URL.

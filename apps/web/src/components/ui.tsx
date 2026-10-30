@@ -48,12 +48,13 @@ export function Container({ children, className = '' }: { children: ReactNode; c
   return <div className={`mx-auto w-full max-w-[1200px] px-5 sm:px-8 ${className}`}>{children}</div>;
 }
 
-export function Badge({ children, tone = 'neutral' }: { children: ReactNode; tone?: 'neutral' | 'ok' | 'warn' | 'lime' }) {
+export function Badge({ children, tone = 'neutral' }: { children: ReactNode; tone?: 'neutral' | 'ok' | 'warn' | 'lime' | 'danger' }) {
   const tones = {
     neutral: 'bg-wash text-muted',
     ok: 'bg-ok-soft text-ok',
     warn: 'bg-warn-soft text-warn',
     lime: 'bg-lime-soft text-forest',
+    danger: 'bg-danger-soft text-danger',
   } as const;
   return <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${tones[tone]}`}>{children}</span>;
 }

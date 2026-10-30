@@ -732,7 +732,10 @@
     "settings": "Cài đặt",
     "welcome": "Chào mừng",
     "titleTemplate": "{page} · Postbiz",
-    "knowledgeApp": "Cơ sở kiến thức"
+    "knowledgeApp": "Cơ sở kiến thức",
+    "bot": {
+      "title": "PostbizBot"
+    }
   },
   "legal": {
     "updated": "Cập nhật lần cuối: {date}",
@@ -1661,14 +1664,13 @@
     },
     "knowledgePage": {
       "intro": "Những gì AI biết về hoạt động của bạn: giọng điệu thương hiệu, ưu đãi, sản phẩm, câu hỏi thường gặp. AI dùng chúng để viết bài đăng của bạn (trong trình soạn thảo và ở mục Trợ lý) và gợi ý câu trả lời trong hộp thư.",
-      "privacy": "Các mục được lưu trong không gian Postbiz của bạn. Khi AI cần, các đoạn liên quan sẽ được gửi đến OpenAI cùng với yêu cầu: đừng đưa dữ liệu cá nhân của khách hàng vào đó.",
+      "privacy": "Các mục, tài liệu và trang web được lưu trong không gian Postbiz của bạn. Khi AI cần, các đoạn liên quan sẽ được gửi đến OpenAI cùng với yêu cầu: đừng đưa dữ liệu cá nhân của khách hàng vào đó.",
       "demoNote": "Chế độ demo: tìm kiếm theo từ khóa, không gọi AI nào.",
       "noEmbeddings": "Tìm kiếm theo ngữ nghĩa chưa bật trên máy chủ này (thiếu OPENAI_API_KEY): AI chỉ tìm theo từ khóa.",
       "budget": "Mục đã ghim: {used} / {max} ký tự",
       "overBudget": "Các mục đã ghim vượt quá ngân sách: những mục cũ nhất không còn được gửi đầy đủ, AI tra cứu khi cần.",
       "list": "Các mục",
       "empty": "Chưa có mục nào. Hãy bắt đầu với giọng điệu thương hiệu, ưu đãi và câu hỏi thường gặp của bạn.",
-      "soon": "Sắp có: nhập tài liệu (PDF, Word) và trang web.",
       "reindex": "Lập chỉ mục lại",
       "pin": {
         "on": "Luôn được dùng",
@@ -1698,7 +1700,94 @@
           "invalid": "Hãy nhập một câu hỏi.",
           "rate_limited": "Tìm kiếm liên tiếp quá nhiều. Hãy thử lại sau vài phút.",
           "failed": "Tìm kiếm thất bại. Hãy thử lại sau giây lát."
+        },
+        "page": "trang {pages}"
+      },
+      "sourcesCount": "{count} / {max} nguồn",
+      "tabs": {
+        "text": "Văn bản",
+        "documents": "Tài liệu",
+        "websites": "Trang web"
+      },
+      "docs": {
+        "hint": "Tệp PDF (có văn bản), Word, văn bản, Markdown, CSV hoặc HTML, mỗi tệp tối đa {max} MB. AI sẽ tra cứu chúng khi câu hỏi liên quan.",
+        "add": "Thêm tài liệu",
+        "uploading": "Đang tải lên “{name}”…",
+        "empty": "Chưa có tài liệu nào. Hãy thêm danh mục sản phẩm, điều kiện bán hàng hoặc bảng giá của bạn.",
+        "demoNote": "Chế độ demo: tệp được đọc ngay trên máy chủ này, không lưu trữ và không dùng AI."
+      },
+      "sites": {
+        "hint": "Postbiz đọc các trang công khai của trang web (tối đa {max} trang), tuân theo tệp robots.txt của trang và đọc lại mỗi tuần. Chỉ thêm những trang web mà bạn có quyền sử dụng nội dung.",
+        "urlLabel": "Địa chỉ trang web",
+        "urlPlaceholder": "https://www.example.com",
+        "scopeLabel": "Nội dung cần đọc",
+        "scopeSite": "Toàn bộ trang web (tối đa {max} trang)",
+        "scopePage": "Chỉ trang này",
+        "autoSync": "Đọc lại trang web mỗi tuần",
+        "add": "Thêm trang web",
+        "adding": "Đang thêm…",
+        "empty": "Chưa có trang web nào.",
+        "demoNote": "Chế độ demo: không có trang nào được đọc trên Internet, một trang web mẫu thay cho trang của bạn.",
+        "showPages": "Xem các trang đã đọc",
+        "hidePages": "Ẩn các trang",
+        "pagesRead": "Số trang đã đọc: {count}",
+        "pagesLoading": "Đang tải…",
+        "noPages": "Chưa đọc trang nào."
+      },
+      "sources": {
+        "status": {
+          "pending": "Đang chờ",
+          "processing": "Đang đọc…",
+          "ready": "Sẵn sàng",
+          "failed": "Thất bại"
+        },
+        "refresh": "Cập nhật",
+        "retry": "Thử lại",
+        "syncedAt": "Đọc lần cuối: {when}",
+        "weekly": "Đọc lại mỗi tuần",
+        "pdfPages": "Số trang: {count}",
+        "retrying": "Đã lên lịch thử lại: {reason}",
+        "syncFailed": "Lần cập nhật gần nhất thất bại, nội dung trước đó được giữ lại: {reason}",
+        "stalled": "Vẫn đang chờ: tài liệu và trang web được đọc bởi worker của Postbiz, worker này phải đang chạy.",
+        "warnings": {
+          "truncated": "Chỉ giữ phần đầu: đã đạt giới hạn số trang hoặc số đoạn của một nguồn.",
+          "timeLimit": "Việc đọc dừng lại khi hết thời gian tối đa: phần còn lại sẽ được đọc ở lần cập nhật sau.",
+          "spa": "Các trang chỉ hiển thị nội dung bằng JavaScript, chưa được đọc: {count}",
+          "robots": "Các trang bị bỏ qua vì trang web yêu cầu robot không đọc (robots.txt): {count}",
+          "failed": "Các trang không đọc được: {count}"
+        },
+        "errors": {
+          "unsupported_type": "Loại tệp này không được hỗ trợ (PDF, Word, văn bản, Markdown, CSV hoặc HTML).",
+          "too_large": "Tệp quá lớn.",
+          "file_missing": "Không tìm thấy tệp trong kho lưu trữ: hãy gửi lại.",
+          "corrupt": "Tệp bị hỏng hoặc không đúng như tên của nó.",
+          "encrypted": "Tệp được bảo vệ bằng mật khẩu: hãy gỡ bảo vệ rồi gửi lại.",
+          "no_text": "Không có văn bản để đọc. Không đọc được PDF chỉ gồm ảnh quét: cần có tính năng nhận dạng ký tự.",
+          "invalid_url": "Địa chỉ này không hợp lệ.",
+          "blocked_address": "Không thể truy cập công khai vào địa chỉ này.",
+          "dns_failed": "Không tìm thấy tên miền.",
+          "unreachable": "Trang web không phản hồi.",
+          "timeout": "Trang web phản hồi quá lâu.",
+          "tls_error": "Chứng chỉ bảo mật của trang web không hợp lệ.",
+          "http_error": "Trang web từ chối hoặc không thể cung cấp trang.",
+          "not_html": "Địa chỉ này không phải là một trang web.",
+          "robots_disallowed": "Trang web yêu cầu robot không đọc trang này (robots.txt).",
+          "redirect_loop": "Trang web chuyển hướng vòng lặp.",
+          "empty_site": "Không có văn bản đọc được: có thể trang web hiển thị nội dung bằng JavaScript, mà Postbiz không chạy.",
+          "internal": "Đã xảy ra lỗi. Hãy thử lại sau vài phút."
         }
+      },
+      "errors": {
+        "filesLimit": "Bạn đã đạt tối đa {max} tài liệu.",
+        "sitesLimit": "Bạn đã đạt tối đa {max} trang web.",
+        "dailyLimit": "Hôm nay đã thêm quá nhiều tài liệu và trang web. Hãy thử lại vào ngày mai.",
+        "duplicate": "Trang web này đã có trong cơ sở kiến thức của bạn.",
+        "invalidUrl": "Địa chỉ này không hợp lệ hoặc trang web không công khai.",
+        "fileTooLarge": "Tệp quá lớn (tối đa {max} MB).",
+        "unsupportedType": "Loại tệp này không được hỗ trợ (PDF, Word, văn bản, Markdown, CSV hoặc HTML).",
+        "fileMissing": "Không tìm thấy tệp. Hãy gửi lại.",
+        "syncTooSoon": "Nguồn này vừa được cập nhật. Hãy thử lại sau vài phút.",
+        "uploadFailed": "Tải lên thất bại. Hãy thử lại."
       }
     }
   }

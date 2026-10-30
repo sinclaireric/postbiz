@@ -26,6 +26,7 @@ export default async function PrivacyPage() {
           <li><RichText t={t} k="legal.privacy.s2.li4" params={vars} tags={legalTags} /></li>
           <li><RichText t={t} k="legal.privacy.s2.li5" params={vars} tags={legalTags} /></li>
           <li><RichText t={t} k="legal.privacy.s2.li6" params={vars} tags={legalTags} /></li>
+          <li><RichText t={t} k="legal.privacy.s2.li7" params={vars} tags={legalTags} /></li>
           <li><RichText t={t} k="legal.privacy.s2.li8" params={vars} tags={legalTags} /></li>
           <li><RichText t={t} k="legal.privacy.s2.li9" params={vars} tags={legalTags} /></li>
         </ul>

@@ -687,7 +687,10 @@
     "settings": "설정",
     "welcome": "환영합니다",
     "titleTemplate": "{page} · Postbiz",
-    "knowledgeApp": "지식 베이스"
+    "knowledgeApp": "지식 베이스",
+    "bot": {
+      "title": "PostbizBot"
+    }
   },
   "legal": {
     "updated": "최종 업데이트: {date}",
@@ -1616,14 +1619,13 @@
     },
     "knowledgePage": {
       "intro": "비즈니스에 대해 AI가 아는 것: 브랜드 어조, 혜택, 제품, 자주 묻는 질문. 게시물 작성(AI 어시스턴트와 에이전트)과 받은편지 답장 제안에 사용합니다.",
-      "privacy": "항목은 Postbiz 작업 공간에 저장됩니다. AI가 필요로 하면 관련 부분이 요청과 함께 OpenAI로 전송됩니다. 고객의 개인정보는 넣지 마세요.",
+      "privacy": "항목, 문서, 웹사이트는 Postbiz 작업 공간에 저장됩니다. AI가 필요로 하면 관련 부분이 요청과 함께 OpenAI로 전송됩니다. 고객의 개인정보는 넣지 마세요.",
       "demoNote": "데모 모드: 검색은 단어로 이루어지며 AI는 호출되지 않습니다.",
       "noEmbeddings": "이 서버에서는 의미 기반 검색이 활성화되어 있지 않습니다(OPENAI_API_KEY 없음). AI는 단어로만 검색합니다.",
       "budget": "고정한 항목: {used} / {max}자",
       "overBudget": "고정한 항목이 한도를 넘었습니다. 오래된 항목부터 전체가 전송되지 않으며, AI가 필요할 때 조회합니다.",
       "list": "항목",
       "empty": "아직 항목이 없습니다. 브랜드 어조, 혜택, 자주 묻는 질문부터 시작해 보세요.",
-      "soon": "곧 제공: 문서(PDF, Word)와 웹사이트 가져오기.",
       "reindex": "다시 색인",
       "pin": {
         "on": "항상 사용",
@@ -1653,7 +1655,94 @@
           "invalid": "질문을 입력하세요.",
           "rate_limited": "검색이 너무 연속으로 이루어졌습니다. 몇 분 뒤에 다시 시도하세요.",
           "failed": "검색에 실패했습니다. 잠시 후 다시 시도하세요."
+        },
+        "page": "{pages}페이지"
+      },
+      "sourcesCount": "소스: {count} / {max}",
+      "tabs": {
+        "text": "텍스트",
+        "documents": "문서",
+        "websites": "웹사이트"
+      },
+      "docs": {
+        "hint": "PDF(텍스트 포함), Word, 텍스트, Markdown, CSV 또는 HTML 파일, 파일당 최대 {max}MB. 질문과 관련될 때 AI가 조회합니다.",
+        "add": "문서 추가",
+        "uploading": "“{name}” 업로드 중…",
+        "empty": "아직 문서가 없습니다. 카탈로그, 판매 조건 또는 가격표를 추가하세요.",
+        "demoNote": "데모 모드: 파일은 이 서버에서 바로 읽으며 저장소와 AI를 사용하지 않습니다."
+      },
+      "sites": {
+        "hint": "Postbiz는 사이트의 공개 페이지(최대 {max}개)를 읽고, robots.txt를 따르며, 매주 다시 읽습니다. 콘텐츠를 사용할 권리가 있는 사이트만 추가하세요.",
+        "urlLabel": "웹사이트 주소",
+        "urlPlaceholder": "https://www.example.com",
+        "scopeLabel": "읽을 범위",
+        "scopeSite": "사이트 전체(최대 {max}페이지)",
+        "scopePage": "이 페이지만",
+        "autoSync": "매주 사이트를 다시 읽기",
+        "add": "웹사이트 추가",
+        "adding": "추가하는 중…",
+        "empty": "아직 웹사이트가 없습니다.",
+        "demoNote": "데모 모드: 인터넷의 페이지를 읽지 않으며, 예시 사이트가 내 사이트를 대신합니다.",
+        "showPages": "읽은 페이지 보기",
+        "hidePages": "페이지 숨기기",
+        "pagesRead": "읽은 페이지: {count}",
+        "pagesLoading": "불러오는 중…",
+        "noPages": "아직 읽은 페이지가 없습니다."
+      },
+      "sources": {
+        "status": {
+          "pending": "대기 중",
+          "processing": "읽는 중…",
+          "ready": "준비됨",
+          "failed": "실패"
+        },
+        "refresh": "새로 고침",
+        "retry": "다시 시도",
+        "syncedAt": "마지막 읽기: {when}",
+        "weekly": "매주 다시 읽음",
+        "pdfPages": "페이지: {count}",
+        "retrying": "재시도가 예정되어 있습니다: {reason}",
+        "syncFailed": "마지막 업데이트에 실패했으며 이전 내용은 유지됩니다: {reason}",
+        "stalled": "아직 대기 중입니다. 문서와 웹사이트는 Postbiz 워커가 읽으며, 워커가 실행 중이어야 합니다.",
+        "warnings": {
+          "truncated": "앞부분만 유지됩니다: 한 소스의 페이지 수 또는 구간 수 한도에 도달했습니다.",
+          "timeLimit": "최대 시간에 도달해 읽기를 멈췄습니다. 나머지는 다음 새로 고침 때 읽습니다.",
+          "spa": "JavaScript로만 내용을 표시해 읽지 못한 페이지: {count}",
+          "robots": "사이트가 로봇의 읽기를 원하지 않아(robots.txt) 건너뛴 페이지: {count}",
+          "failed": "읽지 못한 페이지: {count}"
+        },
+        "errors": {
+          "unsupported_type": "지원하지 않는 파일 형식입니다(PDF, Word, 텍스트, Markdown, CSV 또는 HTML).",
+          "too_large": "파일이 너무 큽니다.",
+          "file_missing": "저장소에서 파일을 찾을 수 없습니다. 다시 보내 주세요.",
+          "corrupt": "파일이 손상되었거나 이름이 나타내는 형식이 아닙니다.",
+          "encrypted": "파일이 비밀번호로 보호되어 있습니다. 보호를 해제하고 다시 보내 주세요.",
+          "no_text": "읽을 텍스트가 없습니다. 스캔한 이미지로만 된 PDF는 읽을 수 없습니다(문자 인식이 필요합니다).",
+          "invalid_url": "유효하지 않은 주소입니다.",
+          "blocked_address": "이 주소는 공개적으로 접근할 수 없습니다.",
+          "dns_failed": "도메인 이름을 찾을 수 없습니다.",
+          "unreachable": "사이트가 응답하지 않습니다.",
+          "timeout": "사이트의 응답이 너무 오래 걸렸습니다.",
+          "tls_error": "사이트의 보안 인증서가 유효하지 않습니다.",
+          "http_error": "사이트가 페이지 제공을 거부했거나 제공하지 못했습니다.",
+          "not_html": "이 주소는 웹 페이지가 아닙니다.",
+          "robots_disallowed": "사이트가 로봇이 이 페이지를 읽지 않기를 요청합니다(robots.txt).",
+          "redirect_loop": "사이트가 순환 리디렉션됩니다.",
+          "empty_site": "읽을 수 있는 텍스트가 없습니다. 사이트가 Postbiz에서 실행하지 않는 JavaScript로 내용을 표시하는 것 같습니다.",
+          "internal": "오류가 발생했습니다. 몇 분 후에 다시 시도해 주세요."
         }
+      },
+      "errors": {
+        "filesLimit": "문서 최대 {max}개에 도달했습니다.",
+        "sitesLimit": "웹사이트 최대 {max}개에 도달했습니다.",
+        "dailyLimit": "오늘 추가한 문서와 웹사이트가 너무 많습니다. 내일 다시 시도해 주세요.",
+        "duplicate": "이 웹사이트는 이미 지식 베이스에 있습니다.",
+        "invalidUrl": "유효하지 않은 주소이거나 공개된 사이트가 아닙니다.",
+        "fileTooLarge": "파일이 너무 큽니다(최대 {max}MB).",
+        "unsupportedType": "지원하지 않는 파일 형식입니다(PDF, Word, 텍스트, Markdown, CSV 또는 HTML).",
+        "fileMissing": "파일을 찾을 수 없습니다. 다시 보내 주세요.",
+        "syncTooSoon": "이 소스는 방금 업데이트되었습니다. 몇 분 후에 다시 시도해 주세요.",
+        "uploadFailed": "업로드에 실패했습니다. 다시 시도해 주세요."
       }
     }
   }

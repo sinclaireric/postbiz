@@ -684,7 +684,10 @@
     "settings": "设置",
     "welcome": "欢迎",
     "titleTemplate": "{page} · Postbiz",
-    "knowledgeApp": "知识库"
+    "knowledgeApp": "知识库",
+    "bot": {
+      "title": "PostbizBot"
+    }
   },
   "legal": {
     "updated": "最后更新:{date}",
@@ -1613,14 +1616,13 @@
     },
     "knowledgePage": {
       "intro": "AI 对你的业务了解的内容:品牌语气、优惠、产品、常见问题。它用这些来撰写你的帖子(AI 助手和智能体),并在收件箱中建议回复。",
-      "privacy": "条目保存在你的 Postbiz 空间中。AI 需要时,相关段落会随请求一起发送给 OpenAI:请不要在其中放入客户的个人数据。",
+      "privacy": "条目、文档和网站保存在你的 Postbiz 空间中。AI 需要时,相关段落会随请求一起发送给 OpenAI:请不要在其中放入客户的个人数据。",
       "demoNote": "演示模式:按词语搜索,不会调用任何 AI。",
       "noEmbeddings": "此服务器未启用语义搜索(缺少 OPENAI_API_KEY):AI 只按词语搜索。",
       "budget": "已置顶条目:{used} / {max} 个字符",
       "overBudget": "已置顶条目超出额度:最早的条目不再完整发送,AI 会在需要时查阅。",
       "list": "条目",
       "empty": "还没有条目。先从你的品牌语气、优惠和常见问题开始吧。",
-      "soon": "即将推出:导入文档(PDF、Word)和网站。",
       "reindex": "重新索引",
       "pin": {
         "on": "始终使用",
@@ -1650,7 +1652,94 @@
           "invalid": "请输入一个问题。",
           "rate_limited": "连续搜索过多。请几分钟后再试。",
           "failed": "搜索失败。请稍后再试。"
+        },
+        "page": "第 {pages} 页"
+      },
+      "sourcesCount": "来源:{count} / {max}",
+      "tabs": {
+        "text": "文本",
+        "documents": "文档",
+        "websites": "网站"
+      },
+      "docs": {
+        "hint": "PDF(含文字)、Word、文本、Markdown、CSV 或 HTML 文件,每个最大 {max} MB。当问题与它们相关时,AI 会查阅。",
+        "add": "添加文档",
+        "uploading": "正在上传“{name}”…",
+        "empty": "还没有文档。添加你的产品目录、销售条款或价格表。",
+        "demoNote": "演示模式:文件会立即在此服务器上读取,不使用存储,也不使用 AI。"
+      },
+      "sites": {
+        "hint": "Postbiz 会读取网站的公开页面(最多 {max} 页),遵守其 robots.txt,并每周重新读取。只添加你有权使用其内容的网站。",
+        "urlLabel": "网站地址",
+        "urlPlaceholder": "https://www.example.com",
+        "scopeLabel": "读取范围",
+        "scopeSite": "整个网站(最多 {max} 页)",
+        "scopePage": "仅此页面",
+        "autoSync": "每周重新读取网站",
+        "add": "添加网站",
+        "adding": "正在添加…",
+        "empty": "还没有网站。",
+        "demoNote": "演示模式:不会读取互联网上的任何页面,由一个示例网站代替你的网站。",
+        "showPages": "查看已读取的页面",
+        "hidePages": "隐藏页面",
+        "pagesRead": "已读取页面:{count}",
+        "pagesLoading": "加载中…",
+        "noPages": "还没有读取任何页面。"
+      },
+      "sources": {
+        "status": {
+          "pending": "等待中",
+          "processing": "读取中…",
+          "ready": "就绪",
+          "failed": "失败"
+        },
+        "refresh": "刷新",
+        "retry": "重试",
+        "syncedAt": "上次读取:{when}",
+        "weekly": "每周重新读取",
+        "pdfPages": "页数:{count}",
+        "retrying": "已安排再次尝试:{reason}",
+        "syncFailed": "上次更新失败,保留之前的内容:{reason}",
+        "stalled": "仍在等待:文档和网站由 Postbiz 的 worker 读取,worker 必须处于运行状态。",
+        "warnings": {
+          "truncated": "只保留开头部分:已达到单个来源的页数或段落数上限。",
+          "timeLimit": "读取在达到最长时间时停止:其余部分将在下次刷新时读取。",
+          "spa": "仅通过 JavaScript 显示内容、未能读取的页面:{count}",
+          "robots": "因网站要求机器人不要读取(robots.txt)而跳过的页面:{count}",
+          "failed": "无法读取的页面:{count}"
+        },
+        "errors": {
+          "unsupported_type": "不支持此文件类型(PDF、Word、文本、Markdown、CSV 或 HTML)。",
+          "too_large": "文件太大。",
+          "file_missing": "在存储中找不到该文件:请重新发送。",
+          "corrupt": "文件已损坏,或与其名称所示的类型不符。",
+          "encrypted": "文件受密码保护:请移除保护后重新发送。",
+          "no_text": "没有可读取的文字。由扫描图像组成的 PDF 无法读取:需要文字识别。",
+          "invalid_url": "此地址无效。",
+          "blocked_address": "无法公开访问此地址。",
+          "dns_failed": "找不到该域名。",
+          "unreachable": "网站没有响应。",
+          "timeout": "网站响应时间过长。",
+          "tls_error": "网站的安全证书无效。",
+          "http_error": "网站拒绝提供该页面,或无法提供。",
+          "not_html": "此地址不是网页。",
+          "robots_disallowed": "网站要求机器人不要读取此页面(robots.txt)。",
+          "redirect_loop": "网站重定向形成循环。",
+          "empty_site": "没有可读取的文字:网站可能通过 JavaScript 显示内容,而 Postbiz 不运行 JavaScript。",
+          "internal": "出了点问题。请几分钟后重试。"
         }
+      },
+      "errors": {
+        "filesLimit": "已达到 {max} 个文档的上限。",
+        "sitesLimit": "已达到 {max} 个网站的上限。",
+        "dailyLimit": "今天添加的文档和网站过多。请明天再试。",
+        "duplicate": "此网站已在你的知识库中。",
+        "invalidUrl": "此地址无效,或该网站不是公开的。",
+        "fileTooLarge": "文件太大(最大 {max} MB)。",
+        "unsupportedType": "不支持此文件类型(PDF、Word、文本、Markdown、CSV 或 HTML)。",
+        "fileMissing": "找不到该文件。请重新发送。",
+        "syncTooSoon": "此来源刚刚更新过。请几分钟后重试。",
+        "uploadFailed": "上传失败。请重试。"
       }
     }
   }

@@ -1,8 +1,11 @@
 import { createClient } from '@supabase/supabase-js';
 import { decryptSecret, encryptSecret } from '@postbiz/core';
+import { defaultEmbedder } from '@postbiz/kb/embed';
+import { FetchError } from '@postbiz/kb/net';
 import { loadConfig } from './config.ts';
 import { createSupabaseWorkerDb } from './engine/db.ts';
 import { collectMetrics, createSupabaseMetricsDb } from './engine/metrics.ts';
+import { createSupabaseKnowledgeDb, processKnowledge } from './engine/knowledge.ts';
 import { createSupabaseRefreshDb, refreshTokens } from './engine/refresh.ts';
 import { tick } from './engine/tick.ts';
 import { createRegistry } from './providers/registry.ts';
@@ -25,7 +28,30 @@ async function main() {
   log(`Worker Postbiz démarré${cfg.dryRun ? ' (MODE ESSAI : aucun réseau n’est contacté)' : ''}`);
 
   let stopping = false;
-  for (const sig of ['SIGINT', 'SIGTERM'] as const) process.on(sig, () => { log(`${sig} reçu, arrêt après le passage en cours`); stopping = true; });
+  const abort = new AbortController();
+  for (const sig of ['SIGINT', 'SIGTERM'] as const) process.on(sig, () => { log(`${sig} reçu, arrêt après le passage en cours`); stopping = true; abort.abort(); });
+
+  // La lecture des documents et des sites a sa propre boucle : un site se lit en plusieurs minutes, et ne doit jamais retarder une publication.
+  // Elle contacte des sites web (et le service d'embeddings d'OpenAI) : jamais en mode essai.
+  if (cfg.knowledge && !cfg.dryRun) {
+    const knowledgeDb = createSupabaseKnowledgeDb(supabase);
+    const embedder = defaultEmbedder();
+    log(`Lecture des documents et des sites : activée${embedder ? '' : ' (sans OPENAI_API_KEY : recherche par les mots seulement)'}`);
+    void (async () => {
+      while (!stopping) {
+        let claimed = 0;
+        try {
+          const s = await processKnowledge({ db: knowledgeDb, embedder, userAgent: cfg.userAgent, signal: abort.signal }, { limit: 1 }, log);
+          claimed = s.claimed;
+          if (s.claimed > 0) log('base de connaissance', s);
+        } catch (e) {
+          if (!(e instanceof FetchError && e.code === 'aborted')) log('lecture des sources en échec', (e as Error).message);
+        }
+        // Tant qu'il y a des sources à lire, on enchaîne ; sinon on attend.
+        if (claimed === 0 && !stopping) await new Promise((r) => setTimeout(r, cfg.knowledgeIntervalMs));
+      }
+    })();
+  }
 
   while (!stopping) {
     try {

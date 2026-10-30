@@ -13,7 +13,15 @@ export function passagesBlock(passages: KnowledgePassage[], budget: number = KB.
   const parts: string[] = [];
   let used = 0;
   for (const p of passages) {
-    const attrs = `source=${JSON.stringify(p.title)}${p.heading ? ` section=${JSON.stringify(p.heading)}` : ''}`;
+    const pages = p.pages ? (p.pages[0] === p.pages[1] ? `${p.pages[0]}` : `${p.pages[0]}-${p.pages[1]}`) : '';
+    // Le titre de la page et la section viennent du site ou du document : de la donnée, neutralisée comme le texte (les guillemets sont déjà protégés par JSON).
+    const attrs = [
+      `source=${JSON.stringify(p.title)}`,
+      p.pageTitle ? `page=${JSON.stringify(neutralize(p.pageTitle))}` : '',
+      p.url ? `url=${JSON.stringify(p.url)}` : '',
+      pages ? `pages=${JSON.stringify(pages)}` : '',
+      p.heading ? `section=${JSON.stringify(neutralize(p.heading))}` : '',
+    ].filter(Boolean).join(' ');
     const part = `<passage ${attrs}>\n${neutralize(p.content).trim()}\n</passage>`;
     if (parts.length > 0 && used + part.length > budget) break;
     parts.push(part.length > budget ? part.slice(0, budget) : part);

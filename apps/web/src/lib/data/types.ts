@@ -1,4 +1,5 @@
 import type { AgentMessage, AgentProposal, AgentProposalStatus, AgentThread, AgentVideoJob, VideoOrientation } from '@/lib/agent/types';
+import type { SourceStats } from '@postbiz/kb/ingest';
 import type { KnowledgeChunkInput, KnowledgeHit, KnowledgeSearchQuery } from '@/lib/kb/types';
 import type { AnalyticsRepository } from '@/lib/analytics/types';
 import type { FormError } from '@/lib/form-error';
@@ -212,15 +213,20 @@ export interface MediaRepository {
   remove(ids: string[]): Promise<MediaRemoval>;
 }
 
-/** Limites d'une fiche : les mêmes que dans la base (migration knowledge). */
-export const KNOWLEDGE_LIMITS = { title: 120, content: 20_000, items: 100 } as const;
+/** Limites des sources : les mêmes que dans la base (migrations knowledge et knowledge_sources). */
+export const KNOWLEDGE_LIMITS = { title: 120, content: 20_000, items: 100, files: 40, sites: 5, fileBytes: 10 * 1024 * 1024, sitePages: 50 } as const;
+
+export type KnowledgeKind = 'text' | 'file' | 'website';
+/** Où en est la lecture d'un fichier ou d'un site : en attente, en cours, prête (cherchable), ou en échec. Une fiche de texte est toujours prête. */
+export type KnowledgeStatus = 'pending' | 'processing' | 'ready' | 'failed';
 
 export interface KnowledgeItem {
   id: string;
   title: string;
+  /** Fiche de texte : son texte. Fichier ou site : un aperçu (le début du texte lu), jamais envoyé en entier à l'IA. */
   content: string;
   updatedAt: string;
-  /** Épinglée : envoyée en entier à l'IA à chaque demande (voix de la marque, règles). Sinon, consultée seulement par la recherche. */
+  /** Épinglée : envoyée en entier à l'IA à chaque demande (voix de la marque, règles). Sinon, consultée seulement par la recherche. Toujours faux pour un fichier ou un site. */
   pinned: boolean;
   /** Nombre de passages de la recherche. */
   chunkCount: number;
@@ -228,6 +234,38 @@ export interface KnowledgeItem {
   indexedAt: string | null;
   /** Date à laquelle tous ses passages avaient leur vecteur ; null : cherchable par les mots seulement. */
   embeddedAt: string | null;
+  kind: KnowledgeKind;
+  status: KnowledgeStatus;
+  /** Site : adresse de départ. */
+  url: string | null;
+  /** Fichier : son nom d'origine. */
+  fileName: string | null;
+  sizeBytes: number | null;
+  /** Pourquoi la dernière lecture a échoué (un code de SOURCE_ERRORS), ou null. Une source prête peut en porter un : sa relecture a échoué, l'ancien contenu reste. */
+  error: string | null;
+  /** Chiffres de la dernière lecture (pages lues, passages…). */
+  stats: SourceStats;
+  /** Site : une page ou tout le site, et relu chaque semaine ou non. */
+  scope: 'page' | 'site' | null;
+  autoSync: boolean;
+  /** Fin de la dernière lecture réussie. */
+  syncedAt: string | null;
+  /** Prochaine lecture prévue (nouvel essai, relecture hebdomadaire). */
+  runAt: string | null;
+}
+
+/** Une fiche de texte : les valeurs d'une fiche ordinaire (prête, épinglée), que `o` complète ou remplace. Sert à lire la base, à la démonstration et aux tests. */
+export const textItem = (o: Partial<KnowledgeItem> & Pick<KnowledgeItem, 'id' | 'title' | 'content'>): KnowledgeItem => ({
+  updatedAt: '2026-10-27T10:00:00.000Z', pinned: true, chunkCount: 0, indexedAt: null, embeddedAt: null,
+  kind: 'text', status: 'ready', url: null, fileName: null, sizeBytes: null, error: null, stats: {}, scope: null, autoSync: false, syncedAt: null, runAt: null,
+  ...o,
+});
+
+/** Une page lue d'un site. */
+export interface KnowledgePage {
+  url: string;
+  title: string;
+  chunks: number;
 }
 
 /** Ce que le composeur sait d'une fiche : de quoi les compter, pas leur contenu (qui peut peser plusieurs centaines de Ko). */
@@ -240,6 +278,7 @@ export interface KnowledgeInput {
 
 /** Fiches que l'IA lit pour écrire dans la voix de l'organisation et répondre juste (ton, offres, produits, questions fréquentes). */
 export interface KnowledgeRepository {
+  /** Toutes les sources de l'organisation : fiches de texte, documents et sites, les plus récentes d'abord. */
   list(): Promise<KnowledgeItem[]>;
   /** Crée une fiche ; `id` est celui de la nouvelle fiche, pour l'indexer ensuite. */
   create(input: KnowledgeInput): Promise<Result & { id?: string }>;
@@ -251,6 +290,17 @@ export interface KnowledgeRepository {
   replaceChunks(itemId: string, chunks: KnowledgeChunkInput[]): Promise<Result>;
   /** Cherche des passages dans la base de l'organisation, par le sens (si `embedding`) et par les mots. */
   search(query: KnowledgeSearchQuery): Promise<KnowledgeHit[]>;
+  /**
+   * Enregistre un document déjà déposé dans le stockage (`path` : « <organisation>/<fichier> ») ; le worker le lit ensuite. En démonstration, il n'y a pas de stockage ni
+   * de worker : `bytes` porte le fichier, lu tout de suite.
+   */
+  addFile(input: { path: string; title: string; size: number; bytes?: Uint8Array }): Promise<Result & { id?: string }>;
+  /** Enregistre un site à lire (une page, ou tout le site jusqu'à 50 pages), relu chaque semaine si `autoSync`. */
+  addWebsite(input: { url: string; title: string; scope: 'page' | 'site'; autoSync: boolean }): Promise<Result & { id?: string }>;
+  /** « Actualiser » : remet un document ou un site dans la file de lecture. */
+  requestSync(id: string): Promise<Result>;
+  /** Les pages lues d'un site. */
+  pages(id: string): Promise<KnowledgePage[]>;
 }
 
 /** Ce que l'utilisateur a fait d'une publication préparée par l'agent : son état, et le texte, les médias et la date tels qu'il les a enregistrés. */

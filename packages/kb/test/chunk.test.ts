@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { chunkKnowledge } from './chunk';
-import { KB } from './types';
+import { chunkKnowledge, chunkSource } from '../src/chunk.ts';
+import { KB } from '../src/constants.ts';
 
 const words = (s: string) => s.toLowerCase().split(/[^\p{L}\p{N}]+/u).filter(Boolean);
 
@@ -22,6 +22,40 @@ describe('chunkKnowledge : découper une fiche en passages', () => {
     expect(chunks.map((c) => c.heading)).toEqual(['Livraison', 'Livraison express', 'Retours']);
     expect(chunks[1]!.embedText.startsWith('Tarifs > Livraison express\n')).toBe(true);
     expect(chunks[0]!.content).not.toContain('# Livraison');
+  });
+
+  it('de petites sections voisines tiennent dans un seul passage : le titre de chacune reste dans le texte, le repère est celui de la première', () => {
+    const [only, ...rest] = chunkKnowledge('Atelier', '# Horaires\n\nOuvert le samedi.\n\n# Livraison\n\nOfferte dès 60 euros.\n\nRetours possibles.\n\n# Garantie\n\nCinq ans.');
+    expect(rest).toEqual([]);
+    expect(only!.heading).toBe('Horaires');
+    expect(only!.content).toBe('Ouvert le samedi.\n\nLivraison\nOfferte dès 60 euros.\n\nRetours possibles.\n\nGarantie\nCinq ans.');
+    expect(only!.embedText).toBe(`Atelier > Horaires\n${only!.content}`);
+  });
+
+  it('un texte qui commence avant tout intertitre : celui de la première section vient aussi dans le texte', () => {
+    const [only] = chunkKnowledge('Atelier', 'Bienvenue chez nous.\n\n# Horaires\n\nOuvert le samedi.');
+    expect(only).toMatchObject({ heading: null, content: 'Bienvenue chez nous.\n\nHoraires\nOuvert le samedi.' });
+  });
+
+  it('un dernier passage court rattaché au précédent garde lui aussi son titre', () => {
+    const grand = 'Un paragraphe de belle taille sur le bois massif. '.repeat(40).trim();
+    const chunks = chunkKnowledge('Atelier', `# Matériaux\n\n${grand}\n\n# Garantie\n\nCinq ans.`);
+    expect(chunks).toHaveLength(1);
+    expect(chunks[0]!.heading).toBe('Matériaux');
+    expect(chunks[0]!.content.endsWith('\n\nGarantie\nCinq ans.')).toBe(true);
+  });
+
+  it('un passage qui change de section n’a pas de titre en double : seule la nouvelle section est annoncée', () => {
+    const [only] = chunkKnowledge('Atelier', '# Horaires\n\nOuvert le samedi.\n\nFermé le dimanche.');
+    expect(only!.content).toBe('Ouvert le samedi.\n\nFermé le dimanche.');
+  });
+
+  it('un élément de liste qui finit par « : » annonce une sous-liste, il n’ouvre pas une section ; une ligne seule « Libellé : » en ouvre une', () => {
+    const [only] = chunkKnowledge('Liens', 'Livraison :\nSous 3 jours.\n\n- Notices dans des dictionnaires :\n- Britannica\n- Larousse\n\n1. Pièces suivantes :\n- Table');
+    expect(only!.heading).toBe('Livraison');
+    expect(only!.content).toContain('- Notices dans des dictionnaires :');
+    expect(only!.content).toContain('1. Pièces suivantes :');
+    expect(only!.content).not.toContain('Notices dans des dictionnaires\n');
   });
 
   it('un texte long est découpé en passages d’au plus la taille visée, sans perdre un mot', () => {
@@ -72,5 +106,43 @@ describe('chunkKnowledge : découper une fiche en passages', () => {
 
   it('normalise les retours à la ligne Windows', () => {
     expect(chunkKnowledge('T', 'Ligne un.\r\n\r\nLigne deux.')[0]!.content).toBe('Ligne un.\n\nLigne deux.');
+  });
+});
+
+describe('chunkSource : documents longs et pages', () => {
+  const long = Array.from({ length: 30 }, (_, i) => `Bloc ${i} ${'x'.repeat(2_000)}`).join('\n\n');
+
+  it('plafonne au nombre demandé et dit si le texte en aurait donné davantage', () => {
+    const all = chunkSource('Doc', long, 1_000);
+    expect(all.truncated).toBe(false);
+    expect(all.chunks.length).toBeGreaterThan(20);
+    const cut = chunkSource('Doc', long, 5);
+    expect(cut.chunks).toHaveLength(5);
+    expect(cut.truncated).toBe(true);
+    expect(cut.chunks).toEqual(all.chunks.slice(0, 5));
+  });
+
+  it('un texte vide ne donne rien', () => {
+    expect(chunkSource('Doc', '  \n ', 10)).toEqual({ chunks: [], truncated: false });
+  });
+
+  it('un texte sans sauts de page n’a pas de pages', () => {
+    expect(chunkKnowledge('T', 'Un seul bloc de texte.')[0]).not.toHaveProperty('pages');
+  });
+
+  it('retient les pages couvertes par chaque passage (sauts de page U+000C)', () => {
+    const page = (n: number) => `Page ${n}. ${'mot '.repeat(300)}`.trim();
+    const chunks = chunkSource('PDF', [page(1), page(2), page(3), page(4)].join('\f'), 10).chunks;
+    expect(chunks.length).toBeGreaterThanOrEqual(2);
+    expect(chunks[0]!.pages![0]).toBe(1);
+    expect(chunks[chunks.length - 1]!.pages![1]).toBe(4);
+    for (const c of chunks) expect(c.pages![0]).toBeLessThanOrEqual(c.pages![1]);
+    // Les pages se suivent d'un passage à l'autre, sans trou ni retour en arrière.
+    for (let i = 1; i < chunks.length; i++) expect(chunks[i]!.pages![0]).toBeGreaterThanOrEqual(chunks[i - 1]!.pages![0]);
+  });
+
+  it('une page courte seule garde son numéro, et une section continue d’une page à l’autre', () => {
+    const [only] = chunkKnowledge('PDF', '## Tarifs\nLivraison offerte.\fSuite des tarifs : reprise gratuite.');
+    expect(only).toMatchObject({ heading: 'Tarifs', pages: [1, 2] });
   });
 });

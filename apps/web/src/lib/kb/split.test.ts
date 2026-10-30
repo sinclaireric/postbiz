@@ -1,9 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import { knowledgeBlock, knowledgeEntrySize, KNOWLEDGE_BUDGET } from '@/lib/ai/prompt';
+import { textItem } from '@/lib/data/types';
 import type { KnowledgeItem } from '@/lib/data/types';
 import { splitKnowledge } from './split';
 
-const item = (id: string, over: Partial<KnowledgeItem> = {}): KnowledgeItem => ({
+const item = (id: string, over: Partial<KnowledgeItem> = {}): KnowledgeItem => textItem({
   id, title: `Fiche ${id}`, content: 'Contenu de la fiche.', updatedAt: '2026-10-27T10:00:00Z', pinned: true, chunkCount: 1, indexedAt: '2026-10-27T10:00:00Z', embeddedAt: null, ...over,
 });
 

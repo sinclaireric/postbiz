@@ -11,8 +11,10 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
-  // @postbiz/core est du TypeScript non compilé (workspace) : Next doit le transpiler.
-  transpilePackages: ['@postbiz/core'],
+  // @postbiz/core et @postbiz/kb sont du TypeScript non compilé (workspace) : Next doit les transpiler.
+  transpilePackages: ['@postbiz/core', '@postbiz/kb'],
+  // Le lecteur de PDF (pdf.js) se charge depuis node_modules à l'exécution, sans être empaqueté.
+  serverExternalPackages: ['unpdf'],
   async headers() {
     return [{ source: '/:path*', headers: securityHeaders }];
   },

@@ -1,11 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import type { AiRequest } from '@/lib/ai/types';
+import { textItem } from '@/lib/data/types';
 import type { KnowledgeItem, KnowledgeRepository } from '@/lib/data/types';
 import { assistQuery, consultForAssist, overviewPassages } from './consult';
 import { splitKnowledge } from './split';
 import type { KnowledgeHit, KnowledgeSearchQuery } from './types';
 
-const item = (id: string, over: Partial<KnowledgeItem> = {}): KnowledgeItem => ({
+const item = (id: string, over: Partial<KnowledgeItem> = {}): KnowledgeItem => textItem({
   id, title: `Fiche ${id}`, content: `Contenu de la fiche ${id}.`, updatedAt: '2026-10-27T10:00:00Z', pinned: true, chunkCount: 1, indexedAt: '2026-10-27T10:00:00Z', embeddedAt: null, ...over,
 });
 const hit = (over: Partial<KnowledgeHit> = {}): KnowledgeHit => ({ chunkId: 'c1', itemId: 'b', title: 'Fiche b', content: 'Livraison offerte.', heading: null, similarity: 0, termHits: 2, score: 0.02, ...over });

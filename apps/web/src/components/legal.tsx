@@ -11,7 +11,7 @@ export const CONTACT_EMAIL = process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? 'contact@g
 export const LEGAL_ENTITY = process.env.NEXT_PUBLIC_LEGAL_ENTITY?.trim() || 'Postbiz (getpostbiz.com)';
 
 /** Jour de la dernière révision des textes juridiques : à changer à chaque modification de fond. */
-export const LEGAL_UPDATED = '2026-10-23';
+export const LEGAL_UPDATED = '2026-10-25';
 
 /** Les textes juridiques n'existent qu'en français et en anglais : les autres langues affichent l'anglais, avec un avis traduit. */
 export async function LegalPage({ title, children }: { title: string; children: ReactNode }) {
@@ -48,6 +48,7 @@ export const legalTags = {
   gs: external('https://myaccount.google.com/permissions'),
   gp: external('https://policies.google.com/privacy'),
   del: (text: string) => <Link href="/suppression-des-donnees">{text}</Link>,
+  bot: (text: string) => <Link href="/postbizbot">{text}</Link>,
 };
 
 /** Paramètres {email} et {entity} des textes juridiques. */

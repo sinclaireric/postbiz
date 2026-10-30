@@ -1,9 +1,10 @@
 import { describe, expect, it, vi } from 'vitest';
+import { textItem } from '@/lib/data/types';
 import type { KnowledgeItem, KnowledgeRepository } from '@/lib/data/types';
 import { indexItem, indexMissing } from './indexing';
 import type { KnowledgeChunkInput } from './types';
 
-const item = (id: string, over: Partial<KnowledgeItem> = {}): KnowledgeItem => ({
+const item = (id: string, over: Partial<KnowledgeItem> = {}): KnowledgeItem => textItem({
   id, title: `Fiche ${id}`, content: 'Livraison offerte dès 60 euros.', updatedAt: '2026-10-27T10:00:00Z', pinned: true, chunkCount: 0, indexedAt: null, embeddedAt: null, ...over,
 });
 

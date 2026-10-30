@@ -642,9 +642,10 @@
         "p2": "Postbiz peut suspendre sans délai un compte qui menace la sécurité du service ou le compte de réseau social d’un utilisateur."
       },
       "s6": {
-        "h": "6. Assistant IA et réponses automatiques",
+        "h": "6. Assistant IA, base de connaissance et réponses automatiques",
         "p1": "L’assistant IA propose des brouillons à partir des instructions de l’utilisateur. Ses suggestions peuvent contenir des erreurs : l’utilisateur les relit avant de publier et en reste responsable. Le texte saisi dans l’assistant est transmis à notre prestataire d’IA pour produire la réponse (voir la politique de confidentialité).",
-        "p2": "Les réponses automatiques sont configurées par l’utilisateur, qui en est responsable."
+        "p2": "Les réponses automatiques sont configurées par l’utilisateur, qui en est responsable.",
+        "p3": "L’utilisateur garantit disposer des droits nécessaires sur les documents et les sites web qu’il ajoute à sa base de connaissance, et n’ajouter que des sites dont il a le droit de faire lire le contenu automatiquement. Postbiz ne lit que des pages accessibles publiquement, se présente sous le nom <bot>PostbizBot</bot> et suit les règles du fichier robots.txt de chaque site. L’utilisateur reste responsable des contenus qu’il ajoute et des brouillons qu’il en tire pour publier."
       },
       "s7": {
         "h": "7. Tarifs et paiement",
@@ -687,6 +688,7 @@
         "li4": "<b>Publications et médias :</b> textes, images et vidéos que vous programmez ou importez dans la bibliothèque, et leurs dates.",
         "li5": "<b>Assistant IA :</b> les instructions que vous saisissez dans l’assistant.",
         "li6": "<b>Usage :</b> journaux techniques nécessaires à la sécurité et au bon fonctionnement du service.",
+        "li7": "<b>Base de connaissance :</b> les fiches que vous rédigez, les documents que vous importez (conservés de façon privée dans votre espace) et le texte lu sur les pages publiques des sites web que vous ajoutez.",
         "li8": "<b>Paiement :</b> offre choisie, montants, dates, pays et statut de vos paiements (carte via Stripe, mobile money via PawaPay). Nous ne voyons ni ne conservons votre numéro de carte ni le code secret de votre portefeuille mobile.",
         "li9": "<b>Pays approximatif :</b> pour afficher les prix dans la bonne monnaie, le pays de la personne qui visite le site est déduit de son adresse IP (en-tête fourni par l’hébergeur ; à défaut, un service de géolocalisation interrogé depuis nos serveurs). Ce pays n’est pas conservé en base : seul celui que vous choisissez vous-même est mémorisé, dans un cookie."
       },
@@ -723,7 +725,7 @@
         "li1": "Supabase Inc. — base de données, authentification et stockage des fichiers.",
         "li2": "Vercel Inc. — hébergement du site et de l’application.",
         "li3": "Prestataire d’envoi d’e-mails — messages de connexion et notifications.",
-        "li4": "OpenAI — assistant IA, agent, génération d’images, recherche dans la base de connaissance et suggestions de réponse, uniquement quand vous les utilisez : le texte saisi, la base de connaissance (chaque fiche est aussi convertie en vecteurs numériques à l’enregistrement), les messages de la conversation pour laquelle vous demandez une réponse et, pour l’agent, le nom de vos canaux connectés et vos publications récentes lui sont transmis pour produire la réponse ; les images sont générées d’après la description que rédige l’agent.",
+        "li4": "OpenAI — assistant IA, agent, génération d’images, recherche dans la base de connaissance et suggestions de réponse, uniquement quand vous les utilisez : le texte saisi, la base de connaissance (les fiches, ainsi que le texte des documents et des sites web que vous ajoutez, sont aussi convertis en vecteurs numériques à l’enregistrement ou à l’ajout), les messages de la conversation pour laquelle vous demandez une réponse et, pour l’agent, le nom de vos canaux connectés et vos publications récentes lui sont transmis pour produire la réponse ; les images sont générées d’après la description que rédige l’agent.",
         "li5": "Evolink (Seedance) — génération de vidéos, uniquement quand vous demandez une vidéo à l’agent : la description de la vidéo et, si vous choisissez des images de référence, des liens temporaires vers ces images lui sont transmis.",
         "p1": "Les réseaux sociaux que vous connectez sont des responsables de traitement distincts, régis par leurs propres politiques. Certains sous-traitants sont situés hors de l’Union européenne, notamment aux États-Unis : les transferts reposent alors sur les mécanismes prévus par le RGPD (décision d’adéquation ou clauses contractuelles types).",
         "li6": "Stripe Payments Europe Ltd. — paiement par carte bancaire et gestion des abonnements.",
@@ -770,6 +772,26 @@
       "s4": {
         "h": "Par e-mail",
         "p": "Écrivez à <mail>{email}</mail> depuis l’adresse de votre compte. Nous confirmons la suppression par retour de message."
+      }
+    },
+    "bot": {
+      "title": "PostbizBot",
+      "s1": {
+        "h": "Qu’est-ce que PostbizBot ?",
+        "p": "PostbizBot est le robot que Postbiz utilise pour lire les pages publiques des sites web que ses clients ajoutent à leur base de connaissance, afin que l’assistant IA puisse s’en servir pour rédiger des publications et des réponses pour ce client. Il ne lit un site que parce qu’un client l’a demandé : il ne parcourt pas le web et ne l’indexe pas. Ce qu’il lit ne sert qu’à ce client, et n’est ni vendu ni publié."
+      },
+      "s2": {
+        "h": "Comment il se comporte",
+        "li1": "Il se présente avec l’identifiant <code>PostbizBot/1.0</code>, suivi de l’adresse de cette page.",
+        "li2": "Il ne lit que des pages publiques, jamais derrière une connexion, et reste sur le site qu’on lui a demandé de lire : 50 pages au plus par site, trouvées par le plan du site et par les liens des pages.",
+        "li3": "Il lit d’abord le fichier robots.txt du site et le suit, y compris la directive Crawl-delay (jusqu’à 10 secondes) ; sinon il attend au moins 0,7 seconde entre deux requêtes.",
+        "li4": "Il n’exécute pas de JavaScript, ne remplit aucun formulaire et n’accepte aucun cookie.",
+        "li5": "Il relit un site de lui-même au plus une fois par semaine ; son client peut aussi demander une nouvelle lecture, au plus une toutes les 10 minutes. Les pages qui n’ont pas changé ne sont pas enregistrées de nouveau."
+      },
+      "s3": {
+        "h": "Bloquer PostbizBot",
+        "p1": "Pour empêcher PostbizBot de lire votre site, ajoutez ces lignes au fichier robots.txt, à la racine de votre site. Il consulte ce fichier avant chaque lecture :",
+        "p2": "Pour ne bloquer qu’une partie du site, remplacez <code>/</code> par le chemin à exclure. Pour toute question, ou si PostbizBot vous gêne, écrivez à <mail>{email}</mail>."
       }
     }
   },
@@ -1382,7 +1404,10 @@
     "settings": "Réglages",
     "welcome": "Bienvenue",
     "titleTemplate": "{page} · Postbiz",
-    "knowledgeApp": "Base de connaissance"
+    "knowledgeApp": "Base de connaissance",
+    "bot": {
+      "title": "PostbizBot"
+    }
   },
   "auth": {
     "email": "E-mail",
@@ -2393,14 +2418,13 @@
     },
     "knowledgePage": {
       "intro": "Ce que l’IA sait de votre activité : ton de la marque, offres, produits, questions fréquentes. Elle s’en sert pour rédiger vos publications (assistant IA et agent) et pour suggérer des réponses dans l’inbox.",
-      "privacy": "Les fiches sont enregistrées dans votre espace Postbiz. Quand l’IA en a besoin, les passages concernés sont envoyés à OpenAI avec la demande : n’y mettez pas de données personnelles de clients.",
+      "privacy": "Les fiches, documents et sites sont enregistrés dans votre espace Postbiz. Quand l’IA en a besoin, les passages concernés sont envoyés à OpenAI avec la demande : n’y mettez pas de données personnelles de clients.",
       "demoNote": "Mode démo : la recherche se fait par les mots, aucune IA n’est appelée.",
       "noEmbeddings": "La recherche par le sens n’est pas active sur ce serveur (OPENAI_API_KEY absente) : l’IA ne cherche que par les mots.",
       "budget": "Fiches épinglées : {used} / {max} signes",
       "overBudget": "Les fiches épinglées dépassent le budget : les plus anciennes ne sont plus envoyées en entier, l’IA les consulte au besoin.",
       "list": "Fiches",
       "empty": "Aucune fiche pour l’instant. Commencez par le ton de votre marque, vos offres et vos questions fréquentes.",
-      "soon": "Bientôt : importer des documents (PDF, Word) et un site web.",
       "reindex": "Réindexer",
       "pin": {
         "on": "Toujours utilisée",
@@ -2430,7 +2454,94 @@
           "invalid": "Saisissez une question.",
           "rate_limited": "Trop de recherches d’affilée. Réessayez dans quelques minutes.",
           "failed": "La recherche a échoué. Réessayez dans un instant."
+        },
+        "page": "page {pages}"
+      },
+      "sourcesCount": "{count} / {max} sources",
+      "tabs": {
+        "text": "Texte",
+        "documents": "Documents",
+        "websites": "Sites web"
+      },
+      "docs": {
+        "hint": "Fichiers PDF (avec du texte), Word, texte, Markdown, CSV ou HTML, de {max} Mo au plus. L’IA les consulte quand la question s’y rapporte.",
+        "add": "Ajouter un document",
+        "uploading": "Envoi de « {name} »…",
+        "empty": "Aucun document pour l’instant. Ajoutez votre catalogue, vos conditions de vente ou une liste de prix.",
+        "demoNote": "Mode démo : le fichier est lu tout de suite sur ce serveur, sans stockage et sans IA."
+      },
+      "sites": {
+        "hint": "Postbiz lit les pages publiques du site ({max} au plus), respecte son fichier robots.txt et le relit chaque semaine. N’ajoutez que des sites dont vous avez le droit d’utiliser le contenu.",
+        "urlLabel": "Adresse du site",
+        "urlPlaceholder": "https://www.exemple.fr",
+        "scopeLabel": "Ce qu’il faut lire",
+        "scopeSite": "Tout le site ({max} pages au plus)",
+        "scopePage": "Cette page seulement",
+        "autoSync": "Relire le site chaque semaine",
+        "add": "Ajouter le site",
+        "adding": "Ajout…",
+        "empty": "Aucun site pour l’instant.",
+        "demoNote": "Mode démo : aucune page n’est lue sur Internet, un site d’exemple remplace le vôtre.",
+        "showPages": "Voir les pages lues",
+        "hidePages": "Masquer les pages",
+        "pagesRead": "Pages lues : {count}",
+        "pagesLoading": "Chargement…",
+        "noPages": "Aucune page lue pour l’instant."
+      },
+      "sources": {
+        "status": {
+          "pending": "En attente",
+          "processing": "Lecture en cours…",
+          "ready": "Prêt",
+          "failed": "Échec"
+        },
+        "refresh": "Actualiser",
+        "retry": "Réessayer",
+        "syncedAt": "Dernière lecture : {when}",
+        "weekly": "Relu chaque semaine",
+        "pdfPages": "Pages : {count}",
+        "retrying": "Nouvel essai prévu : {reason}",
+        "syncFailed": "La dernière actualisation a échoué, le contenu précédent est conservé : {reason}",
+        "stalled": "Toujours en attente : les documents et les sites sont lus par le worker de Postbiz, qui doit être démarré.",
+        "warnings": {
+          "truncated": "Seul le début est gardé : la limite de pages ou de passages d’une source est atteinte.",
+          "timeLimit": "La lecture s’est arrêtée à la durée maximale : la suite sera lue à la prochaine actualisation.",
+          "spa": "Pages qui n’affichent leur contenu que par JavaScript, non lues : {count}",
+          "robots": "Pages ignorées parce que le site demande aux robots de ne pas les lire (robots.txt) : {count}",
+          "failed": "Pages qui n’ont pas pu être lues : {count}"
+        },
+        "errors": {
+          "unsupported_type": "Ce type de fichier n’est pas pris en charge (PDF, Word, texte, Markdown, CSV ou HTML).",
+          "too_large": "Le fichier est trop volumineux.",
+          "file_missing": "Le fichier est introuvable dans le stockage : renvoyez-le.",
+          "corrupt": "Le fichier est abîmé, ou n’est pas ce que son nom annonce.",
+          "encrypted": "Le fichier est protégé par un mot de passe : retirez la protection et renvoyez-le.",
+          "no_text": "Aucun texte à lire. Un PDF fait d’images scannées n’est pas lu : il faudrait de la reconnaissance de caractères.",
+          "invalid_url": "Cette adresse n’est pas valable.",
+          "blocked_address": "Cette adresse n’est pas accessible publiquement.",
+          "dns_failed": "Le nom de domaine est introuvable.",
+          "unreachable": "Le site ne répond pas.",
+          "timeout": "Le site a mis trop de temps à répondre.",
+          "tls_error": "Le certificat de sécurité du site n’est pas valide.",
+          "http_error": "Le site a refusé de fournir la page, ou n’a pas pu le faire.",
+          "not_html": "Cette adresse n’est pas une page web.",
+          "robots_disallowed": "Le site demande aux robots de ne pas lire cette page (robots.txt).",
+          "redirect_loop": "Le site redirige en boucle.",
+          "empty_site": "Aucun texte lisible : le site affiche sans doute son contenu avec JavaScript, que Postbiz n’exécute pas.",
+          "internal": "Une erreur est survenue. Réessayez dans quelques minutes."
         }
+      },
+      "errors": {
+        "filesLimit": "Vous avez atteint le maximum de {max} documents.",
+        "sitesLimit": "Vous avez atteint le maximum de {max} sites.",
+        "dailyLimit": "Trop de documents et de sites ajoutés aujourd’hui. Réessayez demain.",
+        "duplicate": "Ce site est déjà dans votre base de connaissance.",
+        "invalidUrl": "Cette adresse n’est pas valable, ou le site n’est pas public.",
+        "fileTooLarge": "Le fichier est trop volumineux ({max} Mo au plus).",
+        "unsupportedType": "Ce type de fichier n’est pas pris en charge (PDF, Word, texte, Markdown, CSV ou HTML).",
+        "fileMissing": "Le fichier est introuvable. Renvoyez-le.",
+        "syncTooSoon": "Cette source vient d’être actualisée. Réessayez dans quelques minutes.",
+        "uploadFailed": "L’envoi a échoué. Réessayez."
       }
     }
   }

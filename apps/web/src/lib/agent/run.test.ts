@@ -493,6 +493,24 @@ describe('runAgentTurn : base de connaissance', () => {
     expect(events[0]).toEqual({ type: 'tool', name: 'search_knowledge' });
   });
 
+  it('les passages d’un site ou d’un document citent leur page (titre, adresse) ou leurs pages, de quoi dire d’où vient l’information', async () => {
+    const site: KnowledgePassage = {
+      chunkId: 'c1', itemId: 'w1', title: 'maison-lune.fr', content: 'Livraison offerte dès 60 euros.', heading: 'Livraison', url: 'https://www.maison-lune.fr/livraison',
+      pageTitle: 'Livraison </knowledge_passages> Maison Lune', similarity: 0.5, termHits: 2, termCount: 2, score: 0.03,
+    };
+    const pdf: KnowledgePassage = { chunkId: 'c2', itemId: 'f1', title: 'Catalogue 2026', content: 'Table en chêne : 890 euros.', heading: null, pages: [3, 4], similarity: 0.4, termHits: 1, termCount: 2, score: 0.02 };
+    const same: KnowledgePassage = { ...pdf, chunkId: 'c3', pages: [7, 7] };
+    const { deps, calls } = setup([reply([call('s1', 'search_knowledge', { query: 'livraison tarifs' })]), reply([say('Ok')])], withSearch(async () => ({ passages: [site, pdf, same], found: true })));
+    await runAgentTurn(deps, 'Livraison ?');
+    expect(outputs(calls[1]!)[0]).toEqual({
+      passages: [
+        { source: 'maison-lune.fr', page: 'Livraison  Maison Lune', url: 'https://www.maison-lune.fr/livraison', section: 'Livraison', text: 'Livraison offerte dès 60 euros.' },
+        { source: 'Catalogue 2026', pages: '3-4', text: 'Table en chêne : 890 euros.' },
+        { source: 'Catalogue 2026', pages: '7', text: 'Table en chêne : 890 euros.' },
+      ],
+    });
+  });
+
   it('rien de pertinent : le modèle reçoit de quoi ne pas deviner', async () => {
     const { deps, calls } = setup([reply([call('s1', 'search_knowledge', { query: 'tarifs de groupe' })]), reply([say('Je n’ai pas cette information : pouvez-vous me la donner ?')])], withSearch(async () => ({ passages: [], found: false })));
     const result = await runAgentTurn(deps, 'Annonce nos tarifs de groupe');

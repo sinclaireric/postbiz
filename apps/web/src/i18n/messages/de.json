@@ -744,7 +744,10 @@
     "settings": "Einstellungen",
     "welcome": "Willkommen",
     "titleTemplate": "{page} · Postbiz",
-    "knowledgeApp": "Wissensdatenbank"
+    "knowledgeApp": "Wissensdatenbank",
+    "bot": {
+      "title": "PostbizBot"
+    }
   },
   "legal": {
     "updated": "Zuletzt aktualisiert: {date}",
@@ -1678,14 +1681,13 @@
     },
     "knowledgePage": {
       "intro": "Was die KI über Ihr Unternehmen weiß: Markenton, Angebote, Produkte, häufige Fragen. Sie nutzt es, um Ihre Beiträge zu schreiben (KI-Assistent und Agent) und um Antworten in der Inbox vorzuschlagen.",
-      "privacy": "Die Einträge werden in Ihrem Postbiz-Bereich gespeichert. Braucht die KI sie, werden die betreffenden Passagen mit der Anfrage an OpenAI gesendet: Tragen Sie dort keine personenbezogenen Kundendaten ein.",
+      "privacy": "Einträge, Dokumente und Websites werden in Ihrem Postbiz-Bereich gespeichert. Braucht die KI sie, werden die betreffenden Passagen mit der Anfrage an OpenAI gesendet: Tragen Sie dort keine personenbezogenen Kundendaten ein.",
       "demoNote": "Demomodus: Die Suche arbeitet mit Wörtern, es wird keine KI aufgerufen.",
       "noEmbeddings": "Die Suche nach Bedeutung ist auf diesem Server nicht aktiv (OPENAI_API_KEY fehlt): Die KI sucht nur nach Wörtern.",
       "budget": "Angeheftete Einträge: {used} / {max} Zeichen",
       "overBudget": "Die angehefteten Einträge überschreiten das Budget: Die ältesten werden nicht mehr vollständig gesendet, die KI schlägt sie bei Bedarf nach.",
       "list": "Einträge",
       "empty": "Noch keine Einträge. Beginnen Sie mit dem Ton Ihrer Marke, Ihren Angeboten und Ihren häufigen Fragen.",
-      "soon": "Demnächst: Dokumente (PDF, Word) und eine Website importieren.",
       "reindex": "Neu indexieren",
       "pin": {
         "on": "Immer verwendet",
@@ -1715,7 +1717,94 @@
           "invalid": "Geben Sie eine Frage ein.",
           "rate_limited": "Zu viele Suchen hintereinander. Versuchen Sie es in einigen Minuten erneut.",
           "failed": "Die Suche ist fehlgeschlagen. Versuchen Sie es gleich noch einmal."
+        },
+        "page": "Seite {pages}"
+      },
+      "sourcesCount": "{count} / {max} Quellen",
+      "tabs": {
+        "text": "Text",
+        "documents": "Dokumente",
+        "websites": "Websites"
+      },
+      "docs": {
+        "hint": "PDF-Dateien (mit Text), Word-, Text-, Markdown-, CSV- oder HTML-Dateien, jeweils bis {max} MB. Die KI schlägt darin nach, wenn eine Frage dazu passt.",
+        "add": "Dokument hinzufügen",
+        "uploading": "„{name}“ wird hochgeladen …",
+        "empty": "Noch keine Dokumente. Fügen Sie Ihren Katalog, Ihre Verkaufsbedingungen oder eine Preisliste hinzu.",
+        "demoNote": "Demomodus: Die Datei wird sofort auf diesem Server gelesen, ohne Speicher und ohne KI."
+      },
+      "sites": {
+        "hint": "Postbiz liest die öffentlichen Seiten der Website (bis zu {max}), beachtet deren robots.txt und liest sie jede Woche erneut. Fügen Sie nur Websites hinzu, deren Inhalt Sie verwenden dürfen.",
+        "urlLabel": "Adresse der Website",
+        "urlPlaceholder": "https://www.beispiel.de",
+        "scopeLabel": "Was gelesen werden soll",
+        "scopeSite": "Die ganze Website (bis zu {max} Seiten)",
+        "scopePage": "Nur diese Seite",
+        "autoSync": "Website jede Woche erneut lesen",
+        "add": "Website hinzufügen",
+        "adding": "Wird hinzugefügt …",
+        "empty": "Noch keine Websites.",
+        "demoNote": "Demomodus: Es wird keine Seite im Internet gelesen, eine Beispiel-Website ersetzt Ihre.",
+        "showPages": "Gelesene Seiten anzeigen",
+        "hidePages": "Seiten ausblenden",
+        "pagesRead": "Gelesene Seiten: {count}",
+        "pagesLoading": "Wird geladen …",
+        "noPages": "Noch keine Seite gelesen."
+      },
+      "sources": {
+        "status": {
+          "pending": "Wartet",
+          "processing": "Wird gelesen …",
+          "ready": "Bereit",
+          "failed": "Fehlgeschlagen"
+        },
+        "refresh": "Aktualisieren",
+        "retry": "Erneut versuchen",
+        "syncedAt": "Zuletzt gelesen: {when}",
+        "weekly": "Wird jede Woche erneut gelesen",
+        "pdfPages": "Seiten: {count}",
+        "retrying": "Neuer Versuch geplant: {reason}",
+        "syncFailed": "Die letzte Aktualisierung ist fehlgeschlagen, der bisherige Inhalt bleibt erhalten: {reason}",
+        "stalled": "Wartet weiterhin: Dokumente und Websites werden vom Postbiz-Worker gelesen, der laufen muss.",
+        "warnings": {
+          "truncated": "Nur der Anfang wird behalten: Die Grenze für Seiten oder Passagen einer Quelle ist erreicht.",
+          "timeLimit": "Das Lesen wurde bei der Höchstdauer beendet: Der Rest wird bei der nächsten Aktualisierung gelesen.",
+          "spa": "Seiten, die ihren Inhalt nur mit JavaScript anzeigen, wurden nicht gelesen: {count}",
+          "robots": "Übersprungene Seiten, weil die Website Robotern das Lesen untersagt (robots.txt): {count}",
+          "failed": "Seiten, die nicht gelesen werden konnten: {count}"
+        },
+        "errors": {
+          "unsupported_type": "Dieser Dateityp wird nicht unterstützt (PDF, Word, Text, Markdown, CSV oder HTML).",
+          "too_large": "Die Datei ist zu groß.",
+          "file_missing": "Die Datei wurde im Speicher nicht gefunden: Senden Sie sie erneut.",
+          "corrupt": "Die Datei ist beschädigt oder entspricht nicht ihrer Endung.",
+          "encrypted": "Die Datei ist mit einem Passwort geschützt: Entfernen Sie den Schutz und senden Sie sie erneut.",
+          "no_text": "Kein lesbarer Text. Ein PDF aus eingescannten Bildern kann nicht gelesen werden: Dafür wäre Texterkennung nötig.",
+          "invalid_url": "Diese Adresse ist ungültig.",
+          "blocked_address": "Diese Adresse ist nicht öffentlich erreichbar.",
+          "dns_failed": "Der Domainname wurde nicht gefunden.",
+          "unreachable": "Die Website antwortet nicht.",
+          "timeout": "Die Website hat zu lange für die Antwort gebraucht.",
+          "tls_error": "Das Sicherheitszertifikat der Website ist ungültig.",
+          "http_error": "Die Website hat die Seite verweigert oder konnte sie nicht liefern.",
+          "not_html": "Diese Adresse ist keine Webseite.",
+          "robots_disallowed": "Die Website untersagt Robotern, diese Seite zu lesen (robots.txt).",
+          "redirect_loop": "Die Website leitet im Kreis weiter.",
+          "empty_site": "Kein lesbarer Text: Die Website zeigt ihren Inhalt vermutlich mit JavaScript an, das Postbiz nicht ausführt.",
+          "internal": "Es ist ein Fehler aufgetreten. Versuchen Sie es in einigen Minuten erneut."
         }
+      },
+      "errors": {
+        "filesLimit": "Sie haben das Maximum von {max} Dokumenten erreicht.",
+        "sitesLimit": "Sie haben das Maximum von {max} Websites erreicht.",
+        "dailyLimit": "Heute wurden zu viele Dokumente und Websites hinzugefügt. Versuchen Sie es morgen erneut.",
+        "duplicate": "Diese Website ist bereits in Ihrer Wissensdatenbank.",
+        "invalidUrl": "Diese Adresse ist ungültig, oder die Website ist nicht öffentlich.",
+        "fileTooLarge": "Die Datei ist zu groß (höchstens {max} MB).",
+        "unsupportedType": "Dieser Dateityp wird nicht unterstützt (PDF, Word, Text, Markdown, CSV oder HTML).",
+        "fileMissing": "Die Datei wurde nicht gefunden. Senden Sie sie erneut.",
+        "syncTooSoon": "Diese Quelle wurde gerade erst aktualisiert. Versuchen Sie es in einigen Minuten erneut.",
+        "uploadFailed": "Das Hochladen ist fehlgeschlagen. Versuchen Sie es erneut."
       }
     }
   }

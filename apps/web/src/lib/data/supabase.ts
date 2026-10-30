@@ -11,9 +11,9 @@ import { workspaceError } from '@/lib/workspaces';
 import type {
   ConversationDetail, ConversationStatus, ConversationSummary, InboxRepository, MessageItem, NetworkId, NoteItem,
 } from '@/lib/inbox/types';
-import { KNOWLEDGE_LIMITS } from './types';
+import { KNOWLEDGE_LIMITS, textItem } from './types';
 import type {
-  AgentRepository, AppContext, CreatePostInput, GenerationRepository, IntegrationItem, KnowledgeInput, KnowledgeItem, KnowledgeRepository, MediaItem, MediaRepository, InvitationItem, MemberItem, NotificationItem, OrgRole, PostItem, PostMedia, PostsRepository, ReceivedInvitation, Repositories, Result, SuggestionRepository, VideoJobRecord, WorkspaceRepository,
+  AgentRepository, AppContext, CreatePostInput, GenerationRepository, IntegrationItem, KnowledgeInput, KnowledgeItem, KnowledgePage, KnowledgeRepository, MediaItem, MediaRepository, InvitationItem, MemberItem, NotificationItem, OrgRole, PostItem, PostMedia, PostsRepository, ReceivedInvitation, Repositories, Result, SuggestionRepository, VideoJobRecord, WorkspaceRepository,
 } from './types';
 
 // Implémentation Supabase. Toutes les requêtes passent par la clé « anon » + la session de l'utilisateur :
@@ -359,11 +359,42 @@ export function createSupabaseRepositories(supabase: SupabaseClient, ctx: AppCon
     },
   };
 
-  const KNOWLEDGE_COLUMNS = 'id, title, content, updated_at, pinned, chunk_count, indexed_at, embedded_at';
-  const toKnowledge = (k: Row): KnowledgeItem => ({
-    id: k.id, title: k.title, content: k.content, updatedAt: k.updated_at, pinned: k.pinned !== false, chunkCount: k.chunk_count ?? 0,
-    indexedAt: k.indexed_at ?? null, embeddedAt: k.embedded_at ?? null,
-  });
+  const KNOWLEDGE_COLUMNS = 'id, title, content, updated_at, pinned, chunk_count, indexed_at, embedded_at, kind, status, url, file_path, size_bytes, error, stats, config, synced_at, run_at';
+  /** Le nom d'origine d'un fichier : son chemin « <organisation>/<identifiant>-<nom> » sans le dossier ni l'identifiant. */
+  const fileNameOf = (path: string | null): string | null =>
+    path ? path.replace(/^[^/]*\//, '').replace(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}-/i, '') : null;
+  const toKnowledge = (k: Row): KnowledgeItem => {
+    const config = (k.config ?? {}) as Row;
+    return textItem({
+      id: k.id, title: k.title, content: k.content ?? '', updatedAt: k.updated_at, pinned: k.pinned !== false, chunkCount: k.chunk_count ?? 0,
+      indexedAt: k.indexed_at ?? null, embeddedAt: k.embedded_at ?? null,
+      kind: k.kind === 'file' || k.kind === 'website' ? k.kind : 'text',
+      status: k.status === 'pending' || k.status === 'processing' || k.status === 'failed' ? k.status : 'ready',
+      url: k.url ?? null, fileName: fileNameOf(k.file_path ?? null), sizeBytes: k.size_bytes === null || k.size_bytes === undefined ? null : Number(k.size_bytes),
+      error: typeof k.error === 'string' ? k.error : null, stats: (k.stats ?? {}) as KnowledgeItem['stats'],
+      scope: k.kind === 'website' ? (config.scope === 'page' ? 'page' : 'site') : null, autoSync: config.autoSync !== false,
+      syncedAt: k.synced_at ?? null, runAt: k.run_at ?? null,
+    });
+  };
+  /** Le message d'une exception de la base (les fonctions `knowledge_*` lèvent des codes lisibles), en erreur de formulaire traduisible. */
+  const sourceError = (message: string | undefined): FormError => {
+    const m = message ?? '';
+    const known: [string, FormError][] = [
+      ['knowledge_items_limit', { key: 'app.knowledge.errLimit', params: { max: KNOWLEDGE_LIMITS.items } }],
+      ['knowledge_files_limit', { key: 'app.knowledgePage.errors.filesLimit', params: { max: KNOWLEDGE_LIMITS.files } }],
+      ['knowledge_sites_limit', { key: 'app.knowledgePage.errors.sitesLimit', params: { max: KNOWLEDGE_LIMITS.sites } }],
+      ['knowledge_daily_limit', { key: 'app.knowledgePage.errors.dailyLimit' }],
+      ['knowledge_duplicate', { key: 'app.knowledgePage.errors.duplicate' }],
+      ['knowledge_invalid_url', { key: 'app.knowledgePage.errors.invalidUrl' }],
+      ['knowledge_invalid_scope', { key: 'app.knowledgePage.errors.invalidUrl' }],
+      ['knowledge_file_too_large', { key: 'app.knowledgePage.errors.fileTooLarge', params: { max: Math.round(KNOWLEDGE_LIMITS.fileBytes / 1_048_576) } }],
+      ['knowledge_unsupported_type', { key: 'app.knowledgePage.errors.unsupportedType' }],
+      ['knowledge_file_missing', { key: 'app.knowledgePage.errors.fileMissing' }],
+      ['knowledge_invalid_path', { key: 'app.knowledgePage.errors.fileMissing' }],
+      ['knowledge_sync_too_soon', { key: 'app.knowledgePage.errors.syncTooSoon' }],
+    ];
+    return known.find(([code]) => m.includes(code))?.[1] ?? { key: 'app.knowledge.errSave' };
+  };
 
   const knowledge: KnowledgeRepository = {
     async list() {
@@ -400,8 +431,12 @@ export function createSupabaseRepositories(supabase: SupabaseClient, ctx: AppCon
     },
 
     async remove(id) {
+      const { data: row } = await supabase.from('knowledge_items').select('kind, file_path').eq('id', id).eq('org_id', ctx.org.id).maybeSingle();
       const { error } = await supabase.from('knowledge_items').delete().eq('id', id).eq('org_id', ctx.org.id);
-      return error ? fail({ key: 'app.knowledge.errSave' }) : { ok: true };
+      if (error) return fail({ key: 'app.knowledge.errSave' });
+      // Le fichier d'un document part avec lui (les passages partent avec la ligne, en cascade) ; un fichier orphelin n'est pas grave, on ne s'en inquiète pas.
+      if (row?.kind === 'file' && typeof row.file_path === 'string') await supabase.storage.from('knowledge').remove([row.file_path]).catch(() => undefined);
+      return { ok: true };
     },
 
     async replaceChunks(itemId, chunks) {
@@ -414,10 +449,37 @@ export function createSupabaseRepositories(supabase: SupabaseClient, ctx: AppCon
     async search(q) {
       const { data, error } = await supabase.rpc('knowledge_search', { p_org: ctx.org.id, p_embedding: q.embedding, p_terms: q.terms, p_limit: q.limit, p_per_item: q.perItem, p_exclude: q.exclude });
       if (error) throw new Error(`knowledge_search : ${error.code ?? 'erreur'}`);
-      return ((data ?? []) as Row[]).map((r): KnowledgeHit => ({
-        chunkId: r.chunk_id, itemId: r.item_id, title: r.title, content: r.content, heading: typeof r.meta?.heading === 'string' ? r.meta.heading : null,
-        similarity: Number(r.similarity) || 0, termHits: Number(r.term_hits) || 0, score: Number(r.score) || 0,
-      }));
+      return ((data ?? []) as Row[]).map((r): KnowledgeHit => {
+        const meta = (r.meta ?? {}) as Row;
+        const pages = Array.isArray(meta.pages) && meta.pages.length === 2 ? ([Number(meta.pages[0]), Number(meta.pages[1])] as [number, number]) : null;
+        return {
+          chunkId: r.chunk_id, itemId: r.item_id, title: r.title, content: r.content, heading: typeof meta.heading === 'string' ? meta.heading : null,
+          url: typeof meta.url === 'string' ? meta.url : null, pageTitle: typeof meta.title === 'string' ? meta.title : null, pages,
+          similarity: Number(r.similarity) || 0, termHits: Number(r.term_hits) || 0, score: Number(r.score) || 0,
+        };
+      });
+    },
+
+    async addFile(input) {
+      const { data, error } = await supabase.rpc('knowledge_add_file', { p_org: ctx.org.id, p_path: input.path, p_title: input.title, p_size: input.size });
+      return error || !data ? fail(sourceError(error?.message)) : { ok: true, id: String(data) };
+    },
+
+    async addWebsite(input) {
+      const { data, error } = await supabase.rpc('knowledge_add_website', {
+        p_org: ctx.org.id, p_url: input.url, p_title: input.title, p_scope: input.scope, p_auto_sync: input.autoSync,
+      });
+      return error || !data ? fail(sourceError(error?.message)) : { ok: true, id: String(data) };
+    },
+
+    async requestSync(id) {
+      const { error } = await supabase.rpc('knowledge_request_sync', { p_item: id });
+      return error ? fail(sourceError(error.message)) : { ok: true };
+    },
+
+    async pages(id): Promise<KnowledgePage[]> {
+      const { data } = await supabase.rpc('knowledge_source_pages', { p_item: id });
+      return ((data ?? []) as Row[]).map((r) => ({ url: String(r.url), title: typeof r.title === 'string' && r.title ? r.title : String(r.url), chunks: Number(r.chunks) || 0 }));
     },
   };
 

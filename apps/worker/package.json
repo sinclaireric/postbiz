@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@postbiz/core": "workspace:*",
+    "@postbiz/kb": "workspace:*",
     "@supabase/supabase-js": "2.118.0",
     "tsx": "4.23.15"
   },

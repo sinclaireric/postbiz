@@ -1,0 +1,31 @@
+{
+  "name": "@postbiz/kb",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Base de connaissance : constantes, découpage en passages, embeddings, lecture des documents (PDF, Word, texte, CSV, HTML), réseau protégé pour lire des sites web, et l'ingestion des fichiers et des sites. Partagé par l'app web (mode démo, recherche) et le worker (production).",
+  "type": "module",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./chunk": "./src/chunk.ts",
+    "./embed": "./src/embed.ts",
+    "./net": "./src/net/index.ts",
+    "./extract": "./src/extract/index.ts",
+    "./ingest": "./src/ingest/index.ts"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "htmlparser2": "12.0.0",
+    "openai": "^7.43.0",
+    "unpdf": "1.9.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "typescript": "5.9.3",
+    "vitest": "3.2.7"
+  }
+}
