@@ -1,5 +1,5 @@
 import { beforeAll, describe, expect, it } from 'vitest';
-import { asAnon, asService, asUser, createDb, createUser, q, seedWorld, type Db, type World } from './harness';
+import { applyMigration, asAnon, asService, asUser, createDb, createUser, q, seedWorld, type Db, type World } from './harness';
 
 let db: Db;
 let w: World;
@@ -339,5 +339,18 @@ describe('suppressions et temps réel', () => {
   it('les deux tables sont publiées en temps réel (la RLS filtre ce que chacun reçoit)', async () => {
     const rows = await q<{ tablename: string }>(db, `select tablename from pg_publication_tables where pubname = 'supabase_realtime' and tablename like 'support_%'`);
     expect(rows.map((r) => r.tablename).sort()).toEqual(['support_conversations', 'support_messages']);
+  });
+});
+
+describe('prérequis de la migration', () => {
+  it('s’arrête avec un message clair, sans rien créer, si la suspension de comptes n’est pas appliquée', async () => {
+    const early = await createDb({ before: '20261027000001_user_suspension.sql' });
+    await expect(applyMigration(early, '20261104000001_support_chat.sql')).rejects.toThrow(/Prérequis manquant.*20261027000001_user_suspension/);
+    expect(await q(early, `select to_regclass('public.support_conversations') as t`)).toEqual([{ t: null }]);
+  });
+
+  it('s’arrête de même si l’espace propriétaire n’est pas appliqué', async () => {
+    const early = await createDb({ before: '20261025000001_platform_admin.sql' });
+    await expect(applyMigration(early, '20261104000001_support_chat.sql')).rejects.toThrow(/Prérequis manquant.*20261025000001_platform_admin/);
   });
 });

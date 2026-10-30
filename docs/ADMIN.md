@@ -70,7 +70,7 @@ La table `subscriptions` (une ligne par organisation) est alimentée par l'essai
 
 Chaque utilisateur peut écrire au support depuis le site (bouton **Support** de l'en-tête, page `/app/support`) et depuis l'application mobile (Compte → **Écrire au support**). Vous répondez depuis `/admin/support` ; l'onglet **Support** du menu affiche le nombre de conversations avec des messages non lus.
 
-**Mise en route.** Appliquer `supabase/migrations/20261104000001_support_chat.sql` (après les précédentes), comme les autres migrations. Sans elle, `/admin/support` affiche un message d'installation et le reste de l'espace fonctionne.
+**Mise en route.** Appliquer `supabase/migrations/20261104000001_support_chat.sql`, **après** `20261025000001_platform_admin.sql` et `20261027000001_user_suspension.sql` (elle utilise `is_platform_admin()` et `is_suspended()` : sans elles, la migration s'arrête avec « Prérequis manquant » avant de créer quoi que ce soit). Sans elle, `/admin/support` affiche un message d'installation et le reste de l'espace fonctionne.
 
 **Fonctionnement.**
 - Une conversation par utilisateur (tables `support_conversations` et `support_messages`), rattachée à l'espace de travail où il se trouvait à son dernier message. Un nouveau message d'un utilisateur rouvre une conversation résolue.

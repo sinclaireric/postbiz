@@ -11,6 +11,20 @@
 --
 -- Pièces jointes : pas dans cette version (texte seulement). Elles s'ajouteront par une migration à part (bucket privé, politique par chemin).
 
+-- ---------------------------------------------------------------- prérequis
+-- Cette migration s'appuie sur l'espace propriétaire (is_platform_admin, admin_like_pattern : 20261025000001_platform_admin.sql) et sur la suspension de
+-- comptes (is_suspended, user_is_suspended : 20261027000001_user_suspension.sql). Si l'une manque, on le dit clairement, avant de créer quoi que ce soit.
+do $$
+begin
+  if to_regprocedure('public.is_platform_admin()') is null or to_regprocedure('public.admin_like_pattern(text)') is null then
+    raise exception 'Prérequis manquant : appliquez d''abord supabase/migrations/20261025000001_platform_admin.sql (puis 20261026000001 et 20261027000001), dans l''ordre.' using errcode = '42883';
+  end if;
+  if to_regprocedure('public.is_suspended()') is null or to_regprocedure('public.user_is_suspended(uuid)') is null then
+    raise exception 'Prérequis manquant : appliquez d''abord supabase/migrations/20261027000001_user_suspension.sql (suspension de comptes).' using errcode = '42883';
+  end if;
+end;
+$$;
+
 -- ---------------------------------------------------------------- tables
 create table public.support_conversations (
   id uuid primary key default gen_random_uuid(),
