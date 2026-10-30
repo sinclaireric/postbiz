@@ -209,46 +209,32 @@
     }
   },
   "pricing": {
-    "title": "Giá đơn giản, <accent>công khai ngay từ bản beta</accent>",
-    "subtitle": "Ba gói theo quy mô nhóm của bạn. Mọi thứ đều miễn phí trong thời gian beta, không cần thẻ tín dụng.",
+    "title": "Giá đơn giản, <accent>bằng đô la hoặc franc CFA</accent>",
+    "subtitle": "Bắt đầu miễn phí, nâng lên gói trả phí khi nhóm của bạn lớn lên.",
     "billingLabel": "Chu kỳ thanh toán",
     "monthly": "Hàng tháng",
     "yearly": "Hàng năm",
     "discount": "−{percent}%",
     "perMonth": "/ tháng",
-    "billedYearly": "Thanh toán hàng năm · bạn tiết kiệm {amount}",
     "billedMonthly": "Thanh toán hàng tháng",
     "popular": "Phổ biến",
     "cta": "Bắt đầu miễn phí",
-    "inherits": "Tất cả của {plan}, cộng thêm:",
     "plans": {
-      "starter": {
-        "name": "Starter",
-        "tagline": "Dành cho nhà sáng tạo nội dung hoặc thương hiệu nhỏ mới bắt đầu.",
-        "f1": "3 kênh được kết nối",
-        "f2": "1 thành viên",
-        "f3": "Lên lịch và lịch đăng",
-        "f4": "Hộp thư hợp nhất",
-        "f5": "Ứng dụng di động"
+      "free": {
+        "name": "Miễn phí",
+        "tagline": "Để làm quen với Postbiz và quản lý vài tài khoản."
       },
-      "pro": {
-        "name": "Pro",
-        "tagline": "Dành cho nhóm trả lời khách hàng mỗi ngày.",
-        "f1": "10 kênh được kết nối",
-        "f2": "5 thành viên",
-        "f3": "Phân công và ghi chú nội bộ",
-        "f4": "Trả lời nhanh",
-        "f5": "Thông báo đẩy",
-        "f6": "Tìm kiếm trong mọi tin nhắn"
+      "standard": {
+        "name": "Tiêu chuẩn",
+        "tagline": "Dành cho nhà sáng tạo hoặc thương hiệu nhỏ đăng bài mỗi tuần."
       },
       "team": {
-        "name": "Team",
-        "tagline": "Dành cho agency hoặc nhiều thương hiệu.",
-        "f1": "Không giới hạn kênh",
-        "f2": "15 thành viên",
-        "f3": "Vai trò và quyền hạn",
-        "f4": "Tự động tối ưu video",
-        "f5": "Hỗ trợ ưu tiên"
+        "name": "Nhóm",
+        "tagline": "Dành cho nhóm đăng bài và trả lời mỗi ngày."
+      },
+      "agency": {
+        "name": "Đại lý",
+        "tagline": "Dành cho đại lý quản lý nhiều tài khoản khách hàng."
       }
     },
     "custom": {
@@ -280,20 +266,192 @@
         "search": "Tìm kiếm trong toàn bộ lịch sử",
         "roles": "Vai trò và quyền hạn",
         "video": "Tự động tối ưu video",
-        "support": "Hỗ trợ ưu tiên"
+        "support": "Hỗ trợ ưu tiên",
+        "knowledge": "Kiến thức (tài liệu / trang web)"
       }
     },
     "faq": {
       "title": "Câu hỏi về bảng giá",
       "more": "Còn câu hỏi khác? <link>Liên hệ chúng tôi</link>.",
-      "q1": "Bản beta có thực sự miễn phí không?",
-      "a1": "Có. Trong thời gian beta, tất cả các gói đều miễn phí và không yêu cầu thẻ tín dụng. Mức giá ở trên là mức chúng tôi dự kiến áp dụng; chúng tôi sẽ thông báo trước khá lâu khi có bất kỳ thay đổi nào.",
+      "q1": "Tôi có thể dùng thử trước khi trả tiền không?",
+      "a1": "Có. Gói Miễn phí không giới hạn thời gian, và mỗi người dùng mới được dùng thử gói Tiêu chuẩn 14 ngày, không cần thẻ.",
       "q2": "Tôi có thể đổi gói không?",
-      "a2": "Bất cứ lúc nào. Các tính năng của gói cao hơn có hiệu lực ngay lập tức.",
+      "a2": "Bất cứ lúc nào. Tính năng gói cao hơn dùng được ngay; với ví di động, thời gian còn lại của gói cũ sẽ được quy đổi.",
       "q3": "Điều gì xảy ra nếu tôi vượt quá số kênh?",
       "a3": "Bạn không thể kết nối thêm kênh cho đến khi đổi gói. Các kênh hiện có vẫn hoạt động bình thường.",
       "q4": "Tin nhắn riêng có được bao gồm ở mọi nơi không?",
-      "a4": "Có, trong phạm vi mà mỗi mạng xã hội cho phép. Xem trang Kênh để biết chi tiết."
+      "a4": "Có, trong phạm vi mà mỗi mạng xã hội cho phép. Xem trang Kênh để biết chi tiết.",
+      "q5": "Thanh toán từ châu Phi như thế nào?",
+      "a5": "Bằng ví di động (Orange Money, MTN MoMo, Moov Money, Airtel Money…) tại các nước được hỗ trợ, hoặc bằng thẻ. Ở các nước khu vực franc CFA, giá tính bằng franc CFA và giảm {percent}%.",
+      "q6": "Điều gì xảy ra khi gói đăng ký kết thúc?",
+      "a6": "Bạn quay về gói Miễn phí. Không có gì bị xóa: dữ liệu vẫn nguyên vẹn, chỉ các mục thêm mới chịu giới hạn của gói Miễn phí. Với ví di động, gói còn hiệu lực thêm 7 ngày và chúng tôi sẽ nhắc trước khi hết hạn."
+    },
+    "betaNotice": "Mọi thứ đều miễn phí trong thời gian beta. Giá bên dưới sẽ áp dụng khi bắt đầu thu phí.",
+    "freeNote": "Không giới hạn thời gian, không cần thẻ",
+    "ctaPaid": "Chọn {plan}",
+    "billedYearlyTotal": "Thanh toán {total}/năm · tiết kiệm {amount}",
+    "region": {
+      "label": "Quốc gia",
+      "other": "Quốc gia khác",
+      "noteLocal": "Giá địa phương: đã giảm {percent}% so với giá đô la.",
+      "noteWorld": "Giá tính bằng đô la Mỹ. Chọn quốc gia của bạn để xem giá địa phương."
+    },
+    "limit": {
+      "channels": "Kênh đã kết nối",
+      "members": "Thành viên",
+      "images_per_month": "Ảnh AI mỗi tháng",
+      "videos_per_month": "Video AI mỗi tháng",
+      "ai_text_per_month": "Tác vụ văn bản AI mỗi tháng",
+      "knowledge_files": "Tài liệu kiến thức",
+      "knowledge_sites": "Trang web kiến thức",
+      "storage_mb": "Dung lượng lưu trữ",
+      "analytics_days": "Lịch sử phân tích (ngày)"
+    },
+    "feature": {
+      "core": "Lên lịch, lịch đăng và hộp thư hợp nhất",
+      "mobile": "Ứng dụng di động",
+      "priority": "Hỗ trợ ưu tiên"
+    },
+    "pay": {
+      "mobile": "Thanh toán bằng thẻ hoặc ví di động (Orange Money, MTN MoMo, Moov Money, Airtel Money…).",
+      "card": "Thanh toán bằng thẻ, bảo mật bởi Stripe."
+    }
+  },
+  "billing": {
+    "title": "Thanh toán",
+    "subtitle": "Gói của bạn, mức sử dụng và các khoản thanh toán.",
+    "demo": "Chế độ demo: thanh toán chỉ là mô phỏng, không bị trừ tiền.",
+    "betaNotice": "Chưa bật tính phí: mọi thứ miễn phí trong thời gian beta.",
+    "current": {
+      "title": "Gói hiện tại",
+      "badge": "Hiện tại"
+    },
+    "phase": {
+      "free": "Bạn đang dùng gói {plan}.",
+      "trialing": "Dùng thử miễn phí gói {plan} đến {date}.",
+      "paying": "Gói {plan}, đã thanh toán đến {date}.",
+      "cancelling": "Gói {plan} đã hủy: kết thúc vào {date}.",
+      "grace": "Kỳ đã thanh toán đã kết thúc. Gói {plan} còn hiệu lực đến {date}, sau đó bạn quay về gói Miễn phí.",
+      "gift": "Gói {plan} được tặng, có hiệu lực đến {date}.",
+      "ended": "Gói đăng ký đã kết thúc: bạn quay về gói Miễn phí. Dữ liệu vẫn được giữ."
+    },
+    "manage": "Quản lý thẻ, hóa đơn và hủy gói",
+    "cancelDemo": "Hủy gói (demo)",
+    "cancelHint": {
+      "prepaid": "Ví di động là trả trước: không cần hủy, gói tự kết thúc khi hết kỳ."
+    },
+    "usage": {
+      "title": "Mức sử dụng",
+      "month": "Hạn mức hằng tháng được đặt lại vào ngày 1 mỗi tháng.",
+      "value": "{used} trên {limit}",
+      "unlimitedValue": "{used} · không giới hạn"
+    },
+    "change": {
+      "title": "Đổi gói",
+      "method": "Phương thức thanh toán"
+    },
+    "method": {
+      "card": "Thẻ ngân hàng",
+      "cardHint": "Visa, Mastercard… Bảo mật bởi Stripe, tự động gia hạn.",
+      "mobile": "Ví di động",
+      "mobileHint": "Orange, MTN, Moov, Airtel… Thanh toán một lần, không tự động gia hạn.",
+      "mobileUnavailable": "Không khả dụng cho quốc gia đã chọn."
+    },
+    "phone": {
+      "label": "Số ví di động (tùy chọn)",
+      "hint": "Kèm mã quốc gia, không có “+” (ví dụ 237670123456). Nếu không, bạn sẽ nhập ở trang thanh toán."
+    },
+    "period": {
+      "monthly": "1 tháng",
+      "yearly": "12 tháng"
+    },
+    "pay": {
+      "card": "Thanh toán {amount} bằng thẻ",
+      "mobile": "Thanh toán {amount} bằng ví di động"
+    },
+    "note": {
+      "card": "Tự động gia hạn mỗi kỳ, hủy bất cứ lúc nào.",
+      "mobile": "Thanh toán một lần cho {period}. Chúng tôi nhắc trước khi hết hạn; gói còn hiệu lực thêm 7 ngày."
+    },
+    "history": {
+      "title": "Lịch sử thanh toán",
+      "empty": "Chưa có khoản thanh toán nào.",
+      "date": "Ngày",
+      "plan": "Gói",
+      "method": "Phương thức",
+      "amount": "Số tiền",
+      "status": "Trạng thái"
+    },
+    "provider": {
+      "stripe": "Thẻ",
+      "pawapay": "Ví di động",
+      "gift": "Quà tặng"
+    },
+    "status": {
+      "pending": "Đang chờ",
+      "succeeded": "Đã thanh toán",
+      "failed": "Thất bại",
+      "expired": "Hết hạn",
+      "refunded": "Đã hoàn tiền"
+    },
+    "admin": {
+      "only": "Chỉ quản trị viên của không gian làm việc mới xem và đổi được gói đăng ký."
+    },
+    "flash": {
+      "ok": "Cảm ơn! Khoản thanh toán của bạn đã được ghi nhận.",
+      "pending": "Đã nhận thanh toán, đang kích hoạt. Hãy tải lại trang sau giây lát.",
+      "cancel": "Đã hủy thanh toán: không bị trừ tiền.",
+      "cancelled": "Gói đăng ký sẽ kết thúc vào cuối kỳ hiện tại."
+    },
+    "error": {
+      "forbidden": "Chỉ quản trị viên của không gian làm việc mới đổi được gói đăng ký.",
+      "plan": "Gói hoặc chu kỳ thanh toán không hợp lệ.",
+      "disabled": "Chưa bật tính phí.",
+      "config": "Thanh toán chưa được cấu hình. Hãy thử lại sau.",
+      "provider": "Dịch vụ thanh toán không khả dụng. Hãy thử lại sau giây lát.",
+      "country": "Ví di động không khả dụng ở quốc gia này. Hãy chọn thẻ.",
+      "phone": "Số điện thoại không hợp lệ.",
+      "return_url": "Thanh toán ví di động cần địa chỉ trang web https.",
+      "has_card": "Đã có gói đăng ký bằng thẻ đang hoạt động: hãy quản lý trong cổng thanh toán.",
+      "has_prepaid": "Đang có kỳ trả trước: bạn có thể chuyển sang thẻ khi kỳ này kết thúc.",
+      "has_gift": "Đang có gói được tặng: bạn có thể thanh toán khi gói này kết thúc.",
+      "portal": "Cổng thanh toán hiện không khả dụng."
+    },
+    "return": {
+      "succeeded": {
+        "title": "Đã nhận thanh toán",
+        "text": "Cảm ơn! Gói của bạn đã được kích hoạt."
+      },
+      "pending": {
+        "title": "Đang kiểm tra thanh toán…",
+        "text": "Chúng tôi đang chờ nhà mạng xác nhận. Trang này tự cập nhật."
+      },
+      "failed": {
+        "title": "Thanh toán không thành công",
+        "text": "Không có khoản nào bị trừ. Hãy kiểm tra số dư và thử lại."
+      },
+      "expired": {
+        "title": "Thanh toán đã hết hạn",
+        "text": "Trang thanh toán không hoàn tất kịp thời. Không có khoản nào bị trừ."
+      },
+      "unknown": {
+        "title": "Không tìm thấy thanh toán",
+        "text": "Không tìm thấy thanh toán này trong không gian của bạn."
+      },
+      "review": {
+        "title": "Đã nhận thanh toán",
+        "text": "Không gian của bạn đã có gói đang hoạt động: chúng tôi sẽ kiểm tra thanh toán này thủ công và liên hệ với bạn."
+      },
+      "error": {
+        "title": "Không thể kiểm tra",
+        "text": "Hiện chúng tôi không liên lạc được với nhà mạng. Hãy thử lại sau giây lát; nếu đã bị trừ tiền, khoản này sẽ được ghi nhận tự động."
+      },
+      "back": "Quay lại thanh toán",
+      "retry": "Thử lại"
+    },
+    "limit": {
+      "reached": "Đã đạt giới hạn: {what} ({limit}) ở gói {plan}. Hãy nâng cấp để tiếp tục.",
+      "upgrade": "Xem các gói"
     }
   },
   "channelsPage": {
@@ -828,7 +986,7 @@
       "soon": "Sắp có",
       "knowledge": "Kiến thức"
     },
-    "titles": { "agent": "Tác nhân", "calendar": "Lịch", "inbox": "Hộp thư", "media": "Media", "channels": "Kênh", "settings": "Cài đặt", "analytics": "Phân tích", "knowledge": "Cơ sở kiến thức" },
+    "titles": { "agent": "Tác nhân", "calendar": "Lịch", "inbox": "Hộp thư", "media": "Media", "channels": "Kênh", "settings": "Cài đặt", "analytics": "Phân tích", "knowledge": "Cơ sở kiến thức", "billing": "Thanh toán" },
     "analytics": {
       "filters": {
         "channel": "Kênh",
@@ -1455,7 +1613,8 @@
       "aucun_compte": "Không tìm thấy tài khoản có thể sử dụng (với Meta: một Trang đã được cấp quyền hoặc một tài khoản Instagram chuyên nghiệp được liên kết với một Trang).",
       "selection_vide": "Hãy chọn ít nhất một tài khoản để kết nối.",
       "expire": "Lựa chọn này đã hết hạn. Hãy bắt đầu lại việc kết nối.",
-      "erreur": "Kết nối không thành công. Vui lòng thử lại sau giây lát."
+      "erreur": "Kết nối không thành công. Vui lòng thử lại sau giây lát.",
+      "limite_canaux": "Bạn đã đạt số kênh tối đa của gói. Hãy nâng cấp để kết nối thêm."
     },
     "onboarding": {
       "label": "Bước đầu với Postbiz",

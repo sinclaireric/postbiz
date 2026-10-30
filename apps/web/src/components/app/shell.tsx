@@ -33,7 +33,7 @@ const MAIN: NavItem[] = [
   { href: '/app/canaux', label: 'app.nav.channels', icon: 'channels' },
 ];
 const BOTTOM: NavItem[] = [
-  { href: '/app/facturation', label: 'app.nav.billing', icon: 'billing', soon: true },
+  { href: '/app/facturation', label: 'app.nav.billing', icon: 'billing' },
   { href: '/app/reglages', label: 'app.nav.settings', icon: 'settings' },
 ];
 // La barre du bas du téléphone n'a de la place que pour sept entrées : la base de connaissance se gère depuis un ordinateur ou le panneau IA du composeur.
@@ -47,6 +47,7 @@ const TITLES: Record<string, MessageKey> = {
   '/app/medias': 'app.titles.media',
   '/app/connaissances': 'app.titles.knowledge',
   '/app/canaux': 'app.titles.channels',
+  '/app/facturation': 'app.titles.billing',
   '/app/reglages': 'app.titles.settings',
   '/app/support': 'app.support.title',
 };

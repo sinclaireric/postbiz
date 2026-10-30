@@ -29,10 +29,10 @@ beforeAll(async () => {
 });
 
 describe('essai gratuit', () => {
-  it('une nouvelle organisation démarre un essai de 14 jours sur l’offre Pro', async () => {
+  it('une nouvelle organisation démarre un essai de 14 jours sur l’offre Standard', async () => {
     const [s] = await q<{ plan: string; status: string; days: number }>(db,
       `select plan, status::text, round(extract(epoch from trial_ends_at - now()) / 86400)::int as days from public.subscriptions where org_id = $1`, [w.orgA]);
-    expect(s).toEqual({ plan: 'pro', status: 'trialing', days: 14 });
+    expect(s).toEqual({ plan: 'standard', status: 'trialing', days: 14 });
   });
 
   it('un essai doit avoir une date de fin', async () => {
@@ -106,7 +106,7 @@ describe('admin_overview', () => {
 
   it('détaille les organisations par offre et rythme de facturation (le prix est calculé par l’application)', async () => {
     const o = await overview();
-    expect(o.by_plan).toEqual(expect.arrayContaining([{ plan: 'team', interval: 'yearly', phase: 'paying', count: 1 }, { plan: 'pro', interval: 'monthly', phase: 'trialing', count: 2 }]));
+    expect(o.by_plan).toEqual(expect.arrayContaining([{ plan: 'team', interval: 'yearly', phase: 'paying', provider: 'none', count: 1, mrr_usd: 0 }, { plan: 'standard', interval: 'monthly', phase: 'trialing', provider: 'none', count: 2, mrr_usd: 0 }]));
   });
 
   it('compte les canaux par réseau et ceux à reconnecter', async () => {
@@ -179,7 +179,7 @@ describe('admin_organizations', () => {
   it('liste les organisations avec leur propriétaire, leurs membres et leur abonnement', async () => {
     const rows = await admin(() => q<any>(db, 'select * from public.admin_organizations()'));
     expect(rows).toHaveLength(4);
-    expect(rows.find((r: any) => r.org_name === 'Org A')).toMatchObject({ owner_email: 'alice@a.test', members_count: 3, channels_count: 1, phase: 'trialing', plan: 'pro' });
+    expect(rows.find((r: any) => r.org_name === 'Org A')).toMatchObject({ owner_email: 'alice@a.test', members_count: 3, channels_count: 1, phase: 'trialing', plan: 'standard' });
     expect(rows.find((r: any) => r.org_name === 'Cliente payante')).toMatchObject({ owner_email: 'payer@d.test', phase: 'paying', plan: 'team' });
   });
 

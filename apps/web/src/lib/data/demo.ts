@@ -723,3 +723,6 @@ export const demoRepositoriesFor = (orgId: string): Repositories => ({
   inbox: bound(inbox, orgId), posts: bound(posts, orgId), workspace: bound(workspace, orgId), media: bound(media, orgId), knowledge: bound(knowledge, orgId),
   analytics: bound(analytics, orgId), agent: bound(agent, orgId), generation: bound(generation, orgId), suggestions: bound(suggestions, orgId),
 });
+  async reserveText() {
+    return true;
+  },

@@ -46,7 +46,7 @@ export interface FlowDeps {
 
 export type ErrorCode =
   | 'reseau_inconnu' | 'non_configure' | 'non_autorise' | 'refuse' | 'etat_invalide' | 'echange' | 'profil' | 'aucun_compte'
-  | 'selection_vide' | 'expire' | 'erreur' | 'api_desactivee' | 'autorisation_incomplete';
+  | 'selection_vide' | 'expire' | 'erreur' | 'api_desactivee' | 'autorisation_incomplete' | 'limite_canaux';
 
 /**
  * Textes de repli en français, utilisés par la logique et les tests. L’affichage passe par les messages
@@ -66,7 +66,11 @@ export const ERROR_MESSAGES: Record<ErrorCode, string> = {
   erreur: 'La connexion a échoué. Réessayez dans un instant.',
   api_desactivee: 'Connexion acceptée, mais l’API YouTube n’est pas activée dans le projet Google Cloud de l’application. Activez « YouTube Data API v3 » dans ce projet, puis réessayez.',
   autorisation_incomplete: 'Une des autorisations demandées a été décochée chez Google. Relancez la connexion en laissant toutes les cases cochées.',
+  limite_canaux: 'Vous avez atteint le nombre de canaux de votre offre. Passez à une offre supérieure pour en connecter davantage.',
 };
+
+/** La base refuse un nouveau canal au-delà de la limite de l’offre (`connect_integration` lève « channel_limit »). */
+const isChannelLimit = (e: unknown) => e instanceof Error && e.message.includes('channel_limit');
 
 const ERROR_FROM_OAUTH: Record<OAuthError['code'], ErrorCode> = {
   denied: 'refuse', invalid_state: 'etat_invalide', exchange: 'echange', profile: 'profil', no_account: 'aucun_compte', config: 'non_configure',
@@ -161,7 +165,7 @@ export async function completeConnection(deps: FlowDeps, a: { family: string; pa
   } catch (e) {
     // Détail technique dans les journaux serveur (déjà expurgé de tout jeton), code fixe pour l'utilisateur.
     deps.log?.(`OAuth ${family.id} : ${(e as Error).message}`);
-    return fail(e instanceof OAuthError ? ERROR_FROM_OAUTH[e.code] : 'erreur');
+    return fail(e instanceof OAuthError ? ERROR_FROM_OAUTH[e.code] : isChannelLimit(e) ? 'limite_canaux' : 'erreur');
   }
 }
 
@@ -224,7 +228,7 @@ export async function confirmSelection(deps: FlowDeps, a: { userId: string; pend
     return { kind: 'connected', network, count: done.count, webhookWarnings: done.webhookWarnings, orgId: p.row.orgId };
   } catch (e) {
     deps.log?.(`OAuth sélection : ${(e as Error).message}`);
-    return { kind: 'error', code: 'erreur', network };
+    return { kind: 'error', code: isChannelLimit(e) ? 'limite_canaux' : 'erreur', network };
   }
 }
 

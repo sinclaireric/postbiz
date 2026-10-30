@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { demoOrganizations, demoOverview, demoUserDetail, demoUserStatus, demoUsers } from './demo';
-import { PAGE_SIZE, daysUntil, isUserId, listHref, pageCount, parseListQuery, parseOrgRow, parseOverview, parsePage, parsePhase, parseUserDetail, parseUserRow, parseUserStatus, parseFlash, cleanReason, suspensionFailure, percent, revenue, totalOf } from './logic';
+import { PAGE_SIZE, daysUntil, isUserId, listHref, pageCount, parseListQuery, parseOrgRow, parseOverview, parsePage, parsePhase, parseUserDetail, parseUserRow, parseUserStatus, parseFlash, cleanReason, suspensionFailure, percent, revenue, totalOf, parseGiftMonths, giftEnd, giftFailure } from './logic';
 import { PHASES, type PlanCount } from './types';
 
 describe('parseOverview', () => {
@@ -17,7 +17,7 @@ describe('parseOverview', () => {
   });
 
   it('une phase inconnue est rangée dans « sans abonnement »', () => {
-    expect(parseOverview({ by_plan: [{ plan: 'pro', interval: 'yearly', phase: 'bizarre', count: 2 }] }).byPlan).toEqual([{ plan: 'pro', interval: 'yearly', phase: 'none', count: 2 }]);
+    expect(parseOverview({ by_plan: [{ plan: 'standard', interval: 'yearly', phase: 'bizarre', count: 2 }] }).byPlan).toEqual([{ plan: 'standard', interval: 'yearly', phase: 'none', provider: 'none', count: 2, mrrUsd: 0 }]);
   });
 });
 
@@ -47,30 +47,60 @@ describe('lignes', () => {
   });
 });
 
+describe('abonnement offert', () => {
+  it('seules les durées proposées sont acceptées', () => {
+    expect([1, 3, 6, 12].map((m) => parseGiftMonths(String(m)))).toEqual([1, 3, 6, 12]);
+    for (const bad of ['0', '2', '24', '-1', 'abc', '', null]) expect(parseGiftMonths(bad as never), String(bad)).toBeNull();
+  });
+
+  it('la fin du cadeau est le dernier jour de la période, à la fin de la journée (UTC)', () => {
+    expect(giftEnd(3, new Date('2026-11-15T10:00:00Z')).toISOString()).toBe('2027-02-15T23:59:59.000Z');
+    expect(giftEnd(12, new Date('2026-11-15T10:00:00Z')).toISOString()).toBe('2027-11-15T23:59:59.000Z');
+  });
+
+  it('traduit les erreurs de la base en résultat affichable', () => {
+    expect(giftFailure('has paid subscription')).toBe('giftPaid');
+    expect(giftFailure('invalid plan')).toBe('giftInvalid');
+    expect(giftFailure('invalid end date')).toBe('giftInvalid');
+    expect(giftFailure('organization not found')).toBe('giftInvalid');
+    expect(giftFailure('forbidden')).toBe('error');
+    expect(giftFailure(undefined)).toBe('error');
+  });
+});
+
 describe('revenue', () => {
+  const row = (r: Partial<PlanCount> & Pick<PlanCount, 'plan' | 'phase' | 'count'>): PlanCount => ({ interval: 'monthly', provider: 'stripe', mrrUsd: 0, ...r });
   const rows: PlanCount[] = [
-    { plan: 'pro', interval: 'monthly', phase: 'paying', count: 2 }, // 2 × 49
-    { plan: 'team', interval: 'yearly', phase: 'paying', count: 1 }, // 95 / mois (119 − 20 %)
-    { plan: 'starter', interval: 'monthly', phase: 'past_due', count: 1 }, // pas compté tant que le paiement n'est pas régularisé
-    { plan: 'pro', interval: 'monthly', phase: 'trialing', count: 3 }, // potentiel seulement
-    { plan: 'pro', interval: 'monthly', phase: 'canceled', count: 5 },
-    { plan: 'pro', interval: 'monthly', phase: 'trial_expired', count: 4 },
+    row({ plan: 'standard', phase: 'paying', count: 2, mrrUsd: 38 }), // 2 × 19 $
+    row({ plan: 'team', interval: 'yearly', phase: 'paying', count: 1, mrrUsd: 31.2, provider: 'pawapay' }), // 374,4 $ / 12, payé en francs CFA
+    row({ plan: 'agency', phase: 'paying', count: 4, provider: 'gift' }), // offerts : jamais dans le revenu
+    row({ plan: 'standard', phase: 'past_due', count: 1, mrrUsd: 19 }), // pas compté tant que le paiement n'est pas régularisé
+    row({ plan: 'standard', phase: 'trialing', count: 3, provider: 'none' }), // potentiel seulement
+    row({ plan: 'team', phase: 'trialing', count: 1, provider: 'none' }),
+    row({ plan: 'standard', phase: 'canceled', count: 5, mrrUsd: 95 }),
+    row({ plan: 'standard', phase: 'trial_expired', count: 4, provider: 'none' }),
   ];
 
-  it('additionne les abonnements payants au tarif publié, selon le rythme de facturation', () => {
+  it('additionne les prix réellement payés (remises et monnaie comprises), en dollars', () => {
     const r = revenue(rows);
-    expect(r.mrr).toBe(2 * 49 + 95);
-    expect(r.arr).toBe(r.mrr * 12);
+    expect(r.mrr).toBe(69.2);
+    expect(r.arr).toBe(830.4);
     expect(r.payingOrgs).toBe(3);
   });
 
-  it('ne compte pas les essais dans le revenu, seulement dans le potentiel', () => {
-    expect(revenue(rows).trialPotential).toBe(3 * 49);
+  it('compte les abonnements offerts à part, jamais dans le revenu', () => {
+    expect(revenue(rows).giftedOrgs).toBe(4);
+    expect(revenue([row({ plan: 'agency', phase: 'paying', count: 2, provider: 'gift', mrrUsd: 0 })])).toMatchObject({ mrr: 0, payingOrgs: 0, giftedOrgs: 2 });
+  });
+
+  it('ne compte pas les essais dans le revenu, seulement dans le potentiel au tarif mensuel en dollars', () => {
+    expect(revenue(rows).trialPotential).toBe(3 * 19 + 39);
     expect(revenue(rows.filter((r) => r.phase === 'trialing')).mrr).toBe(0);
   });
 
-  it('une offre inconnue vaut zéro au lieu de fausser le total', () => {
-    expect(revenue([{ plan: 'ancienne', interval: 'monthly', phase: 'paying', count: 2 }]).mrr).toBe(0);
+  it('un montant manquant retombe sur le prix de référence ; une offre inconnue vaut zéro', () => {
+    expect(revenue([row({ plan: 'team', phase: 'paying', count: 2, mrrUsd: 0 })]).mrr).toBe(78);
+    expect(revenue([row({ plan: 'ancienne', phase: 'paying', count: 2 })]).mrr).toBe(0);
   });
 });
 

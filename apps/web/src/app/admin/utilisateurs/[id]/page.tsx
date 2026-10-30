@@ -13,7 +13,10 @@ import { requireAdmin } from '@/lib/admin/guard';
 import { parseFlash } from '@/lib/admin/logic';
 import type { AdminChannel } from '@/lib/admin/types';
 import { networkName } from '@/lib/networks';
-import { restoreUserAction, suspendUserAction } from './actions';
+import { Button } from '@/components/ui';
+import { GIFT_MONTHS } from '@/lib/admin/logic';
+import { PAID_PLAN_IDS, planNameKey } from '@/lib/billing/plans';
+import { grantSubscriptionAction, restoreUserAction, revokeGiftAction, suspendUserAction } from './actions';
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getT();
@@ -56,7 +59,7 @@ export default async function AdminUserPage({ params, searchParams }: { params: 
       {user.name && user.name !== user.email && <p className="mt-1 text-muted" dir="ltr">{user.email}</p>}
 
       {flash && (
-        <p role="status" className={`mt-5 rounded-2xl px-4 py-3 text-sm font-medium ${flash === 'suspended' || flash === 'restored' ? 'bg-ok-soft text-ok' : flash === 'demo' ? 'bg-wash text-muted' : 'bg-danger-soft text-danger'}`}>
+        <p role="status" className={`mt-5 rounded-2xl px-4 py-3 text-sm font-medium ${flash === 'suspended' || flash === 'restored' || flash === 'gifted' || flash === 'giftRevoked' ? 'bg-ok-soft text-ok' : flash === 'demo' ? 'bg-wash text-muted' : 'bg-danger-soft text-danger'}`}>
           {t(`admin.suspend.flash.${flash}`)}
         </p>
       )}
@@ -116,11 +119,49 @@ export default async function AdminUserPage({ params, searchParams }: { params: 
                       { label: t('admin.user.periodEnd'), value: date(sub.currentPeriodEnd) },
                       { label: t('admin.user.cancelAtEnd'), value: sub.phase === 'paying' ? yesNo(sub.cancelAtPeriodEnd) : null },
                       { label: t('admin.user.canceledOn'), value: date(sub.canceledAt) },
+                      { label: t('admin.user.effectivePlan'), value: sub.effectivePlan && t(planNameKey(sub.effectivePlan as never)) },
+                      { label: t('admin.user.paymentMethod'), value: sub.provider !== 'none' ? t(`billing.provider.${sub.provider as 'stripe'}`) : null },
+                      { label: t('admin.user.monthlyUsd'), value: sub.monthlyUsd !== null && sub.provider !== 'gift' ? `$${sub.monthlyUsd}` : null },
+                      { label: t('admin.user.graceEnds'), value: date(sub.graceEndsAt) },
+                      { label: t('admin.user.giftNote'), value: sub.giftNote },
                       { label: t('admin.user.stripeCustomer'), value: sub.stripeCustomerId && <span dir="ltr" className="font-mono text-xs">{sub.stripeCustomerId}</span> },
                       { label: t('admin.user.stripeSubscription'), value: sub.stripeSubscriptionId && <span dir="ltr" className="font-mono text-xs">{sub.stripeSubscriptionId}</span> },
                     ]} />
                   ) : (
                     <p className="rounded-2xl bg-wash px-4 py-3 text-sm leading-relaxed text-muted">{t('admin.user.noSubscription')}</p>
+                  )}
+                </div>
+                <div className="mt-6 rounded-2xl border border-line p-4">
+                  <p className="font-semibold">{t('admin.gift.title')}</p>
+                  <p className="mt-1 text-sm text-muted">{t('admin.gift.hint')}</p>
+                  <form action={grantSubscriptionAction} className="mt-3 grid gap-3">
+                    <input type="hidden" name="user" value={user.id} />
+                    <input type="hidden" name="org" value={o.orgId} />
+                    <div className="flex flex-wrap gap-3">
+                      <label className="grid gap-1 text-sm font-medium">{t('admin.gift.plan')}
+                        <select name="plan" defaultValue="team" className="h-10 rounded-xl border border-line bg-surface px-3 text-sm">
+                          {PAID_PLAN_IDS.map((id) => <option key={id} value={id}>{t(planNameKey(id))}</option>)}
+                        </select>
+                      </label>
+                      <label className="grid gap-1 text-sm font-medium">{t('admin.gift.duration')}
+                        <select name="months" defaultValue="3" className="h-10 rounded-xl border border-line bg-surface px-3 text-sm">
+                          {GIFT_MONTHS.map((m) => <option key={m} value={m}>{t(`admin.gift.d${m}` as 'admin.gift.d1')}</option>)}
+                        </select>
+                      </label>
+                    </div>
+                    <label className="grid gap-1 text-sm font-medium">{t('admin.gift.note')}
+                      <input name="note" maxLength={500} className="h-10 rounded-xl border border-line bg-surface px-3 text-sm" />
+                    </label>
+                    <div className="flex flex-wrap gap-3">
+                      <Button type="submit" size="sm">{t('admin.gift.submit')}</Button>
+                    </div>
+                  </form>
+                  {sub?.provider === 'gift' && sub.phase === 'paying' && (
+                    <form action={revokeGiftAction} className="mt-3">
+                      <input type="hidden" name="user" value={user.id} />
+                      <input type="hidden" name="org" value={o.orgId} />
+                      <Button type="submit" size="sm" variant="secondary">{t('admin.gift.revoke')}</Button>
+                    </form>
                   )}
                 </div>
               </div>

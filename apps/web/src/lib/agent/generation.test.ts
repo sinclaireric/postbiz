@@ -7,13 +7,17 @@ import { advanceVideoJob, createGenerationTools, isPublicHttpsUrl, mediaSlug, VI
 const T0 = Date.parse('2026-10-27T10:00:00Z');
 
 /** Un dépôt en mémoire qui respecte le contrat de `GenerationRepository` (plafond, prise en charge unique d'une tâche, médiathèque). */
-function memory(over: { used?: { image?: number; video?: number }; saveFails?: boolean; jobFails?: boolean } = {}) {
+function memory(over: { used?: { image?: number; video?: number }; saveFails?: boolean; jobFails?: boolean; monthlyFull?: boolean } = {}) {
   const media: MediaItem[] = [];
   const jobs = new Map<string, VideoJobRecord>();
   const used = { image: over.used?.image ?? 0, video: over.used?.video ?? 0 };
   let seq = 0;
   const repo: GenerationRepository = {
+    async reserveText() {
+      return !over.monthlyFull;
+    },
     async reserve(kind, limit) {
+      if (over.monthlyFull) return 'monthly';
       if (used[kind] >= limit) return false;
       used[kind]++;
       return true;
@@ -365,5 +369,15 @@ describe('advanceVideoJob : faire avancer une vidéo', () => {
     const s = setup({ checks: [ready], fetcher: video() });
     const id = await started(s);
     expect(await s.tools.videoStatus(id)).toMatchObject({ ok: true, job: { status: 'completed' }, item: { kind: 'video' } });
+  });
+});
+
+describe('quota mensuel de l’offre', () => {
+  it('une image ou une vidéo demandée après le quota du mois est refusée avec un message qui renvoie à la page Facturation, sans appeler le fournisseur', async () => {
+    const s = setup({ repo: memory({ monthlyFull: true }) });
+    expect(await s.tools.generateImage({ prompt: 'un chat', size: 'square' })).toMatchObject({ ok: false, error: expect.stringMatching(/included in its plan this month.*Billing page/) });
+    expect(await s.tools.startVideo({ prompt: 'un chat', orientation: 'vertical', referenceIds: [] })).toMatchObject({ ok: false, error: expect.stringMatching(/videos included in its plan this month/) });
+    expect(s.imageCalls).toEqual([]);
+    expect(s.videoStarts).toEqual([]);
   });
 });

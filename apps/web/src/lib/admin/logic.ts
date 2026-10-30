@@ -1,5 +1,5 @@
-import { PLANS, pricePerMonth } from '@/lib/pricing';
-import { FLASHES, PHASES, type AdminChannel, type AdminOrgRow, type AdminOverview, type AdminSubscription, type AdminUserDetail, type AdminUserOrg, type AdminUserRow, type AdminUserStatus, type ChannelStatus, type Flash, type ListQuery, type Phase, type PlanCount } from './types';
+import { USD_MONTHLY, isPaidPlanId } from '@/lib/billing/plans';
+import { FLASHES, PHASES, type AdminPayment, type AdminChannel, type AdminOrgRow, type AdminOverview, type AdminSubscription, type AdminUserDetail, type AdminUserOrg, type AdminUserRow, type AdminUserStatus, type ChannelStatus, type Flash, type ListQuery, type Phase, type PlanCount } from './types';
 
 export const PAGE_SIZE = 25;
 const DAY = 86_400_000;
@@ -25,9 +25,10 @@ export function parseOverview(raw: unknown): AdminOverview {
     phases: Object.fromEntries(PHASES.map((p) => [p, phases[p] ?? 0])) as Record<Phase, number>,
     trialsEnding3d: num(o.trials_ending_3d),
     cancelAtPeriodEnd: num(o.cancel_at_period_end),
+    gifts: num(o.gifts),
     byPlan: (Array.isArray(o.by_plan) ? o.by_plan : []).map((r): PlanCount => {
       const row = obj(r);
-      return { plan: str(row.plan) ?? '', interval: row.interval === 'yearly' ? 'yearly' : 'monthly', phase: asPhase(row.phase), count: num(row.count) };
+      return { plan: str(row.plan) ?? '', interval: row.interval === 'yearly' ? 'yearly' : 'monthly', phase: asPhase(row.phase), provider: str(row.provider) ?? 'none', count: num(row.count), mrrUsd: num(row.mrr_usd) };
     }),
     channels: { total: num(channels.total), needsReconnect: num(channels.needs_reconnect), byProvider: counts(channels.by_provider) },
     posts: { created7d: num(posts.created_7d), byState: counts(posts.by_state) },
@@ -107,6 +108,13 @@ function parseSubscription(raw: unknown): AdminSubscription | null {
     canceledAt: str(r.canceled_at),
     stripeCustomerId: str(r.stripe_customer_id),
     stripeSubscriptionId: str(r.stripe_subscription_id),
+    provider: str(r.provider) ?? 'none',
+    currency: str(r.currency),
+    country: str(r.country),
+    monthlyUsd: r.monthly_usd === null || r.monthly_usd === undefined ? null : num(r.monthly_usd),
+    graceEndsAt: str(r.grace_ends_at),
+    giftNote: str(r.gift_note),
+    effectivePlan: str(r.effective_plan),
     createdAt: str(r.created_at) ?? '',
   };
 }
@@ -154,35 +162,42 @@ export const totalOf = (rows: unknown[]): number => (rows.length ? num(obj(rows[
 // ---------------------------------------------------------------- revenus
 
 export interface Revenue {
-  /** Revenu mensuel récurrent des abonnements payants, en euros. Un paiement en retard n'est pas compté tant qu'il n'est pas régularisé. */
+  /** Revenu mensuel récurrent des abonnements payants, en dollars, au prix réellement payé. Ni les cadeaux ni un paiement en retard ne comptent. */
   mrr: number;
   arr: number;
-  /** Ce que rapporteraient les essais en cours s'ils devenaient tous payants. */
+  /** Ce que rapporteraient les essais en cours s'ils devenaient tous payants au tarif mensuel en dollars. */
   trialPotential: number;
   payingOrgs: number;
+  /** Organisations dont l'abonnement est offert (hors revenu). */
+  giftedOrgs: number;
 }
 
-/** Prix mensuel affiché d'une offre selon le rythme de facturation ; 0 pour une offre inconnue. */
-function monthlyPrice(plan: string, interval: 'monthly' | 'yearly'): number {
-  const p = PLANS.find((x) => x.id === plan);
-  return p ? pricePerMonth(p, interval) : 0;
-}
+/** Prix mensuel de référence en dollars d'une offre ; 0 pour une offre inconnue ou gratuite. */
+const listPrice = (plan: string): number => (isPaidPlanId(plan) ? USD_MONTHLY[plan] : 0);
 
-/** Revenus calculés avec les tarifs publiés (lib/pricing.ts) : la base ne connaît que l'offre et le rythme de facturation. */
+/**
+ * Revenus. Le MRR est la somme des `monthly_usd` enregistrés à chaque paiement (remise locale, rythme annuel et monnaie compris) ; un abonnement dont
+ * ce montant manque retombe sur le prix de référence. Les abonnements offerts sont comptés à part.
+ */
 export function revenue(byPlan: PlanCount[]): Revenue {
   let mrr = 0;
   let trialPotential = 0;
   let payingOrgs = 0;
+  let giftedOrgs = 0;
   for (const r of byPlan) {
-    const amount = monthlyPrice(r.plan, r.interval) * r.count;
     if (r.phase === 'paying') {
-      mrr += amount;
+      if (r.provider === 'gift') {
+        giftedOrgs += r.count;
+        continue;
+      }
+      mrr += r.mrrUsd > 0 ? r.mrrUsd : listPrice(r.plan) * r.count;
       payingOrgs += r.count;
     } else if (r.phase === 'trialing') {
-      trialPotential += amount;
+      trialPotential += listPrice(r.plan) * r.count;
     }
   }
-  return { mrr, arr: mrr * 12, trialPotential, payingOrgs };
+  mrr = Math.round(mrr * 100) / 100;
+  return { mrr, arr: Math.round(mrr * 12 * 100) / 100, trialPotential, payingOrgs, giftedOrgs };
 }
 
 /** Part de `part` dans `whole`, en pourcentage entier (0 si `whole` est nul). */
@@ -255,4 +270,42 @@ export function parseFlash(v: string | string[] | undefined): Flash | null {
 export function cleanReason(v: FormDataEntryValue | null): string | null {
   const s = typeof v === 'string' ? v.trim().slice(0, 500) : '';
   return s === '' ? null : s;
+}
+
+// ---------------------------------------------------------------- abonnement offert
+
+export const GIFT_MONTHS = [1, 3, 6, 12] as const;
+
+/** Durée choisie dans le formulaire : seules les durées proposées sont acceptées. */
+export function parseGiftMonths(v: FormDataEntryValue | null): (typeof GIFT_MONTHS)[number] | null {
+  const n = Number(v);
+  return (GIFT_MONTHS as readonly number[]).includes(n) ? (n as (typeof GIFT_MONTHS)[number]) : null;
+}
+
+/** Fin d'un cadeau de `months` mois commencé maintenant (en UTC, fin de journée : le dernier jour compte en entier). */
+export function giftEnd(months: number, now: Date = new Date()): Date {
+  const d = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + months, now.getUTCDate(), 23, 59, 59));
+  return d;
+}
+
+/** Message d'erreur de la base → résultat affiché sur la fiche. Les messages sont ceux levés par `admin_grant_subscription`. */
+export function giftFailure(message: string | undefined): Flash {
+  const m = (message ?? '').toLowerCase();
+  if (m.includes('has paid subscription')) return 'giftPaid';
+  if (m.includes('invalid plan') || m.includes('invalid end date') || m.includes('organization not found')) return 'giftInvalid';
+  return 'error';
+}
+
+const PAYMENT_STATUS = ['pending', 'succeeded', 'failed', 'expired', 'refunded'] as const;
+
+/** Ligne de `admin_payments()` → paiement. */
+export function parsePaymentRow(raw: unknown): AdminPayment {
+  const r = obj(raw);
+  const provider = r.provider === 'stripe' || r.provider === 'gift' ? r.provider : 'pawapay';
+  const status = (PAYMENT_STATUS as readonly unknown[]).includes(r.status) ? (r.status as AdminPayment['status']) : 'pending';
+  return {
+    id: str(r.id) ?? '', orgId: str(r.org_id) ?? '', orgName: str(r.org_name) ?? '', ownerEmail: str(r.owner_email), provider, plan: str(r.plan) ?? '',
+    months: num(r.months), amount: num(r.amount), currency: str(r.currency) ?? 'USD', usdAmount: num(r.usd_amount), country: str(r.country), status,
+    failureReason: str(r.failure_reason), createdAt: str(r.created_at) ?? '', periodEnd: str(r.period_end),
+  };
 }

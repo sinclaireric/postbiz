@@ -23,6 +23,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     { href: '/admin', label: t('admin.nav.overview') },
     { href: '/admin/utilisateurs', label: t('admin.nav.users') },
     { href: '/admin/abonnements', label: t('admin.nav.subscriptions') },
+    { href: '/admin/facturation', label: t('admin.nav.billing') },
     { href: '/admin/support', label: t('admin.nav.support'), badge: support?.unread ?? 0, badgeLabel: t('admin.support.unreadLabel') },
   ];
   return (

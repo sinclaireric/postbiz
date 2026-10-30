@@ -26,6 +26,8 @@ export default async function PrivacyPage() {
           <li><RichText t={t} k="legal.privacy.s2.li4" params={vars} tags={legalTags} /></li>
           <li><RichText t={t} k="legal.privacy.s2.li5" params={vars} tags={legalTags} /></li>
           <li><RichText t={t} k="legal.privacy.s2.li6" params={vars} tags={legalTags} /></li>
+          <li><RichText t={t} k="legal.privacy.s2.li8" params={vars} tags={legalTags} /></li>
+          <li><RichText t={t} k="legal.privacy.s2.li9" params={vars} tags={legalTags} /></li>
         </ul>
       </section>
       <section>
@@ -69,12 +71,16 @@ export default async function PrivacyPage() {
           <li><RichText t={t} k="legal.privacy.s7.li4" params={vars} tags={legalTags} /></li>
           <li><RichText t={t} k="legal.privacy.s7.li5" params={vars} tags={legalTags} /></li>
         </ul>
+          <li><RichText t={t} k="legal.privacy.s7.li6" params={vars} tags={legalTags} /></li>
+          <li><RichText t={t} k="legal.privacy.s7.li7" params={vars} tags={legalTags} /></li>
+          <li><RichText t={t} k="legal.privacy.s7.li8" params={vars} tags={legalTags} /></li>
         <p><RichText t={t} k="legal.privacy.s7.p1" params={vars} tags={legalTags} /></p>
       </section>
       <section>
         <h2>{t('legal.privacy.s8.h')}</h2>
         <p><RichText t={t} k="legal.privacy.s8.p1" params={vars} tags={legalTags} /></p>
       </section>
+        <p><RichText t={t} k="legal.privacy.s8.p2" params={vars} tags={legalTags} /></p>
       <section>
         <h2>{t('legal.privacy.s9.h')}</h2>
         <p><RichText t={t} k="legal.privacy.s9.p1" params={vars} tags={legalTags} /></p>

@@ -1,3 +1,4 @@
+import { USD_MONTHLY } from '@/lib/billing/plans';
 import { PHASES, type AdminChannel, type AdminOrgRow, type AdminOverview, type AdminPage, type AdminUserDetail, type AdminUserRow, type AdminUserStatus, type ListQuery, type Phase, type PlanCount } from './types';
 import { PAGE_SIZE } from './logic';
 
@@ -7,7 +8,7 @@ const DAY = 86_400_000;
 const FIRST = ['Léa', 'Hugo', 'Inès', 'Karim', 'Chloé', 'Maxime', 'Sarah', 'Théo', 'Camille', 'Nadia', 'Louis', 'Manon', 'Yanis', 'Julie', 'Antoine', 'Emma', 'Rayan', 'Clara', 'Paul', 'Zoé'];
 const LAST = ['Martin', 'Bernard', 'Dubois', 'Moreau', 'Laurent', 'Simon', 'Michel', 'Lefèvre', 'Garcia', 'Roux', 'Fournier', 'Girard', 'Bonnet', 'Mercier', 'Blanc'];
 const COMPANIES = ['Atelier Lune', 'Maison Verte', 'Studio Orange', 'Café du Port', 'Boulangerie Dupain', 'Cabinet Rivière', 'Yoga Aurore', 'Garage Lambert', 'Fleurs & Co', 'Agence Pixel', 'Librairie Mots Bleus', 'Coiffure Éclat'];
-const PLAN_OF: Array<'starter' | 'pro' | 'team'> = ['starter', 'pro', 'pro', 'team', 'starter'];
+const PLAN_OF: Array<'free' | 'standard' | 'team' | 'agency'> = ['standard', 'standard', 'agency', 'team', 'standard'];
 
 /** Générateur pseudo-aléatoire déterministe (mulberry32). */
 function rng(seed: number) {
@@ -106,8 +107,9 @@ export function demoOverview(now = new Date()): AdminOverview {
   for (const u of users) {
     if (!u.plan || !u.interval) continue;
     const key = `${u.plan}|${u.interval}|${u.phase}`;
-    const row = byPlan.get(key) ?? { plan: u.plan, interval: u.interval, phase: u.phase, count: 0 };
+    const row = byPlan.get(key) ?? { plan: u.plan, interval: u.interval, phase: u.phase, provider: 'none', count: 0, mrrUsd: 0 };
     row.count += 1;
+    row.mrrUsd += u.phase === 'paying' ? USD_MONTHLY[u.plan as keyof typeof USD_MONTHLY] ?? 0 : 0;
     byPlan.set(key, row);
   }
 
@@ -134,6 +136,7 @@ export function demoOverview(now = new Date()): AdminOverview {
     phases,
     trialsEnding3d: users.filter((u) => u.phase === 'trialing' && u.trialEndsAt && new Date(u.trialEndsAt).getTime() - now.getTime() <= 3 * DAY).length,
     cancelAtPeriodEnd: users.filter((u) => u.cancelAtPeriodEnd).length,
+    gifts: 0,
     byPlan: [...byPlan.values()],
     channels: {
       total: users.reduce((n, u) => n + u.channelsCount, 0),
@@ -181,6 +184,9 @@ export function demoUserDetail(id: string, now = new Date()): AdminUserDetail | 
         stripeCustomerId: o.phase === 'paying' || o.phase === 'past_due' || o.phase === 'canceled' ? `cus_demo${id.slice(-4)}` : null,
         stripeSubscriptionId: o.phase === 'paying' || o.phase === 'past_due' || o.phase === 'canceled' ? `sub_demo${id.slice(-4)}` : null,
         createdAt: o.createdAt,
+        provider: o.phase === 'paying' || o.phase === 'past_due' ? 'stripe' : 'none', currency: o.phase === 'paying' ? 'USD' : null, country: null,
+        monthlyUsd: o.phase === 'paying' ? USD_MONTHLY[o.plan as keyof typeof USD_MONTHLY] ?? null : null, graceEndsAt: null, giftNote: null,
+        effectivePlan: o.phase === 'paying' || o.phase === 'trialing' ? o.plan : 'free',
       } : null,
       channels,
       posts: {

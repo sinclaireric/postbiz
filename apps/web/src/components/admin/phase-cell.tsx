@@ -2,7 +2,7 @@ import { formatFullDate } from '@/i18n/format';
 import type { T } from '@/i18n/types';
 import { daysUntil } from '@/lib/admin/logic';
 import type { Phase, SubscriptionInfo } from '@/lib/admin/types';
-import { PLANS, planNameKey, type PlanId } from '@/lib/pricing';
+import { PLAN_IDS, planNameKey, type PlanId } from '@/lib/billing/plans';
 
 const TONE: Record<Phase, string> = {
   trialing: 'bg-lime-soft text-forest',
@@ -36,7 +36,7 @@ export function PhaseCell({ sub, t, now = new Date() }: { sub: SubscriptionInfo;
 /** Offre et rythme de facturation, ou un tiret quand l'organisation n'a pas d'abonnement. */
 export function PlanCell({ sub, t }: { sub: SubscriptionInfo; t: T }) {
   if (!sub.plan) return <span className="text-subtle">{t('admin.cell.noPlan')}</span>;
-  const known = PLANS.some((p) => p.id === sub.plan);
+  const known = (PLAN_IDS as readonly string[]).includes(sub.plan);
   return (
     <div>
       <p className="font-medium">{known ? t(planNameKey(sub.plan as PlanId)) : sub.plan}</p>

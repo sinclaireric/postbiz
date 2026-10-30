@@ -7,7 +7,11 @@ export interface PlanCount {
   plan: string;
   interval: 'monthly' | 'yearly';
   phase: Phase;
+  /** `none`, `stripe`, `pawapay` ou `gift` (abonnement offert : jamais compté dans le MRR). */
+  provider: string;
   count: number;
+  /** Somme, en dollars, de ce que rapportent ces abonnements par mois (prix réellement payés, remises comprises). */
+  mrrUsd: number;
 }
 
 export interface AdminOverview {
@@ -16,6 +20,8 @@ export interface AdminOverview {
   phases: Record<Phase, number>;
   trialsEnding3d: number;
   cancelAtPeriodEnd: number;
+  /** Organisations avec un abonnement offert en cours. */
+  gifts: number;
   byPlan: PlanCount[];
   channels: { total: number; needsReconnect: number; byProvider: Record<string, number> };
   posts: { created7d: number; byState: Record<string, number> };
@@ -88,6 +94,15 @@ export interface AdminSubscription extends SubscriptionInfo {
   stripeCustomerId: string | null;
   stripeSubscriptionId: string | null;
   createdAt: string;
+  /** `none`, `stripe`, `pawapay` ou `gift`. */
+  provider: string;
+  currency: string | null;
+  country: string | null;
+  monthlyUsd: number | null;
+  graceEndsAt: string | null;
+  giftNote: string | null;
+  /** Offre réellement applicable aujourd'hui (peut différer de `plan` : essai ou période terminés). */
+  effectivePlan: string | null;
 }
 
 /** Une organisation d'un utilisateur, avec ce qu'elle contient. Jamais de texte de publication ni de jeton : seulement des chiffres. */
@@ -121,5 +136,24 @@ export interface AdminUserStatus {
 }
 
 /** Résultat d'une action de suspension, porté par `?ok=` au retour sur la fiche. */
-export const FLASHES = ['suspended', 'restored', 'demo', 'self', 'protected', 'error'] as const;
+export const FLASHES = ['suspended', 'restored', 'demo', 'self', 'protected', 'error', 'gifted', 'giftRevoked', 'giftPaid', 'giftInvalid'] as const;
 export type Flash = (typeof FLASHES)[number];
+
+/** Un paiement de la plateforme, pour la page Facturation du propriétaire. */
+export interface AdminPayment {
+  id: string;
+  orgId: string;
+  orgName: string;
+  ownerEmail: string | null;
+  provider: 'stripe' | 'pawapay' | 'gift';
+  plan: string;
+  months: number;
+  amount: number;
+  currency: string;
+  usdAmount: number;
+  country: string | null;
+  status: 'pending' | 'succeeded' | 'failed' | 'expired' | 'refunded';
+  failureReason: string | null;
+  createdAt: string;
+  periodEnd: string | null;
+}

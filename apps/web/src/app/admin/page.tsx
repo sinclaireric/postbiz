@@ -5,13 +5,15 @@ import { SignupsChart } from '@/components/admin/signups-chart';
 import { StatTile } from '@/components/admin/stat-tile';
 import { SocialIcon } from '@/components/social-icon';
 import { getT } from '@/i18n/server';
-import { formatEuro, formatNumber } from '@/i18n/format';
+import { formatNumber } from '@/i18n/format';
 import { loadOverview } from '@/lib/admin/data';
 import { requireAdmin } from '@/lib/admin/guard';
 import { listHref, percent, revenue } from '@/lib/admin/logic';
 import { PHASES, type Phase } from '@/lib/admin/types';
 import { networkName } from '@/lib/networks';
-import { PLANS, planNameKey } from '@/lib/pricing';
+import { PLAN_IDS, planNameKey } from '@/lib/billing/plans';
+import { formatMoney } from '@/lib/billing/price';
+import { LOCALE_META } from '@/i18n/config';
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getT();
@@ -34,8 +36,9 @@ export default async function AdminOverviewPage() {
   const phaseMeters: Meter[] = PHASES.map((p: Phase) => ({
     key: p, label: t(`admin.phase.${p}`), value: o.phases[p], display: n(o.phases[p]), href: listHref('/admin/abonnements', { phase: p }),
   }));
-  const planRows = PLANS.map((p) => {
-    const rows = o.byPlan.filter((r) => r.plan === p.id);
+  const usd = (v: number) => formatMoney(LOCALE_META[t.locale].tag, v, 'USD');
+  const planRows = PLAN_IDS.map((id) => ({ id })).map((p) => {
+    const rows = o.byPlan.filter((r) => r.plan === p.id && r.provider !== 'gift');
     const paying = rows.filter((r) => r.phase === 'paying').reduce((s, r) => s + r.count, 0);
     const trials = rows.filter((r) => r.phase === 'trialing').reduce((s, r) => s + r.count, 0);
     return { id: p.id, paying, trials };
@@ -60,7 +63,7 @@ export default async function AdminOverviewPage() {
         <StatTile label={t('admin.kpi.active')} value={n(o.users.active7d)} hint={t('admin.kpi.activeHint', { percent: percent(o.users.active7d, o.users.total) })} />
         <StatTile label={t('admin.kpi.trials')} value={n(trialsActive)} hint={t('admin.kpi.trialsHint', { count: n(o.trialsEnding3d) })} tone={o.trialsEnding3d > 0 ? 'warn' : 'neutral'} />
         <StatTile label={t('admin.kpi.paying')} value={n(money.payingOrgs)} hint={t('admin.kpi.payingHint', { count: n(o.cancelAtPeriodEnd) })} />
-        <StatTile label={t('admin.kpi.mrr')} value={formatEuro(t.locale, money.mrr)} hint={t('admin.kpi.mrrHint', { amount: formatEuro(t.locale, money.arr) })} />
+        <StatTile label={t('admin.kpi.mrr')} value={usd(money.mrr)} hint={t('admin.kpi.mrrHint', { amount: usd(money.arr) })} />
         <StatTile label={t('admin.kpi.expired')} value={n(o.phases.trial_expired)} hint={t('admin.kpi.expiredHint')} />
       </div>
 
@@ -92,7 +95,7 @@ export default async function AdminOverviewPage() {
               </ul>
             </div>
           )}
-          {money.trialPotential > 0 && <p className="mt-4 text-sm text-muted">{t('admin.subs.trialPotential', { amount: formatEuro(t.locale, money.trialPotential) })}</p>}
+          {money.trialPotential > 0 && <p className="mt-4 text-sm text-muted">{t('admin.subs.trialPotential', { amount: usd(money.trialPotential) })}</p>}
           {o.phases.none > 0 && <p className="mt-3 rounded-2xl bg-wash px-4 py-3 text-xs leading-relaxed text-muted">{t('admin.subs.noneNote')}</p>}
         </section>
 

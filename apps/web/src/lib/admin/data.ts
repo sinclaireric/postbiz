@@ -2,8 +2,8 @@ import { cache } from 'react';
 import { isDemo } from '@/lib/supabase/env';
 import { createClient } from '@/lib/supabase/server';
 import { demoOrganizations, demoOverview, demoUserDetail, demoUserStatus, demoUsers } from './demo';
-import { PAGE_SIZE, isUserId, parseOrgRow, parseOverview, parseUserDetail, parseUserRow, parseUserStatus, totalOf } from './logic';
-import type { AdminOrgRow, AdminOverview, AdminPage, AdminUserDetail, AdminUserRow, AdminUserStatus, ListQuery } from './types';
+import { PAGE_SIZE, isUserId, parsePaymentRow, parseOrgRow, parseOverview, parseUserDetail, parseUserRow, parseUserStatus, totalOf } from './logic';
+import type { AdminPayment, AdminOrgRow, AdminOverview, AdminPage, AdminUserDetail, AdminUserRow, AdminUserStatus, ListQuery } from './types';
 
 /** Identifiant du propriétaire en mode démo (aucun compte réel). */
 export const DEMO_ADMIN_ID = '00000000-0000-4000-a000-000000000000';
@@ -72,4 +72,14 @@ export async function loadUserStatus(id: string): Promise<AdminUserStatus> {
   const { data, error } = await supabase.rpc('admin_user_status', { p_user: id });
   if (error) failure('admin_user_status', error);
   return parseUserStatus(data);
+}
+
+/** Interrupteur de la facturation et derniers paiements, pour `/admin/facturation`. */
+export async function loadBillingAdmin(): Promise<{ enabled: boolean; payments: AdminPayment[]; total: number }> {
+  if (isDemo) return { enabled: true, payments: [], total: 0 };
+  const supabase = await createClient();
+  const [enabled, payments] = await Promise.all([supabase.rpc('billing_enabled'), supabase.rpc('admin_payments', { p_limit: 25, p_offset: 0 })]);
+  if (payments.error) failure('admin_payments', payments.error);
+  const rows = (payments.data ?? []) as unknown[];
+  return { enabled: enabled.data === true, payments: rows.map(parsePaymentRow), total: totalOf(rows) };
 }

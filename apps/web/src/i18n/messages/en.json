@@ -377,7 +377,11 @@
         "demo": "Demo mode: nothing was changed.",
         "self": "You cannot suspend your own account.",
         "protected": "A platform administrator cannot be suspended.",
-        "error": "The operation failed. Check that the suspension migration is applied, then try again."
+        "error": "The operation failed. Check that the suspension migration is applied, then try again.",
+        "gifted": "Subscription gifted.",
+        "giftRevoked": "Gift removed.",
+        "giftPaid": "This organization has a paid subscription in progress: a gift never replaces it.",
+        "giftInvalid": "Invalid plan, duration or organization."
       }
     },
     "user": {
@@ -423,7 +427,12 @@
       "colStatus": "State",
       "colConnected": "Connected on",
       "colToken": "Token valid until",
-      "privacyNote": "To protect customers’ data, the text of posts and messages is not shown here: only the numbers are."
+      "privacyNote": "To protect customers’ data, the text of posts and messages is not shown here: only the numbers are.",
+      "effectivePlan": "Plan in effect today",
+      "paymentMethod": "Payment method",
+      "monthlyUsd": "Monthly revenue",
+      "graceEnds": "Grace period until",
+      "giftNote": "Gift note"
     },
     "channelStatus": {
       "active": "Active",
@@ -439,7 +448,8 @@
       "label": "Administration navigation",
       "overview": "Overview",
       "users": "Users",
-      "subscriptions": "Subscriptions"
+      "subscriptions": "Subscriptions",
+      "billing": "Billing"
     },
     "phase": {
       "trialing": "Trial in progress",
@@ -559,6 +569,41 @@
       "renews": "Renews on {date}",
       "endsOn": "Ends on {date}",
       "dueOn": "Period until {date}"
+    },
+    "gift": {
+      "title": "Gift a subscription",
+      "hint": "The organization gets the chosen plan without paying, until the given date. A gift is not counted in MRR and never replaces a paid subscription in progress.",
+      "plan": "Plan",
+      "duration": "Duration",
+      "d1": "1 month",
+      "d3": "3 months",
+      "d6": "6 months",
+      "d12": "12 months",
+      "note": "Note (optional, visible to you only)",
+      "submit": "Gift",
+      "revoke": "Remove the gift"
+    },
+    "billing": {
+      "title": "Billing",
+      "subtitle": "Billing switch, payment provider status and latest payments.",
+      "state": "Billing status",
+      "on": "Enabled: plan limits apply and payments are offered.",
+      "off": "Disabled (free beta): no limits, no payments.",
+      "enable": "Enable billing",
+      "disable": "Disable (back to the free beta)",
+      "enableWarn": "Once enabled, each plan's limits apply to every workspace. Existing channels are not disconnected: only new connections beyond the limit are refused.",
+      "providers": "Payment providers",
+      "stripe": "Stripe (card)",
+      "pawapay": "PawaPay (mobile money)",
+      "configured": "Configured · {mode} mode",
+      "missing": "Not configured",
+      "cron": "Daily job (CRON_SECRET)",
+      "payments": "Latest payments",
+      "noPayments": "No payments.",
+      "org": "Organization",
+      "flashOn": "Billing enabled.",
+      "flashOff": "Billing disabled.",
+      "flashError": "The operation failed. Check that the billing migration is applied."
     }
   },
   "legal": {
@@ -641,7 +686,9 @@
         "li3": "<b>Messages and comments:</b> content received and sent on the accounts you connect, along with the public identifier, name and handle of the people who write to you.",
         "li4": "<b>Posts and media:</b> texts, images and videos that you schedule or upload to the library, and their dates.",
         "li5": "<b>AI assistant:</b> the instructions you enter in the assistant.",
-        "li6": "<b>Usage:</b> technical logs needed for the security and proper operation of the service."
+        "li6": "<b>Usage:</b> technical logs needed for the security and proper operation of the service.",
+        "li8": "<b>Payment:</b> chosen plan, amounts, dates, country and status of your payments (card via Stripe, mobile money via PawaPay). We neither see nor keep your card number or your mobile wallet’s secret code.",
+        "li9": "<b>Approximate country:</b> to show prices in the right currency, a visitor’s country is inferred from their IP address (header provided by the host; otherwise a geolocation service queried from our servers). This country is not stored in our database: only the one you choose yourself is remembered, in a cookie."
       },
       "s3": {
         "h": "3. What we receive from social networks",
@@ -678,15 +725,19 @@
         "li3": "Email delivery provider — sign-in messages and notifications.",
         "li4": "OpenAI — AI assistant, agent, picture generation, knowledge base search and reply suggestions, only when you use them: the text you enter, your knowledge base (each entry is also turned into numerical vectors when you save it), the messages of the conversation you ask a reply for and, for the agent, your connected channels’ names and recent posts are sent to it to produce the answer; pictures are generated from the description the agent writes.",
         "li5": "Evolink (Seedance) — video generation, only when you ask the agent for a video: the description of the video and, if you choose reference pictures, temporary links to those pictures are sent to it.",
-        "p1": "The social networks you connect are separate data controllers, governed by their own policies. Some processors are located outside the European Union, notably in the United States: transfers then rely on the mechanisms provided for by the GDPR (adequacy decision or standard contractual clauses)."
+        "p1": "The social networks you connect are separate data controllers, governed by their own policies. Some processors are located outside the European Union, notably in the United States: transfers then rely on the mechanisms provided for by the GDPR (adequacy decision or standard contractual clauses).",
+        "li6": "Stripe Payments Europe Ltd. — card payments and subscription management.",
+        "li7": "PawaPay — mobile money payments in supported African countries.",
+        "li8": "IP geolocation service — only when the host does not provide the visitor’s country; the address is neither logged nor kept by Postbiz."
       },
       "s8": {
         "h": "8. Retention",
-        "p1": "Account data is kept as long as the account exists. A channel’s access tokens are deleted when you disconnect it; the related messages and comments are deleted within 30 days. When you delete your account, the associated data is erased within the same period."
+        "p1": "Account data is kept as long as the account exists. A channel’s access tokens are deleted when you disconnect it; the related messages and comments are deleted within 30 days. When you delete your account, the associated data is erased within the same period.",
+        "p2": "Payment records (amount, date, plan, provider reference) are kept for the legal period that applies to accounting records, even after the account is deleted."
       },
       "s9": {
         "h": "9. Cookies",
-        "p1": "Postbiz only uses strictly necessary cookies and storage: the sign-in session, your language and your display preferences. There are no advertising cookies and no third-party analytics tools."
+        "p1": "Postbiz only uses strictly necessary cookies and storage: the sign-in session, your language, the country you chose for prices and your display preferences. There are no advertising cookies and no third-party analytics tools."
       },
       "s10": {
         "h": "10. Your rights",
@@ -723,46 +774,32 @@
     }
   },
   "pricing": {
-    "title": "Simple pricing, <accent>published from the beta</accent>",
-    "subtitle": "Three plans depending on your team size. Everything is free during the beta, no credit card.",
+    "title": "Simple pricing, <accent>in dollars or CFA francs</accent>",
+    "subtitle": "Start for free, move to a paid plan when your team grows.",
     "billingLabel": "Billing period",
     "monthly": "Monthly",
     "yearly": "Yearly",
     "discount": "−{percent}%",
     "perMonth": "/ month",
-    "billedYearly": "Billed yearly · you save {amount}",
     "billedMonthly": "Billed monthly",
     "popular": "Popular",
     "cta": "Start for free",
-    "inherits": "Everything in {plan}, plus:",
     "plans": {
-      "starter": {
-        "name": "Starter",
-        "tagline": "For a creator or a small brand getting started.",
-        "f1": "3 connected channels",
-        "f2": "1 member",
-        "f3": "Scheduling and calendar",
-        "f4": "Unified inbox",
-        "f5": "Mobile app"
+      "free": {
+        "name": "Free",
+        "tagline": "To try Postbiz and manage a few accounts."
       },
-      "pro": {
-        "name": "Pro",
-        "tagline": "For a team that replies every day.",
-        "f1": "10 connected channels",
-        "f2": "5 members",
-        "f3": "Assignment and internal notes",
-        "f4": "Quick replies",
-        "f5": "Push notifications",
-        "f6": "Search across all messages"
+      "standard": {
+        "name": "Standard",
+        "tagline": "For a creator or small brand that posts every week."
       },
       "team": {
         "name": "Team",
-        "tagline": "For an agency or several brands.",
-        "f1": "Unlimited channels",
-        "f2": "15 members",
-        "f3": "Roles and permissions",
-        "f4": "Automatic video optimization",
-        "f5": "Priority support"
+        "tagline": "For a team that posts and replies every day."
+      },
+      "agency": {
+        "name": "Agency",
+        "tagline": "For an agency that manages many client accounts."
       }
     },
     "custom": {
@@ -794,20 +831,192 @@
         "search": "Search across the whole history",
         "roles": "Roles and permissions",
         "video": "Automatic video optimization",
-        "support": "Priority support"
+        "support": "Priority support",
+        "knowledge": "Knowledge (documents / websites)"
       }
     },
     "faq": {
       "title": "Questions about pricing",
       "more": "Another question? <link>Contact us</link>.",
-      "q1": "Is the beta really free?",
-      "a1": "Yes. During the beta, all plans are free and no credit card is required. The prices above are the ones we plan to apply; we will let you know well before any change.",
+      "q1": "Can I try before paying?",
+      "a1": "Yes. The Free plan has no time limit, and everyone new gets a 14-day trial of the Standard plan, no credit card needed.",
       "q2": "Can I change plans?",
-      "a2": "At any time. The features of the higher plan are available immediately.",
+      "a2": "At any time. The higher plan’s features are available immediately; with mobile money, the time left on your old plan is converted.",
       "q3": "What happens if I exceed the number of channels?",
       "a3": "You cannot connect an additional channel until you change plans. Your existing channels keep working.",
       "q4": "Are private messages included everywhere?",
-      "a4": "Yes, within what each network allows. See the Channels page for details."
+      "a4": "Yes, within what each network allows. See the Channels page for details.",
+      "q5": "How do I pay from Africa?",
+      "a5": "By mobile money (Orange Money, MTN MoMo, Moov Money, Airtel Money…) in supported countries, or by card. In CFA franc countries, prices are in CFA francs with a {percent}% discount.",
+      "q6": "What happens when my subscription ends?",
+      "a6": "You return to the Free plan. Nothing is deleted: your data stays intact, and only the Free plan’s limits apply to new additions. With mobile money, your plan stays active 7 more days and we remind you before it ends."
+    },
+    "betaNotice": "Everything is free during the beta. The prices below are the ones that will apply when billing starts.",
+    "freeNote": "No time limit, no credit card",
+    "ctaPaid": "Choose {plan}",
+    "billedYearlyTotal": "{total} billed yearly · you save {amount}",
+    "region": {
+      "label": "Country",
+      "other": "Other country",
+      "noteLocal": "Local pricing: a {percent}% discount is already applied to the dollar price.",
+      "noteWorld": "Prices in US dollars. Choose your country to see local pricing."
+    },
+    "limit": {
+      "channels": "Connected channels",
+      "members": "Members",
+      "images_per_month": "AI images per month",
+      "videos_per_month": "AI videos per month",
+      "ai_text_per_month": "AI text actions per month",
+      "knowledge_files": "Knowledge documents",
+      "knowledge_sites": "Knowledge websites",
+      "storage_mb": "Media storage",
+      "analytics_days": "Analytics history (days)"
+    },
+    "feature": {
+      "core": "Scheduling, calendar and unified inbox",
+      "mobile": "Mobile app",
+      "priority": "Priority support"
+    },
+    "pay": {
+      "mobile": "Pay by card or by mobile money (Orange Money, MTN MoMo, Moov Money, Airtel Money…).",
+      "card": "Pay by card, secured by Stripe."
+    }
+  },
+  "billing": {
+    "title": "Billing",
+    "subtitle": "Your plan, your usage and your payments.",
+    "demo": "Demo mode: payments are simulated, nothing is charged.",
+    "betaNotice": "Billing is not enabled yet: everything is free during the beta.",
+    "current": {
+      "title": "Current plan",
+      "badge": "Current"
+    },
+    "phase": {
+      "free": "You are on the {plan} plan.",
+      "trialing": "Free trial of the {plan} plan until {date}.",
+      "paying": "{plan} plan, paid until {date}.",
+      "cancelling": "{plan} plan cancelled: it ends on {date}.",
+      "grace": "Your paid period has ended. The {plan} plan stays active until {date}, then you return to the Free plan.",
+      "gift": "{plan} plan offered to you, valid until {date}.",
+      "ended": "Your subscription has ended: you are back on the Free plan. Your data is kept."
+    },
+    "manage": "Manage card, invoices and cancellation",
+    "cancelDemo": "Cancel subscription (demo)",
+    "cancelHint": {
+      "prepaid": "Mobile money is prepaid: there is nothing to cancel, the plan simply stops at the end of the period."
+    },
+    "usage": {
+      "title": "Usage",
+      "month": "Monthly quotas reset on the 1st of each month.",
+      "value": "{used} of {limit}",
+      "unlimitedValue": "{used} · unlimited"
+    },
+    "change": {
+      "title": "Change plan",
+      "method": "Payment method"
+    },
+    "method": {
+      "card": "Bank card",
+      "cardHint": "Visa, Mastercard… Secured by Stripe, renews automatically.",
+      "mobile": "Mobile money",
+      "mobileHint": "Orange, MTN, Moov, Airtel… One-off payment, no automatic renewal.",
+      "mobileUnavailable": "Not available for the selected country."
+    },
+    "phone": {
+      "label": "Mobile money number (optional)",
+      "hint": "With the country code, without “+” (e.g. 237670123456). Otherwise you will enter it on the payment page."
+    },
+    "period": {
+      "monthly": "1 month",
+      "yearly": "12 months"
+    },
+    "pay": {
+      "card": "Pay {amount} by card",
+      "mobile": "Pay {amount} by mobile money"
+    },
+    "note": {
+      "card": "Renews automatically each period, cancel at any time.",
+      "mobile": "One-off payment for {period}. We warn you before it ends; the plan stays active 7 more days."
+    },
+    "history": {
+      "title": "Payment history",
+      "empty": "No payments yet.",
+      "date": "Date",
+      "plan": "Plan",
+      "method": "Method",
+      "amount": "Amount",
+      "status": "Status"
+    },
+    "provider": {
+      "stripe": "Card",
+      "pawapay": "Mobile money",
+      "gift": "Gift"
+    },
+    "status": {
+      "pending": "Pending",
+      "succeeded": "Paid",
+      "failed": "Failed",
+      "expired": "Expired",
+      "refunded": "Refunded"
+    },
+    "admin": {
+      "only": "Only workspace administrators can view and change the subscription."
+    },
+    "flash": {
+      "ok": "Thank you! Your payment is recorded.",
+      "pending": "Payment received, activation is in progress. Refresh the page in a moment.",
+      "cancel": "Payment cancelled: nothing was charged.",
+      "cancelled": "The subscription will end at the end of the current period."
+    },
+    "error": {
+      "forbidden": "Only workspace administrators can change the subscription.",
+      "plan": "Invalid plan or billing period.",
+      "disabled": "Billing is not enabled yet.",
+      "config": "Payment is not configured yet. Try again later.",
+      "provider": "The payment service is unavailable. Try again in a moment.",
+      "country": "Mobile money is not offered for this country. Choose card.",
+      "phone": "Invalid phone number.",
+      "return_url": "Mobile money payment requires an https site address.",
+      "has_card": "A card subscription is already active: manage it from the billing portal.",
+      "has_prepaid": "A prepaid period is running: you can switch to card when it ends.",
+      "has_gift": "A gifted subscription is running: you can pay when it ends.",
+      "portal": "The billing portal is unavailable at the moment."
+    },
+    "return": {
+      "succeeded": {
+        "title": "Payment received",
+        "text": "Thank you! Your plan is active."
+      },
+      "pending": {
+        "title": "Checking the payment…",
+        "text": "We are waiting for the operator’s confirmation. This page updates by itself."
+      },
+      "failed": {
+        "title": "The payment did not go through",
+        "text": "Nothing was charged. Check your balance and try again."
+      },
+      "expired": {
+        "title": "The payment expired",
+        "text": "The payment page was not completed in time. Nothing was charged."
+      },
+      "unknown": {
+        "title": "Payment not found",
+        "text": "We cannot find this payment in your workspace."
+      },
+      "review": {
+        "title": "Payment received",
+        "text": "Your workspace already has an active subscription: we are checking this payment manually and will contact you."
+      },
+      "error": {
+        "title": "Unable to check",
+        "text": "We cannot reach the operator right now. Try again in a moment; if the payment was charged, it will be applied automatically."
+      },
+      "back": "Back to billing",
+      "retry": "Try again"
+    },
+    "limit": {
+      "reached": "Limit reached: {what} ({limit}) on the {plan} plan. Upgrade to continue.",
+      "upgrade": "See plans"
     }
   },
   "channelsPage": {
@@ -1412,7 +1621,8 @@
       "channels": "Channels",
       "settings": "Settings",
       "analytics": "Analytics",
-      "knowledge": "Knowledge base"
+      "knowledge": "Knowledge base",
+      "billing": "Billing"
     },
     "analytics": {
       "filters": {
@@ -2101,7 +2311,8 @@
       "aucun_compte": "No usable account was found (for Meta: an authorized Page, or a professional Instagram account linked to a Page).",
       "selection_vide": "Select at least one account to connect.",
       "expire": "This selection has expired. Start the connection again.",
-      "erreur": "The connection failed. Please try again in a moment."
+      "erreur": "The connection failed. Please try again in a moment.",
+      "limite_canaux": "You have reached the channel limit of your plan. Upgrade to connect more."
     },
     "onboarding": {
       "label": "Getting started with Postbiz",

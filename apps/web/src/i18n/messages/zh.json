@@ -209,46 +209,32 @@
     }
   },
   "pricing": {
-    "title": "价格简单明了,<accent>测试期间就已公开</accent>",
-    "subtitle": "按团队规模提供三种套餐。测试期间一切免费,无需信用卡。",
+    "title": "简单的定价，<accent>以美元或非洲法郎计价</accent>",
+    "subtitle": "先免费使用，团队壮大后再升级到付费方案。",
     "billingLabel": "计费周期",
     "monthly": "按月",
     "yearly": "按年",
     "discount": "−{percent}%",
     "perMonth": "/ 月",
-    "billedYearly": "按年计费 · 为你节省 {amount}",
     "billedMonthly": "按月计费",
     "popular": "最受欢迎",
     "cta": "免费开始",
-    "inherits": "包含 {plan} 的全部功能,另加:",
     "plans": {
-      "starter": {
-        "name": "Starter",
-        "tagline": "适合刚起步的创作者或小型品牌。",
-        "f1": "3 个已连接渠道",
-        "f2": "1 名成员",
-        "f3": "排期与日历",
-        "f4": "统一收件箱",
-        "f5": "移动应用"
+      "free": {
+        "name": "免费版",
+        "tagline": "用于体验 Postbiz 并管理少量账号。"
       },
-      "pro": {
-        "name": "Pro",
-        "tagline": "适合每天都要回复消息的团队。",
-        "f1": "10 个已连接渠道",
-        "f2": "5 名成员",
-        "f3": "分配与内部备注",
-        "f4": "快捷回复",
-        "f5": "推送通知",
-        "f6": "搜索所有消息"
+      "standard": {
+        "name": "标准版",
+        "tagline": "适合每周发布内容的创作者或小品牌。"
       },
       "team": {
-        "name": "Team",
-        "tagline": "适合代理机构或多个品牌。",
-        "f1": "不限渠道数量",
-        "f2": "15 名成员",
-        "f3": "角色与权限",
-        "f4": "视频自动优化",
-        "f5": "优先支持"
+        "name": "团队版",
+        "tagline": "适合每天发布和回复的团队。"
+      },
+      "agency": {
+        "name": "代理版",
+        "tagline": "适合管理大量客户账号的代理机构。"
       }
     },
     "custom": {
@@ -280,20 +266,192 @@
         "search": "搜索全部历史",
         "roles": "角色与权限",
         "video": "视频自动优化",
-        "support": "优先支持"
+        "support": "优先支持",
+        "knowledge": "知识库（文档 / 网站）"
       }
     },
     "faq": {
       "title": "关于价格的问题",
       "more": "还有其他问题?<link>联系我们</link>。",
-      "q1": "测试版真的免费吗?",
-      "a1": "是的。测试期间所有套餐均免费,不需要信用卡。上方价格是我们计划实行的价格;如有任何变动,我们会提前很长时间通知你。",
+      "q1": "付费前可以试用吗？",
+      "a1": "可以。免费版没有时间限制，每位新用户还可免费试用标准版 14 天，无需绑定银行卡。",
       "q2": "我可以更换套餐吗?",
-      "a2": "随时可以。更高套餐的功能会立即生效。",
+      "a2": "随时可以。更高方案的功能立即可用；使用移动支付时，原方案的剩余时间会折算。",
       "q3": "超出渠道数量会怎样?",
       "a3": "在更换套餐之前,你无法再连接新渠道。现有渠道会继续正常运行。",
       "q4": "所有网络都包含私信吗?",
-      "a4": "是的,以各社交网络允许的范围为限。详情请查看“渠道”页面。"
+      "a4": "是的,以各社交网络允许的范围为限。详情请查看“渠道”页面。",
+      "q5": "在非洲如何付款？",
+      "a5": "在支持的国家可使用移动支付（Orange Money、MTN MoMo、Moov Money、Airtel Money 等），也可使用银行卡。在非洲法郎区国家，价格以非洲法郎计价，并享 {percent}% 折扣。",
+      "q6": "订阅结束后会怎样？",
+      "a6": "您将回到免费版。不会删除任何内容：数据完整保留，只是新增内容受免费版限制。使用移动支付时，方案会再保留 7 天，并在到期前提醒您。"
+    },
+    "betaNotice": "公测期间一切免费。以下价格将在开始收费时生效。",
+    "freeNote": "无时间限制，无需银行卡",
+    "ctaPaid": "选择{plan}",
+    "billedYearlyTotal": "按年计费 {total} · 节省 {amount}",
+    "region": {
+      "label": "国家/地区",
+      "other": "其他国家/地区",
+      "noteLocal": "本地价格：已在美元价格基础上减免 {percent}%。",
+      "noteWorld": "价格以美元计。选择您的国家/地区可查看本地价格。"
+    },
+    "limit": {
+      "channels": "已连接渠道",
+      "members": "成员",
+      "images_per_month": "每月 AI 图片",
+      "videos_per_month": "每月 AI 视频",
+      "ai_text_per_month": "每月 AI 文本操作",
+      "knowledge_files": "知识库文档",
+      "knowledge_sites": "知识库网站",
+      "storage_mb": "媒体存储",
+      "analytics_days": "分析历史（天）"
+    },
+    "feature": {
+      "core": "排期、日历和统一收件箱",
+      "mobile": "手机应用",
+      "priority": "优先支持"
+    },
+    "pay": {
+      "mobile": "支持银行卡或移动支付（Orange Money、MTN MoMo、Moov Money、Airtel Money 等）。",
+      "card": "银行卡支付，由 Stripe 保障安全。"
+    }
+  },
+  "billing": {
+    "title": "账单",
+    "subtitle": "您的方案、用量和付款记录。",
+    "demo": "演示模式：付款为模拟，不会扣款。",
+    "betaNotice": "尚未启用计费：公测期间一切免费。",
+    "current": {
+      "title": "当前方案",
+      "badge": "当前"
+    },
+    "phase": {
+      "free": "您正在使用{plan}方案。",
+      "trialing": "{plan}方案免费试用至 {date}。",
+      "paying": "{plan}方案，已付费至 {date}。",
+      "cancelling": "{plan}方案已取消，将于 {date} 结束。",
+      "grace": "已付费期限结束。{plan}方案保留至 {date}，之后将回到免费版。",
+      "gift": "已赠送{plan}方案，有效期至 {date}。",
+      "ended": "订阅已结束，您已回到免费版。数据仍会保留。"
+    },
+    "manage": "管理银行卡、发票和取消订阅",
+    "cancelDemo": "取消订阅（演示）",
+    "cancelHint": {
+      "prepaid": "移动支付为预付费：无需取消，方案在期限结束时自动停止。"
+    },
+    "usage": {
+      "title": "用量",
+      "month": "每月配额在每月 1 日重置。",
+      "value": "{used} / {limit}",
+      "unlimitedValue": "{used} · 不限"
+    },
+    "change": {
+      "title": "更改方案",
+      "method": "付款方式"
+    },
+    "method": {
+      "card": "银行卡",
+      "cardHint": "Visa、Mastercard 等。由 Stripe 保障安全，自动续费。",
+      "mobile": "移动支付",
+      "mobileHint": "Orange、MTN、Moov、Airtel 等。一次性付款，不自动续费。",
+      "mobileUnavailable": "所选国家/地区不可用。"
+    },
+    "phone": {
+      "label": "移动支付号码（可选）",
+      "hint": "含国家区号、不带“+”（例如 237670123456）。否则将在支付页面输入。"
+    },
+    "period": {
+      "monthly": "1 个月",
+      "yearly": "12 个月"
+    },
+    "pay": {
+      "card": "银行卡支付 {amount}",
+      "mobile": "移动支付 {amount}"
+    },
+    "note": {
+      "card": "每个周期自动续费，可随时取消。",
+      "mobile": "一次性支付 {period}。到期前会提醒您，之后方案再保留 7 天。"
+    },
+    "history": {
+      "title": "付款记录",
+      "empty": "暂无付款记录。",
+      "date": "日期",
+      "plan": "方案",
+      "method": "方式",
+      "amount": "金额",
+      "status": "状态"
+    },
+    "provider": {
+      "stripe": "银行卡",
+      "pawapay": "移动支付",
+      "gift": "赠送"
+    },
+    "status": {
+      "pending": "待处理",
+      "succeeded": "已支付",
+      "failed": "失败",
+      "expired": "已过期",
+      "refunded": "已退款"
+    },
+    "admin": {
+      "only": "只有工作区管理员可以查看和修改订阅。"
+    },
+    "flash": {
+      "ok": "谢谢！您的付款已记录。",
+      "pending": "已收到付款，正在激活。请稍后刷新页面。",
+      "cancel": "付款已取消：未扣款。",
+      "cancelled": "订阅将在当前周期结束时终止。"
+    },
+    "error": {
+      "forbidden": "只有工作区管理员可以修改订阅。",
+      "plan": "方案或计费周期无效。",
+      "disabled": "尚未启用计费。",
+      "config": "付款尚未配置，请稍后再试。",
+      "provider": "支付服务暂不可用，请稍后重试。",
+      "country": "该国家/地区不支持移动支付，请选择银行卡。",
+      "phone": "电话号码无效。",
+      "return_url": "移动支付需要 https 网站地址。",
+      "has_card": "已有银行卡订阅：请在账单门户中管理。",
+      "has_prepaid": "预付费期限尚未结束：到期后可改用银行卡。",
+      "has_gift": "赠送的订阅仍有效：到期后即可付费。",
+      "portal": "账单门户暂时不可用。"
+    },
+    "return": {
+      "succeeded": {
+        "title": "已收到付款",
+        "text": "谢谢！您的方案已激活。"
+      },
+      "pending": {
+        "title": "正在核对付款…",
+        "text": "正在等待运营商确认，本页会自动更新。"
+      },
+      "failed": {
+        "title": "付款未成功",
+        "text": "未扣款。请检查余额后重试。"
+      },
+      "expired": {
+        "title": "付款已过期",
+        "text": "未在规定时间内完成支付页面，未扣款。"
+      },
+      "unknown": {
+        "title": "未找到该付款",
+        "text": "在您的工作区中找不到此付款。"
+      },
+      "review": {
+        "title": "已收到付款",
+        "text": "您的工作区已有有效订阅：我们将人工核查这笔付款并与您联系。"
+      },
+      "error": {
+        "title": "暂时无法核对",
+        "text": "目前无法联系运营商。请稍后重试；若已扣款，系统会自动处理。"
+      },
+      "back": "返回账单",
+      "retry": "重试"
+    },
+    "limit": {
+      "reached": "已达上限：{plan}方案的{what}（{limit}）。升级方案后可继续。",
+      "upgrade": "查看方案"
     }
   },
   "channelsPage": {
@@ -780,7 +938,7 @@
       "soon": "即将推出",
       "knowledge": "知识"
     },
-    "titles": { "agent": "智能体", "calendar": "日历", "inbox": "收件箱", "media": "媒体", "channels": "渠道", "settings": "设置", "analytics": "分析", "knowledge": "知识库" },
+    "titles": { "agent": "智能体", "calendar": "日历", "inbox": "收件箱", "media": "媒体", "channels": "渠道", "settings": "设置", "analytics": "分析", "knowledge": "知识库", "billing": "账单" },
     "analytics": {
       "filters": {
         "channel": "渠道",
@@ -1407,7 +1565,8 @@
       "aucun_compte": "未找到可用账号(Meta 方面:需要一个已授权的主页,或关联到主页的 Instagram 专业账号)。",
       "selection_vide": "请至少选择一个要连接的账号。",
       "expire": "此次选择已过期,请重新开始连接。",
-      "erreur": "连接失败,请稍后重试。"
+      "erreur": "连接失败,请稍后重试。",
+      "limite_canaux": "您已达到当前方案的渠道数量上限。升级方案后可连接更多渠道。"
     },
     "onboarding": {
       "label": "Postbiz 入门",

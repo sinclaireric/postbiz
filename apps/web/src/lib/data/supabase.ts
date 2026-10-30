@@ -496,7 +496,14 @@ export function createSupabaseRepositories(supabase: SupabaseClient, ctx: AppCon
 
   const generation: GenerationRepository = {
     async reserve(kind, limit) {
-      const { data, error } = await supabase.rpc('ai_generation_reserve', { p_org: ctx.org.id, p_kind: kind, p_limit: limit });
+      // Limite mensuelle de l'offre d'abord, puis plafond journalier anti-abus (`ai_media_reserve`).
+      const { data, error } = await supabase.rpc('ai_media_reserve', { p_org: ctx.org.id, p_kind: kind, p_daily_limit: limit });
+      if (error) return false;
+      return data === 'ok' ? true : data === 'monthly' ? 'monthly' : false;
+    },
+
+    async reserveText(feature) {
+      const { data, error } = await supabase.rpc('ai_text_reserve', { p_org: ctx.org.id, p_feature: feature });
       return !error && data === true;
     },
 

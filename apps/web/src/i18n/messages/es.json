@@ -209,46 +209,32 @@
     }
   },
   "pricing": {
-    "title": "Precios sencillos, <accent>publicados desde la beta</accent>",
-    "subtitle": "Tres planes según el tamaño de tu equipo. Todo es gratuito durante la beta, sin tarjeta de crédito.",
+    "title": "Precios simples, <accent>en dólares o en francos CFA</accent>",
+    "subtitle": "Empiece gratis y pase a un plan de pago cuando su equipo crezca.",
     "billingLabel": "Periodo de facturación",
     "monthly": "Mensual",
     "yearly": "Anual",
     "discount": "−{percent} %",
     "perMonth": "/ mes",
-    "billedYearly": "Facturado anualmente · ahorras {amount}",
     "billedMonthly": "Facturado mensualmente",
     "popular": "Popular",
     "cta": "Empezar gratis",
-    "inherits": "Todo lo de {plan}, y además:",
     "plans": {
-      "starter": {
-        "name": "Starter",
-        "tagline": "Para un creador o una pequeña marca que empieza.",
-        "f1": "3 canales conectados",
-        "f2": "1 miembro",
-        "f3": "Programación y calendario",
-        "f4": "Bandeja de entrada unificada",
-        "f5": "Aplicación móvil"
+      "free": {
+        "name": "Gratis",
+        "tagline": "Para conocer Postbiz y gestionar unas pocas cuentas."
       },
-      "pro": {
-        "name": "Pro",
-        "tagline": "Para un equipo que responde todos los días.",
-        "f1": "10 canales conectados",
-        "f2": "5 miembros",
-        "f3": "Asignación y notas internas",
-        "f4": "Respuestas rápidas",
-        "f5": "Notificaciones push",
-        "f6": "Búsqueda en todos los mensajes"
+      "standard": {
+        "name": "Estándar",
+        "tagline": "Para un creador o una marca pequeña que publica cada semana."
       },
       "team": {
         "name": "Equipo",
-        "tagline": "Para una agencia o varias marcas.",
-        "f1": "Canales ilimitados",
-        "f2": "15 miembros",
-        "f3": "Roles y permisos",
-        "f4": "Optimización automática de vídeos",
-        "f5": "Soporte prioritario"
+        "tagline": "Para un equipo que publica y responde a diario."
+      },
+      "agency": {
+        "name": "Agencia",
+        "tagline": "Para una agencia que gestiona muchas cuentas de clientes."
       }
     },
     "custom": {
@@ -280,20 +266,192 @@
         "search": "Búsqueda en todo el historial",
         "roles": "Roles y permisos",
         "video": "Optimización automática de vídeos",
-        "support": "Soporte prioritario"
+        "support": "Soporte prioritario",
+        "knowledge": "Conocimiento (documentos / sitios)"
       }
     },
     "faq": {
       "title": "Preguntas sobre los precios",
       "more": "¿Otra pregunta? <link>Contáctanos</link>.",
-      "q1": "¿La beta es realmente gratuita?",
-      "a1": "Sí. Durante la beta, todos los planes son gratuitos y no se pide tarjeta de crédito. Los precios de arriba son los que pensamos aplicar; te avisaremos con mucha antelación antes de cualquier cambio.",
+      "q1": "¿Puedo probar antes de pagar?",
+      "a1": "Sí. El plan Gratis no tiene límite de tiempo y cada persona nueva disfruta de 14 días de prueba del plan Estándar, sin tarjeta.",
       "q2": "¿Puedo cambiar de plan?",
-      "a2": "En cualquier momento. Las funciones del plan superior están disponibles de inmediato.",
+      "a2": "En cualquier momento. Las funciones del plan superior están disponibles al instante; con mobile money, el tiempo restante del plan anterior se convierte.",
       "q3": "¿Qué pasa si supero el número de canales?",
       "a3": "No podrás conectar ningún canal adicional hasta que cambies de plan. Tus canales existentes siguen funcionando.",
       "q4": "¿Los mensajes privados están incluidos en todas partes?",
-      "a4": "Sí, dentro de lo que permita cada red. Consulta la página Canales para ver el detalle."
+      "a4": "Sí, dentro de lo que permita cada red. Consulta la página Canales para ver el detalle.",
+      "q5": "¿Cómo pagar desde África?",
+      "a5": "Con mobile money (Orange Money, MTN MoMo, Moov Money, Airtel Money…) en los países admitidos, o con tarjeta. En los países de la zona del franco CFA, los precios están en francos CFA con un {percent} % de descuento.",
+      "q6": "¿Qué pasa cuando termina mi suscripción?",
+      "a6": "Vuelve al plan Gratis. No se borra nada: sus datos se conservan y solo los límites del plan Gratis se aplican a las nuevas altas. Con mobile money, el plan sigue activo 7 días más y le avisamos antes del final."
+    },
+    "betaNotice": "Todo es gratis durante la beta. Los precios de abajo serán los del lanzamiento de la facturación.",
+    "freeNote": "Sin límite de tiempo, sin tarjeta",
+    "ctaPaid": "Elegir {plan}",
+    "billedYearlyTotal": "{total} facturados al año · ahorra {amount}",
+    "region": {
+      "label": "País",
+      "other": "Otro país",
+      "noteLocal": "Precio local: ya se aplica un {percent} % de descuento sobre el precio en dólares.",
+      "noteWorld": "Precios en dólares estadounidenses. Elija su país para ver el precio local."
+    },
+    "limit": {
+      "channels": "Canales conectados",
+      "members": "Miembros",
+      "images_per_month": "Imágenes IA al mes",
+      "videos_per_month": "Vídeos IA al mes",
+      "ai_text_per_month": "Acciones de texto IA al mes",
+      "knowledge_files": "Documentos de conocimiento",
+      "knowledge_sites": "Sitios de conocimiento",
+      "storage_mb": "Almacenamiento de medios",
+      "analytics_days": "Historial de análisis (días)"
+    },
+    "feature": {
+      "core": "Programación, calendario y bandeja unificada",
+      "mobile": "Aplicación móvil",
+      "priority": "Soporte prioritario"
+    },
+    "pay": {
+      "mobile": "Pago con tarjeta o con mobile money (Orange Money, MTN MoMo, Moov Money, Airtel Money…).",
+      "card": "Pago con tarjeta, protegido por Stripe."
+    }
+  },
+  "billing": {
+    "title": "Facturación",
+    "subtitle": "Su plan, su uso y sus pagos.",
+    "demo": "Modo demostración: los pagos se simulan, no se cobra nada.",
+    "betaNotice": "La facturación aún no está activada: todo es gratis durante la beta.",
+    "current": {
+      "title": "Plan actual",
+      "badge": "Actual"
+    },
+    "phase": {
+      "free": "Está usando el plan {plan}.",
+      "trialing": "Prueba gratuita del plan {plan} hasta el {date}.",
+      "paying": "Plan {plan}, pagado hasta el {date}.",
+      "cancelling": "Plan {plan} cancelado: termina el {date}.",
+      "grace": "Su periodo pagado ha terminado. El plan {plan} sigue activo hasta el {date}; después volverá al plan Gratis.",
+      "gift": "Plan {plan} regalado, válido hasta el {date}.",
+      "ended": "Su suscripción ha terminado: ha vuelto al plan Gratis. Sus datos se conservan."
+    },
+    "manage": "Gestionar tarjeta, facturas y cancelación",
+    "cancelDemo": "Cancelar suscripción (demo)",
+    "cancelHint": {
+      "prepaid": "El mobile money es de prepago: no hay nada que cancelar, el plan se detiene al final del periodo."
+    },
+    "usage": {
+      "title": "Uso",
+      "month": "Las cuotas mensuales se reinician el día 1 de cada mes.",
+      "value": "{used} de {limit}",
+      "unlimitedValue": "{used} · ilimitado"
+    },
+    "change": {
+      "title": "Cambiar de plan",
+      "method": "Método de pago"
+    },
+    "method": {
+      "card": "Tarjeta bancaria",
+      "cardHint": "Visa, Mastercard… Protegido por Stripe, se renueva automáticamente.",
+      "mobile": "Mobile money",
+      "mobileHint": "Orange, MTN, Moov, Airtel… Pago único, sin renovación automática.",
+      "mobileUnavailable": "No disponible para el país elegido."
+    },
+    "phone": {
+      "label": "Número de mobile money (opcional)",
+      "hint": "Con el prefijo del país, sin «+» (p. ej. 237670123456). Si no, lo introducirá en la página de pago."
+    },
+    "period": {
+      "monthly": "1 mes",
+      "yearly": "12 meses"
+    },
+    "pay": {
+      "card": "Pagar {amount} con tarjeta",
+      "mobile": "Pagar {amount} con mobile money"
+    },
+    "note": {
+      "card": "Se renueva automáticamente cada periodo; cancele cuando quiera.",
+      "mobile": "Pago único por {period}. Le avisamos antes del final; el plan sigue activo 7 días más."
+    },
+    "history": {
+      "title": "Historial de pagos",
+      "empty": "Aún no hay pagos.",
+      "date": "Fecha",
+      "plan": "Plan",
+      "method": "Método",
+      "amount": "Importe",
+      "status": "Estado"
+    },
+    "provider": {
+      "stripe": "Tarjeta",
+      "pawapay": "Mobile money",
+      "gift": "Regalo"
+    },
+    "status": {
+      "pending": "Pendiente",
+      "succeeded": "Pagado",
+      "failed": "Fallido",
+      "expired": "Caducado",
+      "refunded": "Reembolsado"
+    },
+    "admin": {
+      "only": "Solo los administradores del espacio pueden ver y cambiar la suscripción."
+    },
+    "flash": {
+      "ok": "¡Gracias! Su pago está registrado.",
+      "pending": "Pago recibido, la activación está en curso. Actualice la página en un momento.",
+      "cancel": "Pago cancelado: no se ha cobrado nada.",
+      "cancelled": "La suscripción terminará al final del periodo en curso."
+    },
+    "error": {
+      "forbidden": "Solo los administradores del espacio pueden cambiar la suscripción.",
+      "plan": "Plan o periodo de facturación no válido.",
+      "disabled": "La facturación aún no está activada.",
+      "config": "El pago aún no está configurado. Inténtelo más tarde.",
+      "provider": "El servicio de pago no está disponible. Inténtelo en un momento.",
+      "country": "El mobile money no está disponible para este país. Elija tarjeta.",
+      "phone": "Número de teléfono no válido.",
+      "return_url": "El pago con mobile money requiere una dirección de sitio https.",
+      "has_card": "Ya hay una suscripción con tarjeta activa: gestiónela desde el portal de facturación.",
+      "has_prepaid": "Hay un periodo prepagado en curso: podrá pasar a tarjeta cuando termine.",
+      "has_gift": "Hay una suscripción regalada en curso: podrá pagar cuando termine.",
+      "portal": "El portal de facturación no está disponible por ahora."
+    },
+    "return": {
+      "succeeded": {
+        "title": "Pago recibido",
+        "text": "¡Gracias! Su plan está activado."
+      },
+      "pending": {
+        "title": "Comprobando el pago…",
+        "text": "Esperamos la confirmación del operador. Esta página se actualiza sola."
+      },
+      "failed": {
+        "title": "El pago no se completó",
+        "text": "No se ha cobrado nada. Compruebe su saldo e inténtelo de nuevo."
+      },
+      "expired": {
+        "title": "El pago ha caducado",
+        "text": "La página de pago no se completó a tiempo. No se ha cobrado nada."
+      },
+      "unknown": {
+        "title": "Pago no encontrado",
+        "text": "No encontramos este pago en su espacio."
+      },
+      "review": {
+        "title": "Pago recibido",
+        "text": "Su espacio ya tiene una suscripción activa: revisamos este pago manualmente y le contactaremos."
+      },
+      "error": {
+        "title": "No se puede comprobar",
+        "text": "Ahora no podemos contactar con el operador. Inténtelo en un momento; si se cobró el pago, se aplicará automáticamente."
+      },
+      "back": "Volver a facturación",
+      "retry": "Reintentar"
+    },
+    "limit": {
+      "reached": "Límite alcanzado: {what} ({limit}) con el plan {plan}. Pase a un plan superior para continuar.",
+      "upgrade": "Ver planes"
     }
   },
   "channelsPage": {
@@ -831,7 +989,7 @@
       "soon": "Próximamente",
       "knowledge": "Conocimiento"
     },
-    "titles": { "agent": "Agente", "calendar": "Calendario", "inbox": "Bandeja de entrada", "media": "Medios", "channels": "Canales", "settings": "Ajustes", "analytics": "Analíticas", "knowledge": "Base de conocimiento" },
+    "titles": { "agent": "Agente", "calendar": "Calendario", "inbox": "Bandeja de entrada", "media": "Medios", "channels": "Canales", "settings": "Ajustes", "analytics": "Analíticas", "knowledge": "Base de conocimiento", "billing": "Facturación" },
     "analytics": {
       "filters": {
         "channel": "Canal",
@@ -1463,7 +1621,8 @@
       "aucun_compte": "No se encontró ninguna cuenta utilizable (en Meta: una Página autorizada o una cuenta profesional de Instagram vinculada a una Página).",
       "selection_vide": "Selecciona al menos una cuenta que conectar.",
       "expire": "Esta selección ha caducado. Vuelve a iniciar la conexión.",
-      "erreur": "La conexión ha fallado. Inténtalo de nuevo en un momento."
+      "erreur": "La conexión ha fallado. Inténtalo de nuevo en un momento.",
+      "limite_canaux": "Ha alcanzado el número de canales de su plan. Pase a un plan superior para conectar más."
     },
     "onboarding": {
       "label": "Primeros pasos con Postbiz",

@@ -209,46 +209,32 @@
     }
   },
   "pricing": {
-    "title": "Basit fiyatlar, <accent>beta döneminden itibaren yayında</accent>",
-    "subtitle": "Ekibinizin büyüklüğüne göre üç plan. Beta süresince her şey ücretsizdir, kredi kartı gerekmez.",
+    "title": "Basit fiyatlar, <accent>dolar veya CFA frangı</accent> ile",
+    "subtitle": "Ücretsiz başlayın, ekibiniz büyüdükçe ücretli bir plana geçin.",
     "billingLabel": "Faturalandırma dönemi",
     "monthly": "Aylık",
     "yearly": "Yıllık",
     "discount": "−%{percent}",
     "perMonth": "/ ay",
-    "billedYearly": "Yıllık faturalanır · {amount} tasarruf edersiniz",
     "billedMonthly": "Aylık faturalanır",
     "popular": "Popüler",
     "cta": "Ücretsiz başla",
-    "inherits": "{plan} planındaki her şey, ayrıca:",
     "plans": {
-      "starter": {
-        "name": "Starter",
-        "tagline": "Yeni başlayan bir içerik üreticisi veya küçük bir marka için.",
-        "f1": "3 bağlı kanal",
-        "f2": "1 üye",
-        "f3": "Planlama ve takvim",
-        "f4": "Birleşik gelen kutusu",
-        "f5": "Mobil uygulama"
+      "free": {
+        "name": "Ücretsiz",
+        "tagline": "Postbiz’i denemek ve birkaç hesabı yönetmek için."
       },
-      "pro": {
-        "name": "Pro",
-        "tagline": "Her gün yanıt veren bir ekip için.",
-        "f1": "10 bağlı kanal",
-        "f2": "5 üye",
-        "f3": "Atama ve iç notlar",
-        "f4": "Hazır yanıtlar",
-        "f5": "Anlık bildirimler",
-        "f6": "Tüm mesajlarda arama"
+      "standard": {
+        "name": "Standart",
+        "tagline": "Her hafta paylaşım yapan içerik üreticileri ve küçük markalar için."
       },
       "team": {
-        "name": "Team",
-        "tagline": "Bir ajans veya birden çok marka için.",
-        "f1": "Sınırsız kanal",
-        "f2": "15 üye",
-        "f3": "Roller ve izinler",
-        "f4": "Otomatik video optimizasyonu",
-        "f5": "Öncelikli destek"
+        "name": "Takım",
+        "tagline": "Her gün paylaşım yapıp yanıt veren ekipler için."
+      },
+      "agency": {
+        "name": "Ajans",
+        "tagline": "Çok sayıda müşteri hesabını yöneten ajanslar için."
       }
     },
     "custom": {
@@ -280,20 +266,192 @@
         "search": "Tüm geçmişte arama",
         "roles": "Roller ve izinler",
         "video": "Otomatik video optimizasyonu",
-        "support": "Öncelikli destek"
+        "support": "Öncelikli destek",
+        "knowledge": "Bilgi (belgeler / siteler)"
       }
     },
     "faq": {
       "title": "Fiyatlandırma hakkında sorular",
       "more": "Başka bir sorunuz mu var? <link>Bize ulaşın</link>.",
-      "q1": "Beta gerçekten ücretsiz mi?",
-      "a1": "Evet. Beta süresince tüm planlar ücretsizdir ve kredi kartı istenmez. Yukarıdaki fiyatlar uygulamayı planladığımız fiyatlardır; herhangi bir değişiklikten çok önce sizi bilgilendireceğiz.",
+      "q1": "Ödemeden önce deneyebilir miyim?",
+      "a1": "Evet. Ücretsiz planın süre sınırı yoktur ve her yeni kişi kart gerekmeden Standart planı 14 gün deneyebilir.",
       "q2": "Plan değiştirebilir miyim?",
-      "a2": "İstediğiniz zaman. Üst planın özellikleri hemen kullanılabilir olur.",
+      "a2": "İstediğiniz zaman. Üst planın özellikleri hemen açılır; mobil parada eski planınızda kalan süre dönüştürülür.",
       "q3": "Kanal sayısını aşarsam ne olur?",
       "a3": "Plan değiştirene kadar yeni kanal bağlayamazsınız. Mevcut kanallar çalışmaya devam eder.",
       "q4": "Özel mesajlar her yerde dahil mi?",
-      "a4": "Evet, her sosyal ağın izin verdiği ölçüde. Ayrıntılar için Kanallar sayfasına bakın."
+      "a4": "Evet, her sosyal ağın izin verdiği ölçüde. Ayrıntılar için Kanallar sayfasına bakın.",
+      "q5": "Afrika’dan nasıl ödeme yapılır?",
+      "a5": "Desteklenen ülkelerde mobil parayla (Orange Money, MTN MoMo, Moov Money, Airtel Money…) veya kartla. CFA frangı bölgesi ülkelerinde fiyatlar CFA frangı cinsindendir ve %{percent} indirimlidir.",
+      "q6": "Aboneliğim bittiğinde ne olur?",
+      "a6": "Ücretsiz plana dönersiniz. Hiçbir şey silinmez: verileriniz korunur, yalnızca yeni eklemelere Ücretsiz planın sınırları uygulanır. Mobil parada plan 7 gün daha açık kalır ve bitmeden önce sizi uyarırız."
+    },
+    "betaNotice": "Beta süresince her şey ücretsizdir. Aşağıdaki fiyatlar faturalandırma başladığında geçerli olacak.",
+    "freeNote": "Süre sınırı yok, kart gerekmez",
+    "ctaPaid": "{plan} seç",
+    "billedYearlyTotal": "Yıllık {total} faturalanır · {amount} tasarruf",
+    "region": {
+      "label": "Ülke",
+      "other": "Diğer ülke",
+      "noteLocal": "Yerel fiyat: dolar fiyatına %{percent} indirim zaten uygulandı.",
+      "noteWorld": "Fiyatlar ABD doları cinsindendir. Yerel fiyat için ülkenizi seçin."
+    },
+    "limit": {
+      "channels": "Bağlı kanallar",
+      "members": "Üyeler",
+      "images_per_month": "Aylık yapay zekâ görseli",
+      "videos_per_month": "Aylık yapay zekâ videosu",
+      "ai_text_per_month": "Aylık yapay zekâ metin işlemi",
+      "knowledge_files": "Bilgi belgeleri",
+      "knowledge_sites": "Bilgi siteleri",
+      "storage_mb": "Medya depolama",
+      "analytics_days": "Analiz geçmişi (gün)"
+    },
+    "feature": {
+      "core": "Planlama, takvim ve birleşik gelen kutusu",
+      "mobile": "Mobil uygulama",
+      "priority": "Öncelikli destek"
+    },
+    "pay": {
+      "mobile": "Kartla veya mobil parayla (Orange Money, MTN MoMo, Moov Money, Airtel Money…) ödeme.",
+      "card": "Kartla ödeme, Stripe ile güvende."
+    }
+  },
+  "billing": {
+    "title": "Faturalandırma",
+    "subtitle": "Planınız, kullanımınız ve ödemeleriniz.",
+    "demo": "Demo modu: ödemeler simüle edilir, hiçbir şey tahsil edilmez.",
+    "betaNotice": "Faturalandırma henüz etkin değil: beta süresince her şey ücretsiz.",
+    "current": {
+      "title": "Mevcut plan",
+      "badge": "Mevcut"
+    },
+    "phase": {
+      "free": "{plan} planını kullanıyorsunuz.",
+      "trialing": "{plan} planının ücretsiz denemesi {date} tarihine kadar.",
+      "paying": "{plan} planı, {date} tarihine kadar ödendi.",
+      "cancelling": "{plan} planı iptal edildi: {date} tarihinde sona erecek.",
+      "grace": "Ödenen dönem sona erdi. {plan} planı {date} tarihine kadar açık kalır, ardından Ücretsiz plana dönersiniz.",
+      "gift": "{plan} planı hediye edildi, {date} tarihine kadar geçerli.",
+      "ended": "Aboneliğiniz sona erdi: Ücretsiz plana döndünüz. Verileriniz korunur."
+    },
+    "manage": "Kartı, faturaları ve iptali yönetin",
+    "cancelDemo": "Aboneliği iptal et (demo)",
+    "cancelHint": {
+      "prepaid": "Mobil para ön ödemelidir: iptal edilecek bir şey yok, plan dönem sonunda biter."
+    },
+    "usage": {
+      "title": "Kullanım",
+      "month": "Aylık kotalar her ayın 1’inde sıfırlanır.",
+      "value": "{used} / {limit}",
+      "unlimitedValue": "{used} · sınırsız"
+    },
+    "change": {
+      "title": "Plan değiştir",
+      "method": "Ödeme yöntemi"
+    },
+    "method": {
+      "card": "Banka kartı",
+      "cardHint": "Visa, Mastercard… Stripe ile güvenli, otomatik yenilenir.",
+      "mobile": "Mobil para",
+      "mobileHint": "Orange, MTN, Moov, Airtel… Tek seferlik ödeme, otomatik yenileme yok.",
+      "mobileUnavailable": "Seçilen ülke için kullanılamıyor."
+    },
+    "phone": {
+      "label": "Mobil para numarası (isteğe bağlı)",
+      "hint": "Ülke koduyla, “+” olmadan (örn. 237670123456). Aksi halde ödeme sayfasında girersiniz."
+    },
+    "period": {
+      "monthly": "1 ay",
+      "yearly": "12 ay"
+    },
+    "pay": {
+      "card": "{amount} kartla öde",
+      "mobile": "{amount} mobil parayla öde"
+    },
+    "note": {
+      "card": "Her dönem otomatik yenilenir, istediğiniz zaman iptal edebilirsiniz.",
+      "mobile": "{period} için tek seferlik ödeme. Bitmeden önce uyarırız; plan 7 gün daha açık kalır."
+    },
+    "history": {
+      "title": "Ödeme geçmişi",
+      "empty": "Henüz ödeme yok.",
+      "date": "Tarih",
+      "plan": "Plan",
+      "method": "Yöntem",
+      "amount": "Tutar",
+      "status": "Durum"
+    },
+    "provider": {
+      "stripe": "Kart",
+      "pawapay": "Mobil para",
+      "gift": "Hediye"
+    },
+    "status": {
+      "pending": "Beklemede",
+      "succeeded": "Ödendi",
+      "failed": "Başarısız",
+      "expired": "Süresi doldu",
+      "refunded": "İade edildi"
+    },
+    "admin": {
+      "only": "Aboneliği yalnızca çalışma alanı yöneticileri görüntüleyip değiştirebilir."
+    },
+    "flash": {
+      "ok": "Teşekkürler! Ödemeniz kaydedildi.",
+      "pending": "Ödeme alındı, etkinleştirme sürüyor. Birazdan sayfayı yenileyin.",
+      "cancel": "Ödeme iptal edildi: hiçbir şey tahsil edilmedi.",
+      "cancelled": "Abonelik, mevcut dönemin sonunda sona erecek."
+    },
+    "error": {
+      "forbidden": "Aboneliği yalnızca çalışma alanı yöneticileri değiştirebilir.",
+      "plan": "Geçersiz plan veya faturalama dönemi.",
+      "disabled": "Faturalandırma henüz etkin değil.",
+      "config": "Ödeme henüz yapılandırılmadı. Daha sonra tekrar deneyin.",
+      "provider": "Ödeme hizmeti kullanılamıyor. Birazdan tekrar deneyin.",
+      "country": "Bu ülke için mobil para sunulmuyor. Kartı seçin.",
+      "phone": "Geçersiz telefon numarası.",
+      "return_url": "Mobil para ödemesi https site adresi gerektirir.",
+      "has_card": "Zaten etkin bir kart aboneliği var: faturalandırma portalından yönetin.",
+      "has_prepaid": "Ön ödemeli bir dönem sürüyor: bittiğinde karta geçebilirsiniz.",
+      "has_gift": "Hediye bir abonelik sürüyor: bittiğinde ödeme yapabilirsiniz.",
+      "portal": "Faturalandırma portalı şu anda kullanılamıyor."
+    },
+    "return": {
+      "succeeded": {
+        "title": "Ödeme alındı",
+        "text": "Teşekkürler! Planınız etkinleştirildi."
+      },
+      "pending": {
+        "title": "Ödeme doğrulanıyor…",
+        "text": "Operatörün onayı bekleniyor. Bu sayfa kendiliğinden güncellenir."
+      },
+      "failed": {
+        "title": "Ödeme tamamlanamadı",
+        "text": "Hiçbir tutar tahsil edilmedi. Bakiyenizi kontrol edip tekrar deneyin."
+      },
+      "expired": {
+        "title": "Ödemenin süresi doldu",
+        "text": "Ödeme sayfası zamanında tamamlanmadı. Hiçbir şey tahsil edilmedi."
+      },
+      "unknown": {
+        "title": "Ödeme bulunamadı",
+        "text": "Bu ödeme çalışma alanınızda bulunamadı."
+      },
+      "review": {
+        "title": "Ödeme alındı",
+        "text": "Çalışma alanınızda zaten etkin bir abonelik var: bu ödemeyi elle inceleyip sizinle iletişime geçeceğiz."
+      },
+      "error": {
+        "title": "Doğrulanamadı",
+        "text": "Şu anda operatöre ulaşamıyoruz. Birazdan tekrar deneyin; ödeme tahsil edildiyse otomatik olarak işlenir."
+      },
+      "back": "Faturalandırmaya dön",
+      "retry": "Tekrar dene"
+    },
+    "limit": {
+      "reached": "Sınıra ulaşıldı: {plan} planında {what} ({limit}). Devam etmek için üst plana geçin.",
+      "upgrade": "Planları gör"
     }
   },
   "channelsPage": {
@@ -828,7 +986,7 @@
       "soon": "Yakında",
       "knowledge": "Bilgi"
     },
-    "titles": { "agent": "Ajan", "calendar": "Takvim", "inbox": "Gelen kutusu", "media": "Medya", "channels": "Kanallar", "settings": "Ayarlar", "analytics": "Analitik", "knowledge": "Bilgi tabanı" },
+    "titles": { "agent": "Ajan", "calendar": "Takvim", "inbox": "Gelen kutusu", "media": "Medya", "channels": "Kanallar", "settings": "Ayarlar", "analytics": "Analitik", "knowledge": "Bilgi tabanı", "billing": "Faturalandırma" },
     "analytics": {
       "filters": {
         "channel": "Kanal",
@@ -1460,7 +1618,8 @@
       "aucun_compte": "Kullanılabilir hesap bulunamadı (Meta için: yetkilendirilmiş bir Sayfa veya bir Sayfaya bağlı profesyonel bir Instagram hesabı).",
       "selection_vide": "Bağlanacak en az bir hesap seçin.",
       "expire": "Bu seçimin süresi doldu. Bağlantıyı yeniden başlatın.",
-      "erreur": "Bağlantı başarısız oldu. Birazdan tekrar deneyin."
+      "erreur": "Bağlantı başarısız oldu. Birazdan tekrar deneyin.",
+      "limite_canaux": "Planınızın kanal sınırına ulaştınız. Daha fazlasını bağlamak için üst plana geçin."
     },
     "onboarding": {
       "label": "Postbiz'e ilk adımlar",

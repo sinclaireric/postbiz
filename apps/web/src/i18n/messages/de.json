@@ -209,46 +209,32 @@
     }
   },
   "pricing": {
-    "title": "Einfache Preise, <accent>schon in der Beta veröffentlicht</accent>",
-    "subtitle": "Drei Tarife je nach Teamgröße. Während der Beta ist alles kostenlos, ohne Kreditkarte.",
+    "title": "Einfache Preise, <accent>in Dollar oder CFA-Franc</accent>",
+    "subtitle": "Starten Sie kostenlos und wechseln Sie zu einem bezahlten Tarif, wenn Ihr Team wächst.",
     "billingLabel": "Abrechnungszeitraum",
     "monthly": "Monatlich",
     "yearly": "Jährlich",
     "discount": "−{percent} %",
     "perMonth": "/ Monat",
-    "billedYearly": "Jährliche Abrechnung · Sie sparen {amount}",
     "billedMonthly": "Monatliche Abrechnung",
     "popular": "Beliebt",
     "cta": "Kostenlos starten",
-    "inherits": "Alles aus {plan}, plus:",
     "plans": {
-      "starter": {
-        "name": "Starter",
-        "tagline": "Für Kreative oder kleine Marken, die gerade anfangen.",
-        "f1": "3 verbundene Kanäle",
-        "f2": "1 Mitglied",
-        "f3": "Planung und Kalender",
-        "f4": "Einheitlicher Posteingang",
-        "f5": "Mobile App"
+      "free": {
+        "name": "Kostenlos",
+        "tagline": "Zum Kennenlernen von Postbiz und für ein paar Konten."
       },
-      "pro": {
-        "name": "Pro",
-        "tagline": "Für ein Team, das täglich antwortet.",
-        "f1": "10 verbundene Kanäle",
-        "f2": "5 Mitglieder",
-        "f3": "Zuweisung und interne Notizen",
-        "f4": "Schnellantworten",
-        "f5": "Push-Benachrichtigungen",
-        "f6": "Suche in allen Nachrichten"
+      "standard": {
+        "name": "Standard",
+        "tagline": "Für Kreative oder kleine Marken, die jede Woche posten."
       },
       "team": {
         "name": "Team",
-        "tagline": "Für eine Agentur oder mehrere Marken.",
-        "f1": "Unbegrenzt viele Kanäle",
-        "f2": "15 Mitglieder",
-        "f3": "Rollen und Berechtigungen",
-        "f4": "Automatische Videooptimierung",
-        "f5": "Prioritäts-Support"
+        "tagline": "Für Teams, die täglich posten und antworten."
+      },
+      "agency": {
+        "name": "Agentur",
+        "tagline": "Für Agenturen mit vielen Kundenkonten."
       }
     },
     "custom": {
@@ -280,20 +266,192 @@
         "search": "Suche im gesamten Verlauf",
         "roles": "Rollen und Berechtigungen",
         "video": "Automatische Videooptimierung",
-        "support": "Prioritäts-Support"
+        "support": "Prioritäts-Support",
+        "knowledge": "Wissen (Dokumente / Websites)"
       }
     },
     "faq": {
       "title": "Fragen zu den Preisen",
       "more": "Noch eine Frage? <link>Kontaktieren Sie uns</link>.",
-      "q1": "Ist die Beta wirklich kostenlos?",
-      "a1": "Ja. Während der Beta sind alle Tarife kostenlos, und es wird keine Kreditkarte verlangt. Die oben genannten Preise sind die, die wir anwenden wollen; wir informieren Sie rechtzeitig vor jeder Änderung.",
+      "q1": "Kann ich vor dem Bezahlen testen?",
+      "a1": "Ja. Der kostenlose Tarif ist zeitlich unbegrenzt, und jede neue Person erhält 14 Tage Testzeit im Standard-Tarif, ohne Kreditkarte.",
       "q2": "Kann ich den Tarif wechseln?",
-      "a2": "Jederzeit. Die Funktionen des höheren Tarifs stehen sofort zur Verfügung.",
+      "a2": "Jederzeit. Die Funktionen des höheren Tarifs sind sofort verfügbar; bei Mobile Money wird die Restzeit des alten Tarifs umgerechnet.",
       "q3": "Was passiert, wenn ich die Anzahl der Kanäle überschreite?",
       "a3": "Sie können keinen weiteren Kanal verbinden, bis Sie den Tarif wechseln. Ihre bestehenden Kanäle funktionieren weiter.",
       "q4": "Sind private Nachrichten überall enthalten?",
-      "a4": "Ja, im Rahmen dessen, was das jeweilige Netzwerk erlaubt. Details finden Sie auf der Seite Kanäle."
+      "a4": "Ja, im Rahmen dessen, was das jeweilige Netzwerk erlaubt. Details finden Sie auf der Seite Kanäle.",
+      "q5": "Wie bezahle ich aus Afrika?",
+      "a5": "Per Mobile Money (Orange Money, MTN MoMo, Moov Money, Airtel Money …) in unterstützten Ländern oder per Karte. In den Ländern der CFA-Franc-Zone gelten Preise in CFA-Franc mit {percent} % Rabatt.",
+      "q6": "Was passiert, wenn mein Abo endet?",
+      "a6": "Sie wechseln zum kostenlosen Tarif. Nichts wird gelöscht: Ihre Daten bleiben erhalten, nur neue Ergänzungen unterliegen den Grenzen des kostenlosen Tarifs. Bei Mobile Money bleibt der Tarif 7 Tage länger aktiv, und wir erinnern Sie vor Ablauf."
+    },
+    "betaNotice": "Während der Beta ist alles kostenlos. Die Preise unten gelten ab Start der Abrechnung.",
+    "freeNote": "Ohne Zeitlimit, ohne Kreditkarte",
+    "ctaPaid": "{plan} wählen",
+    "billedYearlyTotal": "{total} jährlich abgerechnet · Sie sparen {amount}",
+    "region": {
+      "label": "Land",
+      "other": "Anderes Land",
+      "noteLocal": "Lokaler Preis: {percent} % Rabatt auf den Dollarpreis sind bereits abgezogen.",
+      "noteWorld": "Preise in US-Dollar. Wählen Sie Ihr Land, um den lokalen Preis zu sehen."
+    },
+    "limit": {
+      "channels": "Verbundene Kanäle",
+      "members": "Mitglieder",
+      "images_per_month": "KI-Bilder pro Monat",
+      "videos_per_month": "KI-Videos pro Monat",
+      "ai_text_per_month": "KI-Textaktionen pro Monat",
+      "knowledge_files": "Wissensdokumente",
+      "knowledge_sites": "Wissens-Websites",
+      "storage_mb": "Medienspeicher",
+      "analytics_days": "Analyse-Verlauf (Tage)"
+    },
+    "feature": {
+      "core": "Planung, Kalender und einheitliche Inbox",
+      "mobile": "Mobile App",
+      "priority": "Priorisierter Support"
+    },
+    "pay": {
+      "mobile": "Zahlung per Karte oder Mobile Money (Orange Money, MTN MoMo, Moov Money, Airtel Money …).",
+      "card": "Zahlung per Karte, abgesichert durch Stripe."
+    }
+  },
+  "billing": {
+    "title": "Abrechnung",
+    "subtitle": "Ihr Tarif, Ihre Nutzung und Ihre Zahlungen.",
+    "demo": "Demomodus: Zahlungen werden simuliert, es wird nichts abgebucht.",
+    "betaNotice": "Die Abrechnung ist noch nicht aktiv: Während der Beta ist alles kostenlos.",
+    "current": {
+      "title": "Aktueller Tarif",
+      "badge": "Aktuell"
+    },
+    "phase": {
+      "free": "Sie nutzen den Tarif {plan}.",
+      "trialing": "Kostenlose Testphase des Tarifs {plan} bis {date}.",
+      "paying": "Tarif {plan}, bezahlt bis {date}.",
+      "cancelling": "Tarif {plan} gekündigt: Er endet am {date}.",
+      "grace": "Ihr bezahlter Zeitraum ist beendet. Der Tarif {plan} bleibt bis {date} aktiv, danach wechseln Sie zum kostenlosen Tarif.",
+      "gift": "Tarif {plan} geschenkt, gültig bis {date}.",
+      "ended": "Ihr Abo ist beendet: Sie sind zurück im kostenlosen Tarif. Ihre Daten bleiben erhalten."
+    },
+    "manage": "Karte, Rechnungen und Kündigung verwalten",
+    "cancelDemo": "Abo kündigen (Demo)",
+    "cancelHint": {
+      "prepaid": "Mobile Money ist ein Vorabzahlung: Es gibt nichts zu kündigen, der Tarif endet am Ende des Zeitraums."
+    },
+    "usage": {
+      "title": "Nutzung",
+      "month": "Monatskontingente werden am 1. jedes Monats zurückgesetzt.",
+      "value": "{used} von {limit}",
+      "unlimitedValue": "{used} · unbegrenzt"
+    },
+    "change": {
+      "title": "Tarif wechseln",
+      "method": "Zahlungsmethode"
+    },
+    "method": {
+      "card": "Bankkarte",
+      "cardHint": "Visa, Mastercard … Abgesichert durch Stripe, verlängert sich automatisch.",
+      "mobile": "Mobile Money",
+      "mobileHint": "Orange, MTN, Moov, Airtel … Einmalzahlung, keine automatische Verlängerung.",
+      "mobileUnavailable": "Für das gewählte Land nicht verfügbar."
+    },
+    "phone": {
+      "label": "Mobile-Money-Nummer (optional)",
+      "hint": "Mit Landesvorwahl, ohne „+“ (z. B. 237670123456). Sonst geben Sie sie auf der Zahlungsseite ein."
+    },
+    "period": {
+      "monthly": "1 Monat",
+      "yearly": "12 Monate"
+    },
+    "pay": {
+      "card": "{amount} per Karte zahlen",
+      "mobile": "{amount} per Mobile Money zahlen"
+    },
+    "note": {
+      "card": "Verlängert sich automatisch, jederzeit kündbar.",
+      "mobile": "Einmalzahlung für {period}. Wir erinnern Sie vor Ablauf; der Tarif bleibt 7 Tage länger aktiv."
+    },
+    "history": {
+      "title": "Zahlungsverlauf",
+      "empty": "Noch keine Zahlungen.",
+      "date": "Datum",
+      "plan": "Tarif",
+      "method": "Methode",
+      "amount": "Betrag",
+      "status": "Status"
+    },
+    "provider": {
+      "stripe": "Karte",
+      "pawapay": "Mobile Money",
+      "gift": "Geschenk"
+    },
+    "status": {
+      "pending": "Ausstehend",
+      "succeeded": "Bezahlt",
+      "failed": "Fehlgeschlagen",
+      "expired": "Abgelaufen",
+      "refunded": "Erstattet"
+    },
+    "admin": {
+      "only": "Nur Administratoren des Arbeitsbereichs können das Abo einsehen und ändern."
+    },
+    "flash": {
+      "ok": "Danke! Ihre Zahlung wurde erfasst.",
+      "pending": "Zahlung erhalten, die Aktivierung läuft. Laden Sie die Seite gleich neu.",
+      "cancel": "Zahlung abgebrochen: Es wurde nichts abgebucht.",
+      "cancelled": "Das Abo endet am Ende des laufenden Zeitraums."
+    },
+    "error": {
+      "forbidden": "Nur Administratoren des Arbeitsbereichs können das Abo ändern.",
+      "plan": "Ungültiger Tarif oder Abrechnungszeitraum.",
+      "disabled": "Die Abrechnung ist noch nicht aktiv.",
+      "config": "Die Zahlung ist noch nicht eingerichtet. Versuchen Sie es später erneut.",
+      "provider": "Der Zahlungsdienst ist nicht erreichbar. Versuchen Sie es gleich erneut.",
+      "country": "Mobile Money wird für dieses Land nicht angeboten. Wählen Sie die Karte.",
+      "phone": "Ungültige Telefonnummer.",
+      "return_url": "Mobile-Money-Zahlung erfordert eine https-Adresse der Website.",
+      "has_card": "Ein Kartenabo ist bereits aktiv: Verwalten Sie es im Abrechnungsportal.",
+      "has_prepaid": "Ein vorab bezahlter Zeitraum läuft: Nach Ablauf können Sie auf Karte umstellen.",
+      "has_gift": "Ein geschenktes Abo läuft: Nach Ablauf können Sie bezahlen.",
+      "portal": "Das Abrechnungsportal ist derzeit nicht verfügbar."
+    },
+    "return": {
+      "succeeded": {
+        "title": "Zahlung erhalten",
+        "text": "Danke! Ihr Tarif ist aktiviert."
+      },
+      "pending": {
+        "title": "Zahlung wird geprüft …",
+        "text": "Wir warten auf die Bestätigung des Anbieters. Diese Seite aktualisiert sich selbst."
+      },
+      "failed": {
+        "title": "Die Zahlung ist fehlgeschlagen",
+        "text": "Es wurde nichts abgebucht. Prüfen Sie Ihr Guthaben und versuchen Sie es erneut."
+      },
+      "expired": {
+        "title": "Die Zahlung ist abgelaufen",
+        "text": "Die Zahlungsseite wurde nicht rechtzeitig abgeschlossen. Es wurde nichts abgebucht."
+      },
+      "unknown": {
+        "title": "Zahlung nicht gefunden",
+        "text": "Diese Zahlung ist in Ihrem Arbeitsbereich nicht zu finden."
+      },
+      "review": {
+        "title": "Zahlung erhalten",
+        "text": "Ihr Arbeitsbereich hat bereits ein aktives Abo: Wir prüfen diese Zahlung manuell und melden uns."
+      },
+      "error": {
+        "title": "Prüfung nicht möglich",
+        "text": "Der Anbieter ist derzeit nicht erreichbar. Versuchen Sie es gleich erneut; wurde die Zahlung abgebucht, wird sie automatisch berücksichtigt."
+      },
+      "back": "Zurück zur Abrechnung",
+      "retry": "Erneut versuchen"
+    },
+    "limit": {
+      "reached": "Limit erreicht: {what} ({limit}) im Tarif {plan}. Wechseln Sie zu einem höheren Tarif, um fortzufahren.",
+      "upgrade": "Tarife ansehen"
     }
   },
   "channelsPage": {
@@ -840,7 +998,7 @@
       "soon": "Demnächst verfügbar",
       "knowledge": "Wissen"
     },
-    "titles": { "agent": "Agent", "calendar": "Kalender", "inbox": "Posteingang", "media": "Medien", "channels": "Kanäle", "settings": "Einstellungen", "analytics": "Analysen", "knowledge": "Wissensdatenbank" },
+    "titles": { "agent": "Agent", "calendar": "Kalender", "inbox": "Posteingang", "media": "Medien", "channels": "Kanäle", "settings": "Einstellungen", "analytics": "Analysen", "knowledge": "Wissensdatenbank", "billing": "Abrechnung" },
     "analytics": {
       "filters": {
         "channel": "Kanal",
@@ -1472,7 +1630,8 @@
       "aucun_compte": "Es wurde kein verwendbares Konto gefunden (bei Meta: eine autorisierte Seite oder ein mit einer Seite verknüpftes professionelles Instagram-Konto).",
       "selection_vide": "Wählen Sie mindestens ein Konto zum Verbinden aus.",
       "expire": "Diese Auswahl ist abgelaufen. Starten Sie die Verbindung neu.",
-      "erreur": "Die Verbindung ist fehlgeschlagen. Bitte versuchen Sie es gleich noch einmal."
+      "erreur": "Die Verbindung ist fehlgeschlagen. Bitte versuchen Sie es gleich noch einmal.",
+      "limite_canaux": "Sie haben die Kanalgrenze Ihres Tarifs erreicht. Wechseln Sie zu einem höheren Tarif, um mehr zu verbinden."
     },
     "onboarding": {
       "label": "Erste Schritte mit Postbiz",

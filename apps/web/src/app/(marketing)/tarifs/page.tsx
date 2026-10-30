@@ -3,7 +3,13 @@ import Link from 'next/link';
 import { PricingPlans } from '@/components/pricing-table';
 import { RichText, accentTags } from '@/components/rich-text';
 import { Container, Eyebrow } from '@/components/ui';
+import { LOCALE_META } from '@/i18n/config';
 import { getT } from '@/i18n/server';
+import { getSession } from '@/lib/data';
+import { billingEnabled, mobileMoneyCountries, visitorRegion } from '@/lib/billing/server';
+import { LOCAL_DISCOUNT } from '@/lib/billing/config';
+import { PLAN_IDS, PLAN_LIMITS, planNameKey, type LimitKey } from '@/lib/billing/plans';
+import { mobileMoneyAvailable } from '@/lib/billing/region';
 import type { MessageKey } from '@/i18n/types';
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -12,31 +18,52 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 type Cell = boolean | string;
-const ROWS: { key: MessageKey; hint?: boolean; values: [Cell, Cell, Cell] }[] = [
-  { key: 'pricing.compare.rows.channels', values: ['3', '10', 'unlimited'] },
-  { key: 'pricing.compare.rows.members', values: ['1', '5', '15'] },
-  { key: 'pricing.compare.rows.planning', values: [true, true, true] },
-  { key: 'pricing.compare.rows.inbox', values: [true, true, true] },
-  { key: 'pricing.compare.rows.mobile', hint: true, values: [true, true, true] },
-  { key: 'pricing.compare.rows.assign', values: [false, true, true] },
-  { key: 'pricing.compare.rows.quick', hint: true, values: [false, true, true] },
-  { key: 'pricing.compare.rows.push', hint: true, values: [false, true, true] },
-  { key: 'pricing.compare.rows.search', values: [false, true, true] },
-  { key: 'pricing.compare.rows.roles', values: [false, false, true] },
-  { key: 'pricing.compare.rows.video', hint: true, values: [false, false, true] },
-  { key: 'pricing.compare.rows.support', values: [false, false, true] },
-];
+type Row = { key: MessageKey; hint?: boolean; values: [Cell, Cell, Cell, Cell] };
+const ALL: [Cell, Cell, Cell, Cell] = [true, true, true, true];
 
 const FAQ: { q: MessageKey; a: MessageKey }[] = [
   { q: 'pricing.faq.q1', a: 'pricing.faq.a1' },
   { q: 'pricing.faq.q2', a: 'pricing.faq.a2' },
   { q: 'pricing.faq.q3', a: 'pricing.faq.a3' },
   { q: 'pricing.faq.q4', a: 'pricing.faq.a4' },
+  { q: 'pricing.faq.q5', a: 'pricing.faq.a5' },
+  { q: 'pricing.faq.q6', a: 'pricing.faq.a6' },
 ];
+
+export const dynamic = 'force-dynamic';
 
 export default async function PricingPage() {
   const t = await getT();
-  const planNames = [t('pricing.plans.starter.name'), t('pricing.plans.pro.name'), t('pricing.plans.team.name')];
+  const tag = LOCALE_META[t.locale].tag;
+  const [visitor, enabled, session] = await Promise.all([visitorRegion(), billingEnabled(), getSession()]);
+  const mobileMoney = mobileMoneyAvailable(visitor.region.country, await mobileMoneyCountries());
+  const planNames = PLAN_IDS.map((id) => t(planNameKey(id)));
+
+  const num = (n: number) => new Intl.NumberFormat(tag).format(n);
+  const storage = (mb: number) => new Intl.NumberFormat(tag, { style: 'unit', unit: mb >= 1000 ? 'gigabyte' : 'megabyte', maximumFractionDigits: 0 }).format(mb >= 1000 ? mb / 1000 : mb);
+  const limitRow = (key: LimitKey, format: (n: number) => string = num): Row => ({
+    key: `pricing.limit.${key}` as MessageKey,
+    values: PLAN_IDS.map((p) => { const v = PLAN_LIMITS[p][key]; return v === null ? 'unlimited' : v === 0 ? false : format(v); }) as Row['values'],
+  });
+  const ROWS: Row[] = [
+    ...(['channels', 'members', 'images_per_month', 'videos_per_month', 'ai_text_per_month'] as LimitKey[]).map((k) => limitRow(k)),
+    {
+      key: 'pricing.compare.rows.knowledge',
+      values: PLAN_IDS.map((p) => `${num(PLAN_LIMITS[p].knowledge_files ?? 0)} / ${num(PLAN_LIMITS[p].knowledge_sites ?? 0)}`) as Row['values'],
+    },
+    limitRow('storage_mb', storage),
+    limitRow('analytics_days'),
+    { key: 'pricing.compare.rows.planning', values: ALL },
+    { key: 'pricing.compare.rows.inbox', values: ALL },
+    { key: 'pricing.compare.rows.mobile', hint: true, values: ALL },
+    { key: 'pricing.compare.rows.assign', values: ALL },
+    { key: 'pricing.compare.rows.quick', hint: true, values: ALL },
+    { key: 'pricing.compare.rows.push', hint: true, values: ALL },
+    { key: 'pricing.compare.rows.search', values: ALL },
+    { key: 'pricing.compare.rows.roles', values: ALL },
+    { key: 'pricing.compare.rows.video', hint: true, values: [false, false, true, true] },
+    { key: 'pricing.compare.rows.support', values: [false, false, true, true] },
+  ];
 
   return (
     <>
@@ -52,7 +79,7 @@ export default async function PricingPage() {
 
       <section className="pb-20">
         <Container>
-          <PricingPlans />
+          <PricingPlans country={visitor.country} billingEnabled={enabled} mobileMoney={mobileMoney} signedIn={session.status !== 'anonymous'} />
         </Container>
       </section>
 
@@ -60,7 +87,7 @@ export default async function PricingPage() {
         <Container>
           <h2 className="text-[clamp(1.7rem,3vw,2.4rem)] font-semibold tracking-[-0.03em]">{t('pricing.compare.title')}</h2>
           <div className="mt-8 overflow-x-auto rounded-3xl border border-line bg-surface">
-            <table className="w-full min-w-[640px] text-start text-[15px]">
+            <table className="w-full min-w-[720px] text-start text-[15px]">
               <thead>
                 <tr className="border-b border-line">
                   <th scope="col" className="px-6 py-4 text-start font-medium text-muted"><span className="sr-only">{t('pricing.compare.feature')}</span></th>
@@ -105,7 +132,7 @@ export default async function PricingPage() {
                     <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" /></svg>
                   </span>
                 </summary>
-                <p className="mt-3 leading-relaxed text-muted">{t(f.a)}</p>
+                <p className="mt-3 leading-relaxed text-muted">{t(f.a, { percent: Math.round(LOCAL_DISCOUNT * 100) })}</p>
               </details>
             ))}
           </div>

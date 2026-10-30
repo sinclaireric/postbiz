@@ -377,7 +377,11 @@
         "demo": "Mode démo : rien n’a été modifié.",
         "self": "Vous ne pouvez pas suspendre votre propre compte.",
         "protected": "Un administrateur de la plateforme ne peut pas être suspendu.",
-        "error": "L’opération a échoué. Vérifiez que la migration de suspension est appliquée, puis réessayez."
+        "error": "L’opération a échoué. Vérifiez que la migration de suspension est appliquée, puis réessayez.",
+        "gifted": "Abonnement offert.",
+        "giftRevoked": "Cadeau retiré.",
+        "giftPaid": "Cette organisation a un abonnement payé en cours : un cadeau ne le remplace jamais.",
+        "giftInvalid": "Offre, durée ou organisation invalide."
       }
     },
     "user": {
@@ -423,7 +427,12 @@
       "colStatus": "État",
       "colConnected": "Connecté le",
       "colToken": "Jeton valable jusqu’au",
-      "privacyNote": "Pour protéger les données des clients, le texte des publications et des messages n’est pas affiché ici : seuls les chiffres le sont."
+      "privacyNote": "Pour protéger les données des clients, le texte des publications et des messages n’est pas affiché ici : seuls les chiffres le sont.",
+      "effectivePlan": "Offre applicable aujourd’hui",
+      "paymentMethod": "Moyen de paiement",
+      "monthlyUsd": "Revenu mensuel",
+      "graceEnds": "Délai de grâce jusqu’au",
+      "giftNote": "Note du cadeau"
     },
     "channelStatus": {
       "active": "Actif",
@@ -439,7 +448,8 @@
       "label": "Navigation de l’administration",
       "overview": "Vue d’ensemble",
       "users": "Utilisateurs",
-      "subscriptions": "Abonnements"
+      "subscriptions": "Abonnements",
+      "billing": "Facturation"
     },
     "phase": {
       "trialing": "Essai en cours",
@@ -559,6 +569,41 @@
       "renews": "Renouvellement le {date}",
       "endsOn": "Prend fin le {date}",
       "dueOn": "Période jusqu’au {date}"
+    },
+    "gift": {
+      "title": "Offrir un abonnement",
+      "hint": "L’organisation reçoit l’offre choisie sans payer, jusqu’à la date indiquée. Un cadeau n’entre pas dans le MRR et ne remplace jamais un abonnement payé en cours.",
+      "plan": "Offre",
+      "duration": "Durée",
+      "d1": "1 mois",
+      "d3": "3 mois",
+      "d6": "6 mois",
+      "d12": "12 mois",
+      "note": "Note (facultative, visible de vous seul)",
+      "submit": "Offrir",
+      "revoke": "Retirer le cadeau"
+    },
+    "billing": {
+      "title": "Facturation",
+      "subtitle": "Activation de la facturation, état des fournisseurs de paiement et derniers paiements.",
+      "state": "État de la facturation",
+      "on": "Activée : les limites des offres s’appliquent et les paiements sont proposés.",
+      "off": "Désactivée (bêta gratuite) : aucune limite, aucun paiement.",
+      "enable": "Activer la facturation",
+      "disable": "Désactiver (retour à la bêta gratuite)",
+      "enableWarn": "Dès l’activation, les limites de chaque offre s’appliquent à tous les espaces. Les canaux existants ne sont pas déconnectés : seules les nouvelles connexions sont refusées au-delà de la limite.",
+      "providers": "Fournisseurs de paiement",
+      "stripe": "Stripe (carte)",
+      "pawapay": "PawaPay (mobile money)",
+      "configured": "Configuré · mode {mode}",
+      "missing": "Non configuré",
+      "cron": "Tâche quotidienne (CRON_SECRET)",
+      "payments": "Derniers paiements",
+      "noPayments": "Aucun paiement.",
+      "org": "Organisation",
+      "flashOn": "Facturation activée.",
+      "flashOff": "Facturation désactivée.",
+      "flashError": "L’opération a échoué. Vérifiez que la migration de facturation est appliquée."
     }
   },
   "legal": {
@@ -641,7 +686,9 @@
         "li3": "<b>Messages et commentaires :</b> contenus reçus et envoyés sur les comptes que vous connectez, ainsi que l’identifiant public, le nom et le pseudonyme des personnes qui vous écrivent.",
         "li4": "<b>Publications et médias :</b> textes, images et vidéos que vous programmez ou importez dans la bibliothèque, et leurs dates.",
         "li5": "<b>Assistant IA :</b> les instructions que vous saisissez dans l’assistant.",
-        "li6": "<b>Usage :</b> journaux techniques nécessaires à la sécurité et au bon fonctionnement du service."
+        "li6": "<b>Usage :</b> journaux techniques nécessaires à la sécurité et au bon fonctionnement du service.",
+        "li8": "<b>Paiement :</b> offre choisie, montants, dates, pays et statut de vos paiements (carte via Stripe, mobile money via PawaPay). Nous ne voyons ni ne conservons votre numéro de carte ni le code secret de votre portefeuille mobile.",
+        "li9": "<b>Pays approximatif :</b> pour afficher les prix dans la bonne monnaie, le pays de la personne qui visite le site est déduit de son adresse IP (en-tête fourni par l’hébergeur ; à défaut, un service de géolocalisation interrogé depuis nos serveurs). Ce pays n’est pas conservé en base : seul celui que vous choisissez vous-même est mémorisé, dans un cookie."
       },
       "s3": {
         "h": "3. Ce que nous recevons des réseaux sociaux",
@@ -678,15 +725,19 @@
         "li3": "Prestataire d’envoi d’e-mails — messages de connexion et notifications.",
         "li4": "OpenAI — assistant IA, agent, génération d’images, recherche dans la base de connaissance et suggestions de réponse, uniquement quand vous les utilisez : le texte saisi, la base de connaissance (chaque fiche est aussi convertie en vecteurs numériques à l’enregistrement), les messages de la conversation pour laquelle vous demandez une réponse et, pour l’agent, le nom de vos canaux connectés et vos publications récentes lui sont transmis pour produire la réponse ; les images sont générées d’après la description que rédige l’agent.",
         "li5": "Evolink (Seedance) — génération de vidéos, uniquement quand vous demandez une vidéo à l’agent : la description de la vidéo et, si vous choisissez des images de référence, des liens temporaires vers ces images lui sont transmis.",
-        "p1": "Les réseaux sociaux que vous connectez sont des responsables de traitement distincts, régis par leurs propres politiques. Certains sous-traitants sont situés hors de l’Union européenne, notamment aux États-Unis : les transferts reposent alors sur les mécanismes prévus par le RGPD (décision d’adéquation ou clauses contractuelles types)."
+        "p1": "Les réseaux sociaux que vous connectez sont des responsables de traitement distincts, régis par leurs propres politiques. Certains sous-traitants sont situés hors de l’Union européenne, notamment aux États-Unis : les transferts reposent alors sur les mécanismes prévus par le RGPD (décision d’adéquation ou clauses contractuelles types).",
+        "li6": "Stripe Payments Europe Ltd. — paiement par carte bancaire et gestion des abonnements.",
+        "li7": "PawaPay — paiement par mobile money dans les pays d’Afrique pris en charge.",
+        "li8": "Service de géolocalisation par adresse IP — seulement quand l’hébergeur ne fournit pas le pays du visiteur ; l’adresse n’est ni journalisée ni conservée par Postbiz."
       },
       "s8": {
         "h": "8. Durées de conservation",
-        "p1": "Les données du compte sont conservées tant que le compte existe. Les jetons d’accès d’un canal sont supprimés quand vous le déconnectez ; les messages et commentaires associés le sont dans un délai de 30 jours. À la suppression du compte, les données associées sont effacées dans le même délai."
+        "p1": "Les données du compte sont conservées tant que le compte existe. Les jetons d’accès d’un canal sont supprimés quand vous le déconnectez ; les messages et commentaires associés le sont dans un délai de 30 jours. À la suppression du compte, les données associées sont effacées dans le même délai.",
+        "p2": "Les pièces de paiement (montant, date, offre, référence du fournisseur) sont conservées pendant la durée légale applicable aux pièces comptables, même après la suppression du compte."
       },
       "s9": {
         "h": "9. Cookies",
-        "p1": "Postbiz n’utilise que des cookies et des stockages strictement nécessaires : la session de connexion, votre langue et vos préférences d’affichage. Il n’y a ni cookie publicitaire ni outil de mesure d’audience tiers."
+        "p1": "Postbiz n’utilise que des cookies et des stockages strictement nécessaires : la session de connexion, votre langue, votre pays choisi pour l’affichage des prix et vos préférences d’affichage. Il n’y a ni cookie publicitaire ni outil de mesure d’audience tiers."
       },
       "s10": {
         "h": "10. Vos droits",
@@ -723,46 +774,32 @@
     }
   },
   "pricing": {
-    "title": "Des tarifs simples, <accent>publiés dès la bêta</accent>",
-    "subtitle": "Trois offres selon la taille de votre équipe. Tout est gratuit pendant la bêta, sans carte bancaire.",
+    "title": "Des tarifs simples, <accent>en dollars ou en francs CFA</accent>",
+    "subtitle": "Commencez gratuitement, passez à une offre payante quand votre équipe grandit.",
     "billingLabel": "Période de facturation",
     "monthly": "Mensuel",
     "yearly": "Annuel",
     "discount": "−{percent} %",
     "perMonth": "/ mois",
-    "billedYearly": "Facturé à l’année · vous économisez {amount}",
     "billedMonthly": "Facturé au mois",
     "popular": "Populaire",
     "cta": "Commencer gratuitement",
-    "inherits": "Tout de {plan}, plus :",
     "plans": {
-      "starter": {
-        "name": "Starter",
-        "tagline": "Pour un créateur ou une petite marque qui démarre.",
-        "f1": "3 canaux connectés",
-        "f2": "1 membre",
-        "f3": "Planification et calendrier",
-        "f4": "Boîte de réception unifiée",
-        "f5": "Application mobile"
+      "free": {
+        "name": "Gratuit",
+        "tagline": "Pour découvrir Postbiz et gérer quelques comptes."
       },
-      "pro": {
-        "name": "Pro",
-        "tagline": "Pour une équipe qui répond tous les jours.",
-        "f1": "10 canaux connectés",
-        "f2": "5 membres",
-        "f3": "Assignation et notes internes",
-        "f4": "Réponses rapides",
-        "f5": "Notifications push",
-        "f6": "Recherche dans tous les messages"
+      "standard": {
+        "name": "Standard",
+        "tagline": "Pour un créateur ou une petite marque qui publie chaque semaine."
       },
       "team": {
-        "name": "Équipe",
-        "tagline": "Pour une agence ou plusieurs marques.",
-        "f1": "Canaux illimités",
-        "f2": "15 membres",
-        "f3": "Rôles et permissions",
-        "f4": "Optimisation automatique des vidéos",
-        "f5": "Support prioritaire"
+        "name": "Team",
+        "tagline": "Pour une équipe qui publie et répond tous les jours."
+      },
+      "agency": {
+        "name": "Agence",
+        "tagline": "Pour une agence qui gère de nombreux comptes clients."
       }
     },
     "custom": {
@@ -794,20 +831,192 @@
         "search": "Recherche dans tout l’historique",
         "roles": "Rôles et permissions",
         "video": "Optimisation automatique des vidéos",
-        "support": "Support prioritaire"
+        "support": "Support prioritaire",
+        "knowledge": "Connaissances (documents / sites)"
       }
     },
     "faq": {
       "title": "Questions sur les tarifs",
       "more": "Une autre question ? <link>Contactez-nous</link>.",
-      "q1": "La bêta est-elle vraiment gratuite ?",
-      "a1": "Oui. Pendant la bêta, tous les plans sont gratuits et aucune carte bancaire n’est demandée. Les prix ci-dessus sont ceux que nous prévoyons d’appliquer ; nous vous préviendrons bien avant tout changement.",
+      "q1": "Puis-je essayer avant de payer ?",
+      "a1": "Oui. L’offre Gratuite n’a pas de limite de durée, et chaque nouvelle personne profite de 14 jours d’essai de l’offre Standard, sans carte bancaire.",
       "q2": "Puis-je changer de plan ?",
-      "a2": "À tout moment. Les fonctionnalités du plan supérieur sont disponibles immédiatement.",
+      "a2": "À tout moment. Les fonctionnalités de l’offre supérieure sont disponibles immédiatement ; en paiement par mobile money, le temps restant de votre ancienne offre est converti.",
       "q3": "Que se passe-t-il si je dépasse le nombre de canaux ?",
       "a3": "Vous ne pouvez pas connecter de canal supplémentaire tant que vous n’avez pas changé de plan. Vos canaux existants continuent de fonctionner.",
       "q4": "Les messages privés sont-ils inclus partout ?",
-      "a4": "Oui, dans la limite de ce que chaque réseau autorise. Consultez la page Canaux pour le détail."
+      "a4": "Oui, dans la limite de ce que chaque réseau autorise. Consultez la page Canaux pour le détail.",
+      "q5": "Comment payer depuis l’Afrique ?",
+      "a5": "Par mobile money (Orange Money, MTN MoMo, Moov Money, Airtel Money…) dans les pays pris en charge, ou par carte bancaire. Dans les pays de la zone franc CFA, les prix sont en francs CFA avec {percent} % de rabais.",
+      "q6": "Que se passe-t-il à la fin de mon abonnement ?",
+      "a6": "Vous revenez à l’offre Gratuite. Rien n’est supprimé : vos données restent intactes, seules les limites de l’offre Gratuite s’appliquent aux nouveaux ajouts. En mobile money, l’offre reste active 7 jours de plus et nous vous prévenons avant la fin."
+    },
+    "betaNotice": "Tout est gratuit pendant la bêta. Les prix ci-dessous seront ceux du lancement de la facturation.",
+    "freeNote": "Sans limite de durée, sans carte bancaire",
+    "ctaPaid": "Choisir {plan}",
+    "billedYearlyTotal": "{total} facturés à l’année · vous économisez {amount}",
+    "region": {
+      "label": "Pays",
+      "other": "Autre pays",
+      "noteLocal": "Tarif local : {percent} % de rabais déjà appliqué sur le prix en dollars.",
+      "noteWorld": "Prix en dollars américains. Choisissez votre pays pour voir le tarif local."
+    },
+    "limit": {
+      "channels": "Canaux connectés",
+      "members": "Membres",
+      "images_per_month": "Images IA par mois",
+      "videos_per_month": "Vidéos IA par mois",
+      "ai_text_per_month": "Actions IA texte par mois",
+      "knowledge_files": "Documents de connaissance",
+      "knowledge_sites": "Sites de connaissance",
+      "storage_mb": "Stockage de médias",
+      "analytics_days": "Historique des analyses (jours)"
+    },
+    "feature": {
+      "core": "Planification, calendrier et boîte de réception unifiée",
+      "mobile": "Application mobile",
+      "priority": "Support prioritaire"
+    },
+    "pay": {
+      "mobile": "Paiement par carte bancaire ou par mobile money (Orange Money, MTN MoMo, Moov Money, Airtel Money…).",
+      "card": "Paiement par carte bancaire, sécurisé par Stripe."
+    }
+  },
+  "billing": {
+    "title": "Facturation",
+    "subtitle": "Votre offre, votre utilisation et vos paiements.",
+    "demo": "Mode démonstration : les paiements sont simulés, rien n’est débité.",
+    "betaNotice": "La facturation n’est pas encore activée : tout est gratuit pendant la bêta.",
+    "current": {
+      "title": "Offre actuelle",
+      "badge": "Actuelle"
+    },
+    "phase": {
+      "free": "Vous utilisez l’offre {plan}.",
+      "trialing": "Essai gratuit de l’offre {plan} jusqu’au {date}.",
+      "paying": "Offre {plan}, payée jusqu’au {date}.",
+      "cancelling": "Offre {plan} résiliée : elle prend fin le {date}.",
+      "grace": "Votre période payée est terminée. L’offre {plan} reste active jusqu’au {date}, puis vous reviendrez à l’offre Gratuite.",
+      "gift": "Offre {plan} offerte, valable jusqu’au {date}.",
+      "ended": "Votre abonnement est terminé : vous êtes revenu à l’offre Gratuite. Vos données sont conservées."
+    },
+    "manage": "Gérer la carte, les factures et l’annulation",
+    "cancelDemo": "Annuler l’abonnement (démo)",
+    "cancelHint": {
+      "prepaid": "Le mobile money est un paiement prépayé : il n’y a rien à annuler, l’offre s’arrête à la fin de la période."
+    },
+    "usage": {
+      "title": "Utilisation",
+      "month": "Les quotas mensuels repartent à zéro le 1er de chaque mois.",
+      "value": "{used} sur {limit}",
+      "unlimitedValue": "{used} · illimité"
+    },
+    "change": {
+      "title": "Changer d’offre",
+      "method": "Moyen de paiement"
+    },
+    "method": {
+      "card": "Carte bancaire",
+      "cardHint": "Visa, Mastercard… Paiement sécurisé par Stripe, renouvelé automatiquement.",
+      "mobile": "Mobile money",
+      "mobileHint": "Orange, MTN, Moov, Airtel… Paiement unique, sans renouvellement automatique.",
+      "mobileUnavailable": "Non disponible pour le pays choisi."
+    },
+    "phone": {
+      "label": "Numéro mobile money (facultatif)",
+      "hint": "Avec l’indicatif du pays, sans « + » (ex. 237670123456). Sinon, vous le saisirez sur la page de paiement."
+    },
+    "period": {
+      "monthly": "1 mois",
+      "yearly": "12 mois"
+    },
+    "pay": {
+      "card": "Payer {amount} par carte",
+      "mobile": "Payer {amount} par mobile money"
+    },
+    "note": {
+      "card": "Renouvelé automatiquement à chaque période, annulable à tout moment.",
+      "mobile": "Paiement unique pour {period}. Nous vous prévenons avant la fin ; l’offre reste active 7 jours de plus."
+    },
+    "history": {
+      "title": "Historique des paiements",
+      "empty": "Aucun paiement pour le moment.",
+      "date": "Date",
+      "plan": "Offre",
+      "method": "Moyen",
+      "amount": "Montant",
+      "status": "Statut"
+    },
+    "provider": {
+      "stripe": "Carte",
+      "pawapay": "Mobile money",
+      "gift": "Offert"
+    },
+    "status": {
+      "pending": "En attente",
+      "succeeded": "Payé",
+      "failed": "Échoué",
+      "expired": "Expiré",
+      "refunded": "Remboursé"
+    },
+    "admin": {
+      "only": "Seuls les administrateurs de l’espace peuvent voir et modifier l’abonnement."
+    },
+    "flash": {
+      "ok": "Merci ! Votre paiement est enregistré.",
+      "pending": "Paiement reçu, l’activation est en cours. Actualisez la page dans un instant.",
+      "cancel": "Paiement annulé : rien n’a été débité.",
+      "cancelled": "L’abonnement prendra fin à la fin de la période en cours."
+    },
+    "error": {
+      "forbidden": "Seuls les administrateurs de l’espace peuvent modifier l’abonnement.",
+      "plan": "Offre ou rythme de facturation invalide.",
+      "disabled": "La facturation n’est pas encore activée.",
+      "config": "Le paiement n’est pas encore configuré. Réessayez plus tard.",
+      "provider": "Le service de paiement est indisponible. Réessayez dans un instant.",
+      "country": "Le mobile money n’est pas proposé pour ce pays. Choisissez la carte.",
+      "phone": "Numéro de téléphone invalide.",
+      "return_url": "Le paiement par mobile money nécessite une adresse de site en https.",
+      "has_card": "Un abonnement par carte est déjà actif : gérez-le depuis le portail de facturation.",
+      "has_prepaid": "Une période prépayée est en cours : vous pourrez passer à la carte à son terme.",
+      "has_gift": "Un abonnement offert est en cours : vous pourrez payer à son terme.",
+      "portal": "Le portail de facturation est indisponible pour le moment."
+    },
+    "return": {
+      "succeeded": {
+        "title": "Paiement reçu",
+        "text": "Merci ! Votre offre est activée."
+      },
+      "pending": {
+        "title": "Vérification du paiement…",
+        "text": "Nous attendons la confirmation de l’opérateur. Cette page se met à jour toute seule."
+      },
+      "failed": {
+        "title": "Le paiement n’a pas abouti",
+        "text": "Aucun montant n’a été débité. Vérifiez votre solde et réessayez."
+      },
+      "expired": {
+        "title": "Le paiement a expiré",
+        "text": "La page de paiement n’a pas été validée à temps. Rien n’a été débité."
+      },
+      "unknown": {
+        "title": "Paiement introuvable",
+        "text": "Nous ne trouvons pas ce paiement dans votre espace."
+      },
+      "review": {
+        "title": "Paiement reçu",
+        "text": "Votre espace a déjà un abonnement actif : nous vérifions ce paiement manuellement et vous contactons."
+      },
+      "error": {
+        "title": "Vérification impossible",
+        "text": "Nous ne pouvons pas joindre l’opérateur pour le moment. Réessayez dans un instant ; si le paiement a été débité, il sera pris en compte automatiquement."
+      },
+      "back": "Retour à la facturation",
+      "retry": "Réessayer"
+    },
+    "limit": {
+      "reached": "Limite atteinte : {what} ({limit}) avec l’offre {plan}. Passez à une offre supérieure pour continuer.",
+      "upgrade": "Voir les offres"
     }
   },
   "channelsPage": {
@@ -1430,7 +1639,8 @@
       "channels": "Canaux",
       "settings": "Paramètres",
       "analytics": "Analyses",
-      "knowledge": "Base de connaissance"
+      "knowledge": "Base de connaissance",
+      "billing": "Facturation"
     },
     "analytics": {
       "filters": {
@@ -2119,7 +2329,8 @@
       "aucun_compte": "Aucun compte utilisable n’a été trouvé (pour Meta : Page autorisée, ou compte Instagram professionnel lié à une Page).",
       "selection_vide": "Sélectionnez au moins un compte à connecter.",
       "expire": "Cette sélection a expiré. Relancez la connexion.",
-      "erreur": "La connexion a échoué. Réessayez dans un instant."
+      "erreur": "La connexion a échoué. Réessayez dans un instant.",
+      "limite_canaux": "Vous avez atteint le nombre de canaux de votre offre. Passez à une offre supérieure pour en connecter davantage."
     },
     "onboarding": {
       "label": "Prise en main de Postbiz",

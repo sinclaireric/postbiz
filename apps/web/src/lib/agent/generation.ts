@@ -53,6 +53,10 @@ const MAX_ACTIVE_VIDEOS = 3;
 const oneLine = (s: string, n: number) => s.replace(/\s+/g, ' ').trim().slice(0, n);
 
 /** « ai-image-lever-de-soleil » : un nom lisible dans la médiathèque, tiré de la description (lettres sans accent, chiffres, tirets). */
+/** Le quota mensuel de l'offre est épuisé : dit à l'agent quoi répondre (l'offre se change depuis la page Facturation). */
+const MONTHLY_LIMIT = (what: 'pictures' | 'videos') =>
+  `This workspace used all the generated ${what} included in its plan this month. Tell the user they can upgrade their plan from the Billing page, or wait for next month.`;
+
 export function mediaSlug(prompt: string, fallback: string): string {
   const full = prompt.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
   // Coupé à un tiret plutôt qu'au milieu d'un mot.
@@ -72,7 +76,9 @@ export function createGenerationTools(deps: GenerationDeps): GenerationTools {
       const text = prompt.trim().slice(0, AGENT_LIMITS.generationPrompt);
       if (!text) return no('The description of the picture is empty.');
       if (deps.deadline && now() > deps.deadline - IMAGE_MIN_MS) return no('Not enough time is left in this request to generate a picture. Tell the user to ask again in a new message.');
-      if (!(await generation.reserve('image', deps.limits.imagesPerDay))) return no(`This organization reached its limit of ${deps.limits.imagesPerDay} generated pictures per day. Tell the user to try again tomorrow.`);
+      const imageSlot = await generation.reserve('image', deps.limits.imagesPerDay);
+      if (imageSlot === 'monthly') return no(MONTHLY_LIMIT('pictures'));
+      if (imageSlot !== true) return no(`This organization reached its limit of ${deps.limits.imagesPerDay} generated pictures per day. Tell the user to try again tomorrow.`);
       let image;
       try {
         image = await deps.images.generate(text, size, deps.signal);
@@ -93,7 +99,9 @@ export function createGenerationTools(deps: GenerationDeps): GenerationTools {
       const refs = wanted.length > 0 ? await deps.repos.media.byIds(wanted) : [];
       if (refs.length !== wanted.length || refs.some((m) => m.kind !== 'image' || !m.url)) return no('Reference pictures must be images of the media library (ids from list_media or generate_image).');
       if ((await generation.activeJobs()) >= MAX_ACTIVE_VIDEOS) return no(`${MAX_ACTIVE_VIDEOS} videos are already being generated for this user. Tell them to wait for one to finish.`);
-      if (!(await generation.reserve('video', deps.limits.videosPerDay))) return no(`This organization reached its limit of ${deps.limits.videosPerDay} generated videos per day. Tell the user to try again tomorrow.`);
+      const videoSlot = await generation.reserve('video', deps.limits.videosPerDay);
+      if (videoSlot === 'monthly') return no(MONTHLY_LIMIT('videos'));
+      if (videoSlot !== true) return no(`This organization reached its limit of ${deps.limits.videosPerDay} generated videos per day. Tell the user to try again tomorrow.`);
 
       let taskId: string;
       try {

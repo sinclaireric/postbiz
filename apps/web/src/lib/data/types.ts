@@ -312,8 +312,16 @@ export interface VideoJobRecord extends AgentVideoJob {
 
 /** Génération d'images et de vidéos par l'agent : plafonds, médiathèque et tâches. Toutes les opérations sont celles de l'utilisateur connecté (RLS). */
 export interface GenerationRepository {
-  /** Réserve une génération du jour pour l'organisation, de façon atomique : faux quand le plafond de `limit` sur 24 h est atteint. */
-  reserve(kind: 'image' | 'video', limit: number): Promise<boolean>;
+  /**
+   * Réserve une génération pour l'organisation, de façon atomique : « monthly » quand l'offre n'en permet plus ce mois-ci, faux quand le plafond
+   * anti-abus de `limit` sur 24 h est atteint (ou l'accès refusé), vrai sinon.
+   */
+  reserve(kind: 'image' | 'video', limit: number): Promise<boolean | 'monthly'>;
+  /**
+   * Réserve une action d'IA texte (assistant du composeur, suggestion de réponse, agent) sous la limite mensuelle de l'offre : faux quand elle est atteinte.
+   * Toujours vrai sans facturation activée (la base journalise quand même l'usage).
+   */
+  reserveText(feature: 'assistant' | 'suggestion' | 'agent'): Promise<boolean>;
   /** Range un fichier généré dans la médiathèque ; null si l'envoi ou l'enregistrement a échoué (rien n'est gardé). */
   createMedia(input: GeneratedMediaInput): Promise<MediaItem | null>;
   /** Nombre de vidéos de l'utilisateur encore en cours. */
