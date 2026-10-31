@@ -21,6 +21,8 @@ interface NavItem {
   /** Fonctionnalité de Postiz pas encore disponible dans Postbiz. */
   soon?: boolean;
   badge?: 'inbox';
+  /** Autres adresses qui font partie de cette entrée (Canaux se trouve dans les Paramètres). */
+  also?: string[];
 }
 
 const MAIN: NavItem[] = [
@@ -30,11 +32,10 @@ const MAIN: NavItem[] = [
   { href: '/app/analyses', label: 'app.nav.analytics', icon: 'analytics' },
   { href: '/app/medias', label: 'app.nav.media', icon: 'media' },
   { href: '/app/connaissances', label: 'app.nav.knowledge', icon: 'knowledge' },
-  { href: '/app/canaux', label: 'app.nav.channels', icon: 'channels' },
 ];
 const BOTTOM: NavItem[] = [
   { href: '/app/facturation', label: 'app.nav.billing', icon: 'billing' },
-  { href: '/app/reglages', label: 'app.nav.settings', icon: 'settings' },
+  { href: '/app/reglages', label: 'app.nav.settings', icon: 'settings', also: ['/app/canaux'] },
 ];
 // La barre du bas du téléphone n'a de la place que pour sept entrées : la base de connaissance se gère depuis un ordinateur ou le panneau IA du composeur.
 const MOBILE: NavItem[] = [...MAIN.filter((n) => n.icon !== 'knowledge'), BOTTOM[1]!];
@@ -91,6 +92,7 @@ export function AppShell({
   const t = useT();
   const pathname = usePathname();
   const isActive = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
+  const isCurrent = (n: NavItem) => isActive(n.href) || (n.also ?? []).some(isActive);
   const titleKey = Object.entries(TITLES).find(([href]) => isActive(href))?.[1];
   const title = titleKey ? t(titleKey) : 'Postbiz';
 
@@ -100,10 +102,10 @@ export function AppShell({
       <aside className="hidden w-[92px] shrink-0 flex-col items-center rounded-3xl border border-line bg-surface py-4 lg:flex">
         <Link href="/app/calendrier" aria-label={t('app.nav.home')} title={orgName}><LogoMark size={44} /></Link>
         <nav className="mt-6 flex flex-col items-center gap-1" aria-label={t('app.nav.label')}>
-          {MAIN.map((n) => <RailItem key={n.href} item={n} active={isActive(n.href)} unread={unreadMessages} />)}
+          {MAIN.map((n) => <RailItem key={n.href} item={n} active={isCurrent(n)} unread={unreadMessages} />)}
         </nav>
         <nav className="mt-auto flex flex-col items-center gap-1" aria-label={t('app.nav.accountLabel')}>
-          {BOTTOM.map((n) => <RailItem key={n.href} item={n} active={isActive(n.href)} unread={0} />)}
+          {BOTTOM.map((n) => <RailItem key={n.href} item={n} active={isCurrent(n)} unread={0} />)}
         </nav>
       </aside>
 
@@ -132,7 +134,7 @@ export function AppShell({
       {/* Barre d'onglets (mobile) */}
       <nav className="fixed inset-x-0 bottom-0 z-30 flex justify-around border-t border-line bg-surface px-1 pt-1.5 pb-[max(0.375rem,env(safe-area-inset-bottom))] lg:hidden" aria-label={t('app.nav.label')}>
         {MOBILE.map((n) => (
-          <Link key={n.href} href={n.href} aria-current={isActive(n.href) ? 'page' : undefined} className={`flex min-w-0 flex-1 flex-col items-center gap-0.5 rounded-xl py-1.5 ${isActive(n.href) ? 'text-forest' : 'text-ink/60'}`}>
+          <Link key={n.href} href={n.href} aria-current={isCurrent(n) ? 'page' : undefined} className={`flex min-w-0 flex-1 flex-col items-center gap-0.5 rounded-xl py-1.5 ${isCurrent(n) ? 'text-forest' : 'text-ink/60'}`}>
             <span className="relative">
               <NavIcon name={n.icon} size={22} />
               {n.badge === 'inbox' && unreadMessages > 0 && <span className="absolute -top-1 -end-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-ink px-1 text-[10px] font-bold text-white">{unreadMessages}</span>}

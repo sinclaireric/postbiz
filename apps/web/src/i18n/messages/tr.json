@@ -1472,6 +1472,7 @@
       "noPreview": "Önizleme yok"
     },
     "settings": {
+      "tabs": { "general": "Genel", "label": "Ayar bölümleri" },
       "orgTitle": "Çalışma alanı",
       "orgName": "Çalışma alanı adı",
       "orgSaved": "Ad kaydedildi.",

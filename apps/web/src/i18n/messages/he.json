@@ -1446,6 +1446,7 @@
       "noPreview": "אין תצוגה מקדימה"
     },
     "settings": {
+      "tabs": { "general": "כללי", "label": "חלקי ההגדרות" },
       "orgTitle": "סביבת עבודה",
       "orgName": "שם סביבת העבודה",
       "orgSaved": "השם נשמר.",

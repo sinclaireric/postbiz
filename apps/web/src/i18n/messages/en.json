@@ -2183,6 +2183,7 @@
       "noPreview": "Preview unavailable"
     },
     "settings": {
+      "tabs": { "general": "General", "label": "Settings sections" },
       "orgTitle": "Workspace",
       "orgName": "Workspace name",
       "orgSaved": "Name saved.",

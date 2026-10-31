@@ -1420,6 +1420,7 @@
       "noPreview": "无预览"
     },
     "settings": {
+      "tabs": { "general": "常规", "label": "设置分区" },
       "orgTitle": "工作区",
       "orgName": "工作区名称",
       "orgSaved": "名称已保存。",

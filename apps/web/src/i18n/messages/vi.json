@@ -1468,6 +1468,7 @@
       "noPreview": "Không có bản xem trước"
     },
     "settings": {
+      "tabs": { "general": "Chung", "label": "Các mục cài đặt" },
       "orgTitle": "Không gian làm việc",
       "orgName": "Tên không gian làm việc",
       "orgSaved": "Đã lưu tên.",

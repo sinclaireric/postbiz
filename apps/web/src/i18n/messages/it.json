@@ -1478,6 +1478,7 @@
       "noPreview": "Anteprima non disponibile"
     },
     "settings": {
+      "tabs": { "general": "Generale", "label": "Sezioni delle impostazioni" },
       "orgTitle": "Spazio di lavoro",
       "orgName": "Nome dello spazio di lavoro",
       "orgSaved": "Nome salvato.",

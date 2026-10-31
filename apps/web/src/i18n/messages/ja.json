@@ -1423,6 +1423,7 @@
       "noPreview": "プレビューなし"
     },
     "settings": {
+      "tabs": { "general": "一般", "label": "設定のセクション" },
       "orgTitle": "ワークスペース",
       "orgName": "ワークスペース名",
       "orgSaved": "名前を保存しました。",

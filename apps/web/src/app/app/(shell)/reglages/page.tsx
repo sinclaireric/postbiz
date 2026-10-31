@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
+import { SettingsTabs } from '@/components/app/settings-tabs';
 import { WorkspaceBadge } from '@/components/app/workspace-menu';
 import { RichText } from '@/components/rich-text';
 import { Badge, Button } from '@/components/ui';
@@ -37,6 +38,7 @@ export default async function SettingsPage() {
 
   return (
     <div className="mx-auto w-full max-w-3xl px-5 py-8 sm:px-8">
+      <SettingsTabs current="general" t={t} />
       {received.length > 0 && (
         <section className={`${card} mb-6`} aria-labelledby="invitations" id="invitations">
           <h2 id="invitations" className="text-lg font-semibold">{t('app.workspace.received.title')}</h2>

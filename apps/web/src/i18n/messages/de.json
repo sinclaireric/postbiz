@@ -1484,6 +1484,7 @@
       "noPreview": "Vorschau nicht verfügbar"
     },
     "settings": {
+      "tabs": { "general": "Allgemein", "label": "Bereiche der Einstellungen" },
       "orgTitle": "Arbeitsbereich",
       "orgName": "Name des Arbeitsbereichs",
       "orgSaved": "Name gespeichert.",

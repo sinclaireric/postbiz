@@ -1475,6 +1475,7 @@
       "noPreview": "Vista previa no disponible"
     },
     "settings": {
+      "tabs": { "general": "General", "label": "Secciones de ajustes" },
       "orgTitle": "Espacio de trabajo",
       "orgName": "Nombre del espacio de trabajo",
       "orgSaved": "Nombre guardado.",

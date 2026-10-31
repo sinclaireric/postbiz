@@ -1461,6 +1461,7 @@
       "noPreview": "لا توجد معاينة"
     },
     "settings": {
+      "tabs": { "general": "عام", "label": "أقسام الإعدادات" },
       "orgTitle": "مساحة العمل",
       "orgName": "اسم مساحة العمل",
       "orgSaved": "تم حفظ الاسم.",

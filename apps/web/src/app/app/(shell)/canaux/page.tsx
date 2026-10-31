@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
+import { SettingsTabs } from '@/components/app/settings-tabs';
 import { ChannelAvatar } from '@/components/calendar/channel-avatar';
 import { SocialIcon } from '@/components/social-icon';
 import { RichText } from '@/components/rich-text';
@@ -65,7 +66,8 @@ export default async function ChannelsPage({ searchParams }: { searchParams: Pro
 
   return (
     <div className="mx-auto w-full max-w-5xl px-5 py-8 sm:px-8">
-      <p className="mt-1 text-muted">{t('app.channelsPage.intro')}</p>
+      <SettingsTabs current="channels" t={t} />
+      <p className="text-muted">{t('app.channelsPage.intro')}</p>
 
       {flash && <p role="status" className={`mt-5 rounded-2xl border px-4 py-3 text-sm leading-relaxed ${BANNER_CLASS[flash.tone]}`}>{flash.text}</p>}
 
@@ -76,7 +78,7 @@ export default async function ChannelsPage({ searchParams }: { searchParams: Pro
         ) : (
           <ul className="mt-3 grid gap-3 sm:grid-cols-2">
             {integrations.map((i) => (
-              <li key={i.id} className="flex items-center gap-4 rounded-2xl border border-line bg-surface p-4">
+              <li key={i.id} className="flex min-w-0 items-center gap-4 rounded-2xl border border-line bg-surface p-4">
                 <ChannelAvatar channel={i} size={44} />
                 <span className="min-w-0 flex-1">
                   <span className="block truncate font-semibold">{i.name}</span>

@@ -1423,6 +1423,7 @@
       "noPreview": "미리보기 없음"
     },
     "settings": {
+      "tabs": { "general": "일반", "label": "설정 섹션" },
       "orgTitle": "워크스페이스",
       "orgName": "워크스페이스 이름",
       "orgSaved": "이름이 저장되었습니다.",
